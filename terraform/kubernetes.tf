@@ -140,8 +140,7 @@ data "helm_template" "cilium" {
           "NET_ADMIN",
           "NET_RAW",
           "IPC_LOCK",
-          "PERFMON",
-          "BPF",
+          "SYS_ADMIN",
           "SYS_RESOURCE",
           "DAC_OVERRIDE",
           "FOWNER",
@@ -150,8 +149,7 @@ data "helm_template" "cilium" {
         ],
         cleanCiliumState : [
           "NET_ADMIN",
-          "PERFMON",
-          "BPF",
+          "SYS_ADMIN",
           "SYS_RESOURCE"
         ]
       }
@@ -198,8 +196,7 @@ data "helm_template" "cilium" {
           keepCapNetBindService : true
           envoy : [
             "NET_ADMIN",
-            "BPF",
-            "PERFMON",
+            "SYS_ADMIN",
             "NET_BIND_SERVICE"
           ]
         }
