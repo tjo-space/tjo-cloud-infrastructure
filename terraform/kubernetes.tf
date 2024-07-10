@@ -1,6 +1,6 @@
 locals {
-  // Downloaded from factory.talos.dev
-  // https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Ftailscale&platform=metal&secureboot=undefined&target=metal&version=1.7.0
+  # Downloaded from factory.talos.dev
+  # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Ftailscale&platform=metal&secureboot=undefined&target=metal&version=1.7.0
   iso = "proxmox-backup-tjo-cloud:iso/talos-v1.7.5-tailscale-metal-amd64.iso"
 
   boot_pool = "hetzner-main-data"
@@ -119,15 +119,105 @@ data "talos_machine_disks" "boot" {
   }
 }
 
+data "helm_template" "cilium" {
+  name         = "cilium"
+  repository   = "https://helm.cilium.io/"
+  chart        = "cilium"
+  version      = "1.15.6"
+  namespace    = "kube-system"
+  include_crds = true
 
-resource "talos_machine_configuration_apply" "this" {
-  for_each = local.nodes_with_address
+  values = [yamlencode({
+    ipam : {
+      mode : "kubernetes"
+    },
+    kubeProxyReplacement : true
+    securityContext : {
+      capabilities : {
+        ciliumAgent : [
+          "CHOWN",
+          "KILL",
+          "NET_ADMIN",
+          "NET_RAW",
+          "IPC_LOCK",
+          "PERFMON",
+          "BPF",
+          "SYS_RESOURCE",
+          "DAC_OVERRIDE",
+          "FOWNER",
+          "SETGID",
+          "SETUID"
+        ],
+        cleanCiliumState : [
+          "NET_ADMIN",
+          "PERFMON",
+          "BPF",
+          "SYS_RESOURCE"
+        ]
+      }
+    },
+    cgroup : {
+      autoMount : {
+        enabled : false
+      },
+      hostRoot : "/sys/fs/cgroup"
+    },
+    k8sServiceHost : "localhost"
+    k8sServicePort : "7445"
+    ipv4 : {
+      enabled : true
+    },
+    #ipv6: {
+    #  enabled: true
+    #},
+    hubble : {
+      ui : {
+        enabled : true
+      }
+      relay : {
+        enabled : true
+      }
+    },
+    # Ingress gateway
+    gatewayAPI : {
+      enabled : true
+      default : true
+      hostNetwork : {
+        enabled : true
+        nodes : {
+          matchLabels : {
+            "k8s.tjo.cloud/gateway" : "true"
+          }
+        }
+      }
+    }
+    envoy : {
+      enabled : true
+      securityContext : {
+        capabilities : {
+          keepCapNetBindService : true
+          envoy : [
+            "NET_ADMIN",
+            "BPF",
+            "PERFMON",
+            "NET_BIND_SERVICE"
+          ]
+        }
+      }
+    }
+  })]
+}
+
+resource "talos_machine_configuration_apply" "controlplane" {
+  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
 
   client_configuration        = talos_machine_secrets.this.client_configuration
-  machine_configuration_input = each.value.type == "controlplane" ? data.talos_machine_configuration.controlplane.machine_configuration : data.talos_machine_configuration.worker.machine_configuration
+  machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
 
   node     = each.value.name
   endpoint = each.value.address_ipv4
+
+  apply_mode = "reboot"
 
   config_patches = [
     yamlencode({
@@ -136,6 +226,9 @@ resource "talos_machine_configuration_apply" "this" {
           cni : {
             name : "none"
           }
+        }
+        proxy : {
+          disabled : true
         }
         allowSchedulingOnControlPlanes : true,
         apiServer : {
@@ -148,9 +241,10 @@ resource "talos_machine_configuration_apply" "this" {
             "oidc-groups-prefix" : "oidc:groups:",
           }
         }
-        inlineManifests : [{
-          name : "oidc-groups"
-          contents : <<-EOF
+        inlineManifests : [
+          {
+            name : "oidc-groups"
+            contents : <<-EOF
             apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
@@ -163,8 +257,81 @@ resource "talos_machine_configuration_apply" "this" {
               kind: ClusterRole
               name: cluster-admin
               apiGroup: rbac.authorization.k8s.io
-        EOF
-        }]
+            EOF
+          },
+          {
+            name : "gateway-api-crds"
+            contents : file("${path.module}/manifests/gateway-api-crds.yaml")
+          },
+          {
+            name : "cilium"
+            contents : data.helm_template.cilium.manifest
+          }
+        ],
+      }
+      machine = {
+        kubelet = {
+          extraArgs = {
+            rotate-server-certificates : "true"
+          }
+        }
+        network = {
+          hostname = each.value.name
+        }
+        install = {
+          image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:v1.7.5"
+          disk  = data.talos_machine_disks.boot[each.key].disks[0].name
+        }
+        nodeLabels = {
+          "k8s.tjo.cloud/gateway" = "true"
+        }
+      }
+    }),
+    yamlencode({
+      apiVersion : "v1alpha1"
+      kind : "ExtensionServiceConfig"
+      name : "tailscale"
+      environment : [
+        "TS_AUTHKEY=${var.tailscale_authkey}"
+      ]
+    })
+
+  ]
+}
+
+resource "talos_machine_configuration_apply" "worker" {
+  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "worker" }
+
+  client_configuration        = talos_machine_secrets.this.client_configuration
+  machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
+
+  node     = each.value.name
+  endpoint = each.value.address_ipv4
+
+  apply_mode = "reboot"
+
+  config_patches = [
+    yamlencode({
+      cluster : {
+        network : {
+          cni : {
+            name : "none"
+          }
+        }
+        proxy : {
+          disabled : true
+        }
+        allowSchedulingOnControlPlanes : true,
+        apiServer : {
+          extraArgs : {
+            "oidc-issuer-url" : "https://id.tjo.space/application/o/k8stjocloud/",
+            "oidc-client-id" : "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
+            "oidc-username-claim" : "sub",
+            "oidc-username-prefix" : "oidc:",
+            "oidc-groups-claim" : "groups",
+            "oidc-groups-prefix" : "oidc:groups:",
+          }
+        }
       }
       machine = {
         kubelet = {
@@ -195,7 +362,8 @@ resource "talos_machine_configuration_apply" "this" {
 
 resource "talos_machine_bootstrap" "this" {
   depends_on = [
-    talos_machine_configuration_apply.this
+    talos_machine_configuration_apply.controlplane,
+    talos_machine_configuration_apply.worker
   ]
 
   node                 = local.first_controlplane_node.name
@@ -234,44 +402,6 @@ resource "local_file" "talosconfig" {
 
   content  = nonsensitive(data.talos_client_configuration.this[0].talos_config)
   filename = "${path.module}/talosconfig"
-}
-
-
-resource "helm_release" "cilium" {
-  depends_on = [
-    talos_machine_bootstrap.this
-  ]
-
-  name       = "cilium"
-  repository = "https://helm.cilium.io/"
-  chart      = "cilium"
-  version    = "1.15.6"
-  namespace  = "kube-system"
-
-  set {
-    name  = "ipam.mode"
-    value = "kubernetes"
-  }
-  set {
-    name  = "kubeProxyReplacement"
-    value = "disabled"
-  }
-  set {
-    name  = "securityContext.capabilities.ciliumAgent"
-    value = "{CHOWN,KILL,NET_ADMIN,NET_RAW,IPC_LOCK,SYS_ADMIN,SYS_RESOURCE,DAC_OVERRIDE,FOWNER,SETGID,SETUID}"
-  }
-  set {
-    name  = "securityContext.capabilities.cleanCiliumState"
-    value = "{NET_ADMIN,SYS_ADMIN,SYS_RESOURCE}"
-  }
-  set {
-    name  = "cgroup.autoMount.enabled"
-    value = false
-  }
-  set {
-    name  = "cgroup.hostRoot"
-    value = "/sys/fs/cgroup"
-  }
 }
 
 resource "helm_release" "dashboard" {
