@@ -1,17 +1,36 @@
 locals {
   # Downloaded from factory.talos.dev
   # https://factory.talos.dev/?arch=amd64&board=undefined&cmdline-set=true&extensions=-&extensions=siderolabs%2Fqemu-guest-agent&extensions=siderolabs%2Ftailscale&platform=metal&secureboot=undefined&target=metal&version=1.7.0
-  iso = "proxmox-backup-tjo-cloud:iso/talos-v1.7.5-tailscale-metal-amd64.iso"
+  iso = "proxmox-backup-tjo-cloud:iso/talos-${var.talos_version}-tailscale-metal-amd64.iso"
 
   boot_pool = "hetzner-main-data"
 
-  cluster_endpoint = "https://api.${var.cluster_name}.${var.domain}:6443"
+  cluster_domain   = "api.${var.cluster_name}.${var.domain}"
+  cluster_port     = 6443
+  cluster_endpoint = "https://${local.cluster_domain}:${local.cluster_port}"
 
   nodes                     = { for k, v in var.nodes : k => merge(v, { name = "${k}.node.${var.cluster_name}.${var.domain}" }) }
   nodes_with_address        = { for k, v in local.nodes : k => merge(v, { address_ipv4 = proxmox_vm_qemu.this[k].default_ipv4_address, address_ipv6 = proxmox_vm_qemu.this[k].default_ipv6_address }) }
   first_controlplane_node   = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[0]
   nodes_public_controlplane = { for k, v in proxmox_vm_qemu.this : k => v if var.nodes[k].public && var.nodes[k].type == "controlplane" }
 
+  podSubnets = [
+    "10.200.0.0/16",
+    #"fd9b:5314:fc70::/48",
+  ]
+  serviceSubnets = [
+    "10.201.0.0/16",
+    #"fd9b:5314:fc71::/48",
+  ]
+
+  # Nodes will use IPs from this subnets
+  # for communication between each other.
+  tailscaleSubnets = [
+    "100.64.0.0/10",
+    "fd7a:115c:a1e0::/96"
+  ]
+
+  apply_mode = "reboot"
 }
 
 resource "macaddress" "this" {
@@ -89,6 +108,9 @@ data "talos_machine_configuration" "controlplane" {
   cluster_endpoint = local.cluster_endpoint
   machine_secrets  = talos_machine_secrets.this.machine_secrets
 
+  talos_version      = var.talos_version
+  kubernetes_version = var.kubernetes_version
+
   depends_on = [
     digitalocean_record.controlplane-A,
     digitalocean_record.controlplane-AAAA,
@@ -100,6 +122,9 @@ data "talos_machine_configuration" "worker" {
   machine_type     = "worker"
   cluster_endpoint = local.cluster_endpoint
   machine_secrets  = talos_machine_secrets.this.machine_secrets
+
+  talos_version      = var.talos_version
+  kubernetes_version = var.kubernetes_version
 
   depends_on = [
     digitalocean_record.controlplane-A,
@@ -120,18 +145,27 @@ data "talos_machine_disks" "boot" {
 }
 
 data "helm_template" "cilium" {
-  name         = "cilium"
-  repository   = "https://helm.cilium.io/"
-  chart        = "cilium"
-  version      = "1.15.6"
-  namespace    = "kube-system"
-  include_crds = true
+  provider = helm.template
+
+  name       = "cilium"
+  chart      = "cilium"
+  repository = "https://helm.cilium.io/"
+  version    = "1.15.6"
+  namespace  = "kube-system"
+
+  kube_version = var.kubernetes_version
+  api_versions = [
+    "gateway.networking.k8s.io/v1/GatewayClass",
+  ]
 
   values = [yamlencode({
     ipam : {
       mode : "kubernetes"
     },
-    kubeProxyReplacement : true
+    nodeIPAM : {
+      enabled : true
+    },
+    kubeProxyReplacement : "true"
     securityContext : {
       capabilities : {
         ciliumAgent : [
@@ -160,15 +194,22 @@ data "helm_template" "cilium" {
       },
       hostRoot : "/sys/fs/cgroup"
     },
-    k8sServiceHost : "localhost"
-    k8sServicePort : "7445"
+    k8sServiceHost : local.cluster_domain
+    k8sServicePort : local.cluster_port
     ipv4 : {
       enabled : true
     },
-    #ipv6: {
-    #  enabled: true
+    #ipv6 : {
+    #  enabled : true
     #},
     hubble : {
+      tls : {
+        auto : {
+          enabled : true
+          method : "cronJob"
+          schedule : "0 0 1 */4 *"
+        }
+      }
       ui : {
         enabled : true
       }
@@ -179,7 +220,6 @@ data "helm_template" "cilium" {
     # Ingress gateway
     gatewayAPI : {
       enabled : true
-      default : true
       hostNetwork : {
         enabled : true
         nodes : {
@@ -214,15 +254,26 @@ resource "talos_machine_configuration_apply" "controlplane" {
   node     = each.value.name
   endpoint = each.value.address_ipv4
 
-  apply_mode = "reboot"
+  apply_mode = local.apply_mode
 
   config_patches = [
     yamlencode({
       cluster : {
+        controlPlane : {
+          endpoint : local.cluster_endpoint
+          localAPIServerPort : local.cluster_port
+        }
+        etcd : {
+          #advertisedSubnets : [
+          #  local.tailscaleSubnet
+          #]
+        }
         network : {
           cni : {
             name : "none"
           }
+          podSubnets : local.podSubnets
+          serviceSubnets : local.serviceSubnets
         }
         proxy : {
           disabled : true
@@ -268,15 +319,15 @@ resource "talos_machine_configuration_apply" "controlplane" {
       }
       machine = {
         kubelet = {
-          extraArgs = {
-            rotate-server-certificates : "true"
+          nodeIP : {
+            validSubnets : local.tailscaleSubnets
           }
         }
         network = {
           hostname = each.value.name
         }
         install = {
-          image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:v1.7.5"
+          image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:${var.talos_version}"
           disk  = data.talos_machine_disks.boot[each.key].disks[0].name
         }
         nodeLabels = {
@@ -292,7 +343,6 @@ resource "talos_machine_configuration_apply" "controlplane" {
         "TS_AUTHKEY=${var.tailscale_authkey}"
       ]
     })
-
   ]
 }
 
@@ -305,42 +355,48 @@ resource "talos_machine_configuration_apply" "worker" {
   node     = each.value.name
   endpoint = each.value.address_ipv4
 
-  apply_mode = "reboot"
+  apply_mode = local.apply_mode
 
   config_patches = [
     yamlencode({
       cluster : {
+        controlPlane : {
+          endpoint : local.cluster_endpoint
+          localAPIServerPort : local.cluster_port
+        }
         network : {
           cni : {
             name : "none"
           }
+          podSubnets : local.podSubnets
+          serviceSubnets : local.serviceSubnets
         }
         proxy : {
           disabled : true
         }
-        allowSchedulingOnControlPlanes : true,
+        allowSchedulingOnControlPlanes : true
         apiServer : {
           extraArgs : {
-            "oidc-issuer-url" : "https://id.tjo.space/application/o/k8stjocloud/",
-            "oidc-client-id" : "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
-            "oidc-username-claim" : "sub",
-            "oidc-username-prefix" : "oidc:",
-            "oidc-groups-claim" : "groups",
-            "oidc-groups-prefix" : "oidc:groups:",
+            "oidc-issuer-url" : var.oidc_issuer_url
+            "oidc-client-id" : var.oidc_client_id
+            "oidc-username-claim" : "sub"
+            "oidc-username-prefix" : "oidc:"
+            "oidc-groups-claim" : "groups"
+            "oidc-groups-prefix" : "oidc:groups:"
           }
         }
       }
       machine = {
         kubelet = {
-          extraArgs = {
-            rotate-server-certificates : "true"
+          nodeIP : {
+            validSubnets : local.tailscaleSubnets
           }
         }
         network = {
           hostname = each.value.name
         }
         install = {
-          image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:v1.7.5"
+          image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:${var.talos_version}"
           disk  = data.talos_machine_disks.boot[each.key].disks[0].name
         }
       }
@@ -353,7 +409,6 @@ resource "talos_machine_configuration_apply" "worker" {
         "TS_AUTHKEY=${var.tailscale_authkey}"
       ]
     })
-
   ]
 }
 
@@ -369,8 +424,6 @@ resource "talos_machine_bootstrap" "this" {
 }
 
 data "talos_cluster_kubeconfig" "this" {
-  count = length(values(local.nodes_public_controlplane)) > 0 ? 1 : 0
-
   depends_on = [
     talos_machine_bootstrap.this
   ]
@@ -380,25 +433,78 @@ data "talos_cluster_kubeconfig" "this" {
 }
 
 resource "local_file" "kubeconfig" {
-  count = length(local.nodes_public_controlplane) > 0 ? 1 : 0
-
-  content  = data.talos_cluster_kubeconfig.this[0].kubeconfig_raw
+  content = templatefile("${path.module}/templates/kubeconfig.tftpl", {
+    cluster : {
+      name : var.cluster_name,
+      endpoint : local.cluster_endpoint,
+      ca : data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate,
+    }
+    oidc : {
+      issuer : var.oidc_issuer_url,
+      id : var.oidc_client_id,
+    }
+  })
   filename = "${path.module}/kubeconfig"
 }
 
-data "talos_client_configuration" "this" {
-  count = length(values(local.nodes_public_controlplane)) > 0 ? 1 : 0
+resource "kubernetes_manifest" "hetzner-nodes-as-loadbalancers" {
+  depends_on = [
+    talos_machine_bootstrap.this
+  ]
 
-  cluster_name         = var.cluster_name
-  client_configuration = talos_machine_secrets.this.client_configuration
-  endpoints            = values(local.nodes_public_controlplane)[*].default_ipv4_address
+  manifest = {
+    apiVersion = "cilium.io/v2alpha1"
+    kind       = "CiliumLoadBalancerIPPool"
+    metadata = {
+      name = "hetzner-nodes"
+    }
+    spec = {
+      blocks = concat(
+        [for k, v in proxmox_vm_qemu.this : { start : v.default_ipv4_address } if var.nodes[k].public],
+        #[for k, v in proxmox_vm_qemu.this : { start : v.default_ipv6_address } if var.nodes[k].public],
+      )
+    }
+  }
 }
 
-resource "local_file" "talosconfig" {
-  count = length(local.nodes_public_controlplane) > 0 ? 1 : 0
+# TODO: Certmanager, externaldns...
+resource "helm_release" "cert-manager" {
+  depends_on = [
+    talos_machine_bootstrap.this
+  ]
 
-  content  = nonsensitive(data.talos_client_configuration.this[0].talos_config)
-  filename = "${path.module}/talosconfig"
+  name       = "cert-manager"
+  chart      = "cert-manager"
+  repository = "https://charts.jetstack.io"
+  version    = "v1.15.1"
+  namespace  = "kube-system"
+
+  set {
+    name  = "crds.enabled"
+    value = true
+  }
+}
+
+resource "kubernetes_manifest" "gateway" {
+  depends_on = [
+    talos_machine_bootstrap.this
+  ]
+
+  manifest = {
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "Gateway"
+    metadata = {
+      name      = "gateway"
+      namespace = "kube-system"
+    }
+    spec = {
+      gatewayClassName = "cilium"
+      listeners = [
+        { name : "http", protocol : "HTTP", port : 80 },
+        { name : "https", protocol : "HTTPS", port : 443 },
+      ]
+    }
+  }
 }
 
 resource "helm_release" "dashboard" {
@@ -411,13 +517,47 @@ resource "helm_release" "dashboard" {
   chart      = "kubernetes-dashboard"
   version    = "7.5.0"
   namespace  = "kube-system"
+}
 
-  set {
-    name  = "ingress.enabled"
-    value = true
-  }
-  set {
-    name  = "useDefaultIngressClass"
-    value = true
+resource "kubernetes_manifest" "dashoard-http-route" {
+  depends_on = [
+    talos_machine_bootstrap.this,
+    kubernetes_manifest.gateway,
+  ]
+
+  manifest = {
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "HTTPRoute"
+    metadata = {
+      name      = "dashboard"
+      namespace = "kube-system"
+    }
+    spec = {
+      parentRefs = [
+        { name : "gateway" }
+      ]
+      hostnames = [
+        "dashboard.${var.cluster_name}.${var.domain}"
+      ]
+      rules = [
+        {
+          matches = [
+            {
+              path : {
+                value : "/"
+                type : "PathPrefix"
+              }
+            }
+          ]
+          backendRefs = [
+            {
+              name : "kubernetes-dashboard-kong-proxy"
+              port : 443
+            }
+          ]
+        }
+      ]
+
+    }
   }
 }

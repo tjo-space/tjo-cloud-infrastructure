@@ -45,7 +45,45 @@ provider "digitalocean" {
 }
 
 provider "helm" {
+  alias = "template"
+}
+
+provider "helm" {
   kubernetes {
-    config_path = "./kubeconfig"
+    host                   = local.cluster_endpoint
+    cluster_ca_certificate = base64decode(data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate)
+    exec {
+      api_version = "client.authentication.k8s.io/v1beta1"
+      command     = "kubectl"
+      args = [
+        "oidc-login",
+        "get-token",
+        "--oidc-issuer-url", var.oidc_issuer_url,
+        "--oidc-client-id", var.oidc_client_id,
+        "--oidc-extra-scope", "profile",
+        "--grant-type", "password",
+        "--username", var.oidc_username,
+        "--password", var.oidc_password,
+      ]
+    }
+  }
+}
+
+provider "kubernetes" {
+  host                   = local.cluster_endpoint
+  cluster_ca_certificate = base64decode(data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate)
+  exec {
+    api_version = "client.authentication.k8s.io/v1beta1"
+    command     = "kubectl"
+    args = [
+      "oidc-login",
+      "get-token",
+      "--oidc-issuer-url", var.oidc_issuer_url,
+      "--oidc-client-id", var.oidc_client_id,
+      "--oidc-extra-scope", "profile",
+      "--grant-type", "password",
+      "--username", var.oidc_username,
+      "--password", var.oidc_password,
+    ]
   }
 }
