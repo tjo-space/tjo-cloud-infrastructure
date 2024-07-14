@@ -19,3 +19,8 @@ variable "oidc_client_id" {
 variable "oidc_issuer_url" {
   type = string
 }
+
+variable "digitalocean_token" {
+  type      = string
+  sensitive = true
+}

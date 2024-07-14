@@ -78,17 +78,106 @@ resource "kubernetes_manifest" "hetzner-nodes-as-loadbalancers" {
   }
 }
 
-# TODO: Certmanager, externaldns...
+resource "kubernetes_namespace" "tjo-cloud" {
+  metadata {
+    name = "tjo-cloud"
+  }
+}
+
+resource "kubernetes_secret" "digitalocean-token" {
+  metadata {
+    name      = "digitalocean-token"
+    namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+  }
+  data = {
+    token = var.digitalocean_token
+  }
+}
+
+resource "helm_release" "external-dns" {
+  name       = "external-dns"
+  chart      = "external-dns"
+  repository = "https://kubernetes-sigs.github.io/external-dns/"
+  version    = "v1.14.5"
+  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
+
+  set {
+    name  = "namespaced"
+    value = "true"
+  }
+
+  set {
+    name  = "provider"
+    value = "digitalocean"
+  }
+
+  set {
+    name  = "env[0].name"
+    value = "DO_TOKEN"
+  }
+  set {
+    name  = "env[0].valueFrom.secretKeyRef.name"
+    value = kubernetes_secret.digitalocean-token.metadata[0].name
+  }
+  set {
+    name  = "env[0].valueFrom.secretKeyRef.key"
+    value = "token"
+  }
+
+  set_list {
+    name  = "sources"
+    value = ["gateway-httproute", "gateway-tlsroute", "gateway-tcproute", "gateway-udproute", "ingress", "service"]
+  }
+}
+
 resource "helm_release" "cert-manager" {
   name       = "cert-manager"
   chart      = "cert-manager"
   repository = "https://charts.jetstack.io"
   version    = "v1.15.1"
-  namespace  = "kube-system"
+  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
 
   set {
     name  = "crds.enabled"
     value = true
+  }
+
+  set_list {
+    name  = "extraArgs"
+    value = ["--enable-gateway-api"]
+  }
+}
+
+
+resource "kubernetes_manifest" "tjo-cloud-issuer" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "Issuer"
+    metadata = {
+      name      = "tjo-cloud"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+    }
+    spec = {
+      acme = {
+        email  = "tine@tjo.space"
+        server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+        privateKeySecretRef = {
+          name = "tjo-cloud-acme-account"
+        }
+        solvers = [
+          {
+            dns01 = {
+              digitalocean = {
+                tokenSecretRef = {
+                  name = kubernetes_secret.digitalocean-token.metadata[0].name
+                  key  = "token"
+                }
+              }
+            }
+          }
+        ]
+      }
+    }
   }
 }
 
@@ -98,13 +187,33 @@ resource "kubernetes_manifest" "gateway" {
     kind       = "Gateway"
     metadata = {
       name      = "gateway"
-      namespace = "kube-system"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      annotations = {
+        "cert-manager.io/issuer" : "tjo-cloud"
+      }
     }
     spec = {
       gatewayClassName = "cilium"
       listeners = [
-        { name : "http", protocol : "HTTP", port : 80 },
-        { name : "https", protocol : "HTTPS", port : 443 },
+        {
+          name : "http"
+          hostname : "*.${module.cluster.name}.${module.cluster.domain}"
+          protocol : "HTTPS"
+          port : 443
+          allowedRoutes : {
+            namespaces : {
+              from : "Same"
+            }
+          }
+          tls : {
+            mode : "Terminate"
+            certificateRefs : [
+              {
+                name : "tjo-cloud-tls"
+              }
+            ]
+          }
+        }
       ]
     }
   }
@@ -115,7 +224,7 @@ resource "helm_release" "dashboard" {
   repository = "https://kubernetes.github.io/dashboard"
   chart      = "kubernetes-dashboard"
   version    = "7.5.0"
-  namespace  = "kube-system"
+  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
 }
 
 resource "kubernetes_manifest" "dashoard-http-route" {
@@ -128,11 +237,13 @@ resource "kubernetes_manifest" "dashoard-http-route" {
     kind       = "HTTPRoute"
     metadata = {
       name      = "dashboard"
-      namespace = "kube-system"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
     }
     spec = {
       parentRefs = [
-        { name : "gateway" }
+        {
+          name : "gateway"
+        }
       ]
       hostnames = [
         "dashboard.${module.cluster.name}.${module.cluster.domain}"
@@ -149,8 +260,8 @@ resource "kubernetes_manifest" "dashoard-http-route" {
           ]
           backendRefs = [
             {
-              name : "kubernetes-dashboard-kong-proxy"
-              port : 443
+              name : "kubernetes-dashboard-web"
+              port : 8000
             }
           ]
         }
