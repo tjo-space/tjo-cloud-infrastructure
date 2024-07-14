@@ -50,8 +50,8 @@ provider "helm" {
 
 provider "helm" {
   kubernetes {
-    host                   = local.cluster_endpoint
-    cluster_ca_certificate = base64decode(data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate)
+    host                   = module.cluster.api.endpoint
+    cluster_ca_certificate = base64decode(module.cluster.api.ca)
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
       command     = "kubectl"
@@ -70,8 +70,8 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-  host                   = local.cluster_endpoint
-  cluster_ca_certificate = base64decode(data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate)
+  host                   = module.cluster.api.endpoint
+  cluster_ca_certificate = base64decode(module.cluster.api.ca)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"
     command     = "kubectl"
