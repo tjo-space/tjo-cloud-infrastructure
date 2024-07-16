@@ -24,6 +24,12 @@ variable "iso" {
   description = "Downloaded from factory.talos.dev, select quemu agent and tailscale extensions."
 }
 
+variable "allow_scheduling_on_control_planes" {
+  default     = false
+  type        = bool
+  description = "Allow scheduling on control plane nodes"
+}
+
 variable "cluster" {
   type = object({
     name   = string
@@ -41,5 +47,22 @@ variable "cluster" {
 
 variable "tailscale_authkey" {
   type      = string
+  sensitive = true
+}
+
+variable "proxmox" {
+  type = object({
+    name     = string
+    url      = string
+    insecure = optional(bool, false)
+    csi = object({
+      username = string
+      token    = string
+    })
+    ccm = object({
+      username = string
+      token    = string
+    })
+  })
   sensitive = true
 }

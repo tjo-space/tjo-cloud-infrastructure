@@ -1,12 +1,10 @@
 locals {
-  cluster_domain     = "${var.cluster.name}.${var.cluster.domain}"
-  cluster_api_domain = "${var.cluster.api.subdomain}.${local.cluster_domain}"
+  cluster_api_domain = "${var.cluster.api.subdomain}.${var.cluster.domain}"
+  cluster_endpoint   = "https://${local.cluster_api_domain}:${var.cluster.api.port}"
 
-  cluster_endpoint = "https://${local.cluster_api_domain}:${var.cluster.api.port}"
+  nodes = { for k, v in var.nodes : k => merge(v, { name = replace("${k}.${v.type}.${var.cluster.domain}", ".", "-") }) }
 
-  nodes = { for k, v in var.nodes : k => merge(v, { name = "${k}.node.${local.cluster_domain}" }) }
-
-  nodes_with_address = { for k, v in local.nodes : k => merge(v, { address_ipv4 = proxmox_vm_qemu.this[k].default_ipv4_address, address_ipv6 = proxmox_vm_qemu.this[k].default_ipv6_address }) }
+  nodes_with_address = { for k, v in local.nodes : k => merge(v, { ipv4 = try(proxmox_vm_qemu.this[k].default_ipv4_address, false), ipv6 = try(proxmox_vm_qemu.this[k].default_ipv6_address, false) }) }
 
   first_controlplane_node = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[0]
 
@@ -25,9 +23,22 @@ locals {
     "100.64.0.0/10",
     "fd7a:115c:a1e0::/96"
   ]
+
+  proxmox-cloud-controller-manager = {
+    clusters : [{
+      region : var.proxmox.name,
+      url : var.proxmox.url,
+      insecure : var.proxmox.insecure,
+      token_id : var.proxmox.ccm.username,
+      token_secret : var.proxmox.ccm.token,
+    }]
+  }
 }
 
-resource "macaddress" "this" {
+resource "macaddress" "private" {
+  for_each = local.nodes
+}
+resource "macaddress" "public" {
   for_each = local.nodes
 }
 
@@ -39,6 +50,7 @@ resource "proxmox_vm_qemu" "this" {
   tags = join(";", concat(
     ["kubernetes", "terraform"],
     each.value.public ? ["public"] : ["private"],
+    [each.value.type]
   ))
 
   cores  = each.value.cores
@@ -52,7 +64,7 @@ resource "proxmox_vm_qemu" "this" {
   network {
     model   = "virtio"
     bridge  = each.value.public ? "vmpublic0" : "vmprivate0"
-    macaddr = macaddress.this[each.key].address
+    macaddr = macaddress.private[each.key].address
   }
 
   disks {
@@ -75,21 +87,21 @@ resource "proxmox_vm_qemu" "this" {
 }
 
 resource "digitalocean_record" "controlplane-A" {
-  for_each = { for k, v in proxmox_vm_qemu.this : k => v if var.nodes[k].public && var.nodes[k].type == "controlplane" }
+  for_each = { for k, v in proxmox_vm_qemu.this : k => v if try(var.nodes[k].public && var.nodes[k].type == "controlplane", false) }
 
   domain = var.cluster.domain
   type   = "A"
-  name   = "${var.cluster.api.subdomain}.${var.cluster.name}"
+  name   = var.cluster.api.subdomain
   value  = each.value.default_ipv4_address
   ttl    = 30
 }
 
 resource "digitalocean_record" "controlplane-AAAA" {
-  for_each = { for k, v in proxmox_vm_qemu.this : k => v if var.nodes[k].public && var.nodes[k].type == "controlplane" }
+  for_each = { for k, v in proxmox_vm_qemu.this : k => v if try(var.nodes[k].public && var.nodes[k].type == "controlplane", false) }
 
   domain = var.cluster.domain
   type   = "AAAA"
-  name   = "${var.cluster.api.subdomain}.${var.cluster.name}"
+  name   = var.cluster.api.subdomain
   value  = each.value.default_ipv6_address
   ttl    = 30
 }
@@ -124,18 +136,6 @@ data "talos_machine_configuration" "worker" {
     digitalocean_record.controlplane-A,
     digitalocean_record.controlplane-AAAA
   ]
-}
-
-data "talos_machine_disks" "boot" {
-  for_each = local.nodes_with_address
-
-  client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = each.value.name
-  endpoint             = each.value.address_ipv4
-
-  filters = {
-    size = "< 60GB"
-  }
 }
 
 data "helm_template" "cilium" {
@@ -211,25 +211,11 @@ data "helm_template" "cilium" {
         enabled : true
       }
     },
-    # Ingress gateway
     gatewayAPI : {
-      enabled : true
-      hostNetwork : {
-        enabled : true
-      }
+      enabled : false
     }
     envoy : {
-      enabled : true
-      securityContext : {
-        capabilities : {
-          keepCapNetBindService : true
-          envoy : [
-            "NET_ADMIN",
-            "SYS_ADMIN",
-            "NET_BIND_SERVICE"
-          ]
-        }
-      }
+      enabled : false
     }
   })]
 }
@@ -241,7 +227,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
 
   node     = each.value.name
-  endpoint = each.value.address_ipv4
+  endpoint = each.value.ipv4
 
   apply_mode = "reboot"
 
@@ -267,7 +253,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
         proxy : {
           disabled : true
         }
-        allowSchedulingOnControlPlanes : true,
+        allowSchedulingOnControlPlanes : var.allow_scheduling_on_control_planes,
         apiServer : {
           extraArgs : {
             "oidc-issuer-url" : "https://id.tjo.space/application/o/k8stjocloud/",
@@ -297,19 +283,42 @@ resource "talos_machine_configuration_apply" "controlplane" {
             EOF
           },
           {
-            name : "gateway-api-crds"
-            contents : file("${path.module}/gateway-api-crds.yaml")
-          },
-          {
             name : "cilium"
             contents : data.helm_template.cilium.manifest
+          },
+          {
+            name : "proxmox-cloud-controller-manager"
+            contents : <<-EOF
+            apiVersion: v1
+            kind: Secret
+            metadata:
+              name: proxmox-cloud-controller-manager
+              namespace: kube-system
+            data:
+              config.yaml: ${base64encode(yamlencode(local.proxmox-cloud-controller-manager))}
+            EOF
           }
-        ],
+        ]
+        externalCloudProvider : {
+          enabled : true
+          manifests : [
+            "https://raw.githubusercontent.com/sergelogvinov/proxmox-csi-plugin/v0.7.0/docs/deploy/proxmox-csi-plugin-talos.yml",
+            "https://raw.githubusercontent.com/sergelogvinov/proxmox-cloud-controller-manager/v0.4.2/docs/deploy/cloud-controller-manager-talos.yml"
+          ]
+        }
+        extraManifests : [
+          #"https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/v0.8.5/deploy/standalone-install.yaml",
+          "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.1/components.yaml",
+        ]
       }
       machine = {
         kubelet = {
           nodeIP : {
             validSubnets : local.tailscaleSubnets
+          }
+          extraArgs : {
+            rotate-server-certificates : true
+            cloud-provider : "external"
           }
         }
         network = {
@@ -317,11 +326,12 @@ resource "talos_machine_configuration_apply" "controlplane" {
         }
         install = {
           image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:${var.versions.talos}"
-          disk  = data.talos_machine_disks.boot[each.key].disks[0].name
+          disk  = "/dev/vda"
         }
         nodeLabels = {
-          "k8s.tjo.cloud/public" = each.value.public ? "true" : "false"
-          "k8s.tjo.cloud/host"   = each.value.host
+          "k8s.tjo.cloud/public"  = each.value.public ? "true" : "false"
+          "k8s.tjo.cloud/host"    = each.value.host
+          "k8s.tjo.cloud/proxmox" = var.proxmox.name
         }
       }
     }),
@@ -330,7 +340,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
       kind : "ExtensionServiceConfig"
       name : "tailscale"
       environment : [
-        "TS_AUTHKEY=${var.tailscale_authkey}"
+        "TS_AUTHKEY=${var.tailscale_authkey}",
+        "TS_HOSTNAME=${replace(each.value.name, ".", "-")}",
       ]
     })
   ]
@@ -343,7 +354,7 @@ resource "talos_machine_configuration_apply" "worker" {
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
 
   node     = each.value.name
-  endpoint = each.value.address_ipv4
+  endpoint = each.value.ipv4
 
   apply_mode = "reboot"
 
@@ -370,17 +381,22 @@ resource "talos_machine_configuration_apply" "worker" {
           nodeIP : {
             validSubnets : local.tailscaleSubnets
           }
+          extraArgs : {
+            rotate-server-certificates : true
+            cloud-provider : "external"
+          }
         }
         network = {
           hostname = each.value.name
         }
         install = {
           image = "factory.talos.dev/installer/7d4c31cbd96db9f90c874990697c523482b2bae27fb4631d5583dcd9c281b1ff:${var.versions.talos}"
-          disk  = data.talos_machine_disks.boot[each.key].disks[0].name
+          disk  = "/dev/vda"
         }
         nodeLabels = {
-          "k8s.tjo.cloud/public" = each.value.public ? "true" : "false"
-          "k8s.tjo.cloud/host"   = each.value.host
+          "k8s.tjo.cloud/public"  = each.value.public ? "true" : "false"
+          "k8s.tjo.cloud/host"    = each.value.host
+          "k8s.tjo.cloud/proxmox" = var.proxmox.name
         }
       }
     }),
@@ -389,7 +405,8 @@ resource "talos_machine_configuration_apply" "worker" {
       kind : "ExtensionServiceConfig"
       name : "tailscale"
       environment : [
-        "TS_AUTHKEY=${var.tailscale_authkey}"
+        "TS_AUTHKEY=${var.tailscale_authkey}",
+        "TS_HOSTNAME=${replace(each.value.name, ".", "-")}",
       ]
     })
   ]
@@ -402,7 +419,7 @@ resource "talos_machine_bootstrap" "this" {
   ]
 
   node                 = local.first_controlplane_node.name
-  endpoint             = local.first_controlplane_node.address_ipv4
+  endpoint             = local.first_controlplane_node.ipv4
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
@@ -412,5 +429,5 @@ data "talos_cluster_kubeconfig" "this" {
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.first_controlplane_node.address_ipv4
+  node                 = local.first_controlplane_node.ipv4
 }
