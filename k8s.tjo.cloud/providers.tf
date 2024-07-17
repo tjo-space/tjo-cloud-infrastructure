@@ -1,8 +1,8 @@
 terraform {
   required_providers {
     proxmox = {
-      source  = "Telmate/proxmox"
-      version = "3.0.1-rc3"
+      source  = "bpg/proxmox"
+      version = "0.61.1"
     }
     talos = {
       source  = "siderolabs/talos"
@@ -37,8 +37,13 @@ terraform {
 
 provider "proxmox" {
   # FIXME: Traefik/NGINX breaks this! 500 ERROR
-  pm_api_url      = "https://178.63.49.225:8006/api2/json"
-  pm_tls_insecure = true
+  endpoint  = "https://178.63.49.225:8006/api2/json"
+  insecure  = true
+  api_token = var.proxmox_token
+  ssh {
+    agent    = true
+    username = "root"
+  }
 }
 
 provider "digitalocean" {

@@ -22,18 +22,7 @@ variable "digitalocean_token" {
   sensitive = true
 }
 
-variable "proxmox_csi_username" {
-  type = string
-}
-variable "proxmox_csi_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "proxmox_ccm_username" {
-  type = string
-}
-variable "proxmox_ccm_token" {
+variable "proxmox_token" {
   type      = string
   sensitive = true
 }

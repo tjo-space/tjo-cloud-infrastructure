@@ -5,24 +5,29 @@ variable "nodes" {
     host   = string
 
     cores  = optional(number, 4)
-    memory = optional(string, 4096)
+    memory = optional(number, 4096)
 
     boot_pool = string
-    boot_size = optional(string, "32G")
+    boot_size = optional(number, 32)
   }))
 }
 
-variable "versions" {
+variable "talos" {
   type = object({
-    talos      = optional(string, "v1.7.5")
+    version    = optional(string, "v1.7.5")
     kubernetes = optional(string, "v1.30.0")
+
+    # Default is:
+    #  customization:
+    #    systemExtensions:
+    #      officialExtensions:
+    #          - siderolabs/kata-containers
+    #          - siderolabs/qemu-guest-agent
+    #          - siderolabs/tailscale
+    schematic_id = optional(string, "a3f29a65dfd32b73c76f14eef96ef7588cf08c7d737d24fae9b8216d1ffa5c3d")
   })
 }
 
-variable "iso" {
-  type        = string
-  description = "Downloaded from factory.talos.dev, select quemu agent and tailscale extensions."
-}
 
 variable "allow_scheduling_on_control_planes" {
   default     = false
@@ -52,17 +57,10 @@ variable "tailscale_authkey" {
 
 variable "proxmox" {
   type = object({
-    name     = string
-    url      = string
-    insecure = optional(bool, false)
-    csi = object({
-      username = string
-      token    = string
-    })
-    ccm = object({
-      username = string
-      token    = string
-    })
+    name           = string
+    url            = string
+    insecure       = optional(bool, false)
+    iso_storage_id = string
   })
   sensitive = true
 }

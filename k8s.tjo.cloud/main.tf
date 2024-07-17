@@ -5,12 +5,10 @@ module "cluster" {
     helm.template = helm.template
   }
 
-  versions = {
-    talos      = "v1.7.5"
+  talos = {
+    version    = "v1.7.5"
     kubernetes = "v1.30.0"
   }
-
-  iso = "proxmox-backup-tjo-cloud:iso/talos-v1.7.5-tailscale-metal-amd64.iso"
 
   cluster = {
     name   = "tjo-cloud"
@@ -22,16 +20,9 @@ module "cluster" {
   }
 
   proxmox = {
-    name = "tjo-cloud"
-    url  = "https://proxmox.tjo.cloud/api2/json"
-    ccm = {
-      username = var.proxmox_ccm_username
-      token    = var.proxmox_ccm_token
-    }
-    csi = {
-      username = var.proxmox_csi_username
-      token    = var.proxmox_csi_token
-    }
+    name           = "tjo-cloud"
+    url            = "https://proxmox.tjo.cloud/api2/json"
+    iso_storage_id = "proxmox-backup-tjo-cloud"
   }
 
   tailscale_authkey = var.tailscale_authkey
