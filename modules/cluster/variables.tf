@@ -7,7 +7,7 @@ variable "nodes" {
     cores  = optional(number, 4)
     memory = optional(number, 4096)
 
-    boot_pool = string
+    storage   = string
     boot_size = optional(number, 32)
   }))
 }
@@ -60,7 +60,7 @@ variable "proxmox" {
     name           = string
     url            = string
     insecure       = optional(bool, false)
-    iso_storage_id = string
+    common_storage = string
   })
   sensitive = true
 }

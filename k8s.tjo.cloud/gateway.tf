@@ -9,6 +9,8 @@ resource "kubernetes_secret" "digitalocean-token" {
 }
 
 resource "helm_release" "cert-manager" {
+  depends_on = [helm_release.envoy]
+
   name       = "cert-manager"
   chart      = "cert-manager"
   repository = "https://charts.jetstack.io"
@@ -27,6 +29,8 @@ resource "helm_release" "cert-manager" {
 }
 
 resource "kubernetes_manifest" "tjo-cloud-issuer" {
+  depends_on = [helm_release.cert-manager]
+
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "Issuer"
@@ -90,7 +94,9 @@ resource "helm_release" "envoy" {
   ]
 }
 
-resource "kubernetes_manifest" "gateway-class" {
+resource "kubernetes_manifest" "gateway_class" {
+  depends_on = [helm_release.envoy]
+
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind       = "GatewayClass"
@@ -115,7 +121,7 @@ resource "kubernetes_manifest" "gateway" {
       }
     }
     spec = {
-      gatewayClassName = "envoy"
+      gatewayClassName = kubernetes_manifest.gateway_class.object.metadata.name
       listeners = [
         {
           name : "http"

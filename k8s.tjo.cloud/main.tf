@@ -22,7 +22,7 @@ module "cluster" {
   proxmox = {
     name           = "tjo-cloud"
     url            = "https://proxmox.tjo.cloud/api2/json"
-    iso_storage_id = "proxmox-backup-tjo-cloud"
+    common_storage = "proxmox-backup-tjo-cloud"
   }
 
   tailscale_authkey = var.tailscale_authkey
@@ -30,52 +30,52 @@ module "cluster" {
   allow_scheduling_on_control_planes = true
   nodes = {
     pink = {
-      public    = true
-      type      = "controlplane"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 4096
+      public  = true
+      type    = "controlplane"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 4096
     }
     purple = {
-      public    = true
-      type      = "controlplane"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 4096
+      public  = true
+      type    = "controlplane"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 4096
     }
     violet = {
-      public    = true
-      type      = "controlplane"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 4096
+      public  = true
+      type    = "controlplane"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 4096
     }
     blue = {
-      public    = false
-      type      = "worker"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 16384
+      public  = false
+      type    = "worker"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 16384
     }
     cyan = {
-      public    = false
-      type      = "worker"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 16384
+      public  = false
+      type    = "worker"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 16384
     }
     green = {
-      public    = false
-      type      = "worker"
-      host      = "hetzner"
-      boot_pool = "hetzner-main-data"
-      cores     = 4
-      memory    = 16384
+      public  = false
+      type    = "worker"
+      host    = "hetzner"
+      storage = "local-zfs"
+      cores   = 4
+      memory  = 16384
     }
   }
 }

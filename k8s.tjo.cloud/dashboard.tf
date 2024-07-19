@@ -12,10 +12,6 @@ resource "helm_release" "dashboard" {
 }
 
 resource "kubernetes_manifest" "dashoard-http-route" {
-  depends_on = [
-    kubernetes_manifest.gateway,
-  ]
-
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind       = "HTTPRoute"
@@ -26,7 +22,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
     spec = {
       parentRefs = [
         {
-          name : "gateway"
+          name : kubernetes_manifest.gateway.object.metadata.name
         }
       ]
       hostnames = [
@@ -120,7 +116,7 @@ resource "kubernetes_manifest" "dashboard-oidc" {
       targetRef = {
         group : "gateway.networking.k8s.io"
         kind : "HTTPRoute"
-        name : "dashboard"
+        name : kubernetes_manifest.dashoard-http-route.object.metadata.name
       }
       oidc = {
         provider = {
@@ -128,7 +124,7 @@ resource "kubernetes_manifest" "dashboard-oidc" {
         }
         clientID : var.oidc_client_id
         clientSecret : {
-          name : "dashboard-oidc"
+          name : kubernetes_secret.dashboard-oidc.metadata[0].name
         }
         scopes : ["openid", "email", "profile"]
         forwardAccessToken : true

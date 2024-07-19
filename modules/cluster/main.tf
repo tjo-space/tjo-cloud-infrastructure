@@ -21,9 +21,8 @@ locals {
   talos_controlplane_config = {
     cluster : {
       etcd : {
-        #advertisedSubnets : [
-        #  local.tailscaleSubnet
-        #]
+        advertisedSubnets : local.tailscaleSubnets
+        listenSubnets : local.tailscaleSubnets
       }
       allowSchedulingOnControlPlanes : var.allow_scheduling_on_control_planes,
       apiServer : {
@@ -67,11 +66,8 @@ locals {
           contents : data.helm_template.ccm.manifest
         }
       ]
-      externalCloudProvider : {
-        enabled : true
-      }
       extraManifests : [
-        #"https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/v0.8.5/deploy/standalone-install.yaml",
+        "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/v0.8.5/deploy/standalone-install.yaml",
         "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.1/components.yaml",
       ]
     }
@@ -79,6 +75,9 @@ locals {
 
   talos_worker_config = {
     cluster : {
+      #externalCloudProvider : {
+      #  enabled : true
+      #}
       controlPlane : {
         endpoint : local.cluster_endpoint
         localAPIServerPort : var.cluster.api.port
@@ -101,6 +100,7 @@ locals {
         }
         extraArgs : {
           rotate-server-certificates : true
+          #cloud-provider : "external"
         }
       }
       install = {
@@ -108,6 +108,33 @@ locals {
         disk  = "/dev/vda"
       }
     }
+  }
+
+  talos_node_config = {
+    for k, node in local.nodes_with_address : k => [
+      yamlencode({
+        machine = {
+          network = {
+            hostname = node.name
+          }
+          nodeLabels = {
+            "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
+            "k8s.tjo.cloud/host"    = node.host
+            "k8s.tjo.cloud/proxmox" = var.proxmox.name
+          }
+        }
+      }),
+      yamlencode(
+        {
+          apiVersion : "v1alpha1"
+          kind : "ExtensionServiceConfig"
+          name : "tailscale"
+          environment : [
+            "TS_AUTHKEY=${var.tailscale_authkey}",
+            "TS_HOSTNAME=${node.name}",
+          ]
+      })
+    ]
   }
 }
 
@@ -131,7 +158,9 @@ resource "digitalocean_record" "controlplane-AAAA" {
   ttl    = 30
 }
 
-resource "talos_machine_secrets" "this" {}
+resource "talos_machine_secrets" "this" {
+  talos_version = var.talos.version
+}
 
 data "talos_machine_configuration" "controlplane" {
   cluster_name     = var.cluster.name
@@ -262,14 +291,30 @@ data "helm_template" "csi" {
         - url: ${var.proxmox.url}
           insecure: ${var.proxmox.insecure}
           token_id: "${proxmox_virtual_environment_user_token.csi.id}"
-          token_secret: "${proxmox_virtual_environment_user_token.csi.value}"
+          token_secret: "${split("=", proxmox_virtual_environment_user_token.csi.value)[1]}"
           region: "${var.proxmox.name}"
 
     storageClass:
-      - name: default
+      - name: proxmox
         storage: local-storage
         reclaimPolicy: Delete
-        fstype: xfs
+        fstype: ext4
+        ssd: true
+        cache: none
+
+    replicaCount: 1
+
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+      node.cloudprovider.kubernetes.io/platform: nocloud
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+    node:
+      nodeSelector:
+        node.cloudprovider.kubernetes.io/platform: nocloud
+      tolerations:
+        - operator: Exists
   EOF
   ]
 }
@@ -285,13 +330,22 @@ data "helm_template" "ccm" {
   kube_version = var.talos.kubernetes
 
   values = [<<-EOF
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+    enabledControllers:
+      - cloud-node-lifecycle
     config:
       clusters:
         - url: ${var.proxmox.url}
           insecure: ${var.proxmox.insecure}
-          token_id: "${proxmox_virtual_environment_user_token.ccm.id}"
-          token_secret: "${proxmox_virtual_environment_user_token.ccm.value}"
-          region: "${var.proxmox.name}"
+          token_id: ${proxmox_virtual_environment_user_token.ccm.id}
+          token_secret: ${split("=", proxmox_virtual_environment_user_token.ccm.value)[1]}
+          region: ${var.proxmox.name}
   EOF
   ]
 }
@@ -307,31 +361,13 @@ resource "talos_machine_configuration_apply" "controlplane" {
 
   apply_mode = "reboot"
 
-  config_patches = [
-    yamlencode(merge(local.talos_worker_config, local.talos_controlplane_config, {
-      machine = {
-        network = {
-          hostname = each.value.name
-        }
-        nodeLabels = {
-          "k8s.tjo.cloud/public"  = each.value.public ? "true" : "false"
-          "k8s.tjo.cloud/host"    = each.value.host
-          "k8s.tjo.cloud/proxmox" = var.proxmox.name
-        }
-      }
-
-    })),
-    yamlencode(
-      {
-        apiVersion : "v1alpha1"
-        kind : "ExtensionServiceConfig"
-        name : "tailscale"
-        environment : [
-          "TS_AUTHKEY=${var.tailscale_authkey}",
-          "TS_HOSTNAME=${each.value.name}",
-        ]
-    })
-  ]
+  config_patches = concat(
+    [
+      yamlencode(local.talos_worker_config),
+      yamlencode(local.talos_controlplane_config)
+    ],
+    local.talos_node_config[each.key]
+  )
 }
 
 resource "talos_machine_configuration_apply" "worker" {
@@ -345,30 +381,12 @@ resource "talos_machine_configuration_apply" "worker" {
 
   apply_mode = "reboot"
 
-  config_patches = [
-    yamlencode(merge(local.talos_worker_config, {
-      machine = {
-        network = {
-          hostname = each.value.name
-        }
-        nodeLabels = {
-          "k8s.tjo.cloud/public"  = each.value.public ? "true" : "false"
-          "k8s.tjo.cloud/host"    = each.value.host
-          "k8s.tjo.cloud/proxmox" = var.proxmox.name
-        }
-      }
-    })),
-    yamlencode(
-      {
-        apiVersion : "v1alpha1"
-        kind : "ExtensionServiceConfig"
-        name : "tailscale"
-        environment : [
-          "TS_AUTHKEY=${var.tailscale_authkey}",
-          "TS_HOSTNAME=${each.value.name}",
-        ]
-    })
-  ]
+  config_patches = concat(
+    [
+      yamlencode(local.talos_worker_config)
+    ],
+    local.talos_node_config[each.key]
+  )
 }
 
 resource "talos_machine_bootstrap" "this" {
@@ -389,4 +407,24 @@ data "talos_cluster_kubeconfig" "this" {
 
   client_configuration = talos_machine_secrets.this.client_configuration
   node                 = local.first_controlplane_node.ipv4
+}
+
+resource "local_file" "kubeconfig" {
+  content  = data.talos_cluster_kubeconfig.this.kubeconfig_raw
+  filename = "${path.root}/admin.kubeconfig"
+}
+
+data "talos_client_configuration" "this" {
+  count = length(values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })) > 0 ? 1 : 0
+
+  cluster_name         = var.cluster.name
+  client_configuration = talos_machine_secrets.this.client_configuration
+  endpoints            = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[*].ipv4
+}
+
+resource "local_file" "talosconfig" {
+  count = length(values({ for k, v in local.nodes : k => v if v.type == "controlplane" })) > 0 ? 1 : 0
+
+  content  = nonsensitive(data.talos_client_configuration.this[0].talos_config)
+  filename = "${path.root}/admin.talosconfig"
 }

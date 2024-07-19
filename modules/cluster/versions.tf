@@ -20,10 +20,6 @@ terraform {
       source  = "hashicorp/random"
       version = "3.6.2"
     }
-    macaddress = {
-      source  = "ivoronin/macaddress"
-      version = "0.3.2"
-    }
     helm = {
       source  = "hashicorp/helm"
       version = "2.14.0"
