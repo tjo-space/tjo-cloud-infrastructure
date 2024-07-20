@@ -85,24 +85,21 @@ resource "local_file" "kubeconfig" {
   filename = "${path.module}/kubeconfig"
 }
 
-resource "kubernetes_manifest" "hetzner-nodes-as-loadbalancers" {
-  manifest = {
-    apiVersion = "cilium.io/v2alpha1"
-    kind       = "CiliumLoadBalancerIPPool"
-    metadata = {
-      name = "hetzner-nodes"
-    }
-    spec = {
-      blocks = concat(
-        [for k, node in module.cluster.nodes : { start : node.ipv4 } if node.public],
-        # [for k, node in module.cluster.nodes : { start : node.ipv6 } if node.public],
-      )
-    }
-  }
-}
+module "cluster_components" {
+  source = "../modules/cluster-components"
 
-resource "kubernetes_namespace" "tjo-cloud" {
-  metadata {
-    name = "tjo-cloud"
+  oidc_issuer_url = var.oidc_issuer_url
+  oidc_client_id  = var.oidc_client_id
+
+  digitalocean_token = var.digitalocean_token
+
+  cluster_name   = module.cluster.name
+  cluster_domain = module.cluster.domain
+
+  loadbalancer_ips = {
+    hetzner-public = {
+      ipv4 = [for k, node in module.cluster.nodes : node.ipv4 if node.public]
+      ipv6 = [for k, node in module.cluster.nodes : node.ipv6 if node.public]
+    }
   }
 }

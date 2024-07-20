@@ -8,29 +8,7 @@ resource "kubernetes_secret" "digitalocean-token" {
   }
 }
 
-resource "helm_release" "cert-manager" {
-  depends_on = [helm_release.envoy]
-
-  name       = "cert-manager"
-  chart      = "cert-manager"
-  repository = "https://charts.jetstack.io"
-  version    = "v1.15.1"
-  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
-
-  set {
-    name  = "crds.enabled"
-    value = true
-  }
-
-  set_list {
-    name  = "extraArgs"
-    value = ["--enable-gateway-api"]
-  }
-}
-
 resource "kubernetes_manifest" "tjo-cloud-issuer" {
-  depends_on = [helm_release.cert-manager]
-
   manifest = {
     apiVersion = "cert-manager.io/v1"
     kind       = "Issuer"
@@ -62,41 +40,7 @@ resource "kubernetes_manifest" "tjo-cloud-issuer" {
   }
 }
 
-resource "helm_release" "envoy" {
-  name       = "envoy"
-  chart      = "gateway-helm"
-  repository = "oci://docker.io/envoyproxy"
-  version    = "v1.1.0-rc.1"
-  namespace  = "kube-system"
-
-  values = [
-    yamlencode({
-      config = {
-        envoyGateway = {
-          provider = {
-            type = "Kubernetes"
-            kubernetes = {
-              envoyDaemonSet  = {}
-              envoyDeployment = null
-            }
-          }
-          gateway = {
-            controllerName = "gateway.envoyproxy.io/gatewayclass-controller"
-          }
-          logging = {
-            level = {
-              default = "info"
-            }
-          }
-        }
-      }
-    })
-  ]
-}
-
 resource "kubernetes_manifest" "gateway_class" {
-  depends_on = [helm_release.envoy]
-
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind       = "GatewayClass"
@@ -125,7 +69,7 @@ resource "kubernetes_manifest" "gateway" {
       listeners = [
         {
           name : "http"
-          hostname : "*.${module.cluster.name}.${module.cluster.domain}"
+          hostname : "*.${var.cluster_name}.${var.cluster_domain}"
           protocol : "HTTPS"
           port : 443
           allowedRoutes : {

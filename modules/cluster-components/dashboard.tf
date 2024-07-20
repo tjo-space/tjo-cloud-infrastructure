@@ -26,7 +26,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
         }
       ]
       hostnames = [
-        "dashboard.${module.cluster.domain}"
+        "dashboard.${var.cluster_domain}"
       ]
       rules = [
         {
@@ -129,7 +129,7 @@ resource "kubernetes_manifest" "dashboard-oidc" {
         scopes : ["openid", "email", "profile"]
         forwardAccessToken : true
 
-        redirectURL : "https://dashboard.${module.cluster.domain}/login"
+        redirectURL : "https://dashboard.${var.cluster_domain}/login"
       }
     }
   }

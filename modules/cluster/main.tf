@@ -19,6 +19,21 @@ locals {
   ]
 
   talos_controlplane_config = {
+    machine : {
+      features : {
+        rbac : true
+        apidCheckExtKeyUsage : true
+        kubernetesTalosAPIAccess : {
+          enabled : true
+          allowedRoles : [
+            "os:reader"
+          ]
+          allowedKubernetesNamespaces : [
+            "kube-system"
+          ]
+        }
+      }
+    }
     cluster : {
       etcd : {
         advertisedSubnets : local.tailscaleSubnets
@@ -37,7 +52,39 @@ locals {
       }
       inlineManifests : [
         {
-          name : "oidc-groups"
+          name : "proxmox-cloud-controller-manager"
+          contents : data.helm_template.proxmox-ccm.manifest
+        },
+        {
+          name : "talos-cloud-controller-manager"
+          contents : data.helm_template.talos-ccm.manifest
+        },
+        {
+          name : "promxmox-csi-plugin"
+          contents : data.helm_template.proxmox-csi.manifest
+        },
+        {
+          name : "gateway-api-crds"
+          contents : file("${path.module}/manifests/gateway-api-crds.yaml")
+        },
+        {
+          name : "metrics-server"
+          contents : file("${path.module}/manifests/metrics-server.yaml")
+        },
+        {
+          name : "cilium"
+          contents : data.helm_template.cilium.manifest
+        },
+        {
+          name : "envoy"
+          contents : data.helm_template.envoy.manifest
+        },
+        {
+          name : "cert-manager"
+          contents : data.helm_template.cert-manager.manifest
+        },
+        {
+          name : "oidc-admins"
           contents : <<-EOF
             apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
@@ -53,31 +100,15 @@ locals {
               apiGroup: rbac.authorization.k8s.io
             EOF
         },
-        {
-          name : "cilium"
-          contents : data.helm_template.cilium.manifest
-        },
-        {
-          name : "promxmox-csi-plugin"
-          contents : data.helm_template.csi.manifest
-        },
-        {
-          name : "proxmox-cloud-controller-manager"
-          contents : data.helm_template.ccm.manifest
-        }
-      ]
-      extraManifests : [
-        "https://raw.githubusercontent.com/alex1989hu/kubelet-serving-cert-approver/v0.8.5/deploy/standalone-install.yaml",
-        "https://github.com/kubernetes-sigs/metrics-server/releases/download/v0.7.1/components.yaml",
       ]
     }
   }
 
   talos_worker_config = {
     cluster : {
-      #externalCloudProvider : {
-      #  enabled : true
-      #}
+      externalCloudProvider : {
+        enabled : true
+      }
       controlPlane : {
         endpoint : local.cluster_endpoint
         localAPIServerPort : var.cluster.api.port
@@ -100,7 +131,7 @@ locals {
         }
         extraArgs : {
           rotate-server-certificates : true
-          #cloud-provider : "external"
+          cloud-provider : "external"
         }
       }
       install = {
@@ -121,6 +152,8 @@ locals {
             "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
+            # TODO: Can we remove this?
+            "node.cloudprovider.kubernetes.io/platform" = "proxmox"
           }
         }
       }),
@@ -189,164 +222,6 @@ data "talos_machine_configuration" "worker" {
   depends_on = [
     digitalocean_record.controlplane-A,
     digitalocean_record.controlplane-AAAA
-  ]
-}
-
-data "helm_template" "cilium" {
-  provider = helm.template
-
-  name       = "cilium"
-  chart      = "cilium"
-  repository = "https://helm.cilium.io/"
-  version    = "1.15.6"
-  namespace  = "kube-system"
-
-  kube_version = var.talos.kubernetes
-  api_versions = [
-    "gateway.networking.k8s.io/v1/GatewayClass",
-  ]
-
-  values = [yamlencode({
-    ipam : {
-      mode : "kubernetes"
-    },
-    nodeIPAM : {
-      enabled : true
-    },
-    kubeProxyReplacement : "true"
-    securityContext : {
-      capabilities : {
-        ciliumAgent : [
-          "CHOWN",
-          "KILL",
-          "NET_ADMIN",
-          "NET_RAW",
-          "IPC_LOCK",
-          "SYS_ADMIN",
-          "SYS_RESOURCE",
-          "DAC_OVERRIDE",
-          "FOWNER",
-          "SETGID",
-          "SETUID"
-        ],
-        cleanCiliumState : [
-          "NET_ADMIN",
-          "SYS_ADMIN",
-          "SYS_RESOURCE"
-        ]
-      }
-    },
-    cgroup : {
-      autoMount : {
-        enabled : false
-      },
-      hostRoot : "/sys/fs/cgroup"
-    },
-    k8sServiceHost : local.cluster_api_domain
-    k8sServicePort : var.cluster.api.port
-    ipv4 : {
-      enabled : true
-    },
-    #ipv6 : {
-    #  enabled : true
-    #},
-    hubble : {
-      tls : {
-        auto : {
-          enabled : true
-          method : "cronJob"
-          schedule : "0 0 1 */4 *"
-        }
-      }
-      ui : {
-        enabled : true
-      }
-      relay : {
-        enabled : true
-      }
-    },
-    gatewayAPI : {
-      enabled : false
-    }
-    envoy : {
-      enabled : false
-    }
-  })]
-}
-
-data "helm_template" "csi" {
-  provider = helm.template
-
-  name       = "proxmox-csi-plugin"
-  chart      = "proxmox-csi-plugin"
-  repository = "oci://ghcr.io/sergelogvinov/charts"
-  version    = "0.2.5"
-  namespace  = "kube-system"
-
-  kube_version = var.talos.kubernetes
-
-  values = [<<-EOF
-    config:
-      clusters:
-        - url: ${var.proxmox.url}
-          insecure: ${var.proxmox.insecure}
-          token_id: "${proxmox_virtual_environment_user_token.csi.id}"
-          token_secret: "${split("=", proxmox_virtual_environment_user_token.csi.value)[1]}"
-          region: "${var.proxmox.name}"
-
-    storageClass:
-      - name: proxmox
-        storage: local-storage
-        reclaimPolicy: Delete
-        fstype: ext4
-        ssd: true
-        cache: none
-
-    replicaCount: 1
-
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: ""
-      node.cloudprovider.kubernetes.io/platform: nocloud
-    tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        effect: NoSchedule
-    node:
-      nodeSelector:
-        node.cloudprovider.kubernetes.io/platform: nocloud
-      tolerations:
-        - operator: Exists
-  EOF
-  ]
-}
-
-data "helm_template" "ccm" {
-  provider   = helm.template
-  name       = "proxmox-cloud-controller-manager"
-  chart      = "proxmox-cloud-controller-manager"
-  repository = "oci://ghcr.io/sergelogvinov/charts"
-  version    = "0.2.3"
-  namespace  = "kube-system"
-
-  kube_version = var.talos.kubernetes
-
-  values = [<<-EOF
-    affinity:
-      nodeAffinity:
-        requiredDuringSchedulingIgnoredDuringExecution:
-          nodeSelectorTerms:
-          - matchExpressions:
-            - key: node-role.kubernetes.io/control-plane
-              operator: Exists
-    enabledControllers:
-      - cloud-node-lifecycle
-    config:
-      clusters:
-        - url: ${var.proxmox.url}
-          insecure: ${var.proxmox.insecure}
-          token_id: ${proxmox_virtual_environment_user_token.ccm.id}
-          token_secret: ${split("=", proxmox_virtual_environment_user_token.ccm.value)[1]}
-          region: ${var.proxmox.name}
-  EOF
   ]
 }
 
