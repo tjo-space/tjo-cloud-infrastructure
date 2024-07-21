@@ -98,13 +98,11 @@ data "helm_template" "proxmox-csi" {
           region: "${var.proxmox.name}"
 
     storageClass:
-      - name: proxmox
-        storage: local-zfs
+      - name: proxmox-main
+        storage: main
         reclaimPolicy: Delete
         fstype: ext4
         cache: none
-
-    replicaCount: 1
 
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
@@ -112,11 +110,13 @@ data "helm_template" "proxmox-csi" {
     tolerations:
       - key: node-role.kubernetes.io/control-plane
         effect: NoSchedule
+
     node:
       nodeSelector:
         node.cloudprovider.kubernetes.io/platform: nocloud
       tolerations:
-        - operator: Exists
+        - key: node-role.kubernetes.io/control-plane
+          effect: NoSchedule
   EOF
   ]
 }
@@ -198,23 +198,4 @@ data "helm_template" "envoy" {
   ]
 
   include_crds = true
-
-  values = [
-    yamlencode({
-      config = {
-        envoyGateway = {
-          provider = {
-            type = "Kubernetes"
-            kubernetes = {
-              envoyDaemonSet  = {}
-              envoyDeployment = null
-            }
-          }
-          gateway = {
-            controllerName = "gateway.envoyproxy.io/gatewayclass-controller"
-          }
-        }
-      }
-    })
-  ]
 }

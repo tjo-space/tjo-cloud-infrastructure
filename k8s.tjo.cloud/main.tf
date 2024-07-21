@@ -27,29 +27,12 @@ module "cluster" {
 
   tailscale_authkey = var.tailscale_authkey
 
-  allow_scheduling_on_control_planes = true
   nodes = {
     pink = {
       public  = true
       type    = "controlplane"
       host    = "hetzner"
-      storage = "local-zfs"
-      cores   = 4
-      memory  = 4096
-    }
-    purple = {
-      public  = true
-      type    = "controlplane"
-      host    = "hetzner"
-      storage = "local-zfs"
-      cores   = 4
-      memory  = 4096
-    }
-    violet = {
-      public  = true
-      type    = "controlplane"
-      host    = "hetzner"
-      storage = "local-zfs"
+      storage = "main"
       cores   = 4
       memory  = 4096
     }
@@ -57,24 +40,16 @@ module "cluster" {
       public  = false
       type    = "worker"
       host    = "hetzner"
-      storage = "local-zfs"
-      cores   = 4
+      storage = "main"
+      cores   = 6
       memory  = 16384
     }
     cyan = {
       public  = false
       type    = "worker"
       host    = "hetzner"
-      storage = "local-zfs"
-      cores   = 4
-      memory  = 16384
-    }
-    green = {
-      public  = false
-      type    = "worker"
-      host    = "hetzner"
-      storage = "local-zfs"
-      cores   = 4
+      storage = "main"
+      cores   = 6
       memory  = 16384
     }
   }

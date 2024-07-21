@@ -126,10 +126,10 @@ resource "proxmox_virtual_environment_vm" "nodes" {
     iothread     = true
   }
 
-  initialization {
-    datastore_id      = each.value.storage
-    meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
-  }
+  #initialization {
+  #  datastore_id      = each.value.storage
+  #  meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
+  #}
 }
 
 resource "proxmox_virtual_environment_role" "csi" {

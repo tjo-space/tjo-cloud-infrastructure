@@ -65,7 +65,7 @@ locals {
         },
         {
           name : "gateway-api-crds"
-          contents : file("${path.module}/manifests/gateway-api-crds.yaml")
+          contents : file("${path.module}/manifests/gateway-api.crds.yaml")
         },
         {
           name : "metrics-server"
@@ -149,11 +149,16 @@ locals {
             hostname = node.name
           }
           nodeLabels = {
-            "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
+            "k8s.tjo.cloud/public" = node.public ? "true" : "false"
+            #"k8s.tjo.cloud/ipv4"    = node.ipv4
+            #"k8s.tjo.cloud/ipv6"    = node.ipv6
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
-            # TODO: Can we remove this?
-            "node.cloudprovider.kubernetes.io/platform" = "proxmox"
+          }
+          kubelet = {
+            extraConfig = {
+              podCIDR = ""
+            }
           }
         }
       }),
