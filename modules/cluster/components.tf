@@ -9,72 +9,67 @@ data "helm_template" "cilium" {
 
   kube_version = var.talos.kubernetes
 
-  values = [yamlencode({
-    ipam : {
-      mode : "kubernetes"
-    },
-    nodeIPAM : {
-      enabled : true
-    },
-    kubeProxyReplacement : "true"
-    securityContext : {
-      capabilities : {
-        ciliumAgent : [
-          "CHOWN",
-          "KILL",
-          "NET_ADMIN",
-          "NET_RAW",
-          "IPC_LOCK",
-          "SYS_ADMIN",
-          "SYS_RESOURCE",
-          "DAC_OVERRIDE",
-          "FOWNER",
-          "SETGID",
-          "SETUID"
-        ],
-        cleanCiliumState : [
-          "NET_ADMIN",
-          "SYS_ADMIN",
-          "SYS_RESOURCE"
-        ]
-      }
-    },
-    cgroup : {
-      autoMount : {
-        enabled : false
-      },
-      hostRoot : "/sys/fs/cgroup"
-    },
-    k8sServiceHost : local.cluster_api_domain
-    k8sServicePort : var.cluster.api.port
-    ipv4 : {
-      enabled : true
-    },
-    #ipv6 : {
-    #  enabled : true
-    #},
-    hubble : {
-      tls : {
-        auto : {
-          enabled : true
-          method : "cronJob"
-          schedule : "0 0 1 */4 *"
-        }
-      }
-      ui : {
-        enabled : true
-      }
-      relay : {
-        enabled : true
-      }
-    },
-    gatewayAPI : {
-      enabled : false
-    }
-    envoy : {
-      enabled : false
-    }
-  })]
+  values = [<<-EOF
+    ipam:
+      mode: "kubernetes"
+
+    #routingMode: native
+    #ipv4NativeRoutingCIDR: pod and service cidrs?
+    enableIPv4Masquerade: true
+    ipv4:
+      enabled: true
+
+    #enableIPv6Masquerade: true
+    ipv6:
+      enabled: false
+
+    nodeIPAM:
+      enabled: true
+
+
+    kubeProxyReplacement: "true"
+    securityContext:
+      capabilities:
+        ciliumAgent:
+          - "CHOWN"
+          - "KILL"
+          - "NET_ADMIN"
+          - "NET_RAW"
+          - "IPC_LOCK"
+          - "SYS_ADMIN"
+          - "SYS_RESOURCE"
+          - "DAC_OVERRIDE"
+          - "FOWNER"
+          - "SETGID"
+          - "SETUID"
+        cleanCiliumState:
+          - "NET_ADMIN"
+          - "SYS_ADMIN"
+          - "SYS_RESOURCE"
+    cgroup:
+      hostRoot: "/sys/fs/cgroup"
+      autoMount:
+        enabled: false
+
+    k8sServiceHost: ${local.cluster_api_domain}
+    k8sServicePort: ${var.cluster.api.port}
+
+    hubble:
+      ui:
+        enabled: true
+      relay:
+        enabled: true
+      tls:
+        auto:
+          enabled: true
+          method: "cronJob"
+          schedule: "0 0 1 */4 *"
+    gatewayAPI:
+      enabled: false
+    envoy:
+      enabled: false
+    EOF
+  ]
 }
 
 data "helm_template" "proxmox-csi" {
@@ -173,15 +168,14 @@ data "helm_template" "cert-manager" {
 
   include_crds = true
 
-  set {
-    name  = "crds.enabled"
-    value = true
-  }
+  values = [<<-EOF
+    crds:
+      enabled: true
 
-  set_list {
-    name  = "extraArgs"
-    value = ["--enable-gateway-api"]
-  }
+    extraArgs:
+      - --enable-gateway-api
+    EOF
+  ]
 }
 
 data "helm_template" "envoy" {

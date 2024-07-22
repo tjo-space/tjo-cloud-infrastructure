@@ -4,11 +4,11 @@ locals {
 
   podSubnets = [
     "10.200.0.0/16",
-    #"fd9b:5314:fc70::/48",
+    #"fd9b:5314:fc70::/64",
   ]
   serviceSubnets = [
     "10.201.0.0/16",
-    #"fd9b:5314:fc71::/48",
+    #"fd9b:5314:fc71::/108",
   ]
 
   # Nodes will use IPs from this subnets
@@ -75,14 +75,14 @@ locals {
           name : "cilium"
           contents : data.helm_template.cilium.manifest
         },
-        {
-          name : "envoy"
-          contents : data.helm_template.envoy.manifest
-        },
-        {
-          name : "cert-manager"
-          contents : data.helm_template.cert-manager.manifest
-        },
+        #{
+        #  name : "envoy"
+        #  contents : data.helm_template.envoy.manifest
+        #},
+        #{
+        #  name : "cert-manager"
+        #  contents : data.helm_template.cert-manager.manifest
+        #},
         {
           name : "oidc-admins"
           contents : <<-EOF
@@ -149,16 +149,9 @@ locals {
             hostname = node.name
           }
           nodeLabels = {
-            "k8s.tjo.cloud/public" = node.public ? "true" : "false"
-            #"k8s.tjo.cloud/ipv4"    = node.ipv4
-            #"k8s.tjo.cloud/ipv6"    = node.ipv6
+            "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
-          }
-          kubelet = {
-            extraConfig = {
-              podCIDR = ""
-            }
           }
         }
       }),
@@ -170,6 +163,8 @@ locals {
           environment : [
             "TS_AUTHKEY=${var.tailscale_authkey}",
             "TS_HOSTNAME=${node.name}",
+            # IPV6: https://github.com/siderolabs/extensions/issues/432
+            "TS_ROUTES=${local.podSubnets[0]},${local.serviceSubnets[0]}"
           ]
       })
     ]
