@@ -75,14 +75,6 @@ locals {
           name : "cilium"
           contents : data.helm_template.cilium.manifest
         },
-        #{
-        #  name : "envoy"
-        #  contents : data.helm_template.envoy.manifest
-        #},
-        #{
-        #  name : "cert-manager"
-        #  contents : data.helm_template.cert-manager.manifest
-        #},
         {
           name : "oidc-admins"
           contents : <<-EOF
@@ -153,6 +145,10 @@ locals {
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
           }
+          sysctls = {
+            "net.ipv4.ip_forward"          = "1"
+            "net.ipv6.conf.all.forwarding" = "1"
+          }
         }
       }),
       yamlencode(
@@ -163,8 +159,8 @@ locals {
           environment : [
             "TS_AUTHKEY=${var.tailscale_authkey}",
             "TS_HOSTNAME=${node.name}",
-            # IPV6: https://github.com/siderolabs/extensions/issues/432
-            "TS_ROUTES=${local.podSubnets[0]},${local.serviceSubnets[0]}"
+            "TS_ROUTES=${join(",", local.podSubnets)},${join(",", local.serviceSubnets)}",
+            "TS_EXTRA_ARGS=--accept-routes --snat-subnet-routes",
           ]
       })
     ]

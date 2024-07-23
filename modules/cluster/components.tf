@@ -12,20 +12,19 @@ data "helm_template" "cilium" {
   values = [<<-EOF
     ipam:
       mode: "kubernetes"
+    nodeIPAM:
+      enabled: true
 
-    #routingMode: native
-    #ipv4NativeRoutingCIDR: pod and service cidrs?
+    bpf:
+      masquerade: true
+
     enableIPv4Masquerade: true
     ipv4:
       enabled: true
 
     #enableIPv6Masquerade: true
-    ipv6:
-      enabled: false
-
-    nodeIPAM:
-      enabled: true
-
+    #ipv6:
+    #  enabled: true
 
     kubeProxyReplacement: "true"
     securityContext:
@@ -151,45 +150,4 @@ data "helm_template" "talos-ccm" {
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes
-}
-
-data "helm_template" "cert-manager" {
-  provider   = helm.template
-  name       = "cert-manager"
-  chart      = "cert-manager"
-  repository = "https://charts.jetstack.io"
-  version    = "v1.15.1"
-  namespace  = "kube-system"
-
-  kube_version = var.talos.kubernetes
-  api_versions = [
-    "gateway.networking.k8s.io/v1/GatewayClass",
-  ]
-
-  include_crds = true
-
-  values = [<<-EOF
-    crds:
-      enabled: true
-
-    extraArgs:
-      - --enable-gateway-api
-    EOF
-  ]
-}
-
-data "helm_template" "envoy" {
-  provider   = helm.template
-  name       = "envoy"
-  chart      = "gateway-helm"
-  repository = "oci://docker.io/envoyproxy"
-  version    = "v1.1.0-rc.1"
-  namespace  = "kube-system"
-
-  kube_version = var.talos.kubernetes
-  api_versions = [
-    "gateway.networking.k8s.io/v1/GatewayClass",
-  ]
-
-  include_crds = true
 }

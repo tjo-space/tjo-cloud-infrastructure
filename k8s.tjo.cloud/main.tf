@@ -60,7 +60,11 @@ resource "local_file" "kubeconfig" {
   filename = "${path.module}/kubeconfig"
 }
 
-module "cluster_components" {
+module "cluster-core" {
+  source = "../modules/cluster-core"
+}
+
+module "cluster-components" {
   source = "../modules/cluster-components"
 
   oidc_issuer_url = var.oidc_issuer_url

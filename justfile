@@ -17,4 +17,5 @@ modules-cluster-manifests:
 k8s-apply: modules-cluster-manifests
   tofu -chdir={{justfile_directory()}}/k8s.tjo.cloud init
   tofu -chdir={{justfile_directory()}}/k8s.tjo.cloud apply -target module.cluster
+  tofu -chdir={{justfile_directory()}}/k8s.tjo.cloud apply -target module.cluster-core
   tofu -chdir={{justfile_directory()}}/k8s.tjo.cloud apply

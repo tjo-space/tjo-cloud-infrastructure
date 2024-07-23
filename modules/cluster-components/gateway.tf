@@ -40,6 +40,50 @@ resource "kubernetes_manifest" "tjo-cloud-issuer" {
   }
 }
 
+resource "kubernetes_manifest" "gateway_class_config" {
+  manifest = {
+    apiVersion = "gateway.envoyproxy.io/v1alpha1"
+    kind       = "EnvoyProxy"
+    metadata = {
+      name      = "daemonset"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+    }
+    spec = {
+      provider = {
+        type = "Kubernetes"
+        kubernetes = {
+          envoyDaemonSet = {
+            patch : {
+              type : "StrategicMerge"
+              value : {
+                spec : {
+                  template : {
+                    spec : {
+                      hostNetwork : true
+                      dnsPolicy : "ClusterFirstWithHostNet"
+                    }
+                  }
+                }
+              }
+            }
+            pod = {
+              nodeSelector = {
+                "node-role.kubernetes.io/control-plane" = ""
+              }
+              tolerations = [
+                {
+                  key    = "node-role.kubernetes.io/control-plane"
+                  effect = "NoSchedule"
+                }
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
 resource "kubernetes_manifest" "gateway_class" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -49,6 +93,12 @@ resource "kubernetes_manifest" "gateway_class" {
     }
     spec = {
       controllerName : "gateway.envoyproxy.io/gatewayclass-controller"
+      parametersRef : {
+        group : "gateway.envoyproxy.io"
+        kind : "EnvoyProxy"
+        name : kubernetes_manifest.gateway_class_config.object.metadata.name
+        namespace : kubernetes_manifest.gateway_class_config.object.metadata.namespace
+      }
     }
   }
 }
