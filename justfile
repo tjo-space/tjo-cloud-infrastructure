@@ -3,6 +3,10 @@ set shell := ["devbox", "run"]
 # Load dotenv
 set dotenv-load
 
+lint:
+  @tofu fmt -check -recursive .
+  @tflint --recursive
+
 GATEWAY_API_VERSION := "v1.1.0"
 METRICS_SERVER_VERSION := "v0.7.1"
 

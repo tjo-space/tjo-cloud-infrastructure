@@ -22,9 +22,9 @@ data "helm_template" "cilium" {
     ipv4:
       enabled: true
 
-    #enableIPv6Masquerade: true
-    #ipv6:
-    #  enabled: true
+    enableIPv6Masquerade: true
+    ipv6:
+      enabled: true
 
     kubeProxyReplacement: "true"
     securityContext:

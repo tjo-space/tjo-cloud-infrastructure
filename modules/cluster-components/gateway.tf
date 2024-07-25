@@ -53,14 +53,14 @@ resource "kubernetes_manifest" "gateway_class_config" {
         type = "Kubernetes"
         kubernetes = {
           envoyDaemonSet = {
-            patch : {
-              type : "StrategicMerge"
-              value : {
-                spec : {
-                  template : {
-                    spec : {
-                      hostNetwork : true
-                      dnsPolicy : "ClusterFirstWithHostNet"
+            patch = {
+              type = "StrategicMerge"
+              value = {
+                spec = {
+                  template = {
+                    spec = {
+                      hostNetwork = true
+                      dnsPolicy   = "ClusterFirstWithHostNet"
                     }
                   }
                 }
@@ -92,12 +92,12 @@ resource "kubernetes_manifest" "gateway_class" {
       name = "envoy"
     }
     spec = {
-      controllerName : "gateway.envoyproxy.io/gatewayclass-controller"
-      parametersRef : {
-        group : "gateway.envoyproxy.io"
-        kind : "EnvoyProxy"
-        name : kubernetes_manifest.gateway_class_config.object.metadata.name
-        namespace : kubernetes_manifest.gateway_class_config.object.metadata.namespace
+      controllerName = "gateway.envoyproxy.io/gatewayclass-controller"
+      parametersRef = {
+        group     = "gateway.envoyproxy.io"
+        kind      = "EnvoyProxy"
+        name      = kubernetes_manifest.gateway_class_config.object.metadata.name
+        namespace = kubernetes_manifest.gateway_class_config.object.metadata.namespace
       }
     }
   }
@@ -111,27 +111,27 @@ resource "kubernetes_manifest" "gateway" {
       name      = "gateway"
       namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
       annotations = {
-        "cert-manager.io/issuer" : "tjo-cloud"
+        "cert-manager.io/issuer" = "tjo-cloud"
       }
     }
     spec = {
       gatewayClassName = kubernetes_manifest.gateway_class.object.metadata.name
       listeners = [
         {
-          name : "http"
-          hostname : "*.${var.cluster_name}.${var.cluster_domain}"
-          protocol : "HTTPS"
-          port : 443
-          allowedRoutes : {
-            namespaces : {
-              from : "Same"
+          name     = "http"
+          hostname = "*.${var.cluster_name}.${var.cluster_domain}"
+          protocol = "HTTPS"
+          port     = 443
+          allowedRoutes = {
+            namespaces = {
+              from = "Same"
             }
           }
-          tls : {
-            mode : "Terminate"
-            certificateRefs : [
+          tls = {
+            mode = "Terminate"
+            certificateRefs = [
               {
-                name : "tjo-cloud-tls"
+                name = "tjo-cloud-tls"
               }
             ]
           }

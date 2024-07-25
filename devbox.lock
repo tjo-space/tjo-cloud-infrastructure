@@ -324,6 +324,54 @@
           "store_path": "/nix/store/63slizc3fnqigbbn8lwpdwwz9ccx13qa-talosctl-1.7.5"
         }
       }
+    },
+    "tflint@latest": {
+      "last_modified": "2024-07-19T15:40:08Z",
+      "resolved": "github:NixOS/nixpkgs/ad0111043c09f7d0f6b9f039882cbf350d4f7d49#tflint",
+      "source": "devbox-search",
+      "version": "0.52.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/0r44l4z5bd367npzgbgmpg5zba862wml-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/0r44l4z5bd367npzgbgmpg5zba862wml-tflint-0.52.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hn8cflv9xa7l9yqqnzf9yxxy8gp71483-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/hn8cflv9xa7l9yqqnzf9yxxy8gp71483-tflint-0.52.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/jlhmb4ka96dw5zayp993zn9zisd24s2v-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/jlhmb4ka96dw5zayp993zn9zisd24s2v-tflint-0.52.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/vwwkk3ph9rx68ngdg4mxm0zm4p0sqwa7-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/vwwkk3ph9rx68ngdg4mxm0zm4p0sqwa7-tflint-0.52.0"
+        }
+      }
     }
   }
 }

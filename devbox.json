@@ -6,7 +6,8 @@
     "cilium-cli@latest",
     "kubelogin-oidc@latest",
     "talosctl@latest",
-    "kubernetes-helm@latest"
+    "kubernetes-helm@latest",
+    "tflint@latest"
   ],
   "shell": {
     "init_hook": [

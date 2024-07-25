@@ -18,13 +18,14 @@ variable "talos" {
     kubernetes = optional(string, "v1.30.0")
 
     # Default is:
-    #  customization:
-    #    systemExtensions:
-    #      officialExtensions:
-    #          - siderolabs/kata-containers
-    #          - siderolabs/qemu-guest-agent
-    #          - siderolabs/tailscale
-    schematic_id = optional(string, "a3f29a65dfd32b73c76f14eef96ef7588cf08c7d737d24fae9b8216d1ffa5c3d")
+    # customization:
+    #   systemExtensions:
+    #     officialExtensions:
+    #         - siderolabs/kata-containers
+    #         - siderolabs/qemu-guest-agent
+    #         - siderolabs/tailscale
+    #         - siderolabs/wasmedge
+    schematic_id = optional(string, "a125b6d6becb63df5543edfae1231e351723dd6e4d551ba73e0f30229ad6ff59")
   })
 }
 

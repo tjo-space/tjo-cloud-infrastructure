@@ -4,11 +4,11 @@ locals {
 
   podSubnets = [
     "10.200.0.0/16",
-    #"fd9b:5314:fc70::/64",
+    "fd9b:5314:fc70::/56",
   ]
   serviceSubnets = [
     "10.201.0.0/16",
-    #"fd9b:5314:fc71::/108",
+    "fd9b:5314:fc71::/112",
   ]
 
   # Nodes will use IPs from this subnets
@@ -19,65 +19,65 @@ locals {
   ]
 
   talos_controlplane_config = {
-    machine : {
-      features : {
-        rbac : true
-        apidCheckExtKeyUsage : true
-        kubernetesTalosAPIAccess : {
-          enabled : true
-          allowedRoles : [
+    machine = {
+      features = {
+        rbac                 = true
+        apidCheckExtKeyUsage = true
+        kubernetesTalosAPIAccess = {
+          enabled = true
+          allowedRoles = [
             "os:reader"
           ]
-          allowedKubernetesNamespaces : [
+          allowedKubernetesNamespaces = [
             "kube-system"
           ]
         }
       }
     }
-    cluster : {
-      etcd : {
-        advertisedSubnets : local.tailscaleSubnets
-        listenSubnets : local.tailscaleSubnets
+    cluster = {
+      etcd = {
+        advertisedSubnets = local.tailscaleSubnets
+        listenSubnets     = local.tailscaleSubnets
       }
-      allowSchedulingOnControlPlanes : var.allow_scheduling_on_control_planes,
-      apiServer : {
-        extraArgs : {
-          "oidc-issuer-url" : "https://id.tjo.space/application/o/k8stjocloud/",
-          "oidc-client-id" : "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
-          "oidc-username-claim" : "sub",
-          "oidc-username-prefix" : "oidc:",
-          "oidc-groups-claim" : "groups",
-          "oidc-groups-prefix" : "oidc:groups:",
+      allowSchedulingOnControlPlanes = var.allow_scheduling_on_control_planes,
+      apiServer = {
+        extraArgs = {
+          "oidc-issuer-url"      = "https://id.tjo.space/application/o/k8stjocloud/",
+          "oidc-client-id"       = "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
+          "oidc-username-claim"  = "sub",
+          "oidc-username-prefix" = "oidc:",
+          "oidc-groups-claim"    = "groups",
+          "oidc-groups-prefix"   = "oidc:groups:",
         }
       }
-      inlineManifests : [
+      inlineManifests = [
         {
-          name : "proxmox-cloud-controller-manager"
-          contents : data.helm_template.proxmox-ccm.manifest
+          name     = "proxmox-cloud-controller-manager"
+          contents = data.helm_template.proxmox-ccm.manifest
         },
         {
-          name : "talos-cloud-controller-manager"
-          contents : data.helm_template.talos-ccm.manifest
+          name     = "talos-cloud-controller-manager"
+          contents = data.helm_template.talos-ccm.manifest
         },
         {
-          name : "promxmox-csi-plugin"
-          contents : data.helm_template.proxmox-csi.manifest
+          name     = "promxmox-csi-plugin"
+          contents = data.helm_template.proxmox-csi.manifest
         },
         {
-          name : "gateway-api-crds"
-          contents : file("${path.module}/manifests/gateway-api.crds.yaml")
+          name     = "gateway-api-crds"
+          contents = file("${path.module}/manifests/gateway-api.crds.yaml")
         },
         {
-          name : "metrics-server"
-          contents : file("${path.module}/manifests/metrics-server.yaml")
+          name     = "metrics-server"
+          contents = file("${path.module}/manifests/metrics-server.yaml")
         },
         {
-          name : "cilium"
-          contents : data.helm_template.cilium.manifest
+          name     = "cilium"
+          contents = data.helm_template.cilium.manifest
         },
         {
-          name : "oidc-admins"
-          contents : <<-EOF
+          name     = "oidc-admins"
+          contents = <<-EOF
             apiVersion: rbac.authorization.k8s.io/v1
             kind: ClusterRoleBinding
             metadata:
@@ -97,33 +97,33 @@ locals {
   }
 
   talos_worker_config = {
-    cluster : {
-      externalCloudProvider : {
-        enabled : true
+    cluster = {
+      externalCloudProvider = {
+        enabled = true
       }
-      controlPlane : {
-        endpoint : local.cluster_endpoint
-        localAPIServerPort : var.cluster.api.port
+      controlPlane = {
+        endpoint           = local.cluster_endpoint
+        localAPIServerPort = var.cluster.api.port
       }
-      network : {
-        cni : {
-          name : "none"
+      network = {
+        cni = {
+          name = "none"
         }
-        podSubnets : local.podSubnets
-        serviceSubnets : local.serviceSubnets
+        podSubnets     = local.podSubnets
+        serviceSubnets = local.serviceSubnets
       }
-      proxy : {
-        disabled : true
+      proxy = {
+        disabled = true
       }
     }
     machine = {
       kubelet = {
-        nodeIP : {
-          validSubnets : local.tailscaleSubnets
+        nodeIP = {
+          validSubnets = local.tailscaleSubnets
         }
-        extraArgs : {
-          rotate-server-certificates : true
-          cloud-provider : "external"
+        extraArgs = {
+          rotate-server-certificates = true
+          cloud-provider             = "external"
         }
       }
       install = {
@@ -139,6 +139,9 @@ locals {
         machine = {
           network = {
             hostname = node.name
+            kubespan = {
+              enabled = false
+            }
           }
           nodeLabels = {
             "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
@@ -153,14 +156,14 @@ locals {
       }),
       yamlencode(
         {
-          apiVersion : "v1alpha1"
-          kind : "ExtensionServiceConfig"
-          name : "tailscale"
-          environment : [
+          apiVersion = "v1alpha1"
+          kind       = "ExtensionServiceConfig"
+          name       = "tailscale"
+          environment = [
             "TS_AUTHKEY=${var.tailscale_authkey}",
             "TS_HOSTNAME=${node.name}",
             "TS_ROUTES=${join(",", local.podSubnets)},${join(",", local.serviceSubnets)}",
-            "TS_EXTRA_ARGS=--accept-routes --snat-subnet-routes",
+            #"TS_EXTRA_ARGS=--accept-routes --snat-subnet-routes",
           ]
       })
     ]
