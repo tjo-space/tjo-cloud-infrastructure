@@ -49,9 +49,18 @@ resource "kubernetes_manifest" "gateway_class_config" {
       namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
     }
     spec = {
+      mergeGateways = true
       provider = {
         type = "Kubernetes"
         kubernetes = {
+          envoyService = {
+            type                  = "LoadBalancer"
+            externalTrafficPolicy = "Local"
+            annotations = {
+              "io.cilium.nodeipam/match-node-labels" = "k8s.tjo.cloud/public=true"
+            }
+            loadBalancerClass = "io.cilium/node"
+          }
           envoyDaemonSet = {
             patch = {
               type = "StrategicMerge"

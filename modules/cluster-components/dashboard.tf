@@ -1,9 +1,11 @@
 resource "helm_release" "dashboard" {
-  name       = "kubernetes-dashboard"
-  repository = "https://kubernetes.github.io/dashboard"
-  chart      = "kubernetes-dashboard"
-  version    = "7.5.0"
-  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
+  name            = "kubernetes-dashboard"
+  repository      = "https://kubernetes.github.io/dashboard"
+  chart           = "kubernetes-dashboard"
+  version         = "7.5.0"
+  namespace       = kubernetes_namespace.tjo-cloud.metadata[0].name
+  atomic          = true
+  cleanup_on_fail = true
 
   set {
     name  = "kong.enabled"
@@ -22,7 +24,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
     spec = {
       parentRefs = [
         {
-          name : kubernetes_manifest.gateway.object.metadata.name
+          name = kubernetes_manifest.gateway.object.metadata.name
         }
       ]
       hostnames = [

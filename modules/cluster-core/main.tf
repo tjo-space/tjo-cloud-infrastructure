@@ -26,3 +26,19 @@ resource "helm_release" "envoy" {
   atomic          = true
   cleanup_on_fail = true
 }
+
+resource "helm_release" "metrics-server" {
+  name            = "metrics-server"
+  chart           = "metrics-server"
+  repository      = "https://kubernetes-sigs.github.io/metrics-server/"
+  version         = "3.11.0"
+  namespace       = "kube-system"
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [<<-EOF
+    serviceMonitor:
+      enabled: true
+    EOF
+  ]
+}

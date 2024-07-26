@@ -68,10 +68,6 @@ locals {
           contents = file("${path.module}/manifests/gateway-api.crds.yaml")
         },
         {
-          name     = "metrics-server"
-          contents = file("${path.module}/manifests/metrics-server.yaml")
-        },
-        {
           name     = "cilium"
           contents = data.helm_template.cilium.manifest
         },
