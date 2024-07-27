@@ -282,6 +282,10 @@ data "talos_cluster_kubeconfig" "this" {
 resource "local_file" "kubeconfig" {
   content  = data.talos_cluster_kubeconfig.this.kubeconfig_raw
   filename = "${path.root}/admin.kubeconfig"
+
+  lifecycle {
+    ignore_changes = [content]
+  }
 }
 
 data "talos_client_configuration" "this" {

@@ -5,17 +5,43 @@ resource "kubernetes_namespace" "monitoring-system" {
 }
 
 resource "kubernetes_manifest" "prometheus-pod-monitors" {
-  manifest     = yamldecode(file("${path.module}/manifests/crd-podmonitors.yaml"))
+  manifest = yamldecode(file("${path.module}/manifests/crd-podmonitors.yaml"))
 }
 
 resource "kubernetes_manifest" "prometheus-service-monitors" {
-  manifest     = yamldecode(file("${path.module}/manifests/crd-servicemonitors.yaml"))
+  manifest = yamldecode(file("${path.module}/manifests/crd-servicemonitors.yaml"))
+}
+
+resource "helm_release" "kube-state-metrics" {
+  depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
+
+  name            = "kube-state-metrics"
+  chart           = "kube-state-metrics"
+  repository      = "https://prometheus-community.github.io/helm-charts"
+  version         = "5.24.0"
+  namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [<<-EOF
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    tolerations:
+      - key: "node-role.kubernetes.io/control-plane"
+        effect: "NoSchedule"
+    prometheus:
+      monitor:
+        enabled: true
+        http:
+          honorLabels: true
+    EOF
+  ]
 }
 
 resource "helm_release" "grafana-alloy" {
-  depends_on      = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
+  depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
 
-  name            = "grafana-alloy-deamonset"
+  name            = "grafana-alloy"
   chart           = "alloy"
   repository      = "https://grafana.github.io/helm-charts"
   version         = "0.5.1"
@@ -24,6 +50,15 @@ resource "helm_release" "grafana-alloy" {
   cleanup_on_fail = true
 
   values = [<<-EOF
+    serviceMonitor:
+      enabled: true
+    controller:
+      type: "deployment"
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+        - key: "node-role.kubernetes.io/control-plane"
+          effect: "NoSchedule"
     alloy:
       extraEnv:
         - name: "CLUSTER_NAME"
@@ -39,20 +74,17 @@ resource "helm_release" "grafana-alloy" {
             format = "logfmt"
           }
 
+          // --
+          // Discovery
+          // --
           discovery.kubernetes "pods" {
             role = "pod"
-            selectors {
-              role  = "pod"
-              field = "spec.nodeName=" + coalesce(env("HOSTNAME"), constants.hostname)
-            }
           }
-
-          // --
-          // Metrics
-          // --
-          prometheus.exporter.unix "self" {}
-          discovery.relabel "pod_metrics" {
-            targets    = concat(discovery.kubernetes.pods.targets, prometheus.exporter.unix.self.targets)
+          discovery.kubernetes "services" {
+            role = "services"
+          }
+          discovery.relabel "all" {
+            targets = concat(discovery.kubernetes.pods.targets, discovery.kubernetes.services.targets)
 
             // allow override of http scheme with `promehteus.io/scheme`
             rule {
@@ -64,7 +96,6 @@ resource "helm_release" "grafana-alloy" {
               ]
               target_label = "__scheme__"
             }
-
             // allow override of default /metrics path with `prometheus.io/path`
             rule {
               action = "replace"
@@ -75,7 +106,6 @@ resource "helm_release" "grafana-alloy" {
               ]
               target_label = "__metrics_path__"
             }
-
             // allow override of default port with `prometheus.io/port`
             rule {
               action = "replace"
@@ -88,40 +118,64 @@ resource "helm_release" "grafana-alloy" {
               ]
               target_label = "__address__"
             }
-
-            // Add Namespace
-            rule {
-              action = "replace"
-              source_labels = ["__meta_kubernetes_namespace"]
-              target_label = "kubernetes_namespace"
-            }
-            // Add Pod Name
-            rule {
-              action = "replace"
-              source_labels = ["__meta_kubernetes_pod_name"]
-              target_label = "kubernetes_pod"
-            }
-            // Add Service Name
-            rule {
-              action = "replace"
-              source_labels = ["__meta_kubernetes_service_name"]
-              target_label = "kubernetes_service"
-            }
-
-            // Add all pod labels
-            rule {
-              action = "labelmap"
-              regex = "__meta_kubernetes_pod_label_(.+)"
-            }
-            // Add all service labels
-            rule {
-              action = "labelmap"
-              regex = "__meta_kubernetes_service_label_(.+)"
-            }
           }
-          prometheus.scrape "containers" {
-            targets    = discovery.relabel.pod_metrics.output
+
+          // --
+          // Metrics
+          // --
+          prometheus.scrape "all" {
+            honor_labels = true
+            targets    = discovery.relabel.all.output
+            forward_to = [prometheus.relabel.all.receiver]
+          }
+          prometheus.operator.podmonitors "all" {
+            forward_to = [prometheus.relabel.all.receiver]
+          }
+          prometheus.operator.servicemonitors "all" {
+            forward_to = [prometheus.relabel.all.receiver]
+          }
+          prometheus.relabel "all" {
             forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+
+            rule {
+              source_labels = ["__meta_kubernetes_namespace"]
+              action = "replace"
+              target_label = "namespace"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_name"]
+              action = "replace"
+              target_label = "pod"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_name"]
+              action = "replace"
+              target_label = "container"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
+              action = "replace"
+              target_label = "app"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_version"]
+              action = "replace"
+              target_label = "version"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
+              action = "replace"
+              target_label = "job"
+              separator = "/"
+              replacement = "$1"
+            }
+            rule {
+              source_labels = ["__meta_kubernetes_pod_container_id"]
+              action = "replace"
+              target_label = "container_runtime"
+              regex = "^(\\S+):\\/\\/.+$"
+              replacement = "$1"
+            }
           }
           prometheus.remote_write "prometheus_monitor_tjo_space" {
             external_labels = {
@@ -145,22 +199,15 @@ resource "helm_release" "grafana-alloy" {
           // --
           // Logs
           // --
-          local.file_match "node_logs" {
-            path_targets = [{
-                // Monitor syslog to scrape node-logs
-                __path__  = "/var/log/syslog",
-                job       = "node/syslog",
-                node_name = env("HOSTNAME"),
-            }]
+          loki.source.kubernetes "pods" {
+            targets    = discovery.relabel.all.output
+            forward_to = [loki.relabel.all.receiver]
           }
-          loki.source.file "node_logs" {
-            targets    = local.file_match.node_logs.targets
+          loki.source.kubernetes_events "all" {
+            forward_to = [loki.relabel.all.receiver]
+          }
+          loki.relabel "all" {
             forward_to = [loki.write.loki_monitor_tjo_space.receiver]
-          }
-
-
-          discovery.relabel "pod_logs" {
-            targets = discovery.kubernetes.pod.targets
 
             rule {
               source_labels = ["__meta_kubernetes_namespace"]
@@ -183,6 +230,11 @@ resource "helm_release" "grafana-alloy" {
               target_label = "app"
             }
             rule {
+              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_version"]
+              action = "replace"
+              target_label = "version"
+            }
+            rule {
               source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
               action = "replace"
               target_label = "job"
@@ -203,10 +255,6 @@ resource "helm_release" "grafana-alloy" {
               regex = "^(\\S+):\\/\\/.+$"
               replacement = "$1"
             }
-          }
-          loki.source.kubernetes "pod_logs" {
-            targets    = discovery.relabel.pod_logs.output
-            forward_to = [loki.write.loki_monitor_tjo_space.receiver]
           }
           loki.write "loki_monitor_tjo_space" {
             external_labels = {
