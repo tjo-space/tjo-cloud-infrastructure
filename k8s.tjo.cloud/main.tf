@@ -1,5 +1,5 @@
 module "cluster" {
-  source = "../modules/cluster"
+  source = "./modules/cluster"
 
   providers = {
     helm.template = helm.template
@@ -61,11 +61,13 @@ resource "local_file" "kubeconfig" {
 }
 
 module "cluster-core" {
-  source = "../modules/cluster-core"
+  source = "./modules/cluster-core"
+
+  cluster_name = module.cluster.name
 }
 
 module "cluster-components" {
-  source = "../modules/cluster-components"
+  source = "./modules/cluster-components"
 
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id

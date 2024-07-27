@@ -28,7 +28,9 @@ resource "helm_release" "kube-state-metrics" {
       node-role.kubernetes.io/control-plane: ""
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
-        effect: "NoSchedule"
+        effect: NoSchedule
+    updateStrategy: Recreate
+    prometheusScrape: false
     prometheus:
       monitor:
         enabled: true
@@ -62,7 +64,7 @@ resource "helm_release" "grafana-alloy" {
     alloy:
       extraEnv:
         - name: "CLUSTER_NAME"
-          value: "tjo-cloud"
+          value: "${var.cluster_name}"
         - name: "PROMETHEUS_CLIENT_ID"
           value: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
         - name: "LOKI_CLIENT_ID"
@@ -80,18 +82,22 @@ resource "helm_release" "grafana-alloy" {
           discovery.kubernetes "pods" {
             role = "pod"
           }
-          discovery.kubernetes "services" {
-            role = "services"
-          }
           discovery.relabel "all" {
-            targets = concat(discovery.kubernetes.pods.targets, discovery.kubernetes.services.targets)
+            targets = discovery.kubernetes.pods.targets
 
+            // Only process if scrape enabled
+            rule {
+              source_labels = [
+                "__meta_kubernetes_pod_annotation_prometheus_io_scrape",
+              ]
+              action = "keep"
+              regex = "true"
+            }
             // allow override of http scheme with `promehteus.io/scheme`
             rule {
               action = "replace"
               regex = "(https?)"
               source_labels = [
-                "__meta_kubernetes_service_annotation_prometheus_io_scheme",
                 "__meta_kubernetes_pod_annotation_prometheus_io_scheme",
               ]
               target_label = "__scheme__"
@@ -99,43 +105,42 @@ resource "helm_release" "grafana-alloy" {
             // allow override of default /metrics path with `prometheus.io/path`
             rule {
               action = "replace"
-              regex = "(.+)"
               source_labels = [
-                "__meta_kubernetes_service_annotation_prometheus_io_path",
                 "__meta_kubernetes_pod_annotation_prometheus_io_path",
               ]
               target_label = "__metrics_path__"
             }
             // allow override of default port with `prometheus.io/port`
+            // If the metrics port number annotation has a value, override the target address to use it, regardless whether it is
+            // one of the declared ports on that Pod.
+            rule {
+              source_labels = [
+                "__meta_kubernetes_pod_annotation_prometheus_io_port",
+                "__meta_kubernetes_pod_ip",
+              ]
+              regex = "(\\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})"
+              replacement = "[$2]:$1" // IPv6
+              target_label = "__address__"
+            }
+            rule {
+              source_labels = [
+                "__meta_kubernetes_pod_annotation_prometheus_io_port",
+                "__meta_kubernetes_pod_ip",
+              ]
+              regex = "(\\d+);((([0-9]+?)(\\.|$)){4})" // IPv4, takes priority over IPv6 when both exists
+              replacement = "$2:$1"
+              target_label = "__address__"
+            }
             rule {
               action = "replace"
               regex = "([^:]+)(?::\\d+)?;(\\d+)"
               replacement = "$1:$2"
               source_labels = [
                 "__address__",
-                "__meta_kubernetes_service_annotation_prometheus_io_port",
                 "__meta_kubernetes_pod_annotation_prometheus_io_port",
               ]
               target_label = "__address__"
             }
-          }
-
-          // --
-          // Metrics
-          // --
-          prometheus.scrape "all" {
-            honor_labels = true
-            targets    = discovery.relabel.all.output
-            forward_to = [prometheus.relabel.all.receiver]
-          }
-          prometheus.operator.podmonitors "all" {
-            forward_to = [prometheus.relabel.all.receiver]
-          }
-          prometheus.operator.servicemonitors "all" {
-            forward_to = [prometheus.relabel.all.receiver]
-          }
-          prometheus.relabel "all" {
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
 
             rule {
               source_labels = ["__meta_kubernetes_namespace"]
@@ -176,6 +181,21 @@ resource "helm_release" "grafana-alloy" {
               regex = "^(\\S+):\\/\\/.+$"
               replacement = "$1"
             }
+          }
+
+          // --
+          // Metrics
+          // --
+          prometheus.scrape "all" {
+            honor_labels = true
+            targets    = discovery.relabel.all.output
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+          }
+          prometheus.operator.podmonitors "all" {
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+          }
+          prometheus.operator.servicemonitors "all" {
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
           }
           prometheus.remote_write "prometheus_monitor_tjo_space" {
             external_labels = {
