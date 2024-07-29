@@ -62,13 +62,6 @@ resource "helm_release" "grafana-alloy" {
         - key: "node-role.kubernetes.io/control-plane"
           effect: "NoSchedule"
     alloy:
-      extraEnv:
-        - name: "CLUSTER_NAME"
-          value: "${var.cluster_name}"
-        - name: "PROMETHEUS_CLIENT_ID"
-          value: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
-        - name: "LOKI_CLIENT_ID"
-          value: "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
       configMap:
         content: |-
           logging {
@@ -189,25 +182,25 @@ resource "helm_release" "grafana-alloy" {
           prometheus.scrape "all" {
             honor_labels = true
             targets    = discovery.relabel.all.output
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
           }
           prometheus.operator.podmonitors "all" {
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
           }
           prometheus.operator.servicemonitors "all" {
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_space.receiver]
+            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
           }
-          prometheus.remote_write "prometheus_monitor_tjo_space" {
+          prometheus.remote_write "prometheus_monitor_tjo_cloud" {
             external_labels = {
-              cluster = env("CLUSTER_NAME"),
+              cluster = "${var.cluster_name}",
             }
 
             endpoint {
-              url = "https://prometheus.monitor.tjo.space/api/v1/write"
+              url = "https://prometheus.monitor.tjo.cloud/api/v1/write"
 
               oauth2 {
                 token_url = "https://id.tjo.space/application/o/token/"
-                client_id = env("PROMETHEUS_CLIENT_ID")
+                client_id = "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
                 client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 endpoint_params = {
                   client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
@@ -227,7 +220,7 @@ resource "helm_release" "grafana-alloy" {
             forward_to = [loki.relabel.all.receiver]
           }
           loki.relabel "all" {
-            forward_to = [loki.write.loki_monitor_tjo_space.receiver]
+            forward_to = [loki.write.loki_monitor_tjo_cloud.receiver]
 
             rule {
               source_labels = ["__meta_kubernetes_namespace"]
@@ -276,17 +269,17 @@ resource "helm_release" "grafana-alloy" {
               replacement = "$1"
             }
           }
-          loki.write "loki_monitor_tjo_space" {
+          loki.write "loki_monitor_tjo_cloud" {
             external_labels = {
-              cluster = env("CLUSTER_NAME"),
+              cluster = "${var.cluster_name}",
             }
 
             endpoint {
-              url = "https://loki.monitor.tjo.space/loki/api/v1/push"
+              url = "https://loki.monitor.tjo.cloud/loki/api/v1/push"
 
               oauth2 {
                 token_url = "https://id.tjo.space/application/o/token/"
-                client_id = env("LOKI_CLIENT_ID")
+                client_id = "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
                 client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 endpoint_params = {
                   client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",

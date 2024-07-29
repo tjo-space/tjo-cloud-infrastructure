@@ -54,7 +54,7 @@ resource "kubernetes_manifest" "gateway_class_config" {
         type = "Kubernetes"
         kubernetes = {
           envoyService = {
-            type                  = "LoadBalancer"
+            type                  = "ClusterIP"
             externalTrafficPolicy = "Local"
             annotations = {
               "io.cilium.nodeipam/match-node-labels" = "k8s.tjo.cloud/public=true"
