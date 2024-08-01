@@ -13,6 +13,6 @@ jobs:
         uses: jetify-com/devbox-install-action@060be5a8f69feff899b73193cadfcaacd5b88310
         with:
           enable-cache: true
-          github-token: ""
+          github-token: "${{ secrets.NIX_GITHUB_TOKEN }}"
 
       - run: devbox run -- just lint
