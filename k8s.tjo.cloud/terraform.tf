@@ -28,6 +28,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.31.0"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.16.1"
+    }
   }
 
   required_version = "~> 1.7.3"
@@ -46,6 +50,10 @@ provider "proxmox" {
 
 provider "digitalocean" {
   token = var.digitalocean_token
+}
+
+provider "tailscale" {
+  api_key = var.tailscale_apikey
 }
 
 provider "helm" {

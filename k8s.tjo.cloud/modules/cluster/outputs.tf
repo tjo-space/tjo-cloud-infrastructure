@@ -16,10 +16,6 @@ output "name" {
   value = var.cluster.name
 }
 
-output "domain" {
-  value = var.cluster.domain
-}
-
 output "api" {
   value = merge(var.cluster.api, {
     endpoint : local.cluster_endpoint,

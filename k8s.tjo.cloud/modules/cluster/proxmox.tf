@@ -2,7 +2,7 @@ locals {
   nodes_with_names = {
     for k, v in var.nodes : k => merge(v, {
       id   = 1000 + index(keys(var.nodes), k)
-      name = replace("${k}.${v.type}.${var.cluster.domain}", ".", "-")
+      name = replace("${k}.${v.type}.${var.cluster.name}", ".", "-")
     })
   }
   hashes = {

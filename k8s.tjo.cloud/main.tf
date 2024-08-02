@@ -1,3 +1,16 @@
+locals {
+  cluster_domain = "k8s.tjo.cloud"
+}
+
+resource "tailscale_tailnet_key" "nodes" {
+  reusable      = true
+  ephemeral     = true
+  preauthorized = true
+  tags          = ["tag:kubernetes-tjo-cloud"]
+
+  description = "tailscale key for k8s-tjo-cloud nodes"
+}
+
 module "cluster" {
   source = "./modules/cluster"
 
@@ -11,8 +24,7 @@ module "cluster" {
   }
 
   cluster = {
-    name   = "tjo-cloud"
-    domain = "k8s.tjo.cloud"
+    name = "k8s-tjo-cloud"
     oidc = {
       client_id  = var.oidc_client_id
       issuer_url = var.oidc_issuer_url
@@ -25,11 +37,11 @@ module "cluster" {
     common_storage = "proxmox-backup-tjo-cloud"
   }
 
-  tailscale_authkey = var.tailscale_authkey
+  tailscale_authkey = tailscale_tailnet_key.nodes.key
 
   nodes = {
     pink = {
-      public  = true
+      public  = false
       type    = "controlplane"
       host    = "hetzner"
       storage = "main"
@@ -55,6 +67,20 @@ module "cluster" {
   }
 }
 
+data "tailscale_device" "controlpane" {
+  for_each = { for k, v in module.cluster.nodes : k => v if v.type == "controlplane" }
+  hostname = each.value.name
+}
+resource "digitalocean_record" "internal-api" {
+  for_each = toset(flatten([for key, device in data.tailscale_device.controlpane : device.addresses]))
+
+  domain = local.cluster_domain
+  type   = strcontains(each.value, ":") ? "AAAA" : "A"
+  name   = "internal.api"
+  value  = each.value
+  ttl    = 30
+}
+
 resource "local_file" "kubeconfig" {
   content  = module.cluster.kubeconfig
   filename = "${path.module}/kubeconfig"
@@ -75,12 +101,5 @@ module "cluster-components" {
   digitalocean_token = var.digitalocean_token
 
   cluster_name   = module.cluster.name
-  cluster_domain = module.cluster.domain
-
-  loadbalancer_ips = {
-    hetzner-public = {
-      ipv4 = [for k, node in module.cluster.nodes : node.ipv4 if node.public]
-      ipv6 = [for k, node in module.cluster.nodes : node.ipv6 if node.public]
-    }
-  }
+  cluster_domain = "k8s.tjo.cloud"
 }

@@ -38,11 +38,10 @@ variable "allow_scheduling_on_control_planes" {
 
 variable "cluster" {
   type = object({
-    name   = string
-    domain = string
+    name = string
     api = optional(object({
-      subdomain = optional(string, "api")
-      port      = optional(number, 6443)
+      domain = optional(string, "internal.api.k8s.tjo.cloud")
+      port   = optional(number, 6443)
     }), {})
     oidc = object({
       client_id  = string

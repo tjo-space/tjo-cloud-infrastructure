@@ -1,4 +1,4 @@
-variable "tailscale_authkey" {
+variable "tailscale_apikey" {
   type      = string
   sensitive = true
 }

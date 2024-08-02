@@ -1,6 +1,5 @@
 locals {
-  cluster_api_domain = "${var.cluster.api.subdomain}.${var.cluster.domain}"
-  cluster_endpoint   = "https://${local.cluster_api_domain}:${var.cluster.api.port}"
+  cluster_endpoint = "https://${var.cluster.api.domain}:${var.cluster.api.port}"
 
   podSubnets = [
     "10.200.0.0/16",
@@ -159,31 +158,11 @@ locals {
             "TS_AUTHKEY=${var.tailscale_authkey}",
             "TS_HOSTNAME=${node.name}",
             "TS_ROUTES=${join(",", local.podSubnets)},${join(",", local.serviceSubnets)}",
-            #"TS_EXTRA_ARGS=--accept-routes --snat-subnet-routes",
+            #"TS_EXTRA_ARGS=--accept-routes",
           ]
       })
     ]
   }
-}
-
-resource "digitalocean_record" "controlplane-A" {
-  for_each = { for k, node in local.nodes_with_address : k => node if node.type == "controlplane" }
-
-  domain = var.cluster.domain
-  type   = "A"
-  name   = var.cluster.api.subdomain
-  value  = each.value.ipv4
-  ttl    = 30
-}
-
-resource "digitalocean_record" "controlplane-AAAA" {
-  for_each = { for k, node in local.nodes_with_address : k => node if node.type == "controlplane" }
-
-  domain = var.cluster.domain
-  type   = "AAAA"
-  name   = var.cluster.api.subdomain
-  value  = each.value.ipv6
-  ttl    = 30
 }
 
 resource "talos_machine_secrets" "this" {
@@ -198,11 +177,6 @@ data "talos_machine_configuration" "controlplane" {
 
   talos_version      = var.talos.version
   kubernetes_version = var.talos.kubernetes
-
-  depends_on = [
-    digitalocean_record.controlplane-A,
-    digitalocean_record.controlplane-AAAA,
-  ]
 }
 
 data "talos_machine_configuration" "worker" {
@@ -213,11 +187,6 @@ data "talos_machine_configuration" "worker" {
 
   talos_version      = var.talos.version
   kubernetes_version = var.talos.kubernetes
-
-  depends_on = [
-    digitalocean_record.controlplane-A,
-    digitalocean_record.controlplane-AAAA
-  ]
 }
 
 resource "talos_machine_configuration_apply" "controlplane" {
