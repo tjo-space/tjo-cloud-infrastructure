@@ -50,8 +50,8 @@ data "helm_template" "cilium" {
       autoMount:
         enabled: false
 
-    k8sServiceHost: ${var.cluster.api.domain}
-    k8sServicePort: ${var.cluster.api.port}
+    k8sServiceHost: ${var.cluster.api.internal.domain}
+    k8sServicePort: ${var.cluster.api.internal.port}
 
     hubble:
       ui:

@@ -71,18 +71,28 @@ data "tailscale_device" "controlpane" {
   for_each = { for k, v in module.cluster.nodes : k => v if v.type == "controlplane" }
   hostname = each.value.name
 }
-resource "digitalocean_record" "internal-api" {
+resource "digitalocean_record" "api-internal" {
   for_each = toset(flatten([for key, device in data.tailscale_device.controlpane : device.addresses]))
 
   domain = local.cluster_domain
   type   = strcontains(each.value, ":") ? "AAAA" : "A"
-  name   = "internal.api"
+  name   = trimsuffix(module.cluster.api.internal.domain, ".${local.cluster_domain}")
   value  = each.value
   ttl    = 30
 }
 
 resource "local_file" "kubeconfig" {
-  content  = module.cluster.kubeconfig
+  content = templatefile("${path.module}/kubeconfig.tftpl", {
+    cluster : {
+      name : module.cluster.name,
+      endpoint : module.cluster.api.public.endpoint,
+      ca : module.cluster.api.ca,
+    }
+    oidc : {
+      issuer : var.oidc_issuer_url,
+      id : var.oidc_client_id,
+    }
+  })
   filename = "${path.module}/kubeconfig"
 }
 

@@ -62,7 +62,7 @@ provider "helm" {
 
 provider "helm" {
   kubernetes {
-    host                   = module.cluster.api.endpoint
+    host                   = module.cluster.api.internal.endpoint
     cluster_ca_certificate = base64decode(module.cluster.api.ca)
     exec {
       api_version = "client.authentication.k8s.io/v1beta1"
@@ -82,7 +82,7 @@ provider "helm" {
 }
 
 provider "kubernetes" {
-  host                   = module.cluster.api.endpoint
+  host                   = module.cluster.api.internal.endpoint
   cluster_ca_certificate = base64decode(module.cluster.api.ca)
   exec {
     api_version = "client.authentication.k8s.io/v1beta1"

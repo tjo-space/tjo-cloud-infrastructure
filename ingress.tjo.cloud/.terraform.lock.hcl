@@ -24,3 +24,21 @@ provider "registry.opentofu.org/digitalocean/digitalocean" {
     "zh:f42137cf424c3e7c9c935b3f73618e51096bd0367a8d364073e2d70588d2cbf2",
   ]
 }
+
+provider "registry.opentofu.org/hashicorp/dns" {
+  version     = "3.4.1"
+  constraints = "~> 3.4.1"
+  hashes = [
+    "h1:6Tb2wZRxfKunvjLw47ihfkaoARWIQrJd+WCOXkx0hg4=",
+    "zh:53f46f16fc3b25d9bdce61d7cc9a67cea9c67ea5347fcde35833451d5011f1c4",
+    "zh:662669802c99c7e698ca52e7a32afc19acf66d97bbc05f5effacdf0fe471848f",
+    "zh:8289aee49df8a0cb2fcdfded575e68df1721fc3e6ce75555def499d31b7e910d",
+    "zh:90aa9b049d19137ed15ea3f88238824e1fde7d1a806378cb97520391e169a96d",
+    "zh:9e5795e10d65927ba689cfabc06b72085055543342d1db26ef5963ae5ab5d64a",
+    "zh:9f39b6e0ca35cf2405fe4e13af8a405cf9b0b0c34b6b06ad36f319631405a3aa",
+    "zh:c37a2c140c95b3eaa9d0aeb79496b220ba1a0456d01a77fcc68bd565bee7edd5",
+    "zh:cd40d356c5382f0b868df2d8539f95031e3cf0c210053674ec4c7cd20c73b82a",
+    "zh:fde59f09e4e62fc84012fff8493bc64eac287a0245e1c8abf29b0138d3018dfb",
+    "zh:ffee5b54936bd43247e9316de0ecc0dde36556a2cd50f090d7f6443a3f689b95",
+  ]
+}

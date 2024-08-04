@@ -40,8 +40,14 @@ variable "cluster" {
   type = object({
     name = string
     api = optional(object({
-      domain = optional(string, "internal.api.k8s.tjo.cloud")
-      port   = optional(number, 6443)
+      internal = optional(object({
+        domain = optional(string, "api.internal.k8s.tjo.cloud")
+        port   = optional(number, 6443)
+      }), {})
+      public = optional(object({
+        domain = optional(string, "api.k8s.tjo.cloud")
+        port   = optional(number, 443)
+      }), {})
     }), {})
     oidc = object({
       client_id  = string

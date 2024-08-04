@@ -1,13 +1,3 @@
-resource "kubernetes_secret" "digitalocean-token" {
-  metadata {
-    name      = "digitalocean-token"
-    namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
-  }
-  data = {
-    token = var.digitalocean_token
-  }
-}
-
 resource "kubernetes_manifest" "tjo-cloud-issuer" {
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -33,6 +23,11 @@ resource "kubernetes_manifest" "tjo-cloud-issuer" {
                 }
               }
             }
+            selector : {
+              dnsZones : [
+                "tjo.cloud"
+              ]
+            }
           }
         ]
       }
@@ -57,24 +52,10 @@ resource "kubernetes_manifest" "gateway_class_config" {
             type                  = "ClusterIP"
             externalTrafficPolicy = "Local"
             annotations = {
-              "io.cilium.nodeipam/match-node-labels" = "k8s.tjo.cloud/public=true"
+              "external-dns.alpha.kubernetes.io/internal-hostname" = "envoy.internal.k8s.tjo.cloud"
             }
-            loadBalancerClass = "io.cilium/node"
           }
           envoyDaemonSet = {
-            patch = {
-              type = "StrategicMerge"
-              value = {
-                spec = {
-                  template = {
-                    spec = {
-                      hostNetwork = true
-                      dnsPolicy   = "ClusterFirstWithHostNet"
-                    }
-                  }
-                }
-              }
-            }
             pod = {
               nodeSelector = {
                 "node-role.kubernetes.io/control-plane" = ""

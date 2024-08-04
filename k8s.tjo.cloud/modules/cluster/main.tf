@@ -1,5 +1,6 @@
 locals {
-  cluster_endpoint = "https://${var.cluster.api.domain}:${var.cluster.api.port}"
+  cluster_internal_endpoint = "https://${var.cluster.api.internal.domain}:${var.cluster.api.internal.port}"
+  cluster_public_endpoint   = "https://${var.cluster.api.public.domain}:${var.cluster.api.public.port}"
 
   podSubnets = [
     "10.200.0.0/16",
@@ -40,6 +41,10 @@ locals {
       }
       allowSchedulingOnControlPlanes = var.allow_scheduling_on_control_planes,
       apiServer = {
+        certSANs = [
+          var.cluster.api.internal.domain,
+          var.cluster.api.public.domain,
+        ]
         extraArgs = {
           "oidc-issuer-url"      = "https://id.tjo.space/application/o/k8stjocloud/",
           "oidc-client-id"       = "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
@@ -97,8 +102,8 @@ locals {
         enabled = true
       }
       controlPlane = {
-        endpoint           = local.cluster_endpoint
-        localAPIServerPort = var.cluster.api.port
+        endpoint           = local.cluster_internal_endpoint
+        localAPIServerPort = var.cluster.api.internal.port
       }
       network = {
         cni = {
@@ -172,7 +177,7 @@ resource "talos_machine_secrets" "this" {
 data "talos_machine_configuration" "controlplane" {
   cluster_name     = var.cluster.name
   machine_type     = "controlplane"
-  cluster_endpoint = local.cluster_endpoint
+  cluster_endpoint = local.cluster_internal_endpoint
   machine_secrets  = talos_machine_secrets.this.machine_secrets
 
   talos_version      = var.talos.version
@@ -182,7 +187,7 @@ data "talos_machine_configuration" "controlplane" {
 data "talos_machine_configuration" "worker" {
   cluster_name     = var.cluster.name
   machine_type     = "worker"
-  cluster_endpoint = local.cluster_endpoint
+  cluster_endpoint = local.cluster_internal_endpoint
   machine_secrets  = talos_machine_secrets.this.machine_secrets
 
   talos_version      = var.talos.version

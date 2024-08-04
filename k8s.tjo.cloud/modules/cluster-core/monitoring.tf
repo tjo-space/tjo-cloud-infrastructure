@@ -203,6 +203,7 @@ resource "helm_release" "grafana-alloy" {
                 client_id = "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
                 client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 endpoint_params = {
+                  grant_type = "client_credentials",
                   client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
                 }
               }
@@ -282,6 +283,7 @@ resource "helm_release" "grafana-alloy" {
                 client_id = "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
                 client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
                 endpoint_params = {
+                  grant_type = "client_credentials",
                   client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
                 }
               }
