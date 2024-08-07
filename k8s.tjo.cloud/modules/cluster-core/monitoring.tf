@@ -1,6 +1,9 @@
 resource "kubernetes_namespace" "monitoring-system" {
   metadata {
     name = "monitoring-system"
+    labels = {
+      "pod-security.kubernetes.io/enforce" = "privileged"
+    }
   }
 }
 
@@ -40,255 +43,88 @@ resource "helm_release" "kube-state-metrics" {
   ]
 }
 
-resource "helm_release" "grafana-alloy" {
+resource "helm_release" "monitoring" {
   depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
 
-  name            = "grafana-alloy"
-  chart           = "alloy"
+  name            = "monitoring"
+  chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "0.5.1"
+  version         = "1.4.6"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
   values = [<<-EOF
-    serviceMonitor:
+    cluster:
+      name: "${var.cluster_name}"
+
+    prometheus-operator-crds:
+      enabled: false
+    prometheus-node-exporter:
       enabled: true
-    controller:
-      type: "deployment"
-      nodeSelector:
-        node-role.kubernetes.io/control-plane: ""
-      tolerations:
-        - key: "node-role.kubernetes.io/control-plane"
-          effect: "NoSchedule"
-    alloy:
-      configMap:
-        content: |-
-          logging {
-            level  = "info"
-            format = "logfmt"
-          }
+    kube-state-metrics:
+      enabled: false
+    opencost:
+      enabled: false
 
-          // --
-          // Discovery
-          // --
-          discovery.kubernetes "pods" {
-            role = "pod"
-          }
-          discovery.relabel "all" {
-            targets = discovery.kubernetes.pods.targets
+    metrics:
+      enabled: true
+      serviceMonitors:
+        enabled: true
+      probes:
+        enabled: true
+      podMonitors:
+        enabled: true
+      node-exporter:
+        enabled: true
+      kubelet:
+        enabled: true
+      kube-state-metrics:
+        enabled: true
+      cost:
+        enabled: false
+      apiserver:
+        enabled: true
+      autoDiscover:
+        enabled: true
+      cadvisor:
+        enabled: true
+      kubeControllerManager:
+        enabled: true
+      kubeScheduler:
+        enabled: true
 
-            // Only process if scrape enabled
-            rule {
-              source_labels = [
-                "__meta_kubernetes_pod_annotation_prometheus_io_scrape",
-              ]
-              action = "keep"
-              regex = "true"
-            }
-            // allow override of http scheme with `promehteus.io/scheme`
-            rule {
-              action = "replace"
-              regex = "(https?)"
-              source_labels = [
-                "__meta_kubernetes_pod_annotation_prometheus_io_scheme",
-              ]
-              target_label = "__scheme__"
-            }
-            // allow override of default /metrics path with `prometheus.io/path`
-            rule {
-              action = "replace"
-              source_labels = [
-                "__meta_kubernetes_pod_annotation_prometheus_io_path",
-              ]
-              target_label = "__metrics_path__"
-            }
-            // allow override of default port with `prometheus.io/port`
-            // If the metrics port number annotation has a value, override the target address to use it, regardless whether it is
-            // one of the declared ports on that Pod.
-            rule {
-              source_labels = [
-                "__meta_kubernetes_pod_annotation_prometheus_io_port",
-                "__meta_kubernetes_pod_ip",
-              ]
-              regex = "(\\d+);(([A-Fa-f0-9]{1,4}::?){1,7}[A-Fa-f0-9]{1,4})"
-              replacement = "[$2]:$1" // IPv6
-              target_label = "__address__"
-            }
-            rule {
-              source_labels = [
-                "__meta_kubernetes_pod_annotation_prometheus_io_port",
-                "__meta_kubernetes_pod_ip",
-              ]
-              regex = "(\\d+);((([0-9]+?)(\\.|$)){4})" // IPv4, takes priority over IPv6 when both exists
-              replacement = "$2:$1"
-              target_label = "__address__"
-            }
-            rule {
-              action = "replace"
-              regex = "([^:]+)(?::\\d+)?;(\\d+)"
-              replacement = "$1:$2"
-              source_labels = [
-                "__address__",
-                "__meta_kubernetes_pod_annotation_prometheus_io_port",
-              ]
-              target_label = "__address__"
-            }
+    logs:
+      enabled: true
 
-            rule {
-              source_labels = ["__meta_kubernetes_namespace"]
-              action = "replace"
-              target_label = "namespace"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_name"]
-              action = "replace"
-              target_label = "pod"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_container_name"]
-              action = "replace"
-              target_label = "container"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-              action = "replace"
-              target_label = "app"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_version"]
-              action = "replace"
-              target_label = "version"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
-              action = "replace"
-              target_label = "job"
-              separator = "/"
-              replacement = "$1"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_container_id"]
-              action = "replace"
-              target_label = "container_runtime"
-              regex = "^(\\S+):\\/\\/.+$"
-              replacement = "$1"
-            }
-          }
+    profiles:
+      enabled: false
 
-          // --
-          // Metrics
-          // --
-          prometheus.scrape "all" {
-            honor_labels = true
-            targets    = discovery.relabel.all.output
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
-          }
-          prometheus.operator.podmonitors "all" {
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
-          }
-          prometheus.operator.servicemonitors "all" {
-            forward_to = [prometheus.remote_write.prometheus_monitor_tjo_cloud.receiver]
-          }
-          prometheus.remote_write "prometheus_monitor_tjo_cloud" {
-            external_labels = {
-              cluster = "${var.cluster_name}",
-            }
+    receivers:
+      deployGrafanaAgentService: false
 
-            endpoint {
-              url = "https://prometheus.monitor.tjo.cloud/api/v1/write"
-
-              oauth2 {
-                token_url = "https://id.tjo.space/application/o/token/"
-                client_id = "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
-                client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-                endpoint_params = {
-                  grant_type = "client_credentials",
-                  client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-                }
-              }
-            }
-          }
-
-          // --
-          // Logs
-          // --
-          loki.source.kubernetes "pods" {
-            targets    = discovery.relabel.all.output
-            forward_to = [loki.relabel.all.receiver]
-          }
-          loki.source.kubernetes_events "all" {
-            forward_to = [loki.relabel.all.receiver]
-          }
-          loki.relabel "all" {
-            forward_to = [loki.write.loki_monitor_tjo_cloud.receiver]
-
-            rule {
-              source_labels = ["__meta_kubernetes_namespace"]
-              action = "replace"
-              target_label = "namespace"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_name"]
-              action = "replace"
-              target_label = "pod"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_container_name"]
-              action = "replace"
-              target_label = "container"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_name"]
-              action = "replace"
-              target_label = "app"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_label_app_kubernetes_io_version"]
-              action = "replace"
-              target_label = "version"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_namespace", "__meta_kubernetes_pod_container_name"]
-              action = "replace"
-              target_label = "job"
-              separator = "/"
-              replacement = "$1"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_uid", "__meta_kubernetes_pod_container_name"]
-              action = "replace"
-              target_label = "__path__"
-              separator = "/"
-              replacement = "/var/log/pods/*$1/*.log"
-            }
-            rule {
-              source_labels = ["__meta_kubernetes_pod_container_id"]
-              action = "replace"
-              target_label = "container_runtime"
-              regex = "^(\\S+):\\/\\/.+$"
-              replacement = "$1"
-            }
-          }
-          loki.write "loki_monitor_tjo_cloud" {
-            external_labels = {
-              cluster = "${var.cluster_name}",
-            }
-
-            endpoint {
-              url = "https://loki.monitor.tjo.cloud/loki/api/v1/push"
-
-              oauth2 {
-                token_url = "https://id.tjo.space/application/o/token/"
-                client_id = "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
-                client_secret_file = "/var/run/secrets/kubernetes.io/serviceaccount/token"
-                endpoint_params = {
-                  grant_type = "client_credentials",
-                  client_assertion_type = "urn:ietf:params:oauth:client-assertion-type:jwt-bearer",
-                }
-              }
-            }
-          }
+    externalServices:
+      prometheus:
+        host: "https://prometheus.monitor.tjo.cloud"
+        writeEndpoint: "/api/v1/write"
+        authMode: "oauth2"
+        oauth2:
+          tokenURL: "https://id.tjo.space/application/o/token/"
+          clientId: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
+          clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          endpointParams:
+            grant_type: "client_credentials"
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+      loki:
+        host: "https://loki.monitor.tjo.cloud"
+        authMode: "oauth2"
+        oauth2:
+          tokenURL: "https://id.tjo.space/application/o/token/"
+          clientId: "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
+          clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+          endpointParams:
+            grant_type: "client_credentials"
+            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
     EOF
   ]
 }
