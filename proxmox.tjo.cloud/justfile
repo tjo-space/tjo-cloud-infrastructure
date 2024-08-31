@@ -1,0 +1,18 @@
+default:
+  @just --list
+
+build:
+  @nix build .#vm
+
+apply: build
+  #!/usr/bin/env sh
+  export NIXOS_IMAGE=$(nix path-info --quiet .#vm)/nixos.qcow2
+  export TF_VAR_image_path=$NIXOS_IMAGE
+
+  echo "Deploying $NIXOS_IMAGE"
+  tofu init
+  tofu apply
+
+destroy:
+  #!/usr/bin/env sh
+  tofu destroy

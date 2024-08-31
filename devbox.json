@@ -9,6 +9,9 @@
     "kubernetes-helm@latest",
     "tflint@latest"
   ],
+  "env": {
+    "TFENV_AUTO_INSTALL": "true"
+  },
   "shell": {
     "init_hook": [
       "echo 'Welcome to devbox!' > /dev/null"
