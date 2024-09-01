@@ -34,7 +34,9 @@ override.tf.json
 .terraformrc
 terraform.rc
 
-
 # ENV
 .env
 admin.*config
+
+# Nix
+**/result/*

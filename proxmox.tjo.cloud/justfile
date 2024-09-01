@@ -2,11 +2,11 @@ default:
   @just --list
 
 build:
-  @nix build .#vm
+  @nix build .#nixosConfigurations.build-qcow2.config.system.build.qcow2
 
 apply: build
   #!/usr/bin/env sh
-  export NIXOS_IMAGE=$(nix path-info --quiet .#vm)/nixos.qcow2
+  export NIXOS_IMAGE=$(nix path-info --quiet .#nixosConfigurations.build-qcow2.config.system.build.qcow2)/nixos.qcow2
   export TF_VAR_image_path=$NIXOS_IMAGE
 
   echo "Deploying $NIXOS_IMAGE"
