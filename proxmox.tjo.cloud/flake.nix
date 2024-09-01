@@ -10,6 +10,7 @@
         build-qcow2 = nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           modules = [
+            ./qcow2.nix
             ./configuration.nix
           ];
         };
