@@ -4,7 +4,6 @@ set shell := ["devbox", "run"]
 set dotenv-load
 
 mod k8s 'k8s.tjo.cloud'
-mod proxmox 'proxmox.tjo.cloud'
 
 default:
   @just --list
