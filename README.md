@@ -22,7 +22,7 @@ reboot
 Every Proxmox node needs to have configured `/etc/hosts` with entryies for all servers.
 
 
-## Servers
+#### Servers
 
 ```
 100.71.223.89 naboo.system.tjo.cloud naboo
