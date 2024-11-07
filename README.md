@@ -63,7 +63,7 @@ systemctl disable --now rpcbind
 ### 5. Disable SSH Access from public internet and enable public key auth.
 
 ```
-echo "PasswordAuthentication no" >>> /etc/ssh/sshd_config
+echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 ```
 
 ### 6. Install Node Exporter and send metrics to monitor.tjo.cloud.
