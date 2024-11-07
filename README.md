@@ -7,7 +7,7 @@
 ### 1. Tailscale.
 Install and authenticate as always. Start with `tailscale up --ssh --accept-routes --accept-dns=false`.
 
-### 2. Install intel-firmware updates.
+### 2. Install intel-micropodes updates.
 
 ```
 # Add non-free-firmware to the end
