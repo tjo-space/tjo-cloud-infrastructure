@@ -57,7 +57,9 @@ iptables -A INPUT -p tcp -i vmbr0 --dport 8006 -j DROP
 ### 5. Disable RPC Bind
 
 ```
-systemctl disable --now rpcbind
+systemctl disable --now rpcbind.target
+systemctl disable --now rpcbind.socket
+systemctl disable --now rpcbind.service
 ```
 
 ### 5. Disable SSH Access from public internet and enable public key auth.
