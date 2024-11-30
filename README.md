@@ -44,11 +44,18 @@ fd7a:115c:a1e0::301:c81b jakku.system.tjo.cloud jakku
 
 100.82.48.119 nevaroo.system.tjo.cloud nevaroo
 fd7a:115c:a1e0::b301:3077 nevaroo.system.tjo.cloud nevaroo
+
+100.99.13.61 mustafar.system.tjo.cloud mustafar
+fd7a:115c:a1e0::2601:d3d mustafar.system.tjo.cloud mustafar
 ```
 
 ### 3. Connect to Proxmox Cluster.
 
-The `$EXISTING_CLUSTER_NODE_HOST_NAME` represent an existing cluster node, via which the new node will join to the cluster.
+The `$EXISTING_CLUSTER_NODE_HOST_NAME` (examples: `nevaroo`, `jakku` not the FQDN) represent an existing cluster node, via which the new node will join to the cluster.
+
+This node's ssh key (`cat ~/.ssh/id_rsa.pub`) must be added to the `$EXISTING_CLUSTER_NODE_HOST_NAME` under `~/.ssh/authorized_keys`.
+
+Then the node can join the cluster using:
 
 ```
 pvecm add $EXISTING_CLUSTER_NODE_HOST_NAME --link0 $(tailscale ip -4) --link1 $(tailscale ip -6)
