@@ -5,7 +5,12 @@
 * [Guide to install on emmc](https://ibug.io/blog/2022/03/install-proxmox-ve-emmc/)
 
 ### 1. Tailscale.
-Install and authenticate as always. Start with `tailscale up --ssh --accept-routes --accept-dns=false --advertise-tags=tag:system-tjo-cloud`.
+Install and authenticate as always. Start with:
+
+```
+tailscale up --ssh --accept-routes --accept-dns=false --advertise-tags=tag:system-tjo-cloud --hostname=$(hostname -f | sed 's/\./-/g')
+
+```
 
 ### 2. Install intel-micropodes updates.
 
@@ -43,8 +48,10 @@ fd7a:115c:a1e0::b301:3077 nevaroo.system.tjo.cloud nevaroo
 
 ### 3. Connect to Proxmox Cluster.
 
+The `$EXISTING_CLUSTER_NODE_HOST_NAME` represent an existing cluster node, via which the new node will join to the cluster.
+
 ```
-pvecm add nevaroo.system.tjo.cloud --link0 $(tailscale ip -4) --link1 $(tailscale ip -6)
+pvecm add $EXISTING_CLUSTER_NODE_HOST_NAME --link0 $(tailscale ip -4) --link1 $(tailscale ip -6)
 ```
 
 ### 4. Configure Firewall.
