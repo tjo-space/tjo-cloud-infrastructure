@@ -19,7 +19,7 @@ reboot
 ```
 
 ### 2. Configure Hosts.
-Every Proxmox node needs to have configured `/etc/hosts` with entryies for all servers.
+Every Proxmox node needs to have configured `/etc/hosts` with entries for all servers.
 
 
 #### Servers
@@ -44,13 +44,13 @@ fd7a:115c:a1e0::b301:3077 nevaroo.system.tjo.cloud nevaroo
 ### 3. Connect to Proxmox Cluster.
 
 ```
-pvecm add $EXISTING_NODE --link0 $(tailscale ip -4) --link1 $(tailscale ip -6)
+pvecm add nevaroo.system.tjo.cloud --link0 $(tailscale ip -4) --link1 $(tailscale ip -6)
 ```
 
 ### 4. Configure Firewall.
 
 ```
-# Web Portal on public IP
+# Disable Web Portal on public IP
 iptables -A INPUT -p tcp -i vmbr0 --dport 8006 -j DROP
 ```
 
@@ -64,10 +64,12 @@ systemctl disable --now rpcbind.service
 
 ### 5. Disable SSH Access from public internet and enable public key auth.
 
+Make sure to copy your public key using `ssh-copy-id root@proxmox.ip.address`.
+
 ```
 echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 ```
 
-### 6. Install Node Exporter and send metrics to monitor.tjo.cloud.
+### 6. Done
 
-### 7. ???
+Your node should now be vissible at https://proxmox.tjo.cloud.
