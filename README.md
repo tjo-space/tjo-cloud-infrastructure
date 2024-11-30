@@ -5,7 +5,7 @@
 * [Guide to install on emmc](https://ibug.io/blog/2022/03/install-proxmox-ve-emmc/)
 
 ### 1. Tailscale.
-Install and authenticate as always. Start with `tailscale up --ssh --accept-routes --accept-dns=false`.
+Install and authenticate as always. Start with `tailscale up --ssh --accept-routes --accept-dns=false --advertise-tags=tag:system-tjo-cloud`.
 
 ### 2. Install intel-micropodes updates.
 
