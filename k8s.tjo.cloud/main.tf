@@ -2,15 +2,6 @@ locals {
   cluster_domain = "k8s.tjo.cloud"
 }
 
-resource "tailscale_tailnet_key" "nodes" {
-  reusable      = true
-  ephemeral     = true
-  preauthorized = true
-  tags          = ["tag:kubernetes-tjo-cloud"]
-
-  description = "tailscale key for k8s-tjo-cloud nodes"
-}
-
 module "cluster" {
   source = "./modules/cluster"
 
@@ -19,8 +10,8 @@ module "cluster" {
   }
 
   talos = {
-    version    = "v1.7.5"
-    kubernetes = "v1.30.0"
+    version    = "v1.8.3"
+    kubernetes = "v1.31.0"
   }
 
   cluster = {
@@ -34,51 +25,44 @@ module "cluster" {
   proxmox = {
     name           = "tjo-cloud"
     url            = "https://proxmox.tjo.cloud/api2/json"
-    common_storage = "proxmox-backup-tjo-cloud"
+    common_storage = "synology.storage.tjo.cloud"
   }
-
-  tailscale_authkey = tailscale_tailnet_key.nodes.key
 
   nodes = {
     pink = {
-      public  = false
       type    = "controlplane"
-      host    = "hetzner"
-      storage = "main"
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
+      pod_cidr = {
+        ipv4 = "10.0.56.0/20"
+        ipv6 = "fd74:6a6f:0:3800::/52"
+      }
     }
     blue = {
-      public  = false
       type    = "worker"
-      host    = "hetzner"
-      storage = "main"
-      cores   = 6
-      memory  = 16384
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
+      cores   = 8
+      memory  = 24576
+      pod_cidr = {
+        ipv4 = "10.0.52.0/20"
+        ipv6 = "fd74:6a6f:0:3400::/52"
+      }
     }
     cyan = {
-      public  = false
       type    = "worker"
-      host    = "hetzner"
-      storage = "main"
-      cores   = 6
-      memory  = 16384
+      host    = "mustafar"
+      storage = "local"
+      cores   = 2
+      memory  = 4096
+      pod_cidr = {
+        ipv4 = "10.0.68.0/20"
+        ipv6 = "fd74:6a6f:0:4000::/52"
+      }
     }
   }
-}
-
-data "tailscale_device" "controlpane" {
-  for_each = { for k, v in module.cluster.nodes : k => v if v.type == "controlplane" }
-  hostname = each.value.name
-}
-resource "digitalocean_record" "api-internal" {
-  for_each = toset(flatten([for key, device in data.tailscale_device.controlpane : device.addresses]))
-
-  domain = local.cluster_domain
-  type   = strcontains(each.value, ":") ? "AAAA" : "A"
-  name   = trimsuffix(module.cluster.api.internal.domain, ".${local.cluster_domain}")
-  value  = each.value
-  ttl    = 30
 }
 
 resource "local_file" "kubeconfig" {

@@ -1,21 +1,16 @@
 locals {
-  cluster_internal_endpoint = "https://${var.cluster.api.internal.domain}:${var.cluster.api.internal.port}"
-  cluster_public_endpoint   = "https://${var.cluster.api.public.domain}:${var.cluster.api.public.port}"
+  public_domain             = "${var.cluster.api.public.subdomain}.${var.cluster.api.public.domain}"
+  internal_domain           = "${var.cluster.api.internal.subdomain}.${var.cluster.api.internal.domain}"
+  cluster_internal_endpoint = "https://${local.internal_domain}:${var.cluster.api.internal.port}"
+  cluster_public_endpoint   = "https://${local.public_domain}:${var.cluster.api.public.port}"
 
   podSubnets = [
-    "10.200.0.0/16",
-    "fd9b:5314:fc70::/56",
+    "10.0.240.0/22",
+    "fd74:6a6f:0:f000::/54",
   ]
   serviceSubnets = [
-    "10.201.0.0/16",
-    "fd9b:5314:fc71::/112",
-  ]
-
-  # Nodes will use IPs from this subnets
-  # for communication between each other.
-  tailscaleSubnets = [
-    "100.64.0.0/10",
-    "fd7a:115c:a1e0::/96"
+    "10.0.244.0/22",
+    "fd74:6a6f:0:f400::/54",
   ]
 
   talos_controlplane_config = {
@@ -35,15 +30,11 @@ locals {
       }
     }
     cluster = {
-      etcd = {
-        advertisedSubnets = local.tailscaleSubnets
-        listenSubnets     = local.tailscaleSubnets
-      }
       allowSchedulingOnControlPlanes = var.allow_scheduling_on_control_planes,
       apiServer = {
         certSANs = [
-          var.cluster.api.internal.domain,
-          var.cluster.api.public.domain,
+          local.public_domain,
+          local.internal_domain,
         ]
         extraArgs = {
           "oidc-issuer-url"      = "https://id.tjo.space/application/o/k8stjocloud/",
@@ -118,9 +109,6 @@ locals {
     }
     machine = {
       kubelet = {
-        nodeIP = {
-          validSubnets = local.tailscaleSubnets
-        }
         extraArgs = {
           rotate-server-certificates = true
           cloud-provider             = "external"
@@ -144,28 +132,15 @@ locals {
             }
           }
           nodeLabels = {
-            "k8s.tjo.cloud/public"  = node.public ? "true" : "false"
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
           }
-          sysctls = {
-            "net.ipv4.ip_forward"          = "1"
-            "net.ipv6.conf.all.forwarding" = "1"
+          nodeAnnotations = {
+            "network.cilium.io/ipv4-pod-cidr" : node.pod_cidr.ipv4
+            "network.cilium.io/ipv6-pod-cidr" : node.pod_cidr.ipv6
           }
         }
       }),
-      yamlencode(
-        {
-          apiVersion = "v1alpha1"
-          kind       = "ExtensionServiceConfig"
-          name       = "tailscale"
-          environment = [
-            "TS_AUTHKEY=${var.tailscale_authkey}",
-            "TS_HOSTNAME=${node.name}",
-            "TS_ROUTES=${join(",", local.podSubnets)},${join(",", local.serviceSubnets)}",
-            #"TS_EXTRA_ARGS=--accept-routes",
-          ]
-      })
     ]
   }
 }
@@ -244,7 +219,7 @@ resource "talos_machine_bootstrap" "this" {
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
-data "talos_cluster_kubeconfig" "this" {
+resource "talos_cluster_kubeconfig" "this" {
   depends_on = [
     talos_machine_bootstrap.this
   ]
@@ -254,7 +229,7 @@ data "talos_cluster_kubeconfig" "this" {
 }
 
 resource "local_file" "kubeconfig" {
-  content  = data.talos_cluster_kubeconfig.this.kubeconfig_raw
+  content  = talos_cluster_kubeconfig.this.kubeconfig_raw
   filename = "${path.root}/admin.kubeconfig"
 
   lifecycle {
@@ -275,4 +250,24 @@ resource "local_file" "talosconfig" {
 
   content  = nonsensitive(data.talos_client_configuration.this[0].talos_config)
   filename = "${path.root}/admin.talosconfig"
+}
+
+resource "digitalocean_record" "api-internal-ipv4" {
+  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
+
+  domain = var.cluster.api.internal.domain
+  type   = "A"
+  name   = var.cluster.api.internal.subdomain
+  value  = each.value.ipv4
+  ttl    = 30
+}
+
+resource "digitalocean_record" "api-internal-ipv6" {
+  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
+
+  domain = var.cluster.api.internal.domain
+  type   = "AAAA"
+  name   = var.cluster.api.internal.subdomain
+  value  = each.value.ipv6
+  ttl    = 30
 }

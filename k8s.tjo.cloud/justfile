@@ -18,6 +18,9 @@ module-cluster-core-manifests:
   @curl -L -o modules/cluster-core/manifests/crd-servicemonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml"
 
+destroy:
+  tofu destroy -target module.cluster
+
 apply: modules-cluster-manifests module-cluster-core-manifests
   tofu init
   tofu apply -target module.cluster

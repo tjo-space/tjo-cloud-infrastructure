@@ -6,7 +6,7 @@ terraform {
     }
     talos = {
       source  = "siderolabs/talos"
-      version = "0.5.0"
+      version = "0.6.1"
     }
     local = {
       source  = "hashicorp/local"
@@ -28,10 +28,6 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.31.0"
     }
-    tailscale = {
-      source  = "tailscale/tailscale"
-      version = "0.16.1"
-    }
   }
 
   required_version = "~> 1.7.3"
@@ -45,15 +41,35 @@ provider "proxmox" {
   ssh {
     agent    = true
     username = "root"
+
+    node {
+      name    = "batuu"
+      address = "batuu.system.tjo.cloud"
+      port    = 22
+    }
+
+    node {
+      name    = "jakku"
+      address = "jakku.system.tjo.cloud"
+      port    = 22
+    }
+
+    node {
+      name    = "nevaroo"
+      address = "nevaroo.system.tjo.cloud"
+      port    = 22
+    }
+
+    node {
+      name    = "mustafar"
+      address = "mustafar.system.tjo.cloud"
+      port    = 22
+    }
   }
 }
 
 provider "digitalocean" {
   token = var.digitalocean_token
-}
-
-provider "tailscale" {
-  api_key = var.tailscale_apikey
 }
 
 provider "helm" {

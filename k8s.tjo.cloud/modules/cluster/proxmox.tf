@@ -1,7 +1,7 @@
 locals {
   nodes_with_names = {
     for k, v in var.nodes : k => merge(v, {
-      id   = 1000 + index(keys(var.nodes), k)
+      id   = 6000 + index(keys(var.nodes), k)
       name = replace("${k}.${v.type}.${var.cluster.name}", ".", "-")
     })
   }
@@ -75,11 +75,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   node_name = each.value.host
 
   description = "Node ${each.value.name} for cluster ${var.cluster.name}."
-  tags = concat(
-    ["kubernetes", "terraform"],
-    each.value.public ? ["public"] : ["private"],
-    [each.value.type]
-  )
+  tags        = ["kubernetes.tjo.cloud", each.value.type]
 
   stop_on_destroy     = true
   timeout_start_vm    = 60
@@ -106,7 +102,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
 
   network_device {
-    bridge      = each.value.public ? "vmpublic0" : "vmprivate0"
+    bridge      = "vmbr1"
     mac_address = each.value.mac_address
   }
 

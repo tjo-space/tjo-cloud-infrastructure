@@ -1,21 +1,25 @@
 variable "nodes" {
   type = map(object({
-    public = bool
-    type   = string
-    host   = string
+    type = string
+    host = string
 
     cores  = optional(number, 4)
     memory = optional(number, 4096)
 
     storage   = string
     boot_size = optional(number, 32)
+
+    pod_cidr = object({
+      ipv4 = string
+      ipv6 = string
+    })
   }))
 }
 
 variable "talos" {
   type = object({
-    version    = optional(string, "v1.7.5")
-    kubernetes = optional(string, "v1.30.0")
+    version    = optional(string, "v1.8.3")
+    kubernetes = optional(string, "v1.31.0")
 
     # Default is:
     # customization:
@@ -23,9 +27,8 @@ variable "talos" {
     #     officialExtensions:
     #         - siderolabs/kata-containers
     #         - siderolabs/qemu-guest-agent
-    #         - siderolabs/tailscale
     #         - siderolabs/wasmedge
-    schematic_id = optional(string, "a125b6d6becb63df5543edfae1231e351723dd6e4d551ba73e0f30229ad6ff59")
+    schematic_id = optional(string, "392092063ce5c8be7dfeba0bd466add2bc0b55a20939cc2c0060058fcc25d784")
   })
 }
 
@@ -41,12 +44,14 @@ variable "cluster" {
     name = string
     api = optional(object({
       internal = optional(object({
-        domain = optional(string, "api.internal.k8s.tjo.cloud")
-        port   = optional(number, 6443)
+        domain    = optional(string, "k8s.tjo.cloud")
+        subdomain = optional(string, "api.internal")
+        port      = optional(number, 6443)
       }), {})
       public = optional(object({
-        domain = optional(string, "api.k8s.tjo.cloud")
-        port   = optional(number, 443)
+        domain    = optional(string, "k8s.tjo.cloud")
+        subdomain = optional(string, "api")
+        port      = optional(number, 443)
       }), {})
     }), {})
     oidc = object({
@@ -54,11 +59,6 @@ variable "cluster" {
       issuer_url = string
     })
   })
-}
-
-variable "tailscale_authkey" {
-  type      = string
-  sensitive = true
 }
 
 variable "proxmox" {

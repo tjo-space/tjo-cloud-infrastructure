@@ -1,8 +1,3 @@
-variable "tailscale_apikey" {
-  type      = string
-  sensitive = true
-}
-
 variable "oidc_username" {
   type = string
 }

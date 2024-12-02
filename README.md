@@ -12,7 +12,7 @@ tailscale up --ssh --accept-routes --accept-dns=false --advertise-tags=tag:syste
 
 ```
 
-### 2. Install intel-micropodes updates.
+### 2. Install intel-firmware updates.
 
 ```
 # Add non-free-firmware to the end

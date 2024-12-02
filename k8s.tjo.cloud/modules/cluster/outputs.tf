@@ -10,7 +10,7 @@ output "api" {
     public : merge(var.cluster.api.public, {
       endpoint : local.cluster_public_endpoint,
     }),
-    ca : data.talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate,
+    ca : talos_cluster_kubeconfig.this.kubernetes_client_configuration.ca_certificate,
   })
 }
 
