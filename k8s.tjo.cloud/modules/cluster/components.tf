@@ -4,7 +4,7 @@ data "helm_template" "cilium" {
   name       = "cilium"
   chart      = "cilium"
   repository = "https://helm.cilium.io/"
-  version    = "1.15.6"
+  version    = "1.16.4"
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes
@@ -50,8 +50,8 @@ data "helm_template" "cilium" {
       autoMount:
         enabled: false
 
-    k8sServiceHost: ${var.cluster.api.internal.domain}
-    k8sServicePort: ${var.cluster.api.internal.port}
+    k8sServiceHost: localhost
+    k8sServicePort: 7445
 
     hubble:
       ui:
@@ -77,7 +77,7 @@ data "helm_template" "proxmox-csi" {
   name       = "proxmox-csi-plugin"
   chart      = "proxmox-csi-plugin"
   repository = "oci://ghcr.io/sergelogvinov/charts"
-  version    = "0.2.5"
+  version    = "0.2.14"
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes
@@ -120,7 +120,7 @@ data "helm_template" "proxmox-ccm" {
   name       = "proxmox-cloud-controller-manager"
   chart      = "proxmox-cloud-controller-manager"
   repository = "oci://ghcr.io/sergelogvinov/charts"
-  version    = "0.2.3"
+  version    = "0.2.8"
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes
@@ -146,7 +146,7 @@ data "helm_template" "talos-ccm" {
   name       = "talos-cloud-controller-manager"
   chart      = "talos-cloud-controller-manager"
   repository = "oci://ghcr.io/siderolabs/charts"
-  version    = "0.3.1"
+  version    = "0.4.3"
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes

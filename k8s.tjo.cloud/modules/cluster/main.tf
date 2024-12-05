@@ -35,6 +35,7 @@ locals {
         certSANs = [
           local.public_domain,
           local.internal_domain,
+          "localhost:7445",
         ]
         extraArgs = {
           "oidc-issuer-url"      = "https://id.tjo.space/application/o/k8stjocloud/",
@@ -92,10 +93,6 @@ locals {
       externalCloudProvider = {
         enabled = true
       }
-      controlPlane = {
-        endpoint           = local.cluster_internal_endpoint
-        localAPIServerPort = var.cluster.api.internal.port
-      }
       network = {
         cni = {
           name = "none"
@@ -127,9 +124,6 @@ locals {
         machine = {
           network = {
             hostname = node.name
-            kubespan = {
-              enabled = false
-            }
           }
           nodeLabels = {
             "k8s.tjo.cloud/host"    = node.host
