@@ -1,5 +1,6 @@
 variable "nodes" {
   type = map(object({
+    id   = number
     type = string
     host = string
 
@@ -8,11 +9,6 @@ variable "nodes" {
 
     storage   = string
     boot_size = optional(number, 32)
-
-    pod_cidr = object({
-      ipv4 = string
-      ipv6 = string
-    })
   }))
 }
 

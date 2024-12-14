@@ -5,16 +5,21 @@ locals {
   cluster_public_endpoint   = "https://${local.public_domain}:${var.cluster.api.public.port}"
 
   podSubnets = [
-    "10.0.240.0/22",
-    "fd74:6a6f:0:f000::/54",
+    "10.0.240.0/21",
+    "fd74:6a6f:0:f000::/53",
   ]
   serviceSubnets = [
-    "10.0.244.0/22",
-    "fd74:6a6f:0:f400::/54",
+    "10.0.248.0/22",
+    "fd74:6a6f:0:f800::/108",
   ]
 
   talos_controlplane_config = {
     machine = {
+      kubelet = {
+        extraArgs = {
+          rotate-server-certificates = true
+        }
+      }
       features = {
         rbac                 = true
         apidCheckExtKeyUsage = true
@@ -90,9 +95,6 @@ locals {
 
   talos_worker_config = {
     cluster = {
-      externalCloudProvider = {
-        enabled = true
-      }
       network = {
         cni = {
           name = "none"
@@ -128,10 +130,6 @@ locals {
           nodeLabels = {
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
-          }
-          nodeAnnotations = {
-            "network.cilium.io/ipv4-pod-cidr" : node.pod_cidr.ipv4
-            "network.cilium.io/ipv6-pod-cidr" : node.pod_cidr.ipv6
           }
         }
       }),
@@ -172,15 +170,13 @@ resource "talos_machine_configuration_apply" "controlplane" {
   node     = each.value.name
   endpoint = each.value.ipv4
 
-  apply_mode = "reboot"
-
-  config_patches = concat(
+  config_patches = sensitive(concat(
     [
       yamlencode(local.talos_worker_config),
       yamlencode(local.talos_controlplane_config)
     ],
     local.talos_node_config[each.key]
-  )
+  ))
 }
 
 resource "talos_machine_configuration_apply" "worker" {
@@ -192,14 +188,12 @@ resource "talos_machine_configuration_apply" "worker" {
   node     = each.value.name
   endpoint = each.value.ipv4
 
-  apply_mode = "reboot"
-
-  config_patches = concat(
+  config_patches = sensitive(concat(
     [
       yamlencode(local.talos_worker_config)
     ],
     local.talos_node_config[each.key]
-  )
+  ))
 }
 
 resource "talos_machine_bootstrap" "this" {

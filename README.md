@@ -86,4 +86,4 @@ echo "PasswordAuthentication no" >> /etc/ssh/sshd_config
 
 ### 6. Done
 
-Your node should now be vissible at https://proxmox.tjo.cloud.
+Your node should now be visible at https://proxmox.tjo.cloud.

@@ -12,7 +12,15 @@ data "helm_template" "cilium" {
   values = [<<-EOF
     ipam:
       mode: "kubernetes"
-    nodeIPAM:
+
+    operator:
+      priorityClassName: "system-cluster-critical"
+
+    routingMode: "native"
+    autoDirectNodeRoutes: true
+    directRoutingSkipUnreachable: true
+
+    bgpControlPlane:
       enabled: true
 
     bpf:
@@ -21,12 +29,15 @@ data "helm_template" "cilium" {
     enableIPv4Masquerade: true
     ipv4:
       enabled: true
+    ipv4NativeRoutingCIDR: "10.0.0.0/16"
 
     enableIPv6Masquerade: true
     ipv6:
-      enabled: true
+      enabled: false
+    ipv6NativeRoutingCIDR: "fd74:6a6f:0::/48"
 
-    kubeProxyReplacement: "true"
+    kubeProxyReplacement: true
+
     securityContext:
       capabilities:
         ciliumAgent:
@@ -55,14 +66,9 @@ data "helm_template" "cilium" {
 
     hubble:
       ui:
-        enabled: true
+        enabled: false
       relay:
-        enabled: true
-      tls:
-        auto:
-          enabled: true
-          method: "cronJob"
-          schedule: "0 0 1 */4 *"
+        enabled: false
     gatewayAPI:
       enabled: false
     envoy:
@@ -92,8 +98,18 @@ data "helm_template" "proxmox-csi" {
           region: "${var.proxmox.name}"
 
     storageClass:
-      - name: proxmox-main
-        storage: main
+      - name: proxmox-local-nvme
+        storage: local-nvme
+        reclaimPolicy: Delete
+        fstype: ext4
+        cache: none
+      - name: proxmox-local
+        storage: local
+        reclaimPolicy: Delete
+        fstype: ext4
+        cache: none
+      - name: proxmox-local-nvme-lvm
+        storage: local-nvme-lvm
         reclaimPolicy: Delete
         fstype: ext4
         cache: none
@@ -126,10 +142,23 @@ data "helm_template" "proxmox-ccm" {
   kube_version = var.talos.kubernetes
 
   values = [<<-EOF
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: ""
+    # Deploy CCM only on control-plane nodes
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        effect: NoSchedule
+
     enabledControllers:
       - cloud-node-lifecycle
+
     config:
       clusters:
         - url: ${var.proxmox.url}
@@ -150,4 +179,11 @@ data "helm_template" "talos-ccm" {
   namespace  = "kube-system"
 
   kube_version = var.talos.kubernetes
+
+  values = [<<-EOF
+    enabledControllers:
+      - cloud-node
+      - node-csr-approval
+  EOF
+  ]
 }

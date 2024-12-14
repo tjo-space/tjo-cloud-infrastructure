@@ -29,38 +29,54 @@ module "cluster" {
   }
 
   nodes = {
-    pink = {
+    nevaroo-cp = {
+      id      = 6001
       type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
-      pod_cidr = {
-        ipv4 = "10.0.56.0/20"
-        ipv6 = "fd74:6a6f:0:3800::/52"
-      }
     }
-    blue = {
+    #mustafar-cp = {
+    #  id      = 6000
+    #  type    = "controlplane"
+    #  host    = "mustafar"
+    #  storage = "local"
+    #  cores   = 2
+    #  memory  = 4096
+    #}
+    #jakku-cp = {
+    #  id      = 6000
+    #  type    = "controlplane"
+    #  host    = "jakku"
+    #  storage = "local-nvme"
+    #  cores   = 2
+    #  memory  = 4096
+    #}
+    #batuu-cp = {
+    #  id      = 6000
+    #  type    = "controlplane"
+    #  host    = "batuu"
+    #  storage = "local-nvme"
+    #  cores   = 2
+    #  memory  = 4096
+    #}
+
+    nevaro-w1 = {
+      id      = 6002
       type    = "worker"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 8
       memory  = 24576
-      pod_cidr = {
-        ipv4 = "10.0.52.0/20"
-        ipv6 = "fd74:6a6f:0:3400::/52"
-      }
     }
-    cyan = {
+    mustafar-1 = {
+      id      = 6000
       type    = "worker"
       host    = "mustafar"
       storage = "local"
       cores   = 2
       memory  = 4096
-      pod_cidr = {
-        ipv4 = "10.0.68.0/20"
-        ipv6 = "fd74:6a6f:0:4000::/52"
-      }
     }
   }
 }
@@ -69,7 +85,7 @@ resource "local_file" "kubeconfig" {
   content = templatefile("${path.module}/kubeconfig.tftpl", {
     cluster : {
       name : module.cluster.name,
-      endpoint : module.cluster.api.public.endpoint,
+      endpoint : module.cluster.api.internal.endpoint,
       ca : module.cluster.api.ca,
     }
     oidc : {
