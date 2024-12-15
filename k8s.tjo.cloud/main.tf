@@ -20,6 +20,14 @@ module "cluster" {
       client_id  = var.oidc_client_id
       issuer_url = var.oidc_issuer_url
     }
+    pod_cidr = {
+      ipv4 = "10.0.240.0/21"
+      ipv6 = "fd74:6a6f:0:f000::/53"
+    }
+    service_cidr = {
+      ipv4 = "10.0.248.0/22"
+      ipv6 = "fd74:6a6f:0:f800::/108"
+    }
   }
 
   proxmox = {
@@ -28,47 +36,23 @@ module "cluster" {
     common_storage = "synology.storage.tjo.cloud"
   }
 
+  hosts = {
+    nevaroo = {
+      asn = 65003
+    }
+    mustafar = {
+      asn = 65004
+    }
+  }
+
   nodes = {
-    nevaroo-cp = {
+    nevaroo-1 = {
       id      = 6001
       type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
-    }
-    #mustafar-cp = {
-    #  id      = 6000
-    #  type    = "controlplane"
-    #  host    = "mustafar"
-    #  storage = "local"
-    #  cores   = 2
-    #  memory  = 4096
-    #}
-    #jakku-cp = {
-    #  id      = 6000
-    #  type    = "controlplane"
-    #  host    = "jakku"
-    #  storage = "local-nvme"
-    #  cores   = 2
-    #  memory  = 4096
-    #}
-    #batuu-cp = {
-    #  id      = 6000
-    #  type    = "controlplane"
-    #  host    = "batuu"
-    #  storage = "local-nvme"
-    #  cores   = 2
-    #  memory  = 4096
-    #}
-
-    nevaro-w1 = {
-      id      = 6002
-      type    = "worker"
-      host    = "nevaroo"
-      storage = "local-nvme-lvm"
-      cores   = 8
-      memory  = 24576
     }
     mustafar-1 = {
       id      = 6000

@@ -4,15 +4,6 @@ locals {
   cluster_internal_endpoint = "https://${local.internal_domain}:${var.cluster.api.internal.port}"
   cluster_public_endpoint   = "https://${local.public_domain}:${var.cluster.api.public.port}"
 
-  podSubnets = [
-    "10.0.240.0/21",
-    "fd74:6a6f:0:f000::/53",
-  ]
-  serviceSubnets = [
-    "10.0.248.0/22",
-    "fd74:6a6f:0:f800::/108",
-  ]
-
   talos_controlplane_config = {
     machine = {
       kubelet = {
@@ -35,7 +26,7 @@ locals {
       }
     }
     cluster = {
-      allowSchedulingOnControlPlanes = var.allow_scheduling_on_control_planes,
+      allowSchedulingOnControlPlanes = true,
       apiServer = {
         certSANs = [
           local.public_domain,
@@ -51,7 +42,7 @@ locals {
           "oidc-groups-prefix"   = "oidc:groups:",
         }
       }
-      inlineManifests = [
+      inlineManifests = concat([
         {
           name     = "proxmox-cloud-controller-manager"
           contents = data.helm_template.proxmox-ccm.manifest
@@ -73,23 +64,93 @@ locals {
           contents = data.helm_template.cilium.manifest
         },
         {
+          name     = "cilium-bgp-advertisement"
+          contents = <<-EOF
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumBGPAdvertisement
+          metadata:
+            name: pods-and-services
+            labels:
+              k8s.tjo.cloud/default: "true"
+          spec:
+            advertisements:
+              - advertisementType: "PodCIDR"
+              - advertisementType: "Service"
+                service:
+                  addresses:
+                    - ClusterIP
+                    - ExternalIP
+                    - LoadBalancerIP
+          EOF
+        },
+        {
+          name     = "cilium-bgp-peer-config"
+          contents = <<-EOF
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumBGPPeerConfig
+          metadata:
+            name: default
+          spec:
+            families:
+              - afi: ipv4
+                safi: unicast
+                advertisements:
+                  matchLabels:
+                    k8s.tjo.cloud/default: "true"
+              - afi: ipv6
+                safi: unicast
+                advertisements:
+                  matchLabels:
+                    k8s.tjo.cloud/default: "true"
+          EOF
+        },
+        {
           name     = "oidc-admins"
           contents = <<-EOF
-            apiVersion: rbac.authorization.k8s.io/v1
-            kind: ClusterRoleBinding
-            metadata:
-              name: id-tjo-space:admins
-            subjects:
-            - kind: Group
-              name: oidc:groups:k8s.tjo.cloud admin
-              apiGroup: rbac.authorization.k8s.io
-            roleRef:
-              kind: ClusterRole
-              name: cluster-admin
-              apiGroup: rbac.authorization.k8s.io
-            EOF
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: id-tjo-space:admins
+          subjects:
+          - kind: Group
+            name: oidc:groups:k8s.tjo.cloud admin
+            apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+            apiGroup: rbac.authorization.k8s.io
+          EOF
         },
-      ]
+        ],
+        [for name, attributes in var.hosts : {
+          name     = "cilium-bgp-node-config-override-${name}"
+          contents = <<-EOF
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumBGPClusterConfig
+          metadata:
+            name: ${name}
+          spec:
+            gracefulRestart:
+              enabled: true
+              restartTimeSeconds: 15
+            nodeSelector:
+              matchLabels:
+                k8s.tjo.cloud/bgp: "true"
+                k8s.tjo.cloud/host: ${name}
+                k8s.tjo.cloud/proxmox: ${var.proxmox.name}
+            bgpInstances:
+              - name: "${name}"
+                localASN: ${attributes.asn}
+                peers:
+                  - name: "local-router-vip"
+                    peerASN: ${attributes.asn}
+                    peerAddress: "10.0.0.1"
+                    peerConfigRef:
+                      name: "default"
+          EOF
+          }
+        ]
+      )
     }
   }
 
@@ -99,8 +160,14 @@ locals {
         cni = {
           name = "none"
         }
-        podSubnets     = local.podSubnets
-        serviceSubnets = local.serviceSubnets
+        podSubnets = [
+          var.cluster.pod_cidr.ipv4,
+          var.cluster.pod_cidr.ipv6
+        ]
+        serviceSubnets = [
+          var.cluster.service_cidr.ipv4,
+          var.cluster.service_cidr.ipv6
+        ]
       }
       proxy = {
         disabled = true
@@ -128,6 +195,7 @@ locals {
             hostname = node.name
           }
           nodeLabels = {
+            "k8s.tjo.cloud/bgp"     = "true"
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
           }

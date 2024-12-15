@@ -12,6 +12,12 @@ variable "nodes" {
   }))
 }
 
+variable "hosts" {
+  type = map(object({
+    asn = number
+  }))
+}
+
 variable "talos" {
   type = object({
     version    = optional(string, "v1.8.3")
@@ -26,13 +32,6 @@ variable "talos" {
     #         - siderolabs/wasmedge
     schematic_id = optional(string, "392092063ce5c8be7dfeba0bd466add2bc0b55a20939cc2c0060058fcc25d784")
   })
-}
-
-
-variable "allow_scheduling_on_control_planes" {
-  default     = false
-  type        = bool
-  description = "Allow scheduling on control plane nodes"
 }
 
 variable "cluster" {
@@ -53,6 +52,14 @@ variable "cluster" {
     oidc = object({
       client_id  = string
       issuer_url = string
+    })
+    pod_cidr = object({
+      ipv4 = string
+      ipv6 = string
+    })
+    service_cidr = object({
+      ipv4 = string
+      ipv6 = string
     })
   })
 }

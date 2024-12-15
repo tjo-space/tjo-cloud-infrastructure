@@ -29,12 +29,12 @@ data "helm_template" "cilium" {
     enableIPv4Masquerade: true
     ipv4:
       enabled: true
-    ipv4NativeRoutingCIDR: "10.0.0.0/16"
+    ipv4NativeRoutingCIDR: "${var.cluster.pod_cidr.ipv4}"
 
     enableIPv6Masquerade: true
     ipv6:
       enabled: false
-    ipv6NativeRoutingCIDR: "fd74:6a6f:0::/48"
+    ipv6NativeRoutingCIDR: "${var.cluster.pod_cidr.ipv6}"
 
     kubeProxyReplacement: true
 
