@@ -184,6 +184,12 @@ locals {
         image = "factory.talos.dev/installer/${var.talos.schematic_id}:${var.talos.version}"
         disk  = "/dev/vda"
       }
+      features = {
+        hostDNS = {
+          enabled              = true
+          forwardKubeDNSToHost = false
+        }
+      }
     }
   }
 
