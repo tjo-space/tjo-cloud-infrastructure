@@ -20,8 +20,8 @@ variable "hosts" {
 
 variable "talos" {
   type = object({
-    version    = optional(string, "v1.8.3")
-    kubernetes = optional(string, "v1.31.0")
+    version    = optional(string, "v1.9.0")
+    kubernetes = optional(string, "v1.32.0")
 
     # Default is:
     # customization:

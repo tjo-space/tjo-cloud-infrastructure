@@ -23,23 +23,19 @@ data "helm_template" "cilium" {
     bgpControlPlane:
       enabled: true
 
-    bpf:
-      masquerade: true
-
     ipv4:
       enabled: true
-    ipv4NativeRoutingCIDR: "${var.cluster.pod_cidr.ipv4}"
+    enableIPv4Masquerade: false
 
     ipv6:
       enabled: false
-    ipv6NativeRoutingCIDR: "${var.cluster.pod_cidr.ipv6}"
+    enableIPv6Masquerade: false
 
     kubeProxyReplacement: true
 
-    # This breaks it??
-    #k8s:
-    #  requireIPv4PodCIDR: true
-    #  requireIPv6PodCIDR: true
+    k8s:
+      requireIPv4PodCIDR: true
+      requireIPv6PodCIDR: true
 
     securityContext:
       capabilities:

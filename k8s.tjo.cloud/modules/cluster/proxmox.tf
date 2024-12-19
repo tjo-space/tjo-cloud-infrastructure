@@ -13,7 +13,6 @@ locals {
     })
   }
 
-
   first_controlplane_node = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[0]
 
   ipv4_addresses = {
@@ -74,7 +73,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   node_name = each.value.host
 
   description = "Node ${each.value.name} for cluster ${var.cluster.name}."
-  tags        = ["kubernetes.tjo.cloud", each.value.type]
+  tags        = ["k8s.tjo.cloud", each.value.type]
 
   stop_on_destroy     = true
   timeout_start_vm    = 60

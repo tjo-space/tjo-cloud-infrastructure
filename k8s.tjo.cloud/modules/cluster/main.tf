@@ -26,7 +26,6 @@ locals {
       }
     }
     cluster = {
-      allowSchedulingOnControlPlanes = true,
       apiServer = {
         certSANs = [
           local.public_domain,
@@ -184,12 +183,12 @@ locals {
         image = "factory.talos.dev/installer/${var.talos.schematic_id}:${var.talos.version}"
         disk  = "/dev/vda"
       }
-      features = {
-        hostDNS = {
-          enabled              = true
-          forwardKubeDNSToHost = false
-        }
-      }
+      #features = {
+      #  hostDNS = {
+      #    enabled              = true
+      #    forwardKubeDNSToHost = false
+      #  }
+      #}
     }
   }
 
@@ -251,6 +250,11 @@ resource "talos_machine_configuration_apply" "controlplane" {
     ],
     local.talos_node_config[each.key]
   ))
+
+  timeouts = {
+    create = "1m"
+    update = "1m"
+  }
 }
 
 resource "talos_machine_configuration_apply" "worker" {
@@ -268,6 +272,11 @@ resource "talos_machine_configuration_apply" "worker" {
     ],
     local.talos_node_config[each.key]
   ))
+
+  timeouts = {
+    create = "1m"
+    update = "1m"
+  }
 }
 
 resource "talos_machine_bootstrap" "this" {

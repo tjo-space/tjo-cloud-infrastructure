@@ -10,8 +10,8 @@ module "cluster" {
   }
 
   talos = {
-    version    = "v1.8.3"
-    kubernetes = "v1.31.0"
+    version    = "v1.9.0"
+    kubernetes = "v1.32.0"
   }
 
   cluster = {
@@ -59,7 +59,7 @@ module "cluster" {
       type    = "worker"
       host    = "mustafar"
       storage = "local"
-      cores   = 2
+      cores   = 4
       memory  = 4096
     }
   }
