@@ -1,4 +1,4 @@
-# `tjo-cloud/infrastructure`
+# `proxmox.tjo.cloud`
 
 ## Proxmox Configuration
 
@@ -8,10 +8,14 @@
 Install and authenticate as always. Start with:
 
 ```
-tailscale up --ssh --accept-routes --accept-dns=false --advertise-tags=tag:system-tjo-cloud --hostname=$(hostname -f | sed 's/\./-/g')
+tailscale up \
+    --ssh \
+    --accept-routes \
+    --accept-dns=false \
+    --advertise-tags=tag:system-tjo-cloud \
+    --hostname=$(hostname -f | sed 's/\./-/g')
 
 ```
-
 ### 2. Install intel-firmware updates.
 
 ```
