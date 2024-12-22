@@ -61,6 +61,10 @@ variable "cluster" {
       ipv4 = string
       ipv6 = string
     })
+    load_balancer_cidr = object({
+      ipv4 = string
+      ipv6 = string
+    })
   })
 }
 

@@ -59,6 +59,23 @@ locals {
           contents = file("${path.module}/manifests/gateway-api.crds.yaml")
         },
         {
+          name     = "oidc-admins"
+          contents = <<-EOF
+          apiVersion: rbac.authorization.k8s.io/v1
+          kind: ClusterRoleBinding
+          metadata:
+            name: id-tjo-space:admins
+          subjects:
+          - kind: Group
+            name: oidc:groups:k8s.tjo.cloud admin
+            apiGroup: rbac.authorization.k8s.io
+          roleRef:
+            kind: ClusterRole
+            name: cluster-admin
+            apiGroup: rbac.authorization.k8s.io
+          EOF
+        },
+        {
           name     = "cilium"
           contents = data.helm_template.cilium.manifest
         },
@@ -77,9 +94,11 @@ locals {
               - advertisementType: "Service"
                 service:
                   addresses:
-                    - ClusterIP
                     - ExternalIP
                     - LoadBalancerIP
+                  selector:
+                    matchExpressions:
+                     - {key: somekey, operator: NotIn, values: ['never-used-value']} # match all services
           EOF
         },
         {
@@ -104,20 +123,16 @@ locals {
           EOF
         },
         {
-          name     = "oidc-admins"
+          name     = "cilium-load-balancer-ip-pool"
           contents = <<-EOF
-          apiVersion: rbac.authorization.k8s.io/v1
-          kind: ClusterRoleBinding
+          apiVersion: cilium.io/v2alpha1
+          kind: CiliumLoadBalancerIPPool
           metadata:
-            name: id-tjo-space:admins
-          subjects:
-          - kind: Group
-            name: oidc:groups:k8s.tjo.cloud admin
-            apiGroup: rbac.authorization.k8s.io
-          roleRef:
-            kind: ClusterRole
-            name: cluster-admin
-            apiGroup: rbac.authorization.k8s.io
+            name: default
+          spec:
+            blocks:
+              - cidr: "${var.cluster.load_balancer_cidr.ipv4}"
+              - cidr: "${var.cluster.load_balancer_cidr.ipv6}"
           EOF
         },
         ],
@@ -183,12 +198,13 @@ locals {
         image = "factory.talos.dev/installer/${var.talos.schematic_id}:${var.talos.version}"
         disk  = "/dev/vda"
       }
-      #features = {
-      #  hostDNS = {
-      #    enabled              = true
-      #    forwardKubeDNSToHost = false
-      #  }
-      #}
+      features = {
+        hostDNS = {
+          enabled              = false
+          resolveMemberNames   = false
+          forwardKubeDNSToHost = false
+        }
+      }
     }
   }
 

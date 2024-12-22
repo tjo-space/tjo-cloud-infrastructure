@@ -21,12 +21,16 @@ module "cluster" {
       issuer_url = var.oidc_issuer_url
     }
     pod_cidr = {
-      ipv4 = "10.0.240.0/21"
-      ipv6 = "fd74:6a6f:0:f000::/53"
+      ipv4 = "10.0.240.0/22"
+      ipv6 = "fd74:6a6f:0:f000::/54"
     }
     service_cidr = {
+      ipv4 = "10.0.244.0/22"
+      ipv6 = "fd74:6a6f:0:f400::/108"
+    }
+    load_balancer_cidr = {
       ipv4 = "10.0.248.0/22"
-      ipv6 = "fd74:6a6f:0:f800::/108"
+      ipv6 = "fd74:6a6f:0:f800::/54"
     }
   }
 
@@ -54,8 +58,24 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
+    nevaroo-2 = {
+      id      = 6003
+      type    = "worker"
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
+      cores   = 4
+      memory  = 4096
+    }
     mustafar-1 = {
       id      = 6000
+      type    = "controlplane"
+      host    = "mustafar"
+      storage = "local"
+      cores   = 4
+      memory  = 4096
+    }
+    mustafar-2 = {
+      id      = 6002
       type    = "worker"
       host    = "mustafar"
       storage = "local"

@@ -46,10 +46,12 @@ resource "helm_release" "kube-state-metrics" {
 resource "helm_release" "monitoring" {
   depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
 
+  count = 0
+
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "1.4.6"
+  version         = "2.0.0-rc.10"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -58,73 +60,52 @@ resource "helm_release" "monitoring" {
     cluster:
       name: "${var.cluster_name}"
 
-    prometheus-operator-crds:
-      enabled: false
-    prometheus-node-exporter:
-      enabled: true
-    kube-state-metrics:
-      enabled: false
-    opencost:
-      enabled: false
-
-    metrics:
-      enabled: true
-      serviceMonitors:
-        enabled: true
-      probes:
-        enabled: true
-      podMonitors:
-        enabled: true
-      node-exporter:
-        enabled: true
-      kubelet:
-        enabled: true
-      kube-state-metrics:
-        enabled: true
-      cost:
-        enabled: false
-      apiserver:
-        enabled: true
-      autoDiscover:
-        enabled: true
-      cadvisor:
-        enabled: true
-      kubeControllerManager:
-        enabled: true
-      kubeScheduler:
-        enabled: true
-
-    logs:
+    clusterMetrics:
       enabled: true
 
-    profiles:
-      enabled: false
+    clusterEvents:
+      enabled: true
 
-    receivers:
-      deployGrafanaAgentService: false
+    podLogs:
+      enabled: true
 
-    externalServices:
-      prometheus:
-        host: "https://prometheus.monitor.tjo.cloud"
-        writeEndpoint: "/api/v1/write"
-        authMode: "oauth2"
-        oauth2:
-          tokenURL: "https://id.tjo.space/application/o/token/"
-          clientId: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
-          clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
-          endpointParams:
-            grant_type: "client_credentials"
-            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
-      loki:
-        host: "https://loki.monitor.tjo.cloud"
-        authMode: "oauth2"
-        oauth2:
-          tokenURL: "https://id.tjo.space/application/o/token/"
-          clientId: "56TYXtgg7QwLjh4lPl1PTu3C4iExOvO1d6b15WuC"
-          clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
-          endpointParams:
-            grant_type: "client_credentials"
-            client_assertion_type: "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+    nodeLogs:
+      enabled: true
+
+    prometheusOperatorObjects:
+      enabled: true
+
+    annotationAutodiscovery:
+      enabled: true
+
+    alloy-logs:
+      enabled: true
+    alloy-metrics:
+      enabled: true
+    alloy-singleton:
+      enabled: true
+
+    destinations:
+      - name: monitor-tjo-cloud
+        type: otlp
+        url: "grpc.otel.monitor.tjo.cloud:443"
+        auth:
+          type: oauth2
+          oauth2:
+            tokenURL: "https://id.tjo.space/application/o/token/"
+            clientId: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
+            clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            endpointParams:
+              grant_type:
+                - "client_credentials"
+              client_assertion_type:
+                - "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
+        logs:
+          enabled: true
+        metrics:
+          enabled: true
+        traces:
+          enabled: false
     EOF
   ]
 }

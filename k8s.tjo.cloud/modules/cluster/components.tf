@@ -15,6 +15,8 @@ data "helm_template" "cilium" {
 
     operator:
       priorityClassName: "system-cluster-critical"
+      prometheus:
+        enabled: true
 
     routingMode: "native"
     autoDirectNodeRoutes: true
@@ -22,6 +24,9 @@ data "helm_template" "cilium" {
 
     bgpControlPlane:
       enabled: true
+
+    bpf:
+      datapathMode: netkit
 
     ipv4:
       enabled: true
@@ -63,11 +68,21 @@ data "helm_template" "cilium" {
     k8sServiceHost: localhost
     k8sServicePort: 7445
 
+    prometheus:
+      enabled: true
+
     hubble:
       ui:
-        enabled: false
+        enabled: true
       relay:
-        enabled: false
+        enabled: true
+      tls:
+        auto:
+          enabled: true
+          method: cronJob
+          certValidityDuration: 1095
+          schedule: "0 0 1 */4 *"
+
     gatewayAPI:
       enabled: false
     envoy:

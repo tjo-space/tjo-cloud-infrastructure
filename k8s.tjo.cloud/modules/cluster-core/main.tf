@@ -2,7 +2,7 @@ resource "helm_release" "cert-manager" {
   name            = "cert-manager"
   chart           = "cert-manager"
   repository      = "https://charts.jetstack.io"
-  version         = "v1.15.1"
+  version         = "v1.16.2"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -11,8 +11,10 @@ resource "helm_release" "cert-manager" {
     crds:
       enabled: true
 
-    extraArgs:
-      - --enable-gateway-api
+    config:
+      apiVersion: controller.config.cert-manager.io/v1alpha1
+      kind: ControllerConfiguration
+      enableGatewayAPI: true
     EOF
   ]
 }
@@ -21,7 +23,7 @@ resource "helm_release" "envoy" {
   name            = "envoy"
   chart           = "gateway-helm"
   repository      = "oci://docker.io/envoyproxy"
-  version         = "v1.1.0"
+  version         = "v1.2.4"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -31,7 +33,7 @@ resource "helm_release" "metrics-server" {
   name            = "metrics-server"
   chart           = "metrics-server"
   repository      = "https://kubernetes-sigs.github.io/metrics-server/"
-  version         = "3.11.0"
+  version         = "3.12.2"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

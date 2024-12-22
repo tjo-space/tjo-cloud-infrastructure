@@ -49,23 +49,8 @@ resource "kubernetes_manifest" "gateway_class_config" {
         type = "Kubernetes"
         kubernetes = {
           envoyService = {
-            type                  = "ClusterIP"
-            externalTrafficPolicy = "Local"
             annotations = {
               "external-dns.alpha.kubernetes.io/internal-hostname" = "envoy.internal.k8s.tjo.cloud"
-            }
-          }
-          envoyDaemonSet = {
-            pod = {
-              nodeSelector = {
-                "node-role.kubernetes.io/control-plane" = ""
-              }
-              tolerations = [
-                {
-                  key    = "node-role.kubernetes.io/control-plane"
-                  effect = "NoSchedule"
-                }
-              ]
             }
           }
         }
@@ -109,7 +94,7 @@ resource "kubernetes_manifest" "gateway" {
       listeners = [
         {
           name     = "http"
-          hostname = "*.${var.cluster_name}.${var.cluster_domain}"
+          hostname = "*.${var.cluster_domain}"
           protocol = "HTTPS"
           port     = 443
           allowedRoutes = {
@@ -127,6 +112,25 @@ resource "kubernetes_manifest" "gateway" {
           }
         }
       ]
+    }
+  }
+}
+
+resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
+  manifest = {
+    apiVersion = "gateway.envoyproxy.io/v1alpha1"
+    kind       = "ClientTrafficPolicy"
+    metadata = {
+      name      = "enable-proxy-protocol-policy"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+    }
+    spec = {
+      targetRef = {
+        group = "gateway.networking.k8s.io"
+        kind  = "Gateway"
+        name  = kubernetes_manifest.gateway.object.metadata.name
+      }
+      enableProxyProtocol = false
     }
   }
 }
