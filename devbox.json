@@ -1,26 +1,23 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.12.0/.schema/devbox.schema.json",
   "packages": [
-    "opentofu@latest",
     "kubectl@latest",
     "cilium-cli@latest",
     "kubelogin-oidc@latest",
     "talosctl@latest",
     "kubernetes-helm@latest",
     "tflint@latest",
-    "age@latest"
+    "age@latest",
+    "tenv@latest",
+    "gomplate@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"
   },
   "shell": {
     "init_hook": [
-      "echo 'Welcome to devbox!' > /dev/null"
     ],
     "scripts": {
-      "test": [
-        "echo \"Error: no test specified\" && exit 1"
-      ]
     }
   }
 }
