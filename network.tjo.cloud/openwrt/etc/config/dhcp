@@ -1,0 +1,46 @@
+config dnsmasq
+	option domainneeded '1'
+	option localise_queries '1'
+	option rebind_protection '1'
+	option rebind_localhost '1'
+	option expandhosts '1'
+	option cachesize '1000'
+	# Must be larger than limits for interfaces.
+	option dhcpleasemax '1024'
+	option authoritative '1'
+	option readethers '1'
+	option leasefile '/tmp/dhcp.leases'
+	option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
+	option localservice '1'
+	option ednspacket_max '1232'
+	list interface 'lan'
+	option min_cache_ttl '60'
+	option max_cache_ttl '600'
+	option nonegcache '1'
+	list rebind_domain 'tjo.cloud'
+	list rebind_domain 'tjo.space'
+
+config dhcp 'lan'
+	option interface 'lan'
+  # Skip first 100.
+  # Reserved for ingress.tjo.cloud and other.
+	option start '100'
+	# 1/4 of the subnet space.
+  # The rest is reserved for other uses.
+	option limit '1021'
+	option leasetime '24h'
+	option dhcpv4 'server'
+	option dhcpv6 'server'
+	option ra 'server'
+	list ra_flags 'managed-config'
+	list ra_flags 'other-config'
+
+config dhcp 'wan'
+	option interface 'wan'
+	option ignore '1'
+
+config odhcpd 'odhcpd'
+	option maindhcp '0'
+	option leasefile '/tmp/hosts/odhcpd'
+	option leasetrigger '/usr/sbin/odhcpd-update'
+	option loglevel '4'

@@ -1,0 +1,83 @@
+# Always use devbox environment to run commands.
+set shell := ["devbox", "run"]
+# Load dotenv
+set dotenv-load
+
+default:
+  @just --list
+
+lint:
+  @tofu fmt -check -recursive .
+  @tflint --recursive
+
+deploy:
+  #!/usr/bin/env sh
+  cd {{justfile_directory()}}/terraform
+  tofu init
+  tofu apply
+
+destroy:
+  #!/usr/bin/env sh
+  cd {{justfile_directory()}}/terraform
+  tofu  destroy
+
+configure-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(ls configs/node.*.yaml | cut -d '.' -f 2)
+  do
+    just configure ${node}
+  done
+
+configure node:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  node="{{node}}"
+
+  echo "Configuring ${node}.network.tjo.cloud"
+
+  for file in {{justfile_directory()}}/openwrt/etc/config/*
+  do
+    echo "- Deploying /etc/config/$(basename $file)"
+    gomplate --file $file \
+      --datasource common=configs/common.yaml \
+      --datasource node=configs/node.${node}.yaml \
+      | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/config/$(basename $file)"
+  done
+
+  echo "- Configuring tailscale"
+  # We disable SNAT due to multiple router hops,
+  #  which would not know how to route Tailscale IP.
+  tailscale ssh "root@${node}-network-tjo-cloud" <<'EOL'
+  tailscale up \
+    --advertise-routes=10.0.0.0/16,fd74:6a6f:0::/48 \
+    --snat-subnet-routes=false \
+    --accept-dns=false \
+    --ssh \
+    --reset
+  EOL
+
+  echo "- Configuring zerotier"
+  tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
+  tailscale ssh "root@${node}-network-tjo-cloud" "opkg install zerotier"
+  tailscale ssh "root@${node}-network-tjo-cloud" <<'EOL'
+  uci set zerotier.global.enabled='1'
+  uci delete zerotier.earth
+  uci delete zerotier.mynet
+  uci set zerotier.tjo_cloud=network
+  uci set zerotier.tjo_cloud.id=b6079f73c6379990
+  uci commit zerotier
+  EOL
+
+  echo "- Configuring bird"
+  tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
+  tailscale ssh "root@${node}-network-tjo-cloud" "opkg install bird2 bird2c"
+  gomplate --file {{justfile_directory()}}/openwrt/etc/bird.conf \
+    --datasource common=configs/common.yaml \
+    --datasource node=configs/node.${node}.yaml \
+    | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/bird.conf"
+
+  echo "- Reboot router in 5 seconds..."
+  sleep 5
+  echo "- Rebooting router..."
+  tailscale ssh "root@${node}-network-tjo-cloud" "reboot"

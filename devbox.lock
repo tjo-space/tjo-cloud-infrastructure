@@ -1,6 +1,54 @@
 {
   "lockfile_version": "1",
   "packages": {
+    "age@latest": {
+      "last_modified": "2024-11-28T07:51:56Z",
+      "resolved": "github:NixOS/nixpkgs/226216574ada4c3ecefcbbec41f39ce4655f78ef#age",
+      "source": "devbox-search",
+      "version": "1.2.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/q69p0frymxagv5qkld2ld07kll29mll9-age-1.2.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/q69p0frymxagv5qkld2ld07kll29mll9-age-1.2.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/nkfwwkx8wk6889gqlrn3nvzajb9nvipy-age-1.2.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/nkfwwkx8wk6889gqlrn3nvzajb9nvipy-age-1.2.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hcv04l5y4agy62a9yhfbj9b1ss677s9x-age-1.2.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/hcv04l5y4agy62a9yhfbj9b1ss677s9x-age-1.2.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/gcj71njzl7yb062m5q3c39vhaywh1r25-age-1.2.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/gcj71njzl7yb062m5q3c39vhaywh1r25-age-1.2.0"
+        }
+      }
+    },
     "cilium-cli@latest": {
       "last_modified": "2024-07-13T12:58:17Z",
       "resolved": "github:NixOS/nixpkgs/b729601a9e6c459fd8884dea513af143111bed54#cilium-cli",

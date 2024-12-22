@@ -1,0 +1,61 @@
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config device
+	option name 'br-lan'
+	option type 'bridge'
+	list ports 'eth1'
+
+# LAN
+config globals 'globals'
+	option ula_prefix '{{ (ds "node").ipv6 }}/52'
+
+config interface 'lan'
+	option device 'br-lan'
+	option proto 'static'
+	option ipaddr '{{ (ds "node").ipv4 }}'
+	option netmask '255.255.240.0'
+	option ip6assign '64'
+
+config interface 'lan_vip'
+	option proto 'static'
+	option device 'br-lan'
+	option ipaddr '10.0.0.1'
+	option netmask '255.255.255.255'
+	list ip6addr 'fd74:6a6f:0:f000::1/128'
+
+# WAN
+config interface 'wan'
+	option device 'eth0'
+	option proto 'dhcp'
+	option peerdns '0'
+	list dns '1.1.1.1'         # cloudflare primary
+	list dns '9.9.9.9'         # quad9 primary
+	list dns '1.0.0.1'         # cloudflare backup
+	list dns '149.112.112.112' # quad9 backup
+
+config interface 'wan6'
+	option device 'eth0'
+	option proto 'dhcpv6'
+	option peerdns '0'
+	list dns '2606:4700:4700::1111' # cloudflare primary
+	list dns '2620:fe::fe'          # quad9 primary
+	list dns '2606:4700:4700::1001' # cloudflare backup
+	list dns '2620:fe::9'           # quad9 backup
+
+##
+# TAILSCALE
+##
+config interface 'tailscale'
+	option proto 'none'
+	option device 'tailscale0'
+
+##
+# ZEROTIER
+##
+config interface 'zerotier'
+	option proto 'none'
+	option device 'ztyxa2r2sw'

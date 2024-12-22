@@ -1,0 +1,114 @@
+{
+	// Declare static groups of users. Use autogroups for all users or users with a specific role.
+	"groups": {
+		"group:admin": ["tine.jozelj@tjo.space"],
+	},
+
+	// Define the tags which can be applied to devices and by which users.
+	"tagOwners": {
+		// Cloud
+		"tag:system-tjo-cloud":     ["group:admin"],
+		"tag:network-tjo-cloud":    ["group:admin"],
+		"tag:kubernetes-tjo-cloud": ["group:admin"],
+		"tag:ingress-tjo-cloud":    ["group:admin"],
+		// Space
+		"tag:system-tjo-space": ["group:admin"],
+	},
+
+	"autoApprovers": {
+		"routes": {
+			// VM Subnets
+			"10.0.0.0/8":     ["tag:network-tjo-cloud"],
+			"fd9b:5314::/32": ["tag:network-tjo-cloud"],
+		},
+	},
+
+	// Define access control lists for users, groups, autogroups, tags,
+	// Tailscale IP addresses, and subnet ranges.
+	"acls": [
+		// Own Devices
+		{
+			"action": "accept",
+			"src":    ["*"],
+			"dst":    ["autogroup:self:*"],
+		},
+		// Between Systems
+		{
+			"action": "accept",
+			"src":    ["tag:system-tjo-cloud"],
+			"dst":    ["tag:system-tjo-cloud:*"],
+		},
+		{
+			"action": "accept",
+			"src":    ["tag:system-tjo-space"],
+			"dst":    ["tag:system-tjo-space:*"],
+		},
+		// From system.tjo.space to system.tjo.cloud Proxmox Access
+		{
+			"action": "accept",
+			"src":    ["tag:system-tjo-space"],
+			"dst":    ["tag:system-tjo-cloud:8006"],
+		},
+		// Network to VM Subnets
+		{
+			"action": "accept",
+			"src":    ["tag:network-tjo-cloud"],
+			"dst": [
+				"10.0.0.0/8:*",
+				"fd9b:5314::/32:*",
+			],
+		},
+		// Admins Everywhere
+		{
+			"action": "accept",
+			"src":    ["group:admin"],
+			"dst":    ["*:*"],
+		},
+	],
+
+	// Define users and devices that can use Tailscale SSH.
+	"ssh": [
+		// Own Devices
+		{
+			"action": "check",
+			"src":    ["autogroup:member"],
+			"dst":    ["autogroup:self"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+		// Between Systems
+		{
+			"action": "accept",
+			"src":    ["tag:system-tjo-cloud"],
+			"dst":    ["tag:system-tjo-cloud"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+		{
+			"action": "accept",
+			"src":    ["tag:system-tjo-space"],
+			"dst":    ["tag:system-tjo-space"],
+			"users":  ["autogroup:nonroot", "root"],
+		},
+		// Admins to Systems Access
+		{
+			"action": "accept",
+			"src":    ["group:admin"],
+			"dst": [
+				"tag:system-tjo-space",
+				"tag:system-tjo-cloud",
+				"tag:ingress-tjo-cloud",
+				"tag:network-tjo-cloud",
+			],
+			"users": ["autogroup:nonroot", "root"],
+		},
+	],
+
+	"nodeAttrs": [
+		{
+			// Funnel policy, which lets tailnet members control Funnel
+			// for their own devices.
+			// Learn more at https://tailscale.com/kb/1223/tailscale-funnel/
+			"target": ["autogroup:member"],
+			"attr":   ["funnel"],
+		},
+	],
+}

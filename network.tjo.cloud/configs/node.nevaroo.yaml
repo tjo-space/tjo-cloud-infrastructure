@@ -1,0 +1,12 @@
+name: "nevaroo"
+
+ipv4_subnet: "10.0.48.0/20"
+ipv4: "10.0.48.1"
+
+ipv6_subnet: "fd74:6a6f:0:3000::/52"
+ipv6: "fd74:6a6f:0:3000::"
+
+hosts:
+  ingress.tjo.cloud:
+    ipv4: "10.0.48.10"
+    ipv6: "fd74:6a6f:0:3010::1"

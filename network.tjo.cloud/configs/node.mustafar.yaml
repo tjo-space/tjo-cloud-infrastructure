@@ -1,0 +1,12 @@
+name: "mustafar"
+
+ipv4_subnet: "10.0.64.0/20"
+ipv4: "10.0.64.1"
+
+ipv6_subnet: "fd74:6a6f:0:4000::/52"
+ipv6: "fd74:6a6f:0:4000::"
+
+hosts:
+  ingress.tjo.cloud:
+    ipv4: "10.0.64.10"
+    ipv6: "fd74:6a6f:0:4010::1"

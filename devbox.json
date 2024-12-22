@@ -7,7 +7,8 @@
     "kubelogin-oidc@latest",
     "talosctl@latest",
     "kubernetes-helm@latest",
-    "tflint@latest"
+    "tflint@latest",
+    "age@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"

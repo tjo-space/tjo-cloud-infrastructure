@@ -1,0 +1,149 @@
+{
+  "lockfile_version": "1",
+  "packages": {
+    "gomplate@latest": {
+      "last_modified": "2024-11-03T14:18:04Z",
+      "resolved": "github:NixOS/nixpkgs/4ae2e647537bcdbb82265469442713d066675275#gomplate",
+      "source": "devbox-search",
+      "version": "4.1.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/lg9rdl6as50qi3bvq5r36g1499cz18r2-gomplate-4.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/lg9rdl6as50qi3bvq5r36g1499cz18r2-gomplate-4.1.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/98dbxhjciq984637q4sb1ndk5p2c1w6v-gomplate-4.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/98dbxhjciq984637q4sb1ndk5p2c1w6v-gomplate-4.1.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/6n4vb7q3nvd43zv1lfv1qb30pdjagkxm-gomplate-4.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/6n4vb7q3nvd43zv1lfv1qb30pdjagkxm-gomplate-4.1.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fila3y6icb544kr954jigi6pr2h1654h-gomplate-4.1.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/fila3y6icb544kr954jigi6pr2h1654h-gomplate-4.1.0"
+        }
+      }
+    },
+    "tenv@latest": {
+      "last_modified": "2024-08-18T12:44:29Z",
+      "resolved": "github:NixOS/nixpkgs/ff1c2669bbb4d0dd9e62cc94f0968cfa652ceec1#tenv",
+      "source": "devbox-search",
+      "version": "3.0.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/0zbz338z744cmpp0z2rmzygab4b8pili-tenv-3.0.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/0zbz338z744cmpp0z2rmzygab4b8pili-tenv-3.0.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/fiwf4p798kamjy6waaqn0nl6dvzrz6r0-tenv-3.0.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/fiwf4p798kamjy6waaqn0nl6dvzrz6r0-tenv-3.0.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/g87m0hmaqlb9gcg2c8ln1lx9fyzqx1m0-tenv-3.0.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/g87m0hmaqlb9gcg2c8ln1lx9fyzqx1m0-tenv-3.0.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/x22lfx74nns131xxmnhpnnn7gz6hfp1r-tenv-3.0.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/x22lfx74nns131xxmnhpnnn7gz6hfp1r-tenv-3.0.0"
+        }
+      }
+    },
+    "tflint@latest": {
+      "last_modified": "2024-08-18T12:44:29Z",
+      "resolved": "github:NixOS/nixpkgs/ff1c2669bbb4d0dd9e62cc94f0968cfa652ceec1#tflint",
+      "source": "devbox-search",
+      "version": "0.52.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2kqp4ba1anc4c1vxm31criv2cnw7bm8i-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2kqp4ba1anc4c1vxm31criv2cnw7bm8i-tflint-0.52.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/zq3wrj237i9v6jvjfiiglhqrxnn5yfbl-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/zq3wrj237i9v6jvjfiiglhqrxnn5yfbl-tflint-0.52.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/57xd6fdjgkhyi8p69bik9bhjz3nxz4gk-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/57xd6fdjgkhyi8p69bik9bhjz3nxz4gk-tflint-0.52.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ldy3j1qq62nq1fm9q3rpmnd0glpzvfma-tflint-0.52.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ldy3j1qq62nq1fm9q3rpmnd0glpzvfma-tflint-0.52.0"
+        }
+      }
+    }
+  }
+}
