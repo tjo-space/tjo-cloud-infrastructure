@@ -7,10 +7,18 @@ echo "== Fetch Source Code (from git)"
 cd /srv
 # Clone if not yet cloned
 if [ ! -d .git ]; then
-  git clone --depth 1 https://code.tjo.space/tjo-cloud/ingress.git .
+  git clone \
+    --depth 1 \
+    --no-checkout \
+    --filter=tree:0 \
+    https://code.tjo.space/tjo-cloud/infrastructure.git .
+  git sparse-checkout set --no-cone /ingress.tjo.cloud
+  git checkout
 else
-  git pull
+  git pull --depth=1
 fi
+# Enter ingress directory
+cd /srv/ingress.tjo.cloud
 
 ##
 echo "== Configure Metadata"
