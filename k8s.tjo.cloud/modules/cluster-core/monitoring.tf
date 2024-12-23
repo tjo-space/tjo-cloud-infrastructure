@@ -46,12 +46,10 @@ resource "helm_release" "kube-state-metrics" {
 resource "helm_release" "monitoring" {
   depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
 
-  count = 0
-
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "2.0.0-rc.10"
+  version         = "2.0.0-rc.11"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -67,9 +65,6 @@ resource "helm_release" "monitoring" {
       enabled: true
 
     podLogs:
-      enabled: true
-
-    nodeLogs:
       enabled: true
 
     prometheusOperatorObjects:
@@ -93,7 +88,7 @@ resource "helm_release" "monitoring" {
           type: oauth2
           oauth2:
             tokenURL: "https://id.tjo.space/application/o/token/"
-            clientId: "o6Tz2215HLvhvZ4RCZCR8oMmCapTu30iwkoMkz6m"
+            clientId: "Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh"
             clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
             endpointParams:
               grant_type:

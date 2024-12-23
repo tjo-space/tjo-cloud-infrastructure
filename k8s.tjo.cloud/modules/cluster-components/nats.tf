@@ -1,4 +1,6 @@
 resource "helm_release" "nats" {
+  count = 0
+
   name            = "nats"
   repository      = "https://nats-io.github.io/k8s/helm/charts/"
   chart           = "nats"
