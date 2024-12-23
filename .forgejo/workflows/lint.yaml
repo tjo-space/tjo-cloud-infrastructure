@@ -11,6 +11,8 @@ jobs:
       - uses: actions/checkout@v4
       - name: Install devbox
         uses: jetify-com/devbox-install-action@060be5a8f69feff899b73193cadfcaacd5b88310
+        env:
+          GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN }}
         with:
           enable-cache: false
           github-token: "${{ secrets.NIX_GITHUB_TOKEN }}"
