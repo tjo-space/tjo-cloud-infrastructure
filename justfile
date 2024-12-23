@@ -23,7 +23,9 @@ dot-env-decrypt:
 
 tofu-state-encrypt:
   #!/bin/bash
-  for file in $(find tofu.tfstate); do
+  for file in $(find -name tofu.tfstate -o -name terraform.tfstate)
+  do
+    echo "Encrypting $file"
     sops \
       --encrypt \
       --input-type=json \
@@ -33,7 +35,9 @@ tofu-state-encrypt:
 
 tofu-state-decrypt:
   #!/bin/bash
-  for file in $(find tofu.tfstate.encrypted); do
+  for file in $(find -name tofu.tfstate.encrypted -o -name terraform.tfstate.encrypted)
+  do
+    echo "Decrypting $file"
     sops \
       --decrypt \
       --input-type=json \
