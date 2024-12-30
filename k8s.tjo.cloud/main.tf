@@ -1,7 +1,3 @@
-locals {
-  cluster_domain = "k8s.tjo.cloud"
-}
-
 module "cluster" {
   source = "./modules/cluster"
 
@@ -66,8 +62,8 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
-    mustafar-1 = {
-      id      = 6000
+    mustafar-3 = {
+      id      = 6005
       type    = "controlplane"
       host    = "mustafar"
       storage = "local"
