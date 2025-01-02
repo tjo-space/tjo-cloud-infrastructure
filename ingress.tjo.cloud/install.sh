@@ -80,6 +80,7 @@ systemctl restart alloy
 ##
 echo "== Configure Dyndns"
 cp root/etc/systemd/system/dyndns.service /etc/systemd/system/dyndns.service
+cp root/usr/local/bin/dyndns /usr/local/bin/dyndns
 cp -r root/etc/default/dyndns /etc/default/dyndns
 {
   echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
