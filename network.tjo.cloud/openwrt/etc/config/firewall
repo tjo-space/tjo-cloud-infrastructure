@@ -20,6 +20,7 @@ config zone
 	option output 'ACCEPT'
 	option forward 'REJECT'
 	option masq '1'
+	option masq6 '1'
 	option mtu_fix '1'
 
 config forwarding

@@ -41,6 +41,7 @@ config interface 'wan6'
 	option device 'eth0'
 	option proto 'dhcpv6'
 	option peerdns '0'
+	option sourcefilter '0'
 	list dns '2606:4700:4700::1111' # cloudflare primary
 	list dns '2620:fe::fe'          # quad9 primary
 	list dns '2606:4700:4700::1001' # cloudflare backup

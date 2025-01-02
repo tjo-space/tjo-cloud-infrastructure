@@ -3,13 +3,13 @@ default:
 
 apply:
   #!/usr/bin/env sh
-  cd {{justfile_directory()}}/terraform
+  cd {{source_directory()}}/terraform
   tofu init
   tofu apply
 
 destroy:
   #!/usr/bin/env sh
-  cd {{justfile_directory()}}/terraform
+  cd {{source_directory()}}/terraform
   tofu  destroy
 
 configure-all:
@@ -27,7 +27,7 @@ configure node:
 
   echo "Configuring ${node}.network.tjo.cloud"
 
-  for file in {{justfile_directory()}}/openwrt/etc/config/*
+  for file in {{source_directory()}}/openwrt/etc/config/*
   do
     echo "- Deploying /etc/config/$(basename $file)"
     gomplate --file $file \
@@ -63,7 +63,7 @@ configure node:
   echo "- Configuring bird"
   tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
   tailscale ssh "root@${node}-network-tjo-cloud" "opkg install bird2 bird2c"
-  gomplate --file {{justfile_directory()}}/openwrt/etc/bird.conf \
+  gomplate --file {{source_directory()}}/openwrt/etc/bird.conf \
     --datasource common=configs/common.yaml \
     --datasource node=configs/node.${node}.yaml \
     | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/bird.conf"
