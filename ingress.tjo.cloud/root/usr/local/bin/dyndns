@@ -14,11 +14,11 @@ services=(
 )
 
 info() {
-  echo "$1" >/dev/stdout
+  echo "INFO: $1"
 }
 
 warn() {
-  echo "$1" >/dev/stderr
+  echo "WARN: $1"
 }
 
 error() {
