@@ -1,16 +1,7 @@
-# Always use devbox environment to run commands.
-set shell := ["devbox", "run"]
-# Load dotenv
-set dotenv-load
-
 default:
   @just --list
 
-lint:
-  @tofu fmt -check -recursive .
-  @tflint --recursive
-
-deploy:
+apply:
   #!/usr/bin/env sh
   cd {{justfile_directory()}}/terraform
   tofu init

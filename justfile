@@ -7,6 +7,9 @@ mod k8s 'k8s.tjo.cloud'
 mod network 'network.tjo.cloud'
 mod ingress 'ingress.tjo.cloud'
 
+default:
+  @just --list
+
 dot-env-encrypt:
   sops \
     --encrypt \
@@ -45,9 +48,10 @@ tofu-state-decrypt:
       $file > ${file%.encrypted}
   done
 
-default:
-  @just --list
-
 lint:
   @tofu fmt -check -recursive .
+  @tflint --recursive
+
+format:
+  @tofu fmt -recursive .
   @tflint --recursive
