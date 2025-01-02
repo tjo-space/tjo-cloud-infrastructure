@@ -78,14 +78,14 @@ systemctl enable --now alloy
 systemctl restart alloy
 
 ##
-echo "== Configure Dydns"
-cp -r root/etc/default/dydns /etc/default/dydns
+echo "== Configure Dyndns"
+cp -r root/etc/default/dyndns /etc/default/dyndns
 {
   echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
   echo "NAME=${CLOUD_REGION}"
-} >>/etc/default/dydns
-systemctl enable --now dydns
-systemctl restart dydns
+} >>/etc/default/dyndns
+systemctl enable --now dyndns
+systemctl restart dyndns
 
 ##
 echo "== Configure Tailscale"
