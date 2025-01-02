@@ -84,7 +84,7 @@ cp -r root/etc/default/dyndns /etc/default/dyndns
   echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
   echo "NAME=${CLOUD_REGION}"
 } >>/etc/default/dyndns
-systemctl daemon reload
+systemctl daemon-reload
 systemctl enable --now dyndns
 systemctl restart dyndns
 
