@@ -27,7 +27,7 @@ error() {
 }
 
 test -f "${DIGITALOCEAN_TOKEN_FILE:-}" && DIGITALOCEAN_TOKEN="$(cat "$DIGITALOCEAN_TOKEN_FILE")"
-test -z "$DIGITALOCEAN_TOKEN" && error "DIGITALOCEAN_TOKEN not set!"
+test -z "${DIGITALOCEAN_TOKEN}" && error "DIGITALOCEAN_TOKEN not set!"
 test -z "${DOMAIN}" && error "DOMAIN not set!"
 test -z "${NAME}" && error "NAME not set!"
 
