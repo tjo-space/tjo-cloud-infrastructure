@@ -14,6 +14,9 @@ locals {
         tailscale = {
           auth_key = tailscale_tailnet_key.key.key
         }
+        digitalocean = {
+          token = var.digitalocean_token
+        }
       }
     })
   }
@@ -60,8 +63,9 @@ resource "proxmox_virtual_environment_file" "userdata" {
     power_state:
       mode: reboot
     runcmd:
-      - git clone https://code.tjo.space/tjo-cloud/ingress.git /srv
-      - /srv/install.sh
+      - git clone --depth 1 --no-checkout --filter=tree:0 https://github.com/tjo-space/tjo-cloud-infrastructure.git /srv
+      - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
+      - /srv/ingress.tjo.cloud/install.sh
     EOF
     file_name = "${each.value.host}.ingress.tjo.cloud.userconfig.yaml"
   }
@@ -87,7 +91,7 @@ Repo: https://code.tjo.space/tjo-cloud/ingress
   timeout_stop_vm     = 60
   timeout_shutdown_vm = 60
   timeout_reboot      = 60
-  timeout_create      = 600
+  timeout_create      = 60
 
   cpu {
     cores = each.value.cores

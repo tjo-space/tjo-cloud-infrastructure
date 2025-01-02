@@ -37,3 +37,8 @@ variable "tailscale_apikey" {
   type      = string
   sensitive = true
 }
+
+variable "digitalocean_token" {
+  type      = string
+  sensitive = true
+}

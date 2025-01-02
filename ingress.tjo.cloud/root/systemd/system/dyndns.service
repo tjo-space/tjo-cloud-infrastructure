@@ -1,0 +1,8 @@
+[Unit]
+Description=Dynamic DNS Updater
+
+[Service]
+ExecStart=/usr/local/bin/dyndns
+
+[Install]
+WantedBy=multi-user.target

@@ -1,8 +1,0 @@
-[Unit]
-Description=Webhooks
-
-[Service]
-ExecStart=/usr/bin/webhook -hooks /etc/webhook/hooks.json -port 7777 -verbose
-
-[Install]
-WantedBy=multi-user.target

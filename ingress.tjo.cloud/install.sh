@@ -11,7 +11,7 @@ if [ ! -d .git ]; then
     --depth 1 \
     --no-checkout \
     --filter=tree:0 \
-    https://code.tjo.space/tjo-cloud/infrastructure.git .
+    https://github.com/tjo-space/tjo-cloud-infrastructure.git .
   git sparse-checkout set --no-cone /ingress.tjo.cloud
   git checkout
 else
@@ -30,6 +30,8 @@ SERVICE_ACCOUNT_USERNAME=$(jq -r ".service_account.username" /etc/tjo.cloud/meta
 SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta.json)
 
 TAILSCALE_AUTH_KEY=$(jq -r ".tailscale.auth_key" /etc/tjo.cloud/meta.json)
+
+DIGITALOCEAN_TOKEN=$(jq -r ".digitalocean.token" /etc/tjo.cloud/meta.json)
 
 ##
 echo "== Install Dependencies"
@@ -59,7 +61,7 @@ apt install -y tailscale
 
 ##
 echo "== Ensure services are enabled"
-systemctl enable --now nginx alloy tailscaled
+systemctl enable --now nginx alloy tailscaled dydns
 
 ##
 echo "== Configure Grafana Alloy"
@@ -71,12 +73,21 @@ ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
 ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}" >>/etc/default/alloy
-# Set Credentials
+# set credentials
 {
-  echo "ALLOY_USERNAME=${SERVICE_ACCOUNT_USERNAME}"
-  echo "ALLOY_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}"
+  echo "alloy_username=${SERVICE_ACCOUNT_USERNAME}"
+  echo "alloy_password=${SERVICE_ACCOUNT_PASSWORD}"
 } >>/etc/default/alloy
 systemctl restart alloy
+
+##
+echo "== Configure Dydns"
+cp -r root/etc/default/dydns /etc/default/dydns
+{
+  echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
+  echo "NAME=${CLOUD_REGION}"
+} >>/etc/default/dydns
+systemctl restart dydns
 
 ##
 echo "== Configure Tailscale"

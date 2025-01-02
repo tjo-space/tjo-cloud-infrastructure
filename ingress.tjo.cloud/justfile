@@ -1,8 +1,3 @@
-# Always use devbox environment to run commands.
-set shell := ["devbox", "run"]
-# Load dotenv
-set dotenv-load
-
 default:
   @just --list
 
@@ -14,16 +9,53 @@ format:
   @tofu fmt -recursive .
   @tflint --recursive
 
-deploy:
+apply:
   #!/usr/bin/env sh
-  cd {{justfile_directory()}}/terraform
+  cd {{source_directory()}}/terraform
   tofu init
   tofu apply
 
+apply-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+
 destroy:
   #!/usr/bin/env sh
-  cd {{justfile_directory()}}/terraform
+  cd {{source_directory()}}/terraform
   tofu  destroy
+
+provision:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  popd > /dev/null
+
+  for NODE in $NODES
+  do
+    echo "= Provisioning node ${NODE}"
+    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+  done
+
+provision-only node:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  popd > /dev/null
+  
+  for NODE in $NODES
+  do
+    if [ "$NODE" -eq "{{node}}" ]
+      echo "= Provisioning node ${NODE}"
+      cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+    fi
+  done
 
 # Create a list of blocked IP ranges. Traffic we don't want.
 update-blocked-list:
@@ -49,20 +81,3 @@ update-blocked-list:
   for ip in $IP_RANGES; do
     echo "deny $ip;" >> root/etc/nginx/partials/blocked.conf
   done
-
-provision:
-  #!/usr/bin/env sh
-  set -eou pipefail
-
-  pushd {{justfile_directory()}}/terraform > /dev/null
-  NODES=$(tofu output -json | jq -r '.nodes.value[]')
-  popd > /dev/null
-
-  for NODE in $NODES
-  do
-    echo "= Provisioning node ${NODE}"
-    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
-  done
-
-list-servers:
-  @cd terraform && tofu output -json | jq -r '.nodes.value[]'
