@@ -15,7 +15,7 @@ if [ ! -d .git ]; then
   git sparse-checkout set --no-cone /ingress.tjo.cloud
   git checkout
 else
-  git pull --depth=1
+  git pull --depth=1 --rebase
 fi
 # Enter ingress directory
 cd /srv/ingress.tjo.cloud
