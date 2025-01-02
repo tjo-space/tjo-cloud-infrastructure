@@ -5,6 +5,7 @@ set -euo pipefail
 api_host="https://api.digitalocean.com/v2"
 sleep_interval=${SLEEP_INTERVAL:-300}
 remove_duplicates=${REMOVE_DUPLICATES:-"false"}
+record_ttl=${RECORD_TTL:-300}
 
 # Only services with ipv6 supported are listed here.
 # And are not using cloudflare or similar services
@@ -66,7 +67,7 @@ configure_record() {
     # re-enable glob expansion
     set +f
 
-    data="{\"type\": \"$type\", \"name\": \"$sub\", \"data\": \"$ip\"}"
+    data="{\"type\": \"$type\", \"name\": \"$sub\", \"data\": \"$ip\", \"ttl\": $record_ttl}"
     url="$dns_list/$record_id"
 
     if [[ -z $record_id ]]; then
