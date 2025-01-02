@@ -60,10 +60,6 @@ apt update -y
 apt install -y tailscale
 
 ##
-echo "== Ensure services are enabled"
-systemctl enable --now nginx alloy tailscaled dydns
-
-##
 echo "== Configure Grafana Alloy"
 cp -r root/etc/alloy/* /etc/alloy/
 cp -r root/etc/default/alloy /etc/default/alloy
@@ -78,6 +74,7 @@ echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}" >>/etc/default/alloy
   echo "alloy_username=${SERVICE_ACCOUNT_USERNAME}"
   echo "alloy_password=${SERVICE_ACCOUNT_PASSWORD}"
 } >>/etc/default/alloy
+systemctl enable --now alloy
 systemctl restart alloy
 
 ##
@@ -87,10 +84,12 @@ cp -r root/etc/default/dydns /etc/default/dydns
   echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
   echo "NAME=${CLOUD_REGION}"
 } >>/etc/default/dydns
+systemctl enable --now dydns
 systemctl restart dydns
 
 ##
 echo "== Configure Tailscale"
+systemctl enable --now tailscaled
 if tailscale status --json | jq -e -r '.BackendState != "Running"' >/dev/null; then
   tailscale up \
     --ssh=true \
@@ -134,4 +133,5 @@ systemctl enable ufw
 echo "== Configure NGINX"
 cp assets/dbip-city-lite-2023-07.mmdb /var/geoip.mmdb
 cp -r root/etc/nginx/* /etc/nginx/
+systemctl enable --now nginx
 systemctl reload nginx
