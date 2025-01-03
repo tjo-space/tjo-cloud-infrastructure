@@ -49,7 +49,7 @@ configure_record() {
     #  we remove duplicates and only keep one A and AAAA records.
     if [[ "${sub}" != "any" ]]; then
       if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
-        echo "'$sub' domain name has duplicate DNS records, removing duplicates"
+        warn "domain=$sub type=$type Domain name has duplicate DNS records, removing duplicates"
         record_id_to_delete=$(echo "$record_id" | tail -n +2)
         record_id=$(echo "$record_id" | head -1)
         record_data=$(echo "$record_data" | head -1)
@@ -70,7 +70,7 @@ configure_record() {
     url="$dns_list/$record_id"
 
     if [[ -z $record_id ]]; then
-      info "No record found with '$sub' domain name. Creating record, sending data=$data to url=$url"
+      info "domain=$sub type=$type No record found. Creating record, sending data=$data to url=$url"
 
       new_record=$(curl -s -X POST \
         -H "Content-Type: application/json" \
@@ -82,7 +82,7 @@ configure_record() {
     fi
 
     if [[ "$ip" != "$record_data" ]]; then
-      info "existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
+      info "domain=$sub type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
 
       curl -s -X PATCH \
         -H "Content-Type: application/json" \
@@ -90,7 +90,7 @@ configure_record() {
         -d "$data" \
         "$url" &>/dev/null
     else
-      info "existing DNS record address ($record_data) did not need updating"
+      info "domain=$sub type=$type Existing DNS record address ($record_data) did not need updating"
     fi
   done
 }
