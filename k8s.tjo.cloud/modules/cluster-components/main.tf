@@ -4,12 +4,14 @@ resource "kubernetes_namespace" "tjo-cloud" {
   }
 }
 
-resource "kubernetes_secret" "digitalocean-token" {
+resource "kubernetes_secret" "dnsimple" {
   metadata {
-    name      = "digitalocean-token"
+    name      = "dnsimple"
     namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
   }
   data = {
-    token = var.digitalocean_token
+    token = var.dnsimple_token
+    account_id = var.dnsimple_account_id
+    zones = var.dnsimple_zones
   }
 }

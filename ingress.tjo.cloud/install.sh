@@ -31,7 +31,7 @@ SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta
 
 TAILSCALE_AUTH_KEY=$(jq -r ".tailscale.auth_key" /etc/tjo.cloud/meta.json)
 
-DIGITALOCEAN_TOKEN=$(jq -r ".digitalocean.token" /etc/tjo.cloud/meta.json)
+DNSIMPLE_TOKEN=$(jq -r ".dnsimple.token" /etc/tjo.cloud/meta.json)
 
 ##
 echo "== Install Dependencies"
@@ -83,8 +83,8 @@ cp root/etc/systemd/system/dyndns.service /etc/systemd/system/dyndns.service
 cp root/usr/local/bin/dyndns /usr/local/bin/dyndns
 cp -r root/etc/default/dyndns /etc/default/dyndns
 {
-  echo "DIGITALOCEAN_TOKEN=${DIGITALOCEAN_TOKEN}"
-  echo "NAME=${CLOUD_REGION}"
+  echo "DNSIMPLE_TOKEN=${DNSIMPLE_TOKEN}"
+  echo "NAME=any;${CLOUD_REGION}"
 } >>/etc/default/dyndns
 systemctl enable --now dyndns
 systemctl restart dyndns

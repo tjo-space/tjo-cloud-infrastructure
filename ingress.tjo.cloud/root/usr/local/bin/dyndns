@@ -2,7 +2,7 @@
 # vim: set filetype=sh
 set -euo pipefail
 
-api_host="https://api.digitalocean.com/v2"
+api_host="https://api.dnsimple.com/v2"
 sleep_interval=${SLEEP_INTERVAL:-300}
 remove_duplicates=${REMOVE_DUPLICATES:-"false"}
 record_ttl=${RECORD_TTL:-300}
@@ -27,12 +27,12 @@ error() {
   exit 1
 }
 
-test -f "${DIGITALOCEAN_TOKEN_FILE:-}" && DIGITALOCEAN_TOKEN="$(cat "$DIGITALOCEAN_TOKEN_FILE")"
-test -z "${DIGITALOCEAN_TOKEN}" && error "DIGITALOCEAN_TOKEN not set!"
+test -z "${DNSIMPLE_TOKEN}" && error "DNSIMPLE_TOKEN not set!"
+test -z "${DNSIMPLE_ACCOUNT_ID}" && error "DNSIMPLE_ACCOUNT_ID not set!"
 test -z "${DOMAIN}" && error "DOMAIN not set!"
 test -z "${NAME}" && error "NAME not set!"
 
-dns_list="$api_host/domains/$DOMAIN/records"
+dns_list="$api_host/$DNSIMPLE_ACCOUNT_ID/zones/$DOMAIN/records"
 
 configure_record() {
   # disable glob expansion
@@ -67,7 +67,7 @@ configure_record() {
     # re-enable glob expansion
     set +f
 
-    data="{\"type\": \"$type\", \"name\": \"$sub\", \"data\": \"$ip\", \"ttl\": $record_ttl}"
+    data="{\"type\": \"$type\", \"name\": \"$sub\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
     url="$dns_list/$record_id"
 
     if [[ -z $record_id ]]; then
@@ -85,7 +85,7 @@ configure_record() {
     if [[ "$ip" != "$record_data" ]]; then
       info "existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
 
-      curl -s -X PUT \
+      curl -s -X PATCH \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
         -d "$data" \

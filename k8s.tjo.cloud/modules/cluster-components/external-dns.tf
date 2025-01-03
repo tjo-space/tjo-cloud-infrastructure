@@ -8,11 +8,18 @@ resource "helm_release" "external-dns-privileged" {
   values = [<<-EOF
     provider: digitalocean
     env:
-      - name: DO_TOKEN
+      - name: DNSIMPLE_OAUTH
         valueFrom:
           secretKeyRef:
-            name: ${kubernetes_secret.digitalocean-token.metadata[0].name}
+            name: ${kubernetes_secret.dnsimple.metadata[0].name}
             key: token
+      - name: DNSIMPLE_ACCOUNT_ID
+        valueFrom:
+          secretKeyRef:
+            name: ${kubernetes_secret.dnsimple.metadata[0].name}
+            key: account_id
+      - name: DNSIMPLE_ZONES
+        value: "k8s.tjo.cloud,internal.k8s.tjo.cloud"
     sources:
       - ingress
       - service
@@ -35,13 +42,20 @@ resource "helm_release" "external-dns-user-content" {
   namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
 
   values = [<<-EOF
-    provider: digitalocean
+    provider: dnsimple
     env:
-      - name: DO_TOKEN
+      - name: DNSIMPLE_OAUTH
         valueFrom:
           secretKeyRef:
-            name: ${kubernetes_secret.digitalocean-token.metadata[0].name}
+            name: ${kubernetes_secret.dnsimple.metadata[0].name}
             key: token
+      - name: DNSIMPLE_ACCOUNT_ID
+        valueFrom:
+          secretKeyRef:
+            name: ${kubernetes_secret.dnsimple.metadata[0].name}
+            key: account_id
+      - name: DNSIMPLE_ZONES
+        value: "user-content.tjo.cloud"
     sources:
       - ingress
       - service

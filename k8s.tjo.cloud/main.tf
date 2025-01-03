@@ -108,7 +108,8 @@ module "cluster-components" {
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
 
-  digitalocean_token = var.digitalocean_token
+  dnsimple_token = var.dnsimple_token
+  dnsimple_account_id = "155200"
 
   cluster_name   = module.cluster.name
   cluster_domain = "k8s.tjo.cloud"
