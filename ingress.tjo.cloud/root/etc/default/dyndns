@@ -4,15 +4,6 @@
 ## Default:     ""
 ## ServiceRestart: dydns
 
-# If set to "true", removes extra DNS records if more than one A record is found on a subdomain.
-# Note that if this is not enabled, the script will NOT update subdomains with more than one A record
-# (default: false)
-REMOVE_DUPLICATES=true
-
-# Polling time in seconds.
-# (default: 300)
-SLEEP_INTERVAL=600
-
 # The domain your subdomain is registered at. (i.e. foo.com for home.foo.com)
 DOMAIN=ingress.tjo.cloud
 
