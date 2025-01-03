@@ -43,7 +43,7 @@ configure_record() {
 
   for sub in ${NAME//;/ }; do
     record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .content == \"$sub\") | .id")
-    record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .content == \"$sub\") | .data")
+    record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .content == \"$sub\") | .content")
 
     if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
       if [[ "${remove_duplicates}" == "true" ]]; then
