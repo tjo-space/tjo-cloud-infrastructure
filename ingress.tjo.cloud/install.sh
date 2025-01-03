@@ -85,7 +85,7 @@ cp -r root/etc/default/dyndns /etc/default/dyndns
 {
   echo ""
   echo "DNSIMPLE_TOKEN=${DNSIMPLE_TOKEN}"
-  echo "NAME=any;${CLOUD_REGION}"
+  echo "CLOUD_REGION=${CLOUD_REGION}"
 } >>/etc/default/dyndns
 systemctl enable --now dyndns
 systemctl restart dyndns

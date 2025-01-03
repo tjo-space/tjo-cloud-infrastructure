@@ -29,70 +29,98 @@ error() {
 test -z "${DNSIMPLE_TOKEN}" && error "DNSIMPLE_TOKEN not set!"
 test -z "${DNSIMPLE_ACCOUNT_ID}" && error "DNSIMPLE_ACCOUNT_ID not set!"
 test -z "${DOMAIN}" && error "DOMAIN not set!"
-test -z "${NAME}" && error "NAME not set!"
+test -z "${CLOUD_REGION}" && error "CLOUD_REGION not set!"
 
 dns_list="$api_host/$DNSIMPLE_ACCOUNT_ID/zones/$DOMAIN/records"
 
-configure_record() {
+configure_single() {
   # disable glob expansion
   set -f
 
   domain_records=$1
-  ip=$2
-  type=$3
+  domain=$2
+  ip=$3
+  type=$4
 
-  for sub in ${NAME//;/ }; do
-    record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$sub\") | .id")
-    record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .name == \"$sub\") | .content")
+  record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\") | .id")
+  record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .name == \"$domain\") | .content")
 
-    # For all subdomains except "any"
-    #  we remove duplicates and only keep one A and AAAA records.
-    if [[ "${sub}" != "any" ]]; then
-      if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
-        warn "domain=$sub type=$type Domain name has duplicate DNS records, removing duplicates"
-        record_id_to_delete=$(echo "$record_id" | tail -n +2)
-        record_id=$(echo "$record_id" | head -1)
-        record_data=$(echo "$record_data" | head -1)
+  if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
+    warn "domain=$domain type=$type Domain name has duplicate DNS records, removing duplicates"
+    record_id_to_delete=$(echo "$record_id" | tail -n +2)
+    record_id=$(echo "$record_id" | head -1)
+    record_data=$(echo "$record_data" | head -1)
 
-        while IFS= read -r line; do
-          curl -s -X DELETE \
-            -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-            "$dns_list/$line" &>/dev/null
-        done <<<"$record_id_to_delete"
-      fi
-    fi
-
-    # re-enable glob expansion
-    set +f
-
-    data="{\"type\": \"$type\", \"name\": \"$sub\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
-    url="$dns_list/$record_id"
-
-    if [[ -z $record_id ]]; then
-      info "domain=$sub type=$type No record found. Creating record, sending data=$data to url=$url"
-
-      new_record=$(curl -s -X POST \
+    while IFS= read -r line; do
+      curl -s -X DELETE \
         -H "Content-Type: application/json" \
         -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-        -d "$data" \
-        "$url")
+        "$dns_list/$line" &>/dev/null
+    done <<<"$record_id_to_delete"
+  fi
 
-      record_data=$(echo "$new_record" | jq -r ".data")
-    fi
+  # re-enable glob expansion
+  set +f
 
-    if [[ "$ip" != "$record_data" ]]; then
-      info "domain=$sub type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
+  data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
+  url="$dns_list/$record_id"
 
-      curl -s -X PATCH \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-        -d "$data" \
-        "$url" &>/dev/null
-    else
-      info "domain=$sub type=$type Existing DNS record address ($record_data) did not need updating"
-    fi
-  done
+  if [[ -z $record_id ]]; then
+    info "domain=$domain type=$type No record found. Creating record, sending data=$data to url=$url"
+
+    new_record=$(curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+      -d "$data" \
+      "$url")
+
+    record_data=$(echo "$new_record" | jq -r ".data")
+  fi
+
+  if [[ "$ip" != "$record_data" ]]; then
+    info "domain=$domain type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
+
+    curl -s -X PATCH \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+      -d "$data" \
+      "$url" &>/dev/null
+  else
+    info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating"
+  fi
+}
+
+configure_many() {
+  # disable glob expansion
+  set -f
+
+  domain_records=$1
+  domain=$2
+  ip=$3
+  type=$4
+
+  record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content = \"$ip\") | .id")
+  record_data=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content = \"$ip\") | .content")
+
+  # re-enable glob expansion
+  set +f
+
+  data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
+  url="$dns_list/$record_id"
+
+  if [[ -z $record_id ]]; then
+    info "domain=$domain type=$type No record found. Creating record, sending data=$data to url=$url"
+
+    new_record=$(curl -s -X POST \
+      -H "Content-Type: application/json" \
+      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+      -d "$data" \
+      "$url")
+
+    record_data=$(echo "$new_record" | jq -r ".data")
+  else
+    info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating"
+  fi
 }
 
 while (true); do
@@ -118,14 +146,16 @@ while (true); do
     warn "IPv4 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
   else
     info "Found IPv4 address $ipv4"
-    configure_record "$domain_records" "$ipv4" "A"
+    configure_single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
+    configure_many   "$domain_records" "any"           "$ipv4" "A"
   fi
 
   if [[ -z $ipv6 ]]; then
     warn "IPv6 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
   else
     info "Found IPv6 address $ipv6"
-    configure_record "$domain_records" "$ipv6" "AAAA"
+    configure_single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
+    configure_many   "$domain_records" "any"           "$ipv6" "AAAA"
   fi
 
   sleep "$sleep_interval"
