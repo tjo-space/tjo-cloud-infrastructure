@@ -99,8 +99,8 @@ configure_many() {
   ip=$3
   type=$4
 
-  record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content = \"$ip\") | .id")
-  record_data=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content = \"$ip\") | .content")
+  record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content == \"$ip\") | .id")
+  record_data=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content == \"$ip\") | .content")
 
   # re-enable glob expansion
   set +f
