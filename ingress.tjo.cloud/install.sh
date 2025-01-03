@@ -68,9 +68,9 @@ ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
 ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
-echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}" >>/etc/default/alloy
-# set credentials
 {
+  echo ""
+  echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}"
   echo "alloy_username=${SERVICE_ACCOUNT_USERNAME}"
   echo "alloy_password=${SERVICE_ACCOUNT_PASSWORD}"
 } >>/etc/default/alloy
@@ -83,6 +83,7 @@ cp root/etc/systemd/system/dyndns.service /etc/systemd/system/dyndns.service
 cp root/usr/local/bin/dyndns /usr/local/bin/dyndns
 cp -r root/etc/default/dyndns /etc/default/dyndns
 {
+  echo ""
   echo "DNSIMPLE_TOKEN=${DNSIMPLE_TOKEN}"
   echo "NAME=any;${CLOUD_REGION}"
 } >>/etc/default/dyndns
@@ -127,6 +128,8 @@ ufw allow 465  # EMAIL
 ufw allow 587  # EMAIL
 ufw allow 993  # EMAIL
 ufw allow 4190 # EMAIL
+
+ufw allow 2222 # SSH ACCESS
 
 ufw --force enable
 systemctl enable ufw
