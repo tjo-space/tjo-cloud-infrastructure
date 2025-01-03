@@ -6,7 +6,7 @@ resource "helm_release" "external-dns-privileged" {
   namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
 
   values = [<<-EOF
-    provider: digitalocean
+    provider: dnsimple
     env:
       - name: DNSIMPLE_OAUTH
         valueFrom:

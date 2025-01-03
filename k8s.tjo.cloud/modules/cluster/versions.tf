@@ -14,9 +14,9 @@ terraform {
       source  = "hashicorp/local"
       version = "1.4.0"
     }
-    digitalocean = {
-      source  = "digitalocean/digitalocean"
-      version = "~> 2.0"
+    dnsimple = {
+      source = "dnsimple/dnsimple"
+      version = "1.8.0"
     }
     random = {
       source  = "hashicorp/random"

@@ -339,20 +339,20 @@ resource "local_file" "talosconfig" {
   filename = "${path.root}/admin.talosconfig"
 }
 
-resource "digitalocean_record" "api-internal-ipv4" {
+resource "dnsimple_zone_record" "api-internal-ipv4" {
   for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
 
-  domain = var.cluster.api.internal.domain
+  zone_name = var.cluster.api.internal.domain
   type   = "A"
   name   = var.cluster.api.internal.subdomain
   value  = each.value.ipv4
   ttl    = 30
 }
 
-resource "digitalocean_record" "api-internal-ipv6" {
+resource "dnsimple_zone_record" "api-internal-ipv6" {
   for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
 
-  domain = var.cluster.api.internal.domain
+  zone_name = var.cluster.api.internal.domain
   type   = "AAAA"
   name   = var.cluster.api.internal.subdomain
   value  = each.value.ipv6

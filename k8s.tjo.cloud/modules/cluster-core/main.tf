@@ -19,6 +19,25 @@ resource "helm_release" "cert-manager" {
   ]
 }
 
+resource "helm_release" "cert-manager-dnsimple" {
+  name            = "cert-manager-webhook-dnsimple"
+  chart           = "cert-manager-webhook-dnsimple"
+  repository      = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
+  version         = "v0.1.6"
+  namespace       = "kube-system"
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [<<-EOF
+      dnsimple:
+        token: "not-used"
+      certManager:
+        namespace: "kube-system"
+        serviceAccountName: "cert-manager"
+    EOF
+  ]
+}
+
 resource "helm_release" "envoy" {
   name            = "envoy"
   chart           = "gateway-helm"

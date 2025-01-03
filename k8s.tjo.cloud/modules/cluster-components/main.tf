@@ -12,6 +12,5 @@ resource "kubernetes_secret" "dnsimple" {
   data = {
     token = var.dnsimple_token
     account_id = var.dnsimple_account_id
-    zones = var.dnsimple_zones
   }
 }

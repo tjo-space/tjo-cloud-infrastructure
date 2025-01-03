@@ -16,10 +16,14 @@ resource "kubernetes_manifest" "tjo-cloud-issuer" {
         solvers = [
           {
             dns01 = {
-              digitalocean = {
-                tokenSecretRef = {
-                  name = kubernetes_secret.digitalocean-token.metadata[0].name
-                  key  = "token"
+              webhook = {
+                solverName = "dnsimple"
+                groupName = "acme.dnsimple.com"
+                config = {
+                  tokenSecretRef = {
+                    name = kubernetes_secret.dnsimple.metadata[0].name
+                    key  = "token"
+                  }
                 }
               }
             }

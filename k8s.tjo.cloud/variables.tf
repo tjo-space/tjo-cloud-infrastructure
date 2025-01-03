@@ -12,7 +12,7 @@ variable "oidc_issuer_url" {
   type = string
 }
 
-variable "digitalocean_token" {
+variable "dnsimple_token" {
   type      = string
   sensitive = true
 }
