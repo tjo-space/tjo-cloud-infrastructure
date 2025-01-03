@@ -42,8 +42,8 @@ configure_record() {
   type=$2
 
   for sub in ${NAME//;/ }; do
-    record_id=$(echo "$domain_records" | jq ".domain_records[] | select(.type == \"$type\" and .name == \"$sub\") | .id")
-    record_data=$(echo "$domain_records" | jq -r ".domain_records[] | select(.type == \"$type\" and .name == \"$sub\") | .data")
+    record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .content == \"$sub\") | .id")
+    record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .content == \"$sub\") | .data")
 
     if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
       if [[ "${remove_duplicates}" == "true" ]]; then
@@ -55,7 +55,7 @@ configure_record() {
         while IFS= read -r line; do
           curl -s -X DELETE \
             -H "Content-Type: application/json" \
-            -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
+            -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
             "$dns_list/$line" &>/dev/null
         done <<<"$record_id_to_delete"
       else
@@ -75,7 +75,7 @@ configure_record() {
 
       new_record=$(curl -s -X POST \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
+        -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
         -d "$data" \
         "$url")
 
@@ -87,7 +87,7 @@ configure_record() {
 
       curl -s -X PATCH \
         -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
+        -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
         -d "$data" \
         "$url" &>/dev/null
     else
@@ -99,8 +99,8 @@ configure_record() {
 while (true); do
   domain_records=$(curl -s -X GET \
     -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $DIGITALOCEAN_TOKEN" \
-    "$dns_list?per_page=200")
+    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+    "$dns_list")
 
   for service in "${services[@]}"; do
     info "Trying with $service..."
