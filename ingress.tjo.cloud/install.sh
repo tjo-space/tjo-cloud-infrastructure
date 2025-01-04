@@ -71,8 +71,8 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 {
   echo ""
   echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}"
-  echo "alloy_username=${SERVICE_ACCOUNT_USERNAME}"
-  echo "alloy_password=${SERVICE_ACCOUNT_PASSWORD}"
+  echo "ALLOY_USERNAME=${SERVICE_ACCOUNT_USERNAME}"
+  echo "ALLOY_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}"
 } >>/etc/default/alloy
 systemctl enable --now alloy
 systemctl restart alloy
