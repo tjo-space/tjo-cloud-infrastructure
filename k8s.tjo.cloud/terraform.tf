@@ -70,7 +70,7 @@ provider "proxmox" {
 
 provider "dnsimple" {
   token = var.dnsimple_token
-  account = "155200"
+  account = var.dnsimple_account_id
 }
 
 provider "helm" {

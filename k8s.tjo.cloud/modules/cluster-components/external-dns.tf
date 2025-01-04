@@ -19,7 +19,7 @@ resource "helm_release" "external-dns-privileged" {
             name: ${kubernetes_secret.dnsimple.metadata[0].name}
             key: account_id
       - name: DNSIMPLE_ZONES
-        value: "k8s.tjo.cloud,internal.k8s.tjo.cloud"
+        value: "k8s.tjo.cloud"
     sources:
       - ingress
       - service

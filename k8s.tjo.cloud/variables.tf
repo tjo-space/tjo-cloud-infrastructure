@@ -17,6 +17,10 @@ variable "dnsimple_token" {
   sensitive = true
 }
 
+variable "dnsimple_account_id" {
+  type = string
+}
+
 variable "proxmox_token" {
   type      = string
   sensitive = true
