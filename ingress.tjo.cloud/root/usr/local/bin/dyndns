@@ -144,7 +144,15 @@ configure_many() {
 healthcheck() {
   local ip="$1"
 
-  curl -s -f -o /dev/null "http://$ip" || error "Healthcheck failed"
+  code=$(curl -s -o /dev/null -I -w '%{http_code}' "http://$ip:1337/healthz" || echo "")
+
+  if [[ "$code" != "200" ]]; then
+    warn "Healthcheck failed for $ip. Got $code"
+    return 1
+  fi
+
+  info "Healthcheck passed for $ip"
+  return 0
 }
 
 while (true); do
@@ -167,17 +175,24 @@ while (true); do
     warn "IPv4 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
   else
     info "Found IPv4 address $ipv4"
-    configure_single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
-    configure_many "$domain_records" "any" "$ipv4" "A"
+    if healthcheck "$ipv4"; then
+      configure_single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
+      configure_many "$domain_records" "any" "$ipv4" "A"
+    fi
   fi
 
   if [[ -z $ipv6 ]]; then
     warn "IPv6 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
   else
     info "Found IPv6 address $ipv6"
-    configure_single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
-    configure_many "$domain_records" "any" "$ipv6" "AAAA"
+    if healthcheck "[$ipv6]"; then
+      configure_single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
+      configure_many "$domain_records" "any" "$ipv6" "AAAA"
+    fi
   fi
+
+  # TODO: Check other domain_records,
+  #       and remove any records that are not healthy.
 
   sleep "$sleep_interval"
 done
