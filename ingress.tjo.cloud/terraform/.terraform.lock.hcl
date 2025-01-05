@@ -6,6 +6,7 @@ provider "registry.opentofu.org/bpg/proxmox" {
   constraints = "0.61.1"
   hashes = [
     "h1:6kz2Rdjc8+TVq2aUxEQXLOwbb9OdhJJei0L1fC4K2R4=",
+    "h1:SQSHTHj2ThcF08cON2gHYcnkS/XLmoF8E4cRIgpagtE=",
     "zh:27d8b589a2dc1e0a5b0f8ab299b9f3704a2f0b69799d1d4d8845c68056986d1f",
     "zh:46dfa6b33ddd7007a2144f38090457604eb56a59a303b37bb0ad1be5c84ddaca",
     "zh:47a1b14a759393c5ecc76f2feb950677c418c910b8c677fde0dd3e4675c41579",
@@ -28,6 +29,7 @@ provider "registry.opentofu.org/goauthentik/authentik" {
   version     = "2024.8.3"
   constraints = "2024.8.3"
   hashes = [
+    "h1:8ZYjDZc+RMO9vFxOPXjc4PEZimV9gMKk1vxDPjc+TZQ=",
     "h1:NiXi1gn1BH2tk1MIqgl6hQotwVe8FN8RJqvE7ix+EWs=",
     "zh:1d2d165662d36dae0aacb478a6bae055546979dea58ee3762dd7d398b7f60e8c",
     "zh:3a118d3c123eab3e26c33821607d2f70f9e317d3d33289f9d615e4b6d353b877",
@@ -51,6 +53,7 @@ provider "registry.opentofu.org/tailscale/tailscale" {
   constraints = "0.17.2"
   hashes = [
     "h1:0bZpffptYi/bXOXEnFjUYD6UwaR4vqUdMULdeeBhz84=",
+    "h1:Hb7w+ibr6O6jvQSJbLAH0DI/r7sgnkxKLiAofAjEzpQ=",
     "zh:13d21db507bfb17018005c5c4f19314591a5734c76bcd51ab6e80984164c2a71",
     "zh:13dbb3d978aca16f66c49596e5a38d236264d10a66879dc0d06839aca9cdad3f",
     "zh:1589a8b006da14d60e3fcd55fbc465ccdce7a99e833b6a7455fbf81be59f07f3",

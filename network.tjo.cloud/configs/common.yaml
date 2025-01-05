@@ -10,6 +10,7 @@ firewall:
       - 465  # ESMTP (implicit TLS)
       - 587  # ESMTP (explicit TLS => STARTTLS)
       - 993  # IMAP4 (implicit TLS)
+      - 1337 # HTTP ingress.tjo.cloud healthcheck
       - 4190 # MANAGE SIEVE
 
 bgp:

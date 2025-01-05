@@ -9,15 +9,14 @@
     "tflint@latest",
     "age@latest",
     "tenv@latest",
-    "gomplate@latest"
+    "gomplate@latest",
+    "just@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"
   },
   "shell": {
-    "init_hook": [
-    ],
-    "scripts": {
-    }
+    "init_hook": [],
+    "scripts":   {}
   }
 }

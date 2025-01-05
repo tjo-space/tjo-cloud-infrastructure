@@ -31,7 +31,45 @@ test -z "${DNSIMPLE_ACCOUNT_ID}" && error "DNSIMPLE_ACCOUNT_ID not set!"
 test -z "${DOMAIN}" && error "DOMAIN not set!"
 test -z "${CLOUD_REGION}" && error "CLOUD_REGION not set!"
 
-dns_list="$api_host/$DNSIMPLE_ACCOUNT_ID/zones/$DOMAIN/records"
+base_zone_url="$api_host/$DNSIMPLE_ACCOUNT_ID/zones/$DOMAIN/records"
+
+dnsimple_list_record() {
+  curl -s -X GET \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+    "$base_zone_url"
+}
+
+dnsimple_create_record() {
+  local data="$1"
+
+  curl -s -X POST \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+    -d "$data" \
+    "$base_zone_url"
+}
+
+dnsimple_update_record() {
+  local record="$1"
+  local data="$2"
+
+  curl -s -X PATCH \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+    -d "$data" \
+    "$base_zone_url/$record" &>/dev/null
+}
+
+dnsimeple_delete_record() {
+  local record="$1"
+
+  curl -s -X DELETE \
+    -H "Content-Type: application/json" \
+    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
+    "$base_zone_url/$record" &>/dev/null
+
+}
 
 configure_single() {
   # disable glob expansion
@@ -52,10 +90,7 @@ configure_single() {
     record_data=$(echo "$record_data" | head -1)
 
     while IFS= read -r line; do
-      curl -s -X DELETE \
-        -H "Content-Type: application/json" \
-        -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-        "$dns_list/$line" &>/dev/null
+      dnsimeple_delete_record "$line"
     done <<<"$record_id_to_delete"
   fi
 
@@ -63,28 +98,17 @@ configure_single() {
   set +f
 
   data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
-  url="$dns_list/$record_id"
 
   if [[ -z $record_id ]]; then
-    info "domain=$domain type=$type No record found. Creating record, sending data=$data to url=$url"
+    info "domain=$domain type=$type No record found. Creating record."
 
-    new_record=$(curl -s -X POST \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-      -d "$data" \
-      "$url")
-
-    record_data=$(echo "$new_record" | jq -r ".data")
+    record_data=$(dnsimple_create_record "$data" | jq -r ".data")
   fi
 
   if [[ "$ip" != "$record_data" ]]; then
-    info "domain=$domain type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip), sending data=$data to url=$url"
+    info "domain=$domain type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip)"
 
-    curl -s -X PATCH \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-      -d "$data" \
-      "$url" &>/dev/null
+    dnsimple_update_record "$record_id" "$data"
   else
     info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating"
   fi
@@ -106,31 +130,28 @@ configure_many() {
   set +f
 
   data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
-  url="$dns_list/$record_id"
+  url="$base_zone_url/$record_id"
 
   if [[ -z $record_id ]]; then
-    info "domain=$domain type=$type No record found. Creating record, sending data=$data to url=$url"
+    info "domain=$domain type=$type No record found. Creating record."
 
-    new_record=$(curl -s -X POST \
-      -H "Content-Type: application/json" \
-      -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-      -d "$data" \
-      "$url")
-
-    record_data=$(echo "$new_record" | jq -r ".data")
+    record_data=$(dnsimple_create_record "$data" | jq -r ".data")
   else
-    info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating"
+    info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating."
   fi
 }
 
+healthcheck() {
+  local ip="$1"
+
+  curl -s -f -o /dev/null "http://$ip" || error "Healthcheck failed"
+}
+
 while (true); do
-  domain_records=$(curl -s -X GET \
-    -H "Content-Type: application/json" \
-    -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
-    "$dns_list")
+  domain_records=$(dnsimple_list_record)
 
   for service in "${services[@]}"; do
-    info "Trying with $service..."
+    info "Discovering public IP with $service..."
 
     ipv4="$(curl -4 -s -f --connect-timeout 2 "$service" || echo "")"
     ipv6="$(curl -6 -s -f --connect-timeout 2 "$service" || echo "")"
@@ -147,7 +168,7 @@ while (true); do
   else
     info "Found IPv4 address $ipv4"
     configure_single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
-    configure_many   "$domain_records" "any"           "$ipv4" "A"
+    configure_many "$domain_records" "any" "$ipv4" "A"
   fi
 
   if [[ -z $ipv6 ]]; then
@@ -155,7 +176,7 @@ while (true); do
   else
     info "Found IPv6 address $ipv6"
     configure_single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
-    configure_many   "$domain_records" "any"           "$ipv6" "AAAA"
+    configure_many "$domain_records" "any" "$ipv6" "AAAA"
   fi
 
   sleep "$sleep_interval"
