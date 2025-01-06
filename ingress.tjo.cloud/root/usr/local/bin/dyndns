@@ -5,6 +5,7 @@ set -euo pipefail
 api_host="https://api.dnsimple.com/v2"
 sleep_interval=${SLEEP_INTERVAL:-300}
 record_ttl=${RECORD_TTL:-600}
+destructive=${DESTRUCTIVE:-false}
 
 # Only services with ipv6 supported are listed here.
 # And are not using cloudflare or similar services
@@ -64,6 +65,11 @@ dnsimple_update_record() {
 dnsimeple_delete_record() {
   local record="$1"
 
+  if [[ "$destructive" == "false" ]]; then
+    warn "record=$record Record deletion is disabled. Set DESTRUCTIVE=true to enable."
+    return
+  fi
+
   curl -s -X DELETE \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
@@ -84,12 +90,13 @@ configure_single() {
   record_data=$(echo "$domain_records" | jq -r ".data[] | select(.type == \"$type\" and .name == \"$domain\") | .content")
 
   if [ "$(echo "$record_id" | wc -l)" -ge 2 ]; then
-    warn "domain=$domain type=$type Domain name has duplicate DNS records, removing duplicates"
+    warn "domain=$domain type=$type Domain name has duplicate DNS records, removing duplicates."
     record_id_to_delete=$(echo "$record_id" | tail -n +2)
     record_id=$(echo "$record_id" | head -1)
     record_data=$(echo "$record_data" | head -1)
 
     while IFS= read -r line; do
+      warn "domain=$domain type=$type record=$line Deleting record"
       dnsimeple_delete_record "$line"
     done <<<"$record_id_to_delete"
   fi
@@ -101,13 +108,9 @@ configure_single() {
 
   if [[ -z $record_id ]]; then
     info "domain=$domain type=$type No record found. Creating record."
-
-    record_data=$(dnsimple_create_record "$data" | jq -r ".data")
-  fi
-
-  if [[ "$ip" != "$record_data" ]]; then
+    dnsimple_create_record "$data"
+  elif [[ "$ip" != "$record_data" ]]; then
     info "domain=$domain type=$type Existing DNS record address ($record_data) doesn't match current IP ($ip)"
-
     dnsimple_update_record "$record_id" "$data"
   else
     info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating"
@@ -130,12 +133,10 @@ configure_many() {
   set +f
 
   data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
-  url="$base_zone_url/$record_id"
 
   if [[ -z $record_id ]]; then
     info "domain=$domain type=$type No record found. Creating record."
-
-    record_data=$(dnsimple_create_record "$data" | jq -r ".data")
+    dnsimple_create_record "$data"
   else
     info "domain=$domain type=$type Existing DNS record address ($record_data) did not need updating."
   fi
@@ -147,11 +148,11 @@ healthcheck() {
   code=$(curl -s -o /dev/null -I -w '%{http_code}' "http://$ip:1337/healthz" || echo "")
 
   if [[ "$code" != "200" ]]; then
-    warn "Healthcheck failed for $ip. Got $code"
+    warn "ip=$ip code=$code Healthcheck failed."
     return 1
   fi
 
-  info "Healthcheck passed for $ip"
+  info "ip=$ip code=$code Healthcheck passed."
   return 0
 }
 
@@ -159,7 +160,7 @@ while (true); do
   domain_records=$(dnsimple_list_record)
 
   for service in "${services[@]}"; do
-    info "Discovering public IP with $service..."
+    info "service=$service Discovering public IP address..."
 
     ipv4="$(curl -4 -s -f --connect-timeout 2 "$service" || echo "")"
     ipv6="$(curl -6 -s -f --connect-timeout 2 "$service" || echo "")"
@@ -167,12 +168,12 @@ while (true); do
     if [[ -n "$ipv4$ipv6" ]]; then
       break
     else
-      warn "Failed to retrieve IP from $service"
+      warn "service=$service Failed to retrieve IP address."
     fi
   done
 
   if [[ -z $ipv4 ]]; then
-    warn "IPv4 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
+    warn "IPv4 address wasn't found." 
   else
     info "Found IPv4 address $ipv4"
     if healthcheck "$ipv4"; then
@@ -182,7 +183,7 @@ while (true); do
   fi
 
   if [[ -z $ipv6 ]]; then
-    warn "IPv6 wasn't retrieved within allowed interval. Will try $sleep_interval seconds later.."
+    warn "IPv6 address wasn't found." 
   else
     info "Found IPv6 address $ipv6"
     if healthcheck "[$ipv6]"; then
@@ -191,8 +192,32 @@ while (true); do
     fi
   fi
 
-  # TODO: Check other domain_records,
-  #       and remove any records that are not healthy.
+  info "type=A Checking for stale records..."
+  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == "A" and .name != "$CLOUD_REGION") | .name"); do
+    info "type=A domain=$domain Checking..."
+    record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
+    if ! healthcheck "$record_ip"; then
+      warn "type=A domain=$domain Unhealthy..."
+      dnsimeple_delete_record "$record_id"
+    else
+      info "type=A domain=$domain Healthy..."
+    fi
+  done
 
+  info "type=AAAA Checking for stale records..."
+  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == "AAAA" and .name != "$CLOUD_REGION") | .name"); do
+    info "type=AAAA domain=$domain Checking..."
+    record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
+    if ! healthcheck "$record_ip"; then
+      warn "type=AAAA domain=$domain Unhealthy."
+      dnsimeple_delete_record "[$record_id]"
+    else
+      info "type=AAAA domain=$domain Healthy."
+    fi  
+  done
+
+  info "Sleeping for $sleep_interval seconds..."
   sleep "$sleep_interval"
 done
