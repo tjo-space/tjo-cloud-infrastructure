@@ -72,13 +72,14 @@ dnsimple::record::delete() {
   if [[ "$destructive" == "false" ]]; then
     log::warn "record=$record Record deletion is disabled. Set DESTRUCTIVE=true to enable."
     return
+  else
+    log::warn "record=$record Deleting record..."
   fi
 
   curl -s -X DELETE \
     -H "Content-Type: application/json" \
     -H "Authorization: Bearer $DNSIMPLE_TOKEN" \
     "$base_zone_url/$record" &>/dev/null
-
 }
 
 configure::single() {
@@ -175,8 +176,11 @@ while (true); do
   else
     log::info "type=A ip=$ipv4 Found IPv4 address."
     if healthcheck "$ipv4"; then
+      log::info "type=A ip=$ipv4 Healthcheck passed."
       configure::single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
       configure::many "$domain_records" "any" "$ipv4" "A"
+    else
+      log::warn "type=A ip=$ipv4 Healthcheck failed."
     fi
 
     log::info "type=A Checking for stale records..."
@@ -185,7 +189,7 @@ while (true); do
       record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == $record_id) | .content")
       log::info "type=A domain=$record_name ip=$record_ip Checking..."
       if ! healthcheck "$record_ip"; then
-        log::warn "type=A domain=$record_name ip=$record_ip Unhealthy..."
+        log::warn "type=A domain=$record_name ip=$record_ip Unhealthy, will delete record..."
         dnsimple::record::delete "$record_id"
       else
         log::info "type=A domain=$record_name ip=$record_ip Healthy..."
@@ -198,8 +202,11 @@ while (true); do
   else
     log::info "type=AAAA ip=$ipv6 Found IPv6 address"
     if healthcheck "[$ipv6]"; then
+      log::info "type=AAAA ip=$ipv6 Healthcheck passed."
       configure::single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
       configure::many "$domain_records" "any" "$ipv6" "AAAA"
+    else
+      log::warn "type=AAAA ip=$ipv6 Healthcheck failed."
     fi
 
     log::info "type=AAAA Checking for stale records..."
@@ -208,7 +215,7 @@ while (true); do
       record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == $record_id) | .content")
       log::info "type=AAAA domain=$record_name ip=$record_ip Checking..."
       if ! healthcheck "[$record_ip]"; then
-        log::warn "type=AAAA domain=$record_name ip=$record_ip Unhealthy..."
+        log::warn "type=AAAA domain=$record_name ip=$record_ip Unhealthy, will delete record..."
         dnsimple::record::delete "$record_id"
       else
         log::info "type=AAAA domain=$record_name ip=$record_ip Healthy..."
