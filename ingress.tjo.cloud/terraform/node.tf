@@ -62,6 +62,9 @@ resource "proxmox_virtual_environment_file" "userdata" {
       - qemu-guest-agent
     power_state:
       mode: reboot
+    swap:
+      filename: /swapfile
+      size: 512M
     runcmd:
       - git clone --depth 1 --no-checkout --filter=tree:0 https://github.com/tjo-space/tjo-cloud-infrastructure.git /srv
       - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
