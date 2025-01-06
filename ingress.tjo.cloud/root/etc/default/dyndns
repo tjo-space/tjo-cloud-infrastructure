@@ -7,5 +7,8 @@
 # The domain your subdomain is registered at. (i.e. foo.com for home.foo.com)
 DOMAIN=ingress.tjo.cloud
 
+# Enable to make DELETE requests.
+DESTRUCTIVE=true
+
 # Account ID
 DNSIMPLE_ACCOUNT_ID=155200
