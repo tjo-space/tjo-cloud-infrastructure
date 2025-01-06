@@ -198,7 +198,7 @@ while (true); do
   fi
 
   log::info "type=A Checking for stale records..."
-  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == "A" and .name != "$CLOUD_REGION") | .name"); do
+  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .name"); do
     log::info "type=A domain=$domain Checking..."
     record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
     record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
@@ -211,7 +211,7 @@ while (true); do
   done
 
   log::info "type=AAAA Checking for stale records..."
-  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == "AAAA" and .name != "$CLOUD_REGION") | .name"); do
+  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .name"); do
     log::info "type=AAAA domain=$domain Checking..."
     record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
     record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
