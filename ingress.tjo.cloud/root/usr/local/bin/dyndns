@@ -198,29 +198,29 @@ while (true); do
   fi
 
   log::info "type=A Checking for stale records..."
-  echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .name" | while read -r domain; do
-    record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
-    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
-    log::info "type=A domain=$domain ip=$record_ip Checking..."
+  echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .id" | while read -r record_id; do
+    record_name=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .name")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$domain\") | .content")
+    log::info "type=A domain=$record_name ip=$record_ip Checking..."
     if ! healthcheck "$record_ip"; then
-      log::warn "type=A domain=$domain ip=$record_ip Unhealthy..."
+      log::warn "type=A domain=$record_name ip=$record_ip Unhealthy..."
       dnsimple::record::delete "$record_id"
     else
-      log::info "type=A domain=$domain ip=$record_ip Healthy..."
+      log::info "type=A domain=$record_name ip=$record_ip Healthy..."
     fi
   done
 
   log::info "type=AAAA Checking for stale records..."
-  echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .name" | while read -r domain; do
-    record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
-    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
-    log::info "type=AAAA domain=$domain ip=$record_ip Checking..."
+  echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .id" | while read -r record_id; do
+    record_name=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .name")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$domain\") | .content")
+    log::info "type=AAAA domain=$record_name ip=$record_ip Checking..."
     if ! healthcheck "[$record_ip]"; then
-      log::warn "type=AAAA domain=$domain ip=$record_ip Unhealthy."
+      log::warn "type=AAAA domain=$record_name ip=$record_ip Unhealthy..."
       dnsimple::record::delete "$record_id"
     else
-      log::info "type=AAAA domain=$domain ip=$record_ip Healthy."
-    fi  
+      log::info "type=AAAA domain=$record_name ip=$record_ip Healthy..."
+    fi
   done
 
   log::info "Sleeping for $sleep_interval seconds..."
