@@ -14,6 +14,10 @@ services=(
   "ifconfig.io"
 )
 
+debug() {
+  echo "DEBUG: $1"
+}
+
 info() {
   echo "INFO: $1"
 }
@@ -158,6 +162,7 @@ healthcheck() {
 
 while (true); do
   domain_records=$(dnsimple_list_record)
+  debug "domain_records=$domain_records"
 
   for service in "${services[@]}"; do
     info "service=$service Discovering public IP address..."
