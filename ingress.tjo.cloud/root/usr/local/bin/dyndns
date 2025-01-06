@@ -178,9 +178,9 @@ while (true); do
   done
 
   if [[ -z $ipv4 ]]; then
-    log::warn "IPv4 address wasn't found." 
+    log::warn "type=A IPv4 address wasn't found." 
   else
-    log::info "Found IPv4 address $ipv4"
+    log::info "type=A ip=$ipv4 Found IPv4 address."
     if healthcheck "$ipv4"; then
       configure::single "$domain_records" "$CLOUD_REGION" "$ipv4" "A"
       configure::many "$domain_records" "any" "$ipv4" "A"
@@ -188,9 +188,9 @@ while (true); do
   fi
 
   if [[ -z $ipv6 ]]; then
-    log::warn "IPv6 address wasn't found." 
+    log::warn "type=AAAA IPv6 address wasn't found." 
   else
-    log::info "Found IPv6 address $ipv6"
+    log::info "type=AAAA ip=$ipv6 Found IPv6 address"
     if healthcheck "[$ipv6]"; then
       configure::single "$domain_records" "$CLOUD_REGION" "$ipv6" "AAAA"
       configure::many "$domain_records" "any" "$ipv6" "AAAA"
@@ -198,28 +198,28 @@ while (true); do
   fi
 
   log::info "type=A Checking for stale records..."
-  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .name"); do
-    log::info "type=A domain=$domain Checking..."
+  echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .name" | while read -r domain; do
     record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
     record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
+    log::info "type=A domain=$domain ip=$record_ip Checking..."
     if ! healthcheck "$record_ip"; then
-      log::warn "type=A domain=$domain Unhealthy..."
+      log::warn "type=A domain=$domain ip=$record_ip Unhealthy..."
       dnsimple::record::delete "$record_id"
     else
-      log::info "type=A domain=$domain Healthy..."
+      log::info "type=A domain=$domain ip=$record_ip Healthy..."
     fi
   done
 
   log::info "type=AAAA Checking for stale records..."
-  for domain in $(echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .name"); do
-    log::info "type=AAAA domain=$domain Checking..."
+  echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .name" | while read -r domain; do
     record_id=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .id")
     record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.name == \"$domain\") | .content")
-    if ! healthcheck "$record_ip"; then
-      log::warn "type=AAAA domain=$domain Unhealthy."
-      dnsimple::record::delete "[$record_id]"
+    log::info "type=AAAA domain=$domain ip=$record_ip Checking..."
+    if ! healthcheck "[$record_ip]"; then
+      log::warn "type=AAAA domain=$domain ip=$record_ip Unhealthy."
+      dnsimple::record::delete "$record_id"
     else
-      log::info "type=AAAA domain=$domain Healthy."
+      log::info "type=AAAA domain=$domain ip=$record_ip Healthy."
     fi  
   done
 
