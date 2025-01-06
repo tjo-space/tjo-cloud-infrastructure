@@ -126,6 +126,7 @@ ufw allow 443  # HTTPS
 ufw allow 465  # EMAIL
 ufw allow 587  # EMAIL
 ufw allow 993  # EMAIL
+ufw allow 1337 # HTTP (healthcheck)
 ufw allow 4190 # EMAIL
 
 ufw allow 2222 # SSH ACCESS
@@ -137,5 +138,6 @@ systemctl enable ufw
 echo "== Configure NGINX"
 cp assets/dbip-city-lite-2023-07.mmdb /var/geoip.mmdb
 cp -r root/etc/nginx/* /etc/nginx/
+unlink /etc/nginx/sites-enabled/default || true
 systemctl enable --now nginx
 systemctl reload nginx
