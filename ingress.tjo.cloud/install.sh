@@ -36,7 +36,6 @@ DNSIMPLE_TOKEN=$(jq -r ".dnsimple.token" /etc/tjo.cloud/meta.json)
 ##
 echo "== Install Dependencies"
 apt update -y
-
 apt install -y \
   gpg \
   git \

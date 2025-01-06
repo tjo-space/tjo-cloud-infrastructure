@@ -122,9 +122,6 @@ configure::single() {
 }
 
 configure::many() {
-  # disable glob expansion
-  set -f
-
   domain_records=$1
   domain=$2
   ip=$3
@@ -132,9 +129,6 @@ configure::many() {
 
   record_id=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content == \"$ip\") | .id")
   record_data=$(echo "$domain_records" | jq ".data[] | select(.type == \"$type\" and .name == \"$domain\" and .content == \"$ip\") | .content")
-
-  # re-enable glob expansion
-  set +f
 
   data="{\"type\": \"$type\", \"name\": \"$domain\", \"content\": \"$ip\", \"ttl\": $record_ttl}"
 
@@ -200,7 +194,7 @@ while (true); do
   log::info "type=A Checking for stale records..."
   echo "$domain_records" | jq -r ".data[] | select(.type == \"A\" and .name != \"$CLOUD_REGION\") | .id" | while read -r record_id; do
     record_name=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .name")
-    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$domain\") | .content")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .content")
     log::info "type=A domain=$record_name ip=$record_ip Checking..."
     if ! healthcheck "$record_ip"; then
       log::warn "type=A domain=$record_name ip=$record_ip Unhealthy..."
@@ -213,7 +207,7 @@ while (true); do
   log::info "type=AAAA Checking for stale records..."
   echo "$domain_records" | jq -r ".data[] | select(.type == \"AAAA\" and .name != \"$CLOUD_REGION\") | .id" | while read -r record_id; do
     record_name=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .name")
-    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$domain\") | .content")
+    record_ip=$(echo "$domain_records" | jq -r ".data[] | select(.id == \"$record_id\") | .content")
     log::info "type=AAAA domain=$record_name ip=$record_ip Checking..."
     if ! healthcheck "[$record_ip]"; then
       log::warn "type=AAAA domain=$record_name ip=$record_ip Unhealthy..."
