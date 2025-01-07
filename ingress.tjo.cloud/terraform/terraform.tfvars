@@ -52,6 +52,8 @@ ssh_keys = [
 zones = [
   "tjo.space",
   "tjo.cloud",
+  # Used for automated A and AAAA records creation.
+  "ingress.tjo.cloud",
 ]
 
 records = {
