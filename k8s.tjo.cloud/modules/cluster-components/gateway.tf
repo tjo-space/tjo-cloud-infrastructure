@@ -18,7 +18,7 @@ resource "kubernetes_manifest" "tjo-cloud-issuer" {
             dns01 = {
               webhook = {
                 solverName = "dnsimple"
-                groupName = "acme.dnsimple.com"
+                groupName  = "acme.dnsimple.com"
                 config = {
                   tokenSecretRef = {
                     name = kubernetes_secret.dnsimple.metadata[0].name

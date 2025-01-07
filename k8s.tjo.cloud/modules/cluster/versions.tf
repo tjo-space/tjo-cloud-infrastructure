@@ -15,7 +15,7 @@ terraform {
       version = "1.4.0"
     }
     dnsimple = {
-      source = "dnsimple/dnsimple"
+      source  = "dnsimple/dnsimple"
       version = "1.8.0"
     }
     random = {

@@ -10,7 +10,7 @@ resource "kubernetes_secret" "dnsimple" {
     namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
   }
   data = {
-    token = var.dnsimple_token
+    token      = var.dnsimple_token
     account_id = var.dnsimple_account_id
   }
 }

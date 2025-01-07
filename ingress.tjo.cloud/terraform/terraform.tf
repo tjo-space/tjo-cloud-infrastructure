@@ -12,9 +12,18 @@ terraform {
       source  = "tailscale/tailscale"
       version = "0.17.2"
     }
+    dnsimple = {
+      source  = "dnsimple/dnsimple"
+      version = "1.8.0"
+    }
   }
 
   required_version = "~> 1.7.3"
+}
+
+provider "dnsimple" {
+  token   = var.dnsimple_token
+  account = var.dnsimple_account_id
 }
 
 provider "authentik" {

@@ -15,7 +15,7 @@ locals {
           auth_key = tailscale_tailnet_key.key.key
         }
         dnsimple = {
-          token    = var.dnsimple_token
+          token = var.dnsimple_token
         }
       }
     })

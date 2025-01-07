@@ -108,7 +108,7 @@ module "cluster-components" {
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
 
-  dnsimple_token = var.dnsimple_token
+  dnsimple_token      = var.dnsimple_token
   dnsimple_account_id = var.dnsimple_account_id
 
   cluster_name   = module.cluster.name

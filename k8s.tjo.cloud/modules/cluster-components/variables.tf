@@ -1,8 +1,3 @@
-variable "cluster_name" {
-  description = "Name of the cluster."
-  type        = string
-}
-
 variable "cluster_domain" {
   description = "Domain of the cluster."
   type        = string
@@ -21,5 +16,5 @@ variable "dnsimple_token" {
 }
 
 variable "dnsimple_account_id" {
-  type      = string
+  type = string
 }

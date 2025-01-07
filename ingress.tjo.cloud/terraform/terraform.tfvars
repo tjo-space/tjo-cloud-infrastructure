@@ -48,3 +48,48 @@ nodes = {
 ssh_keys = [
   "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXAlzwziqfUUb2qmFwNF/nrBYc5MNT1MMOx81ohBmB+ tine@little.sys.tjo.space"
 ]
+
+zones = [
+  "tjo.space",
+  "tjo.cloud",
+]
+
+records = {
+  # TJO.SPACE
+  "tjo.space"      = { to = "any.ingress.tjo.cloud" }
+  "id.tjo.space"   = { to = "any.ingress.tjo.cloud" }
+  "code.tjo.space" = { to = "any.ingress.tjo.cloud" }
+  # mail.tjo.space requires specific ports to be accessible,
+  # which is often not the case for home internet providers.
+  # so we should only ever use "cloud" ingresses.
+  "mail.tjo.space"      = { to = "nevaroo.ingress.tjo.cloud" }
+  "paperless.tjo.space" = { to = "any.ingress.tjo.cloud" }
+  "penpot.tjo.space"    = { to = "any.ingress.tjo.cloud" }
+  "rss.tjo.space"       = { to = "any.ingress.tjo.cloud" }
+  "search.tjo.space"    = { to = "any.ingress.tjo.cloud" }
+  "send.tjo.space"      = { to = "any.ingress.tjo.cloud" }
+  "status.tjo.space"    = { to = "tjo-space.github.io", type = "CNAME" }
+  "stuff.tjo.space"     = { to = "any.ingress.tjo.cloud" }
+  "vault.tjo.space"     = { to = "any.ingress.tjo.cloud" }
+  "yt.tjo.space"        = { to = "any.ingress.tjo.cloud" }
+  # CLOUD.TJO.SPACE
+  "cloud.tjo.space"     = { to = "any.ingress.tjo.cloud" }
+  "collabora.tjo.space" = { to = "any.ingress.tjo.cloud" }
+  # CHAT.TJO.SPACE
+  "chat.tjo.space"         = { to = "any.ingress.tjo.cloud" }
+  "matrix.chat.tjo.space"  = { to = "any.ingress.tjo.cloud" }
+  "webhook.chat.tjo.space" = { to = "any.ingress.tjo.cloud" }
+  "turn.chat.tjo.space"    = { to = "any.ingress.tjo.cloud" }
+  # MEDIA.TJO.SPACE
+  "media.tjo.space"   = { to = "any.ingress.tjo.cloud" }
+  "*.media.tjo.space" = { to = "any.ingress.tjo.cloud" }
+  # TJO.CLOUD
+  "grpc.otel.monitor.tjo.cloud"  = { to = "any.ingress.tjo.cloud" }
+  "http.otel.monitor.tjo.cloud"  = { to = "any.ingress.tjo.cloud" }
+  "loki.monitor.tjo.cloud"       = { to = "any.ingress.tjo.cloud" }
+  "prometheus.monitor.tjo.cloud" = { to = "any.ingress.tjo.cloud" }
+  "monitor.tjo.cloud"            = { to = "any.ingress.tjo.cloud" }
+  "postgresql.tjo.cloud"         = { to = "any.ingress.tjo.cloud" }
+  "proxmox.tjo.cloud"            = { to = "any.ingress.tjo.cloud" }
+  "vault.tjo.cloud"              = { to = "any.ingress.tjo.cloud" }
+}

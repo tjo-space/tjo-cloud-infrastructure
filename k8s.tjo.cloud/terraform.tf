@@ -13,7 +13,7 @@ terraform {
       version = "1.4.0"
     }
     dnsimple = {
-      source = "dnsimple/dnsimple"
+      source  = "dnsimple/dnsimple"
       version = "1.8.0"
     }
     random = {
@@ -69,7 +69,7 @@ provider "proxmox" {
 }
 
 provider "dnsimple" {
-  token = var.dnsimple_token
+  token   = var.dnsimple_token
   account = var.dnsimple_account_id
 }
 

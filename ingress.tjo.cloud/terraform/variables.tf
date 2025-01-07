@@ -19,6 +19,20 @@ variable "nodes" {
   }))
 }
 
+variable "zones" {
+  type = set(string)
+}
+
+variable "records" {
+  type = map(object({
+    to   = string
+    ttl  = optional(number, 600)
+    type = optional(string, "ALIAS")
+  }))
+}
+
+
+
 variable "ssh_keys" {
   type = list(string)
 }
@@ -42,3 +56,8 @@ variable "dnsimple_token" {
   type      = string
   sensitive = true
 }
+
+variable "dnsimple_account_id" {
+  type = string
+}
+
