@@ -94,4 +94,5 @@ records = {
   "postgresql.tjo.cloud"         = { to = "any.ingress.tjo.cloud" }
   "proxmox.tjo.cloud"            = { to = "any.ingress.tjo.cloud" }
   "vault.tjo.cloud"              = { to = "any.ingress.tjo.cloud" }
+  "backup.tjo.cloud"             = { to = "u409586.your-storagebox.de", type = "CNAME" }
 }
