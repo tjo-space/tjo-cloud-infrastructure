@@ -55,6 +55,10 @@ locals {
           contents = data.helm_template.proxmox-csi.manifest
         },
         {
+          name     = "hubrid-csi-plugin"
+          contents = data.helm_template.hybrid-csi.manifest
+        },
+        {
           name     = "gateway-api-crds"
           contents = file("${path.module}/manifests/gateway-api.crds.yaml")
         },
@@ -162,8 +166,35 @@ locals {
                     peerConfigRef:
                       name: "default"
           EOF
-          }
-        ]
+        }],
+        [for name, attributes in var.hosts : {
+          name     = "proxmox-cni-storage-class-${name}"
+          contents = <<-EOF
+          apiVersion: storage.k8s.io/v1
+          kind: StorageClass
+          metadata:
+            name: ${name}
+          annotations:
+            k8s.tjo.cloud/host: ${name}
+            k8s.tjo.cloud/proxmox: ${var.proxmox.name}
+          parameters:
+            storage: ${attributes.storage}
+            csi.storage.k8s.io/fstype: ext4
+            cache: none
+          provisioner: csi.proxmox.sinextra.dev
+          allowVolumeExpansion: true
+          reclaimPolicy: Delete
+          volumeBindingMode: WaitForFirstConsumer
+          allowedTopologies:
+          - matchLabelExpressions:
+            - key: topology.kubernetes.io/region
+              values:
+              - ${var.proxmox.name}
+            - key: topology.kubernetes.io/zone
+              values:
+              - ${name}
+          EOF
+        }],
       )
     }
   }

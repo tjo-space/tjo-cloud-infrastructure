@@ -111,23 +111,6 @@ data "helm_template" "proxmox-csi" {
           token_secret: "${split("=", proxmox_virtual_environment_user_token.csi.value)[1]}"
           region: "${var.proxmox.name}"
 
-    storageClass:
-      - name: proxmox-local-nvme
-        storage: local-nvme
-        reclaimPolicy: Delete
-        fstype: ext4
-        cache: none
-      - name: proxmox-local
-        storage: local
-        reclaimPolicy: Delete
-        fstype: ext4
-        cache: none
-      - name: proxmox-local-nvme-lvm
-        storage: local-nvme-lvm
-        reclaimPolicy: Delete
-        fstype: ext4
-        cache: none
-
     nodeSelector:
       node-role.kubernetes.io/control-plane: ""
       node.cloudprovider.kubernetes.io/platform: nocloud
@@ -141,6 +124,27 @@ data "helm_template" "proxmox-csi" {
       tolerations:
         - key: node-role.kubernetes.io/control-plane
           effect: NoSchedule
+  EOF
+  ]
+}
+
+data "helm_template" "hybrid-csi" {
+  provider = helm.template
+
+  name       = "hybrid-csi-plugin"
+  chart      = "hybrid-csi-plugin"
+  repository = "oci://ghcr.io/sergelogvinov/charts"
+  version    = "0.1.5"
+  namespace  = "kube-system"
+
+  kube_version = var.talos.kubernetes
+
+  values = [<<-EOF
+    nodeSelector:
+      node-role.kubernetes.io/control-plane: ""
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
   EOF
   ]
 }
