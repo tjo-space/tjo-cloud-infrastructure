@@ -37,7 +37,7 @@ resource "proxmox_virtual_environment_download_file" "ubuntu" {
   datastore_id = each.value.iso_storage
   node_name    = each.value.host
   url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-  overwrite    = false
+  overwrite    = true
 }
 
 resource "proxmox_virtual_environment_file" "userdata" {
@@ -70,7 +70,7 @@ resource "proxmox_virtual_environment_file" "userdata" {
       - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
       - /srv/ingress.tjo.cloud/install.sh
     EOF
-    file_name = "${each.value.host}.ingress.tjo.cloud.userconfig.yaml"
+    file_name = "${each.value.host}.${each.value.domain}.userconfig.yaml"
   }
 }
 
@@ -82,9 +82,9 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   node_name = each.value.host
 
   description = <<EOT
-An ingress.tjo.cloud instance for ${each.value.host}.
+An ${each.value.domain} instance for ${each.value.host}.
 
-Repo: https://code.tjo.space/tjo-cloud/ingress
+Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
   EOT
 
   tags = [each.value.domain]
