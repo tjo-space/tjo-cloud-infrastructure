@@ -82,6 +82,8 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   timeout_reboot      = 60
   timeout_create      = 120
 
+  boot_order = ["virtio0", "ide3", "net0"]
+
   cpu {
     cores = each.value.cores
     type  = "host"
