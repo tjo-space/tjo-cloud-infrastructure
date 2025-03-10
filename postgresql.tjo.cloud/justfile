@@ -1,0 +1,56 @@
+default:
+  @just --list
+
+apply:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu apply
+
+apply-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+destroy:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu  destroy
+
+destroy-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+configure:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  popd > /dev/null
+
+  for NODE in $NODES
+  do
+    echo "= Provisioning node ${NODE}"
+    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+  done
+
+configure-only node:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  popd > /dev/null
+
+  for NODE in $NODES
+  do
+    if [ "$NODE" = "{{node}}-ingress-tjo-cloud" ]
+    then
+      echo "= Provisioning node ${NODE}"
+      cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+    fi
+  done
