@@ -21,7 +21,7 @@ else
 fi
 
 echo "=== Copy Configuration Files"
-rsync -a id.tjo.space/root/ /
+rsync -a id.tjo.cloud/root/ /
 systemctl daemon-reload
 
 echo "=== Prepare srv directories"

@@ -59,7 +59,6 @@ zones = [
 records = {
   # TJO.SPACE
   "tjo.space"      = { to = "any.ingress.tjo.cloud" }
-  "id.tjo.space"   = { to = "any.ingress.tjo.cloud" }
   "code.tjo.space" = { to = "any.ingress.tjo.cloud" }
   # mail.tjo.space requires specific ports to be accessible,
   # which is often not the case for home internet providers.

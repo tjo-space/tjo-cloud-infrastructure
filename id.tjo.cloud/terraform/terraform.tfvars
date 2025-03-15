@@ -8,10 +8,10 @@ domain = {
 }
 
 additional_domains = [
-  #{
-  #  name = "id.tjo.space"
-  #  zone = "tjo.space"
-  #}
+  {
+    name = "id.tjo.space"
+    zone = "tjo.space"
+  }
 ]
 
 ssh_keys = {

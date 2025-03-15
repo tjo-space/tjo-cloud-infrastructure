@@ -1,5 +1,5 @@
 locals {
-  domain = "ingress.tjo.cloud"
+  domain = "postgresql.tjo.cloud"
 
   nodes = {
     for k, v in var.nodes : k => merge(v, {
@@ -11,23 +11,9 @@ locals {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
         }
-        tailscale = {
-          auth_key = tailscale_tailnet_key.key.key
-        }
-        dnsimple = {
-          token = var.dnsimple_token
-        }
       }
     })
   }
-}
-
-resource "tailscale_tailnet_key" "key" {
-  reusable      = true
-  ephemeral     = false
-  preauthorized = true
-  description   = "ingress-tjo-cloud terraform key"
-  tags          = ["tag:ingress-tjo-cloud"]
 }
 
 resource "proxmox_virtual_environment_download_file" "ubuntu" {
@@ -57,6 +43,9 @@ resource "proxmox_virtual_environment_file" "userdata" {
     - path: /etc/tjo.cloud/meta.json
       encoding: base64
       content: ${base64encode(jsonencode(each.value.meta))}
+    - path: /tmp/provision.sh
+      encoding: base64
+      content: ${base64encode(file("${path.module}/../install.sh"))}
     ssh_authorized_keys: ${jsonencode(var.ssh_keys)}
     packages:
       - qemu-guest-agent
@@ -66,9 +55,9 @@ resource "proxmox_virtual_environment_file" "userdata" {
       filename: /swapfile
       size: 512M
     runcmd:
-      - git clone --depth 1 --no-checkout --filter=tree:0 https://github.com/tjo-space/tjo-cloud-infrastructure.git /srv
-      - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
-      - /srv/ingress.tjo.cloud/install.sh
+      - "chmod +x /tmp/provision.sh"
+      - "/tmp/provision.sh"
+      - "rm /tmp/provision.sh"
     EOF
     file_name = "${each.value.host}.${each.value.domain}.userconfig.yaml"
   }
@@ -84,7 +73,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   description = <<EOT
 An ${each.value.domain} instance for ${each.value.host}.
 
-Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
+Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
   EOT
 
   tags = [each.value.domain]
@@ -127,6 +116,15 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
     interface    = "virtio0"
     datastore_id = each.value.boot_storage
     size         = each.value.boot_size
+    backup       = true
+    cache        = "none"
+    iothread     = true
+  }
+
+  disk {
+    interface    = "virtio1"
+    datastore_id = each.value.data_storage
+    size         = each.value.data_size
     backup       = true
     cache        = "none"
     iothread     = true
