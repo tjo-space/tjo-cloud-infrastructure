@@ -3,6 +3,7 @@ set shell := ["devbox", "run"]
 # Load dotenv
 set dotenv-load
 
+mod id 'id.tjo.cloud'
 mod k8s 'k8s.tjo.cloud'
 mod network 'network.tjo.cloud'
 mod ingress 'ingress.tjo.cloud'

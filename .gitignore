@@ -21,6 +21,7 @@ tofu.rc
 # ENV
 .env
 admin.*config
+secrets.env
 
 # Nix
 **/result

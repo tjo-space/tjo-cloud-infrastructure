@@ -1,0 +1,17 @@
+a[href^="https://goauthentik.io"] {
+  display:none !important
+}
+
+a[href^="https://unsplash.com"] {
+  display:none !important
+}
+
+.ak-brand {
+  text-align: center !important;
+  flex: 1 1 auto !important;
+}
+
+:root {
+  --ak-accent: #df00ff !important;
+  --pf-global--link--Color: var(--ak-accent) !important
+}
