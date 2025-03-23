@@ -92,7 +92,8 @@ service network restart
 Ref: https://github.com/adyanth/openwrt-tailscale-enabler
 
 ```
-wget -0 - https://code.tjo.space/tjo-cloud/infrastructure/raw/branch/main/network.tjo.cloud/scripts/openwrt-initial-setup.sh | bash
+wget -O - https://code.tjo.space/tjo-cloud/infrastructure/raw/branch/main/network.tjo.cloud/scripts/openwrt-initial-setup.sh > initial.sh
+sh initial.sh
 ```
 
 ### 6. Configure.
