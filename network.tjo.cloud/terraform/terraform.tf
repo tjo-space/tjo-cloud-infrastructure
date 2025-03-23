@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.61.1"
+      version = "0.73.1"
     }
   }
 
@@ -40,6 +40,12 @@ provider "proxmox" {
     node {
       name    = "mustafar"
       address = "mustafar.system.tjo.cloud"
+      port    = 22
+    }
+
+    node {
+      name    = "endor"
+      address = "endor.system.tjo.cloud"
       port    = 22
     }
   }

@@ -90,7 +90,8 @@ Repo: https://code.tjo.space/tjo-cloud/network
   }
 
   agent {
-    enabled = false
+    enabled = true
+    timeout = "10s"
   }
 
   network_device {

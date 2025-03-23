@@ -1,6 +1,14 @@
 default:
   @just --list
 
+download:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  mkdir -p {{source_directory()}}/iso
+
+  curl -L -o - https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-23.05.5-x86-64-generic-ext4-combined-efi.img.gz \
+    | gunzip > {{source_directory()}}/iso/openwrt-23.05.5-x86-64-generic-ext4-combined-efi.img
+
 apply:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
@@ -10,7 +18,13 @@ apply:
 destroy:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
-  tofu  destroy
+  tofu destroy
+
+
+destroy-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu destroy -target='proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
 configure-all:
   #!/usr/bin/env sh

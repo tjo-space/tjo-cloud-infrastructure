@@ -111,6 +111,5 @@ module "cluster-components" {
   dnsimple_token      = var.dnsimple_token
   dnsimple_account_id = var.dnsimple_account_id
 
-  cluster_name   = module.cluster.name
   cluster_domain = "k8s.tjo.cloud"
 }

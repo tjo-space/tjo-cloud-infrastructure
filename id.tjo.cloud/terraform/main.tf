@@ -56,15 +56,15 @@ resource "dnsimple_zone_record" "tjo_cloud_a" {
   ttl       = 300
 }
 
-resource "dnsimple_zone_record" "tjo_cloud_aaaa" {
-  for_each = hcloud_server.main
-
-  zone_name = var.domain.zone
-  name      = trimsuffix(var.domain.name, ".${var.domain.zone}")
-  value     = each.value.ipv6_address
-  type      = "AAAA"
-  ttl       = 300
-}
+#resource "dnsimple_zone_record" "tjo_cloud_aaaa" {
+#  for_each = hcloud_server.main
+#
+#  zone_name = var.domain.zone
+#  name      = trimsuffix(var.domain.name, ".${var.domain.zone}")
+#  value     = each.value.ipv6_address
+#  type      = "AAAA"
+#  ttl       = 300
+#}
 
 resource "dnsimple_zone_record" "additional_alias" {
   for_each = { for domain in var.additional_domains : domain.name => domain }

@@ -79,16 +79,20 @@ tofu import 'proxmox_virtual_environment_network_linux_bridge.vmbr0["nevaroo"]' 
 
 ### 4. Set Password (see bitwarden)
 
+### 5. Setup initial network.
+
+```
+# Fix want to use eth1.
+# Remove all mentions of lan.
+vim /etc/config/network
+service network restart
+```
+
 ### 5. Setup Tailscale.
 Ref: https://github.com/adyanth/openwrt-tailscale-enabler
 
 ```
-opkg update
-opkg install ca-bundle kmod-tun iptables-nft kmod-ipt-conntrack kmod-ipt-conntrack-extra kmod-ipt-conntrack-label kmod-ipt-nat kmod-nft-nat
-/etc/init.d/tailscale start
-/etc/init.d/tailscale enable
-
-tailscale up --advertise-routes=10.0.0.0/16,fd74:6a6f:0::/48 --accept-dns=false --ssh
+wget -0 - https://code.tjo.space/tjo-cloud/infrastructure/raw/branch/main/network.tjo.cloud/scripts/openwrt-initial-setup.sh | bash
 ```
 
 ### 6. Configure.

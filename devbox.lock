@@ -97,6 +97,9 @@
         }
       }
     },
+    "github:NixOS/nixpkgs/nixpkgs-unstable": {
+      "resolved": "github:NixOS/nixpkgs/0740f6f238767d4caf9afe774d3e88105766dfc6?lastModified=1742606399&narHash=sha256-NAxwF5cjgh8o5aylhePXWNQETCWYaTpNvdO2bMfINpQ%3D"
+    },
     "gomplate@latest": {
       "last_modified": "2024-11-28T07:51:56Z",
       "resolved": "github:NixOS/nixpkgs/226216574ada4c3ecefcbbec41f39ce4655f78ef#gomplate",
