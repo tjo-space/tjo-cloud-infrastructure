@@ -17,4 +17,6 @@ tar x -zvC / -f /tmp/tailscale-enabler.tgz
 /etc/init.d/tailscale start
 /etc/init.d/tailscale enable
 
+sleep 10
+
 tailscale up --advertise-routes=10.0.0.0/16,fd74:6a6f:0::/48 --accept-dns=false --ssh

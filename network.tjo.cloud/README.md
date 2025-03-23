@@ -12,7 +12,8 @@ __LAN interface__ is an ordinary lan network.
 
 __ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443, 587 etc.). No other VM is accessible from the internet.
 
-__network.tjo.cloud__ establishes Tailscale VPN connection between other network.tjo.cloud VMs. Using subnet routing it makes it possible that each VM can connect to all other VMs on any Proxmox host.
+__network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud VMs. Using BGP, each node advertises
+it's subnet as well as any other advertisements it receives, like from Kubernetes cluster (Cilium BGP).
 
 # Subnets
 We are using `10.0.0.0/16` range for IPv4 as well as `fd74:6a6f:0::/48` for IPv6.
@@ -63,8 +64,6 @@ Each subnet gives us 4096 IP addresses per host.
 |----------------|------------------|-------------------------|
 | Router LAN VIP | 10.0.0.1/32      | fd74:6a6f:0:f000::1/128 |
 
-Each section gives us 1024 IP addresses.
-
 # Setting up new Host
 
 ### 1. Add new device to terraform.tfvars.
@@ -102,9 +101,16 @@ Once tailscale is up and manually configured (see the config files for guide).
 We can use automated way of maintaining config.
 
 ```
-#just configure-all
 just configure <node>
 ```
+
+
+### 7. Approve ZeroTier member.
+
+https://my.zerotier.com/network/b6079f73c6379990
+
+At this point, an ipv4 and ipv6 will be assigned. We have to write that to `configs/common.yaml` and
+run `just configure <node>` again.
 
 # TODO
 

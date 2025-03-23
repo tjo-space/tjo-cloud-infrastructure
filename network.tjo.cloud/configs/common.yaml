@@ -13,6 +13,7 @@ firewall:
       - 1337 # HTTP ingress.tjo.cloud healthcheck
       - 4190 # MANAGE SIEVE
 
+# IPv4 and IPv6 addresses are from ZEROTIER.
 bgp:
   batuu:
     asn: 65001
@@ -30,5 +31,7 @@ bgp:
     asn: 65004
     ipv4: "172.26.163.65"
     ipv6: "fdb6:079f:73c6:3799:9099:9332:0df3:7967"
-  # endor:
-  #   asn: 65005
+  endor:
+    asn: 65005
+    ipv4: "172.26.201.97"
+    ipv6: "fdb6:079f:73c6:3799:9099:9317:3d71:110d"

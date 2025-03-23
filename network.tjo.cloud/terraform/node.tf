@@ -60,7 +60,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   description = <<EOT
 An network.tjo.cloud instance for ${each.value.host}.
 
-Repo: https://code.tjo.space/tjo-cloud/network
+Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tjo.cloud
   EOT
 
   tags = [each.value.domain]
