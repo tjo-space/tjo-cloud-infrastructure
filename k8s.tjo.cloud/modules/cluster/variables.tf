@@ -14,7 +14,8 @@ variable "nodes" {
 
 variable "hosts" {
   type = map(object({
-    asn = number
+    asn     = number
+    storage = string
   }))
 }
 

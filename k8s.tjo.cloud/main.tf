@@ -38,10 +38,12 @@ module "cluster" {
 
   hosts = {
     nevaroo = {
-      asn = 65003
+      asn     = 65003
+      storage = "local-nvme-lvm"
     }
     mustafar = {
-      asn = 65004
+      asn     = 65004
+      storage = "local"
     }
   }
 
