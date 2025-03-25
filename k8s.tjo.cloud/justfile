@@ -20,6 +20,8 @@ module-cluster-core-manifests:
 
 destroy:
   tofu destroy -target module.cluster
+  tofu state rm module.cluster-core
+  tofu destroy -target module.cluster
 
 apply: modules-cluster-manifests module-cluster-core-manifests
   tofu init

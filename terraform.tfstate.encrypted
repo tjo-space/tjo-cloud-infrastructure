@@ -1,0 +1,26 @@
+{
+	"version": "ENC[AES256_GCM,data:Kg==,iv:L3TFAImYF+obmgPHvBJi3eSbboyS/iL8ZzfOKfUQ1A8=,tag:neZsCiIJzXKK3agbPAKMnw==,type:float]",
+	"terraform_version": "ENC[AES256_GCM,data:6ygOI8I=,iv:q0pXkk/56//mZdSeOW0INGVXUyv0FMmw9m/F2CLnCE4=,tag:YJlXeKUGLW0qHWbhd9z+NA==,type:str]",
+	"serial": "ENC[AES256_GCM,data:uA==,iv:7sKkzkt0KNG0ea7QiKAvBPjooaVk/nrofURyOCna6AA=,tag:WltYOhOfKd+AW9ONh+nrMg==,type:float]",
+	"lineage": "ENC[AES256_GCM,data:HiKjGjvF4ggYHa7DJFuODRH+czGDLtJ/4DYwcwaL8d0YDUq5,iv:DNcPG4C3H+KhVLOTx5CufZPO0g8GI+FtAVb43h1roTM=,tag:pZxbocU2Mky0k3VfJuMKUw==,type:str]",
+	"outputs": {},
+	"resources": [],
+	"check_results": null,
+	"sops": {
+		"kms": null,
+		"gcp_kms": null,
+		"azure_kv": null,
+		"hc_vault": null,
+		"age": [
+			{
+				"recipient": "age1cl3d4wtrrqrgldmrzpu53q2mk60r7hrhrymsrwss8s57z4mdv9fst4a55h",
+				"enc": "-----BEGIN AGE ENCRYPTED FILE-----\nYWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBVYnZWdnlieW5jRFd2djhp\nd0xjQm5Ta0xyckhWQWo0MGhxSTVRcmN3Z3lVClc4S3BFSUNKRndwcFRURFp0Z00x\nczZhVTA3YXZGblZIV1A3b1g2OW5RVU0KLS0tIEE3d3RGbEhWWVc0SVBSSENjb2lX\nbWE5M0c3eWg4UjVPdUZRZ3RxSWRUbzAKlpceQDW+W89ltP9hdUqkxkuw6Mt+WGC4\nc20PmrRRQqanugIzJa/ZQxdiPvrW7Ld5tGJxrxseSLLy0s/+XzXftA==\n-----END AGE ENCRYPTED FILE-----\n"
+			}
+		],
+		"lastmodified": "2025-03-25T21:06:34Z",
+		"mac": "ENC[AES256_GCM,data:3C3Bu3QscWEb5adtFTXs3aRPYEXuEhYvzsznyLoOlt/vVRjLxC1si84fpgdiTwGujIWAA8W+X6/vIA74koIrjtqDj5Apds5Q18uQYcXVRB4LzuimVYu0aQaIJLXx7Hn0BC65wfOtbQ9ovnLRo6qTJQE2heJdbtAMraX0gPJ0ovA=,iv:/DGTvfy5MwQmyb9hT+vqZ6e8r1ERbVVkcrN8m5bZd6c=,tag:PJIsNAOBjlwyNXcfc8cT5w==,type:str]",
+		"pgp": null,
+		"unencrypted_suffix": "_unencrypted",
+		"version": "3.9.4"
+	}
+}

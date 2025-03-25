@@ -64,7 +64,7 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
-    mustafar-3 = {
+    mustafar-1 = {
       id      = 6005
       type    = "controlplane"
       host    = "mustafar"
@@ -77,6 +77,14 @@ module "cluster" {
       type    = "worker"
       host    = "mustafar"
       storage = "local"
+      cores   = 4
+      memory  = 4096
+    }
+    endor-1 = {
+      id      = 6006
+      type    = "controlplane"
+      host    = "endor"
+      storage = "local-nvme"
       cores   = 4
       memory  = 4096
     }

@@ -65,6 +65,12 @@ provider "proxmox" {
       address = "mustafar.system.tjo.cloud"
       port    = 22
     }
+
+    node {
+      name    = "endor"
+      address = "endor.system.tjo.cloud"
+      port    = 22
+    }
   }
 }
 
