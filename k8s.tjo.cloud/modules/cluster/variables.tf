@@ -9,6 +9,8 @@ variable "nodes" {
 
     storage   = string
     boot_size = optional(number, 32)
+
+    bootstrap = optional(bool, false)
   }))
 }
 

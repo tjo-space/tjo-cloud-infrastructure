@@ -56,19 +56,19 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
-    nevaroo-2 = {
-      id      = 6003
-      type    = "worker"
+    nevaroo-3 = {
+      id      = 6004
+      type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
     }
-    mustafar-1 = {
-      id      = 6005
-      type    = "controlplane"
-      host    = "mustafar"
-      storage = "local"
+    nevaroo-2 = {
+      id      = 6003
+      type    = "worker"
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
     }
@@ -81,12 +81,13 @@ module "cluster" {
       memory  = 4096
     }
     endor-1 = {
-      id      = 6006
-      type    = "controlplane"
-      host    = "endor"
-      storage = "local-nvme"
-      cores   = 4
-      memory  = 4096
+      id        = 6006
+      type      = "controlplane"
+      host      = "endor"
+      storage   = "local-nvme"
+      cores     = 4
+      memory    = 4096
+      bootstrap = true
     }
   }
 }

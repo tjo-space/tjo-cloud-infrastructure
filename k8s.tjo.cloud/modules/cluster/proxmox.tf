@@ -13,7 +13,7 @@ locals {
     })
   }
 
-  first_controlplane_node = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[0]
+  bootstrap_node = values({ for k, v in local.nodes_with_address : k => v if v.bootstrap })[0]
 
   ipv4_addresses = {
     for key, node in local.nodes : key => {

@@ -332,8 +332,8 @@ resource "talos_machine_bootstrap" "this" {
     talos_machine_configuration_apply.worker
   ]
 
-  node                 = local.first_controlplane_node.name
-  endpoint             = local.first_controlplane_node.ipv4
+  node                 = local.bootstrap_node.name
+  endpoint             = local.bootstrap_node.ipv4
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
@@ -343,7 +343,7 @@ resource "talos_cluster_kubeconfig" "this" {
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.first_controlplane_node.ipv4
+  node                 = local.bootstrap_node.ipv4
 }
 
 resource "local_file" "kubeconfig" {

@@ -19,8 +19,8 @@ module-cluster-core-manifests:
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml"
 
 destroy:
-  tofu destroy -target module.cluster
-  tofu state rm module.cluster-core
+  tofu state rm module.cluster-core || true
+  tofu state rm module.cluster-components || true
   tofu destroy -target module.cluster
 
 apply: modules-cluster-manifests module-cluster-core-manifests
