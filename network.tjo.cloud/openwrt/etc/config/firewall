@@ -152,7 +152,7 @@ config zone
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
-	option masq '1'
+	option masq '0'
 	option mtu_fix '1'
 	list network 'zerotier'
 
