@@ -161,10 +161,6 @@ config forwarding
 	option dest 'lan'
 
 config forwarding
-	option src 'zerotier'
-	option dest 'tailscale'
-
-config forwarding
 	option src 'lan'
 	option dest 'zerotier'
 
@@ -174,6 +170,30 @@ config rule
 	option proto 'udp'
 	option dest_port '9993'
 	option target 'ACCEPT'
+
+##
+# ZEROTIER - TAILSCALE
+#
+# We need a specific zone to connect
+# zerotier to tailscale with masquerading.
+#
+##
+config zone
+	option name 'zttots'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option masq '1'
+	option mtu_fix '1'
+	list network 'zerotier'
+
+config forwarding
+	option src 'zttots'
+	option dest 'tailscale'
+
+config forwarding
+	option src 'tailscale'
+	option dest 'zttots'
 
 ##
 # INGRESS.TJO.CLOUD
