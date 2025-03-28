@@ -25,15 +25,6 @@ variable "talos" {
   type = object({
     version    = optional(string, "v1.9.0")
     kubernetes = optional(string, "v1.32.0")
-
-    # Default is:
-    # customization:
-    #   systemExtensions:
-    #     officialExtensions:
-    #         - siderolabs/kata-containers
-    #         - siderolabs/qemu-guest-agent
-    #         - siderolabs/wasmedge
-    schematic_id = optional(string, "392092063ce5c8be7dfeba0bd466add2bc0b55a20939cc2c0060058fcc25d784")
   })
 }
 

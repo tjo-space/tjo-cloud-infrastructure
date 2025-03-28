@@ -35,27 +35,33 @@ We are using `10.0.0.0/16` range for IPv4 as well as `fd74:6a6f:0::/48` for IPv6
 |            | 10.0.176.0/20 | fd74:6a6f:0:b000::/52 | 65011   |
 |            | 10.0.192.0/20 | fd74:6a6f:0:c000::/52 | 65012   |
 |            | 10.0.208.0/20 | fd74:6a6f:0:d000::/52 | 65013   |
-|            | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 | 65014   |
-| Kubernetes | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 | 65015   |
+| Kubernetes | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 |         |
+| Kubernetes | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 |         |
 
 Each subnet gives us 4096 IP addresses per host.
 
 ### Per host designations
 
+First 100 addresses are reserved for network and cloud operations.
+
 | Use                      | IPv4             | IPv6                  |
 |--------------------------|------------------|-----------------------|
-| Virtual Machines         | 10.0.(y+0).0/22  | fd74:6a6f:0:y000::/54 |
+| Virtual Machines (DHCP)  | 10.0.(y+0).0/22  | fd74:6a6f:0:y000::/54 |
 |                          | 10.0.(y+4).0/22  | fd74:6a6f:0:y400::/54 |
 |                          | 10.0.(y+8).0/22  | fd74:6a6f:0:y800::/54 |
 |                          | 10.0.(y+12).0/22 | fd74:6a6f:0:yc00::/54 |
 
 ### Kubernetes designations
 
+We can at most have 16 node cluster, before the Pods CIDR is exhausted.
+Each node gets /24 mask for Pods.
+
 | Use              | IPv4             | IPv6                  |
 |------------------|------------------|-----------------------|
-| Pods             | 10.0.240.0/22    | fd74:6a6f:0:f000::/54 |
-| Services         | 10.0.244.0/22    | fd74:6a6f:0:f400::/54 (actually an /108) |
-| Load Balanancers | 10.0.248.0/22    | fd74:6a6f:0:f800::/54 |
+| Pods             | 10.0.224.0/20    | fd74:6a6f:0:e000::/52 |
+| Services         | 10.0.240.0/22    | fd74:6a6f:0:f000::/54 (actually an /108) |
+| Load Balanancers | 10.0.244.0/22    | fd74:6a6f:0:f400::/54 |
+|                  | 10.0.248.0/22    | fd74:6a6f:0:f800::/54 |
 |                  | 10.0.252.0/22    | fd74:6a6f:0:fc00::/54 |
 
 ### Reserved designations

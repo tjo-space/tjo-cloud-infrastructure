@@ -41,8 +41,8 @@ resource "proxmox_virtual_environment_download_file" "talos" {
   content_type = "iso"
   datastore_id = var.proxmox.common_storage
   node_name    = values(var.nodes)[0].host
-  file_name    = "talos-${var.talos.schematic_id}-${var.talos.version}-amd64.iso"
-  url          = "https://factory.talos.dev/image/${var.talos.schematic_id}/${var.talos.version}/nocloud-amd64.iso"
+  file_name    = "talos-${talos_image_factory_schematic.this.id}-${var.talos.version}-amd64.iso"
+  url          = "https://factory.talos.dev/image/${talos_image_factory_schematic.this.id}/${var.talos.version}/nocloud-amd64.iso"
 }
 
 resource "proxmox_virtual_environment_file" "metadata" {
@@ -107,7 +107,6 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
 
   cdrom {
-    enabled = true
     file_id = proxmox_virtual_environment_download_file.talos.id
   }
 

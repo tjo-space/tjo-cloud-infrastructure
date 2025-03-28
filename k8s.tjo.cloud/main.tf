@@ -6,8 +6,8 @@ module "cluster" {
   }
 
   talos = {
-    version    = "v1.9.0"
-    kubernetes = "v1.32.0"
+    version    = "v1.9.5"
+    kubernetes = "v1.32.3"
   }
 
   cluster = {
@@ -17,16 +17,16 @@ module "cluster" {
       issuer_url = var.oidc_issuer_url
     }
     pod_cidr = {
-      ipv4 = "10.0.240.0/22"
-      ipv6 = "fd74:6a6f:0:f000::/54"
+      ipv4 = "10.0.224.0/20"
+      ipv6 = "fd74:6a6f:0:e000::/52"
     }
     service_cidr = {
-      ipv4 = "10.0.244.0/22"
-      ipv6 = "fd74:6a6f:0:f400::/108"
+      ipv4 = "10.0.240.0/22"
+      ipv6 = "fd74:6a6f:0:f000::/108"
     }
     load_balancer_cidr = {
-      ipv4 = "10.0.248.0/22"
-      ipv6 = "fd74:6a6f:0:f800::/54"
+      ipv4 = "10.0.244.0/22"
+      ipv6 = "fd74:6a6f:0:f400::/54"
     }
   }
 
@@ -44,6 +44,10 @@ module "cluster" {
     mustafar = {
       asn     = 65004
       storage = "local"
+    }
+    endor = {
+      asn     = 65005
+      storage = "local-nvme"
     }
   }
 

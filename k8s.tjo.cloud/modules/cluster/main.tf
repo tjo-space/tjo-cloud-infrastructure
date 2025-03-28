@@ -26,6 +26,12 @@ locals {
       }
     }
     cluster = {
+      etcd = {
+        extraArgs = {
+          "heartbeat-timeout" = "1000" # Defaults to 100ms. Which is too fast for our network.
+          "election-timeout"  = "5000" # Defaults to 1000ms. Which is too fast for our network.
+        }
+      }
       apiServer = {
         certSANs = [
           local.public_domain,
@@ -226,7 +232,7 @@ locals {
         }
       }
       install = {
-        image = "factory.talos.dev/installer/${var.talos.schematic_id}:${var.talos.version}"
+        image = "factory.talos.dev/installer/${talos_image_factory_schematic.this.id}:${var.talos.version}"
         disk  = "/dev/vda"
       }
       features = {
