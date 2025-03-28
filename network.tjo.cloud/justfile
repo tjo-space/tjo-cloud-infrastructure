@@ -65,8 +65,11 @@ configure node:
   echo "- Configuring zerotier"
   tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
   tailscale ssh "root@${node}-network-tjo-cloud" "opkg install zerotier"
+  cat {{source_directory()}}/openwrt/etc/zerotier.conf \
+    | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/zerotier.conf"
   tailscale ssh "root@${node}-network-tjo-cloud" <<'EOL'
   uci set zerotier.global.enabled='1'
+  uci set zerotier.global.local_conf_path=/etc/zerotier.conf
   uci delete zerotier.earth
   uci delete zerotier.mynet
   uci set zerotier.tjo_cloud=network

@@ -49,7 +49,7 @@ resource "helm_release" "monitoring" {
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "2.0.0-rc.11"
+  version         = "2.0.22"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true

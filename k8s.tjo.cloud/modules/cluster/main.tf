@@ -28,8 +28,8 @@ locals {
     cluster = {
       etcd = {
         extraArgs = {
-          "heartbeat-timeout" = "1000" # Defaults to 100ms. Which is too fast for our network.
-          "election-timeout"  = "5000" # Defaults to 1000ms. Which is too fast for our network.
+          heartbeat-interval = "1000" # Defaults to 100ms. Which is too fast for our network.
+          election-timeout   = "5000" # Defaults to 1000ms. Which is too fast for our network.
         }
       }
       apiServer = {
