@@ -19,7 +19,7 @@ resource "helm_release" "external-dns-privileged" {
             name: ${kubernetes_secret.dnsimple.metadata[0].name}
             key: account_id
       - name: DNSIMPLE_ZONES
-        value: "k8s.tjo.cloud"
+        value: "${var.domains.privileged}"
     sources:
       - ingress
       - service
@@ -28,8 +28,7 @@ resource "helm_release" "external-dns-privileged" {
       - gateway-tlsroute
       - gateway-tcproute
     domainFilters:
-      - k8s.tjo.cloud
-      - internal.k8s.tjo.cloud
+      - ${var.domains.privileged}
   EOF
   ]
 }
@@ -55,7 +54,7 @@ resource "helm_release" "external-dns-user-content" {
             name: ${kubernetes_secret.dnsimple.metadata[0].name}
             key: account_id
       - name: DNSIMPLE_ZONES
-        value: "user-content.tjo.cloud"
+        value: "${var.domains.usercontent}"
     sources:
       - ingress
       - service
@@ -64,7 +63,7 @@ resource "helm_release" "external-dns-user-content" {
       - gateway-tlsroute
       - gateway-tcproute
     domainFilters:
-      - user-content.tjo.cloud
+      - ${var.domains.usercontent}
   EOF
   ]
 }

@@ -1,9 +1,20 @@
+locals {
+  pod_cidr = {
+    ipv4 = "10.0.224.0/20"
+    ipv6 = "fd74:6a6f:0:e000::/52"
+  }
+  service_cidr = {
+    ipv4 = "10.0.240.0/22"
+    ipv6 = "fd74:6a6f:0:f000::/108"
+  }
+  load_balancer_cidr = {
+    ipv4 = "10.0.244.0/22"
+    ipv6 = "fd74:6a6f:0:f400::/54"
+  }
+}
+
 module "cluster" {
   source = "./modules/cluster"
-
-  providers = {
-    helm.template = helm.template
-  }
 
   talos = {
     version    = "v1.9.5"
@@ -16,39 +27,14 @@ module "cluster" {
       client_id  = var.oidc_client_id
       issuer_url = var.oidc_issuer_url
     }
-    pod_cidr = {
-      ipv4 = "10.0.224.0/20"
-      ipv6 = "fd74:6a6f:0:e000::/52"
-    }
-    service_cidr = {
-      ipv4 = "10.0.240.0/22"
-      ipv6 = "fd74:6a6f:0:f000::/108"
-    }
-    load_balancer_cidr = {
-      ipv4 = "10.0.244.0/22"
-      ipv6 = "fd74:6a6f:0:f400::/54"
-    }
+    pod_cidr     = local.pod_cidr
+    service_cidr = local.service_cidr
   }
 
   proxmox = {
     name           = "tjo-cloud"
     url            = "https://proxmox.tjo.cloud/api2/json"
     common_storage = "synology.storage.tjo.cloud"
-  }
-
-  hosts = {
-    nevaroo = {
-      asn     = 65003
-      storage = "local-nvme-lvm"
-    }
-    mustafar = {
-      asn     = 65004
-      storage = "local"
-    }
-    endor = {
-      asn     = 65005
-      storage = "local-nvme"
-    }
   }
 
   nodes = {
@@ -114,7 +100,25 @@ resource "local_file" "kubeconfig" {
 module "cluster-core" {
   source = "./modules/cluster-core"
 
-  cluster_name = module.cluster.name
+  cluster = {
+    name : module.cluster.name,
+    load_balancer_cidr = local.load_balancer_cidr
+  }
+  hosts = {
+    nevaroo = {
+      asn     = 65003
+      storage = "local-nvme-lvm"
+    }
+    mustafar = {
+      asn     = 65004
+      storage = "local"
+    }
+    endor = {
+      asn     = 65005
+      storage = "local-nvme"
+    }
+  }
+  proxmox = module.cluster.proxmox
 }
 
 module "cluster-components" {

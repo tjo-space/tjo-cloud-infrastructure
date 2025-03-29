@@ -17,3 +17,16 @@ output "api" {
 output "nodes" {
   value = local.nodes_with_address
 }
+
+output "proxmox" {
+  value = merge(var.proxmox, {
+    token = {
+      id     = proxmox_virtual_environment_user_token.csi.id
+      secret = split("=", proxmox_virtual_environment_user_token.csi.value)[1]
+    }
+  })
+}
+
+output "kubeconfig_path" {
+  value = local_file.kubeconfig.filename
+}

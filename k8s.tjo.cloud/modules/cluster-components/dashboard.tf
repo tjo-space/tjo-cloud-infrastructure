@@ -34,60 +34,60 @@ resource "kubernetes_manifest" "dashoard-http-route" {
         {
           matches = [
             {
-              path : {
-                value : "/"
-                type : "PathPrefix"
+              path = {
+                value = "/"
+                type  = "PathPrefix"
               }
             }
           ]
           backendRefs = [
             {
-              name : "kubernetes-dashboard-web"
-              port : 8000
+              name = "kubernetes-dashboard-web"
+              port = 8000
             }
           ]
         },
         {
           matches = [
             {
-              path : {
-                value : "/api/v1/login"
-                type : "PathPrefix"
+              path = {
+                value = "/api/v1/login"
+                type  = "PathPrefix"
               }
             },
             {
-              path : {
-                value : "/api/v1/csrftoken/login"
-                type : "PathPrefix"
+              path = {
+                value = "/api/v1/csrftoken/login"
+                type  = "PathPrefix"
               }
             },
             {
-              path : {
-                value : "/api/v1/me"
-                type : "PathPrefix"
+              path = {
+                value = "/api/v1/me"
+                type  = "PathPrefix"
               }
             },
           ]
           backendRefs = [
             {
-              name : "kubernetes-dashboard-auth"
-              port : 8000
+              name = "kubernetes-dashboard-auth"
+              port = 8000
             }
           ]
         },
         {
           matches = [
             {
-              path : {
-                value : "/api"
-                type : "PathPrefix"
+              path = {
+                value = "/api"
+                type  = "PathPrefix"
               }
             }
           ]
           backendRefs = [
             {
-              name : "kubernetes-dashboard-api"
-              port : 8000
+              name = "kubernetes-dashboard-api"
+              port = 8000
             }
           ]
         },
@@ -116,22 +116,22 @@ resource "kubernetes_manifest" "dashboard-oidc" {
     }
     spec = {
       targetRef = {
-        group : "gateway.networking.k8s.io"
-        kind : "HTTPRoute"
-        name : kubernetes_manifest.dashoard-http-route.object.metadata.name
+        group = "gateway.networking.k8s.io"
+        kind  = "HTTPRoute"
+        name  = kubernetes_manifest.dashoard-http-route.object.metadata.name
       }
       oidc = {
         provider = {
-          issuer : var.oidc_issuer_url
+          issuer = var.oidc_issuer_url
         }
-        clientID : var.oidc_client_id
-        clientSecret : {
-          name : kubernetes_secret.dashboard-oidc.metadata[0].name
+        clientID = var.oidc_client_id
+        clientSecret = {
+          name = kubernetes_secret.dashboard-oidc.metadata[0].name
         }
-        scopes : ["openid", "email", "profile"]
-        forwardAccessToken : true
+        scopes             = ["openid", "email", "profile"]
+        forwardAccessToken = true
 
-        redirectURL : "https://dashboard.${var.cluster_domain}/login"
+        redirectURL = "https://dashboard.${var.cluster_domain}/login"
       }
     }
   }

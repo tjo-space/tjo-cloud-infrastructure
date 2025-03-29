@@ -7,16 +7,8 @@ resource "kubernetes_namespace" "monitoring-system" {
   }
 }
 
-resource "kubernetes_manifest" "prometheus-pod-monitors" {
-  manifest = yamldecode(file("${path.module}/manifests/crd-podmonitors.yaml"))
-}
-
-resource "kubernetes_manifest" "prometheus-service-monitors" {
-  manifest = yamldecode(file("${path.module}/manifests/crd-servicemonitors.yaml"))
-}
-
 resource "helm_release" "kube-state-metrics" {
-  depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
+  depends_on = [kubectl_manifest.crds]
 
   name            = "kube-state-metrics"
   chart           = "kube-state-metrics"
@@ -44,7 +36,7 @@ resource "helm_release" "kube-state-metrics" {
 }
 
 resource "helm_release" "monitoring" {
-  depends_on = [kubernetes_manifest.prometheus-pod-monitors, kubernetes_manifest.prometheus-service-monitors]
+  depends_on = [kubectl_manifest.crds]
 
   name            = "monitoring"
   chart           = "k8s-monitoring"
@@ -55,8 +47,9 @@ resource "helm_release" "monitoring" {
   cleanup_on_fail = true
 
   values = [<<-EOF
+    # FOo
     cluster:
-      name: "${var.cluster_name}"
+      name: "${var.cluster.name}"
 
     clusterMetrics:
       enabled: true

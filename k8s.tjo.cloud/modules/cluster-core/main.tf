@@ -1,3 +1,63 @@
+resource "kubectl_manifest" "crds" {
+  for_each  = fileset("${path.module}/crds", "*.yaml")
+  yaml_body = file("${path.module}/crds/${each.value}")
+}
+
+resource "helm_release" "proxmox-ccm" {
+  name            = "proxmox-cloud-controller-manager"
+  chart           = "proxmox-cloud-controller-manager"
+  repository      = "oci://ghcr.io/sergelogvinov/charts"
+  version         = "0.2.8"
+  namespace       = "kube-system"
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [<<-EOF
+    # Deploy CCM only on control-plane nodes
+    affinity:
+      nodeAffinity:
+        requiredDuringSchedulingIgnoredDuringExecution:
+          nodeSelectorTerms:
+          - matchExpressions:
+            - key: node-role.kubernetes.io/control-plane
+              operator: Exists
+    tolerations:
+      - key: node-role.kubernetes.io/control-plane
+        effect: NoSchedule
+      - key: node.cloudprovider.kubernetes.io/uninitialized
+        effect: NoSchedule
+
+    enabledControllers:
+      - cloud-node-lifecycle
+
+    config:
+      clusters:
+        - url: ${var.proxmox.url}
+          insecure: ${var.proxmox.insecure}
+          token_id: ${var.proxmox.token.id}
+          token_secret: ${var.proxmox.token.secret}
+          region: ${var.proxmox.name}
+  EOF
+  ]
+}
+
+resource "helm_release" "talos-ccm" {
+  name            = "talos-cloud-controller-manager"
+  chart           = "talos-cloud-controller-manager"
+  repository      = "oci://ghcr.io/siderolabs/charts"
+  version         = "0.4.3"
+  namespace       = "kube-system"
+  atomic          = true
+  cleanup_on_fail = true
+
+  values = [yamlencode({
+    enabledControllers = [
+      "cloud-node",
+      "node-csr-approval",
+    ]
+  })]
+}
+
 resource "helm_release" "cert-manager" {
   name            = "cert-manager"
   chart           = "cert-manager"
@@ -7,38 +67,22 @@ resource "helm_release" "cert-manager" {
   atomic          = true
   cleanup_on_fail = true
 
-  values = [<<-EOF
-    crds:
-      enabled: true
+  values = [yamlencode({
+    crds = {
+      enabled = true
+    }
 
-    config:
-      apiVersion: controller.config.cert-manager.io/v1alpha1
-      kind: ControllerConfiguration
-      enableGatewayAPI: true
-    EOF
-  ]
-}
-
-resource "helm_release" "cert-manager-dnsimple" {
-  name            = "cert-manager-webhook-dnsimple"
-  chart           = "cert-manager-webhook-dnsimple"
-  repository      = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
-  version         = "v0.1.6"
-  namespace       = "kube-system"
-  atomic          = true
-  cleanup_on_fail = true
-
-  values = [<<-EOF
-      dnsimple:
-        token: "not-used"
-      certManager:
-        namespace: "kube-system"
-        serviceAccountName: "cert-manager"
-    EOF
-  ]
+    config = {
+      apiVersion       = "controller.config.cert-manager.io/v1alpha1"
+      kind             = "ControllerConfiguration"
+      enableGatewayAPI = true
+    }
+  })]
 }
 
 resource "helm_release" "envoy" {
+  depends_on = [kubectl_manifest.crds]
+
   name            = "envoy"
   chart           = "gateway-helm"
   repository      = "oci://docker.io/envoyproxy"
@@ -57,9 +101,9 @@ resource "helm_release" "metrics-server" {
   atomic          = true
   cleanup_on_fail = true
 
-  values = [<<-EOF
-    serviceMonitor:
-      enabled: true
-    EOF
-  ]
+  values = [yamlencode({
+    serviceMonitor = {
+      enabled = true
+    }
+  })]
 }

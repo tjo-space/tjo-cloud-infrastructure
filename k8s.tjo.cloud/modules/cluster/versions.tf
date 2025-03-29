@@ -22,16 +22,5 @@ terraform {
       source  = "hashicorp/random"
       version = "3.6.2"
     }
-    helm = {
-      source  = "hashicorp/helm"
-      version = "2.14.0"
-      configuration_aliases = [
-        helm.template
-      ]
-    }
-    kubernetes = {
-      source  = "hashicorp/kubernetes"
-      version = "2.36.0"
-    }
   }
 }

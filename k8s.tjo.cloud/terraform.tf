@@ -28,6 +28,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.36.0"
     }
+    kubectl = {
+      source  = "gavinbunney/kubectl"
+      version = "1.19.0"
+    }
   }
 
   required_version = "~> 1.7.3"
@@ -79,46 +83,16 @@ provider "dnsimple" {
   account = var.dnsimple_account_id
 }
 
-provider "helm" {
-  alias = "template"
+provider "kubectl" {
+  config_path = module.cluster.kubeconfig_path
 }
 
 provider "helm" {
   kubernetes {
-    host                   = module.cluster.api.internal.endpoint
-    cluster_ca_certificate = base64decode(module.cluster.api.ca)
-    exec {
-      api_version = "client.authentication.k8s.io/v1beta1"
-      command     = "kubectl"
-      args = [
-        "oidc-login",
-        "get-token",
-        "--oidc-issuer-url", var.oidc_issuer_url,
-        "--oidc-client-id", var.oidc_client_id,
-        "--oidc-extra-scope", "profile",
-        "--grant-type", "password",
-        "--username", var.oidc_username,
-        "--password", var.oidc_password,
-      ]
-    }
+    config_path = module.cluster.kubeconfig_path
   }
 }
 
 provider "kubernetes" {
-  host                   = module.cluster.api.internal.endpoint
-  cluster_ca_certificate = base64decode(module.cluster.api.ca)
-  exec {
-    api_version = "client.authentication.k8s.io/v1beta1"
-    command     = "kubectl"
-    args = [
-      "oidc-login",
-      "get-token",
-      "--oidc-issuer-url", var.oidc_issuer_url,
-      "--oidc-client-id", var.oidc_client_id,
-      "--oidc-extra-scope", "profile",
-      "--grant-type", "password",
-      "--username", var.oidc_username,
-      "--password", var.oidc_password,
-    ]
-  }
+  config_path = module.cluster.kubeconfig_path
 }

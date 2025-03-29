@@ -4,27 +4,25 @@ PROMETHEUS_CRDS_VERSION := "main"
 default:
   @just --list
 
-modules-cluster-manifests:
-  @rm -rf modules/cluster/manifests
-  @mkdir -p modules/cluster/manifests
-  @curl -L -o modules/cluster/manifests/gateway-api.crds.yaml \
-    "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{GATEWAY_API_VERSION}}/experimental-install.yaml"
-
-module-cluster-core-manifests:
-  @rm -rf modules/cluster-core/manifests
-  @mkdir -p modules/cluster-core/manifests
-  @curl -L -o modules/cluster-core/manifests/crd-podmonitors.yaml \
+module-cluster-core-crds:
+  @rm -rf modules/cluster-core/crds
+  @mkdir -p modules/cluster-core/crds
+  @curl -L -o modules/cluster-core/crds/podmonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml"
-  @curl -L -o modules/cluster-core/manifests/crd-servicemonitors.yaml \
+  @curl -L -o modules/cluster-core/crds/servicemonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml"
+  @curl -L -o modules/cluster-core/crds/gateway-api.yaml \
+    "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{GATEWAY_API_VERSION}}/experimental-install.yaml"
 
 destroy:
   tofu state rm module.cluster-core || true
   tofu state rm module.cluster-components || true
   tofu destroy -target module.cluster
 
-apply: modules-cluster-manifests module-cluster-core-manifests
+apply: module-cluster-core-crds
   tofu init
   tofu apply -target module.cluster
+  tofu apply -target module.cluster-core.helm_release.cilium
+  tofu apply -target module.cluster-core.kubectl_manifest.crds
   tofu apply -target module.cluster-core
   tofu apply

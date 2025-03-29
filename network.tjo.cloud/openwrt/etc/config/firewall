@@ -164,18 +164,40 @@ config forwarding
 
 # {{ $port }} - {{ $name }}
 config redirect
-	option name 'IPv4 - {{ $port }} - {{ $name }}'
+	option name 'IPv4 - WAN - {{ $port }} - {{ $name }}'
 	option target 'DNAT'
 	option src 'wan'
 	option src_dport '{{ $port }}'
+	option dest 'lan'
 	option dest_ip '{{ $host.ipv4 }}'
 	option family 'ipv4'
 config redirect
-	option name 'IPv6 - {{ $port }} - {{ $name }}'
+	option name 'IPv6 - WAN - {{ $port }} - {{ $name }}'
 	option target 'DNAT'
 	option src 'wan'
 	option src_dport '{{ $port }}'
+	option dest 'lan'
 	option dest_ip '{{ $host.ipv6 }}'
 	option family 'ipv6'
+config redirect
+	option name 'IPv4 - LAN - {{ $port }} - {{ $name }}'
+	option target 'DNAT'
+	option src 'lan'
+	option src_dport '{{ $port }}'
+	option dest 'lan'
+	option dest_ip '{{ $host.ipv4 }}'
+  option family 'ipv4'
+	option reflection '0'
+	option src_dip '{{ $host.public_ipv4 }}' # FIXME!: This should probably be done differently...
+config redirect
+	option name 'IPv6 - LAN - {{ $port }} - {{ $name }}'
+	option target 'DNAT'
+  option src 'lan'
+	option src_dport '{{ $port }}'
+	option dest 'lan'
+	option dest_ip '{{ $host.ipv6 }}'
+	option family 'ipv6'
+	option reflection '0'
+	option src_dip '{{ $host.public_ipv6 }}'
 {{- end }}
 {{- end }}

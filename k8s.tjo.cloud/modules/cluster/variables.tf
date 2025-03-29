@@ -14,13 +14,6 @@ variable "nodes" {
   }))
 }
 
-variable "hosts" {
-  type = map(object({
-    asn     = number
-    storage = string
-  }))
-}
-
 variable "talos" {
   type = object({
     version    = optional(string, "v1.9.0")
@@ -52,10 +45,6 @@ variable "cluster" {
       ipv6 = string
     })
     service_cidr = object({
-      ipv4 = string
-      ipv6 = string
-    })
-    load_balancer_cidr = object({
       ipv4 = string
       ipv6 = string
     })

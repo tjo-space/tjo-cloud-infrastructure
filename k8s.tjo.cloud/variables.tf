@@ -1,10 +1,3 @@
-variable "oidc_username" {
-  type = string
-}
-variable "oidc_password" {
-  type      = string
-  sensitive = true
-}
 variable "oidc_client_id" {
   type = string
 }

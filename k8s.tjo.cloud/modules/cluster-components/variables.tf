@@ -18,3 +18,15 @@ variable "dnsimple_token" {
 variable "dnsimple_account_id" {
   type = string
 }
+
+variable "domains" {
+  type = object({
+    privileged  = string
+    usercontent = string
+  })
+  default = {
+    privileged  = "k8s.tjo.cloud"
+    usercontent = "usercontent.k8s.tjo.cloud"
+  }
+  description = "Domains to be managed via cert-manager and external-dns."
+}
