@@ -37,7 +37,7 @@ resource "helm_release" "hybrid-csi" {
   name            = "hybrid-csi-plugin"
   chart           = "hybrid-csi-plugin"
   repository      = "oci://ghcr.io/sergelogvinov/charts"
-  version         = "0.1.5"
+  version         = "0.1.6"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -46,6 +46,11 @@ resource "helm_release" "hybrid-csi" {
     nodeSelector = {
       "node-role.kubernetes.io/control-plane" = ""
     }
+
+    image = {
+      tag = "edge"
+    }
+
     tolerations = [{
       key    = "node-role.kubernetes.io/control-plane"
       effect = "NoSchedule"

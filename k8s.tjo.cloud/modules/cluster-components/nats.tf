@@ -1,5 +1,5 @@
 resource "helm_release" "nats" {
-  count = 0
+  count = 1
 
   name            = "nats"
   repository      = "https://nats-io.github.io/k8s/helm/charts/"
@@ -19,6 +19,7 @@ resource "helm_release" "nats" {
         enabled: true
         fileStore:
           pvc:
+            storageClassName: "common"
             size: 10Gi
 
     podTemplate:
