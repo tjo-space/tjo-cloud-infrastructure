@@ -1,6 +1,6 @@
 config system
 	option hostname '{{ (ds "node").name }}.network.tjo.cloud'
-	option timezone 'UTC'
+	option zonename 'UTC'
 	option ttylogin '0'
 	option log_size '64'
 	option urandom_seed '0'
