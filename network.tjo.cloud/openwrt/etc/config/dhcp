@@ -1,8 +1,6 @@
 config dnsmasq
 	option domainneeded '1'
 	option localise_queries '1'
-	option rebind_protection '1'
-	option rebind_localhost '1'
 	option expandhosts '1'
 	option cachesize '1000'
 	# Must be larger than limits for interfaces.
@@ -17,8 +15,7 @@ config dnsmasq
 	option min_cache_ttl '60'
 	option max_cache_ttl '600'
 	option nonegcache '1'
-	list rebind_domain 'tjo.cloud'
-	list rebind_domain 'tjo.space'
+	option rebind_protection '0'
 
 config dhcp 'lan'
 	option interface 'lan'

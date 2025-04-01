@@ -43,12 +43,12 @@ resource "helm_release" "hybrid-csi" {
   cleanup_on_fail = true
 
   values = [yamlencode({
-    nodeSelector = {
-      "node-role.kubernetes.io/control-plane" = ""
-    }
-
     image = {
       tag = "edge"
+    }
+
+    nodeSelector = {
+      "node-role.kubernetes.io/control-plane" = ""
     }
 
     tolerations = [{

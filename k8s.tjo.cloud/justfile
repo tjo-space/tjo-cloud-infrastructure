@@ -1,5 +1,6 @@
-GATEWAY_API_VERSION := "v1.1.0"
+GATEWAY_CRDS_VERSION := "v1.1.0"
 PROMETHEUS_CRDS_VERSION := "main"
+ENVOY_CRDS_VERSION := "1.2.8"
 
 default:
   @just --list
@@ -12,7 +13,10 @@ module-cluster-core-crds:
   @curl -L -o modules/cluster-core/crds/servicemonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml"
   @curl -L -o modules/cluster-core/crds/gateway-api.yaml \
-    "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{GATEWAY_API_VERSION}}/experimental-install.yaml"
+    "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{GATEWAY_CRDS_VERSION}}/experimental-install.yaml"
+  @curl -L -o - \
+    "https://github.com/envoyproxy/gateway/archive/refs/tags/v{{ENVOY_CRDS_VERSION}}.tar.gz" \
+    | tar -xz -C modules/cluster-core/crds --strip-components=5 --wildcards "gateway-{{ENVOY_CRDS_VERSION}}/charts/gateway-helm/crds/generated/*.yaml"
 
 destroy:
   tofu state rm module.cluster-core || true

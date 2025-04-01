@@ -1,6 +1,12 @@
+data "kubectl_path_documents" "crds" {
+  pattern = "${path.module}/crds/*.yaml"
+}
+
 resource "kubectl_manifest" "crds" {
-  for_each  = fileset("${path.module}/crds", "*.yaml")
-  yaml_body = file("${path.module}/crds/${each.value}")
+  for_each          = data.kubectl_path_documents.crds.manifests
+  yaml_body         = each.value
+  server_side_apply = true
+  wait              = true
 }
 
 resource "helm_release" "proxmox-ccm" {
@@ -56,40 +62,6 @@ resource "helm_release" "talos-ccm" {
       "node-csr-approval",
     ]
   })]
-}
-
-resource "helm_release" "cert-manager" {
-  name            = "cert-manager"
-  chart           = "cert-manager"
-  repository      = "https://charts.jetstack.io"
-  version         = "v1.16.2"
-  namespace       = "kube-system"
-  atomic          = true
-  cleanup_on_fail = true
-
-  values = [yamlencode({
-    crds = {
-      enabled = true
-    }
-
-    config = {
-      apiVersion       = "controller.config.cert-manager.io/v1alpha1"
-      kind             = "ControllerConfiguration"
-      enableGatewayAPI = true
-    }
-  })]
-}
-
-resource "helm_release" "envoy" {
-  depends_on = [kubectl_manifest.crds]
-
-  name            = "envoy"
-  chart           = "gateway-helm"
-  repository      = "oci://docker.io/envoyproxy"
-  version         = "v1.2.4"
-  namespace       = "kube-system"
-  atomic          = true
-  cleanup_on_fail = true
 }
 
 resource "helm_release" "metrics-server" {

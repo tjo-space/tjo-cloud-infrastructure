@@ -28,7 +28,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
         }
       ]
       hostnames = [
-        "dashboard.${var.cluster_domain}"
+        "dashboard.k8s.tjo.cloud"
       ]
       rules = [
         {
@@ -131,7 +131,7 @@ resource "kubernetes_manifest" "dashboard-oidc" {
         scopes             = ["openid", "email", "profile"]
         forwardAccessToken = true
 
-        redirectURL = "https://dashboard.${var.cluster_domain}/login"
+        redirectURL = "https://dashboard.k8s.tjo.cloud/login"
       }
     }
   }

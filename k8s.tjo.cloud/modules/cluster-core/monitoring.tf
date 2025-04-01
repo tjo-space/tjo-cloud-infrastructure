@@ -24,6 +24,7 @@ resource "helm_release" "kube-state-metrics" {
     tolerations:
       - key: "node-role.kubernetes.io/control-plane"
         effect: NoSchedule
+
     updateStrategy: Recreate
     prometheusScrape: false
     prometheus:

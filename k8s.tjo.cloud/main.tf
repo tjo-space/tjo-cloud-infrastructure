@@ -121,14 +121,26 @@ module "cluster-core" {
   proxmox = module.cluster.proxmox
 }
 
+# TODO: Move to be managed by argocd
 module "cluster-components" {
   source = "./modules/cluster-components"
 
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
 
-  dnsimple_token      = var.dnsimple_token
-  dnsimple_account_id = var.dnsimple_account_id
+  dnsimple = {
+    token      = var.dnsimple_token
+    account_id = var.dnsimple_account_id
+  }
 
-  cluster_domain = "k8s.tjo.cloud"
+  domains = {
+    "tjo-cloud" = {
+      zone   = "tjo.cloud"
+      domain = "tjo.cloud"
+    }
+    "k8s-tjo-cloud" = {
+      zone   = "k8s.tjo.cloud"
+      domain = "k8s.tjo.cloud"
+    }
+  }
 }
