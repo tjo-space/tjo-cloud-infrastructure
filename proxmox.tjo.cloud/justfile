@@ -1,0 +1,17 @@
+default:
+  @just --list
+
+configure-all:
+  #!/usr/bin/env bash
+  set -eou pipefail
+
+  for node in `cat configs/nodes.yaml | yq -r '.nodes | keys | .[]'`
+  do
+    echo "== Configuring $node"
+    just configure $node
+  done
+
+configure node:
+  gomplate --file {{source_directory()}}/scripts/configure.sh.tmpl \
+    --datasource nodes=configs/nodes.yaml \
+    | tailscale ssh root@{{node}}-system-tjo-cloud
