@@ -1,5 +1,7 @@
+{{ $nodeName := getenv "NODE" }}
+
 config system
-	option hostname '{{ (ds "node").name }}.network.tjo.cloud'
+	option hostname '{{ $nodeName }}.network.tjo.cloud'
 	option zonename 'UTC'
 	option ttylogin '0'
 	option log_size '64'

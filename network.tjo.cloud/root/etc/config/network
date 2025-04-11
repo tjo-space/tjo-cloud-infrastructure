@@ -1,3 +1,6 @@
+{{ $nodeName := getenv "NODE" }}
+{{ $node := index (ds "config").nodes $nodeName }}
+
 config interface 'loopback'
 	option device 'lo'
 	option proto 'static'
@@ -8,15 +11,16 @@ config device
 	option name 'br-lan'
 	option type 'bridge'
 	list ports 'eth1'
+	list ports 'ztyxa2r2sw'
 
 # LAN
 config globals 'globals'
-	option ula_prefix '{{ (ds "node").ipv6 }}/52'
+	option ula_prefix '{{ $node.ipv6.subnet }}'
 
 config interface 'lan'
 	option device 'br-lan'
 	option proto 'static'
-	option ipaddr '{{ (ds "node").ipv4 }}'
+	option ipaddr '{{ $node.ipv4.address }}'
 	option netmask '255.255.240.0'
 	option ip6assign '64'
 
@@ -26,6 +30,16 @@ config interface 'lan_vip'
 	option ipaddr '10.0.0.1'
 	option netmask '255.255.255.255'
 	list ip6addr 'fd74:6a6f:0:f000::1/128'
+
+config route 'zerotier4'
+	option interface 'lan'
+	option target '10.0.0.0/16'
+	option type 'unicast'
+
+config route6 'zerotier6'
+	option interface 'lan'
+	option target 'fd74:6a6f:0::/48'
+	option type 'unicast'
 
 # WAN
 config interface 'wan'
@@ -53,10 +67,3 @@ config interface 'wan6'
 config interface 'tailscale'
 	option proto 'none'
 	option device 'tailscale0'
-
-##
-# ZEROTIER
-##
-config interface 'zerotier'
-	option proto 'none'
-	option device 'ztyxa2r2sw'

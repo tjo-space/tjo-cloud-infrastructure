@@ -13,85 +13,64 @@ firewall:
       - 1337 # HTTP ingress.tjo.cloud healthcheck
       - 4190 # MANAGE SIEVE
 
-# IPv4 and IPv6 addresses are from ZEROTIER.
-bgp:
+nodes:
   batuu:
     asn: 65001
-    ipv4: "172.26.158.117"
-    ipv6: "fdb6:079f:73c6:3799:9099:939d:5a5e:8f57"
+    ipv4:
+      subnet: "10.0.16.0/20"
+      address: "10.0.16.1"
+    ipv6:
+      subnet: "fd74:6a6f:0:1000::/52"
+      address: "fd74:6a6f:0:1000::"
+    hosts:
+      ingress.tjo.cloud:
+        ipv4: "10.0.16.10"
+        ipv6: "fd74:6a6f:0:1010::1"
   jakku:
     asn: 65002
-    ipv4: "172.26.2.34"
-    ipv6: "fdb6:079f:73c6:3799:9099:936e:5fbd:e2e4"
+    ipv4:
+      subnet: "10.0.32.0/20"
+      address: "10.0.32.1"
+    ipv6:
+      subnet: "fd74:6a6f:0:2000::/52"
+      address: "fd74:6a6f:0:2000::"
+    hosts:
+      ingress.tjo.cloud:
+        ipv4: "10.0.32.10"
+        ipv6: "fd74:6a6f:0:2010::1"
   nevaroo:
     asn: 65003
-    ipv4: "172.26.230.30"
-    ipv6: "fdb6:079f:73c6:3799:9099:9366:d3f9:6a2c"
+    ipv4:
+      subnet: "10.0.48.0/20"
+      address: "10.0.48.1"
+    ipv6:
+      subnet: "fd74:6a6f:0:3000::/52"
+      address: "fd74:6a6f:0:3000::"
+    hosts:
+      ingress.tjo.cloud:
+        ipv4: "10.0.48.10"
+        ipv6: "fd74:6a6f:0:3010::1"
   mustafar:
     asn: 65004
-    ipv4: "172.26.163.65"
-    ipv6: "fdb6:079f:73c6:3799:9099:9332:0df3:7967"
+    ipv4:
+      subnet: "10.0.64.0/20"
+      address: "10.0.64.1"
+    ipv6:
+      subnet: "fd74:6a6f:0:4000::/52"
+      address: "fd74:6a6f:0:4000::"
+    hosts:
+      ingress.tjo.cloud:
+        ipv4: "10.0.64.10"
+        ipv6: "fd74:6a6f:0:4010::1"
   endor:
     asn: 65005
-    ipv4: "172.26.201.97"
-    ipv6: "fdb6:079f:73c6:3799:9099:9317:3d71:110d"
-name: "batuu"
-
-ipv4_subnet: "10.0.16.0/20"
-ipv4: "10.0.16.1"
-
-ipv6_subnet: "fd74:6a6f:0:1000::/52"
-ipv6: "fd74:6a6f:0:1000::"
-
-hosts:
-  ingress.tjo.cloud:
-    ipv4: "10.0.16.10"
-    ipv6: "fd74:6a6f:0:1010::1"
-name: "endor"
-
-ipv4_subnet: "10.0.80.0/20"
-ipv4: "10.0.80.1"
-
-ipv6_subnet: "fd74:6a6f:0:5000::/52"
-ipv6: "fd74:6a6f:0:5000::"
-
-hosts:
-  ingress.tjo.cloud:
-    ipv4: "10.0.80.10"
-    ipv6: "fd74:6a6f:0:5010::1"
-name: "jakku"
-
-ipv4_subnet: "10.0.32.0/20"
-ipv4: "10.0.32.1"
-
-ipv6_subnet: "fd74:6a6f:0:2000::/52"
-ipv6: "fd74:6a6f:0:2000::"
-
-hosts:
-  ingress.tjo.cloud:
-    ipv4: "10.0.32.10"
-    ipv6: "fd74:6a6f:0:2010::1"
-name: "mustafar"
-
-ipv4_subnet: "10.0.64.0/20"
-ipv4: "10.0.64.1"
-
-ipv6_subnet: "fd74:6a6f:0:4000::/52"
-ipv6: "fd74:6a6f:0:4000::"
-
-hosts:
-  ingress.tjo.cloud:
-    ipv4: "10.0.64.10"
-    ipv6: "fd74:6a6f:0:4010::1"
-name: "nevaroo"
-
-ipv4_subnet: "10.0.48.0/20"
-ipv4: "10.0.48.1"
-
-ipv6_subnet: "fd74:6a6f:0:3000::/52"
-ipv6: "fd74:6a6f:0:3000::"
-
-hosts:
-  ingress.tjo.cloud:
-    ipv4: "10.0.48.10"
-    ipv6: "fd74:6a6f:0:3010::1"
+    ipv4:
+      subnet: "10.0.80.0/20"
+      address: "10.0.80.1"
+    ipv6:
+      subnet: "fd74:6a6f:0:5000::/52"
+      address: "fd74:6a6f:0:5000::"
+    hosts:
+      ingress.tjo.cloud:
+        ipv4: "10.0.80.10"
+        ipv6: "fd74:6a6f:0:5010::1"

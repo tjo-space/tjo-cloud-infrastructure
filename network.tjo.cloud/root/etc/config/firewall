@@ -157,8 +157,10 @@ config forwarding
 ##
 # INGRESS.TJO.CLOUD
 ##
-{{- range (ds "common").firewall }}
-{{ $host := index (ds "node").hosts .host }}
+{{- range (ds "config").firewall }}
+{{ $nodeName := getenv "NODE" }}
+{{ $node := index (ds "config").nodes $nodeName }}
+{{ $host := index $node.hosts .host }}
 {{ $name := .name }}
 {{- range $port := .ports }}
 

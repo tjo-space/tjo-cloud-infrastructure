@@ -20,7 +20,6 @@ destroy:
   cd {{source_directory()}}/terraform
   tofu destroy
 
-
 destroy-only node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
@@ -29,7 +28,7 @@ destroy-only node:
 configure-all:
   #!/usr/bin/env sh
   set -euo pipefail
-  for node in $(ls configs/node.*.yaml | cut -d '.' -f 2)
+  for node in $(cat config.yaml | yq -r '.nodes | keys | .[]')
   do
     just configure ${node}
   done
@@ -37,23 +36,34 @@ configure-all:
 configure node:
   #!/usr/bin/env sh
   set -euo pipefail
-  node="{{node}}"
 
-  echo "Configuring ${node}.network.tjo.cloud"
+  export NODE="{{node}}"
+  export TMPDIR="$(mktemp -d)"
+  export CONFIG="{{source_directory()}}/config.yaml"
 
-  for file in {{source_directory()}}/openwrt/etc/config/*
+  cd {{source_directory()}}/root
+
+  echo "Configuring ${NODE}.network.tjo.cloud"
+
+  echo "- Generating configuration ${TMPDIR}..."
+  for file in $(find * -type f)
   do
-    echo "- Deploying /etc/config/$(basename $file)"
-    gomplate --file $file \
-      --datasource common=configs/common.yaml \
-      --datasource node=configs/node.${node}.yaml \
-      | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/config/$(basename $file)"
+    echo " - $file"
+    mkdir -p ${TMPDIR}/$(dirname $file)
+    gomplate --file $file --datasource config=${CONFIG} > ${TMPDIR}/${file}
   done
 
+  echo "- Copying configuration to node..."
+  pushd ${TMPDIR}
+  for file in $(find * -type f)
+  do
+    echo "- $file"
+    cat $file | tailscale ssh root@${NODE}-network-tjo-cloud "cat > /$file"
+  done
+  popd
+
   echo "- Configuring tailscale"
-  # We disable SNAT due to multiple router hops,
-  #  which would not know how to route Tailscale IP.
-  tailscale ssh "root@${node}-network-tjo-cloud" <<'EOL'
+  tailscale ssh root@${NODE}-network-tjo-cloud <<'EOL'
   tailscale up \
     --advertise-routes=10.0.0.0/16,fd74:6a6f:0::/48 \
     --snat-subnet-routes=true \
@@ -62,12 +72,12 @@ configure node:
     --reset
   EOL
 
+  echo "- Installing zerotier"
+  tailscale ssh root@${NODE}-network-tjo-cloud "opkg update"
+  tailscale ssh root@${NODE}-network-tjo-cloud "opkg install zerotier"
+
   echo "- Configuring zerotier"
-  tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
-  tailscale ssh "root@${node}-network-tjo-cloud" "opkg install zerotier"
-  cat {{source_directory()}}/openwrt/etc/zerotier.conf \
-    | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/zerotier.conf"
-  tailscale ssh "root@${node}-network-tjo-cloud" <<'EOL'
+  tailscale ssh root@${NODE}-network-tjo-cloud <<'EOL'
   uci set zerotier.global.enabled='1'
   uci set zerotier.global.local_conf_path=/etc/zerotier.conf
   uci delete zerotier.earth
@@ -77,15 +87,11 @@ configure node:
   uci commit zerotier
   EOL
 
-  echo "- Configuring bird"
-  tailscale ssh "root@${node}-network-tjo-cloud" "opkg update"
-  tailscale ssh "root@${node}-network-tjo-cloud" "opkg install bird2 bird2c"
-  gomplate --file {{source_directory()}}/openwrt/etc/bird.conf \
-    --datasource common=configs/common.yaml \
-    --datasource node=configs/node.${node}.yaml \
-    | tailscale ssh "root@${node}-network-tjo-cloud" "cat > /etc/bird.conf"
+  echo "- Installing Bird"
+  tailscale ssh root@${NODE}-network-tjo-cloud "opkg update"
+  tailscale ssh root@${NODE}-network-tjo-cloud "opkg install bird2 bird2c"
 
   echo "- Reboot router in 5 seconds..."
   sleep 5
   echo "- Rebooting router..."
-  tailscale ssh "root@${node}-network-tjo-cloud" "reboot"
+  tailscale ssh root@${NODE}-network-tjo-cloud "reboot"
