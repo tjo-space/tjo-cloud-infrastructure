@@ -28,8 +28,8 @@ ff02::3   ip6-allhosts
 
 {{- range $key, $value := $nodes }}
 # {{ $key }}
-{{ $value.ipv6 }} {{ $key }}.system.tjo.cloud {{ $key }}
 {{ $value.ipv4 }} {{ $key }}.system.tjo.cloud {{ $key }}
+{{ $value.ipv6 }} {{ $key }}.system.tjo.cloud {{ $key }}
 {{ end }}
 EOF
 
@@ -49,7 +49,7 @@ systemctl disable --now rpcbind.service
 ##
 # SSH
 ##
-echo "PasswordAuthentication no" >>/etc/ssh/sshd_config
+echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
 
 ##
 # Networking
@@ -58,4 +58,12 @@ echo "PasswordAuthentication no" >>/etc/ssh/sshd_config
 apt install -qq -yy libpve-network-perl dnsmasq frr-pythontools
 
 systemctl disable --now dnsmasq
-systemctl enable frr.service
+# systemctl enable frr.service
+# We do not yet use this, lets disable for now.
+systemctl disable --now frr.service
+
+##
+# Restart PVE
+##
+systemctl restart pve-cluster.service
+systemctl restart corosync.service
