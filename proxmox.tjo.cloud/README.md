@@ -3,6 +3,7 @@
 ## Proxmox Configuration
 
 * [Guide to install on emmc](https://ibug.io/blog/2022/03/install-proxmox-ve-emmc/)
+* [E1000 Driver Hand](https://forum.proxmox.com/threads/e1000-driver-hang.58284/page-8#post-390709)
 
 ### 1. Tailscale.
 Install and authenticate as always. Start with:

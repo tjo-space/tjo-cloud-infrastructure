@@ -15,10 +15,20 @@ __ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443
 __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud VMs. Using BGP, each node advertises
 it's subnet as well as any other advertisements it receives, like from Kubernetes cluster (Cilium BGP).
 
-# Subnets
-We are using `10.0.0.0/16` range for IPv4 as well as `fd74:6a6f:0::/48` for IPv6.
+# Subnet
+We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
+This is used for the whole SD-WAN.
 
-## Designations
+It is further split as:
+
+| Use                         | IPv4          | IPv6              |
+|-----------------------------|---------------|-------------------|
+| network.tjo.cloud - General | 10.0.0.0/16   | fd74:6a6f:0::/48  |
+| k8s.tjo.cloud               | 10.8.0.0/16   | fd74:6a6f:8::/48  |
+
+Unspecified are unused.
+
+## network.tjo.cloud
 | Host       | IPv4          | IPv6                  | BGP ASN |
 |------------|---------------|-----------------------|---------|
 | _reserved_   | 10.0.0.0/20   | fd74:6a6f:0:0000::/52 | 65000   |
@@ -38,7 +48,7 @@ We are using `10.0.0.0/16` range for IPv4 as well as `fd74:6a6f:0::/48` for IPv6
 |            | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 | 65014   |
 |            | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 | 65015   |
 
-Each subnet gives us 4096 IP addresses per host.
+Each subnet gives us 4096 IPv4 addresses per host.
 
 ### Per host designations
 
@@ -57,18 +67,17 @@ First 100 addresses are reserved for network and cloud operations.
 |----------------|------------------|-------------------------|
 | Router LAN VIP | 10.0.0.1/32      | fd74:6a6f:0:f000::1/128 |
 
-### Kubernetes designations
+## k8s.tjo.cloud
 
-We use `10.10.0.0/16` and `fd74:6a6f:10::/48` subnets for Kubernetes.
-Even though this are outside of subnet routed by the `network.tjo.cloud` that is okay,
-as we use BGP to advertise the routes.
+We use `10.8.0.0/16` and `fd74:6a6f:8::/48` subnets for Kubernetes.
+We use BGP to advertise these routes (iBGP to each network.tjo.cloud ASN).
 
 | Use              | IPv4             | IPv6                     |
 |------------------|------------------|--------------------------|
-| Pods             | 10.10.0.0/20     | fd74:6a6f:10::/52        |
-| Load Balanancers | 10.10.16.0/20    | fd74:6a6f:10:1000::/52   |
+| Pods             | 10.8.0.0/20     | fd74:6a6f:8:0000::/52        |
+| Load Balanancers | 10.8.16.0/20    | fd74:6a6f:8:1000::/52   |
 | _unused_         | xxx              | xxx                      |
-| Services         | 10.10.252.0/22   | fd74:6a6f:10::3e80::/108 |
+| Services         | 10.8.252.0/22   | fd74:6a6f:8::3e80::/108 |
 
 For Services we use last possible subnets.
 

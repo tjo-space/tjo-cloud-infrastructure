@@ -21,7 +21,7 @@ config interface 'lan'
 	option device  'br-lan'
 	option proto   'static'
 	option ipaddr  '{{ $node.ipv4.address }}'
-	option netmask '255.255.0.0'
+	option netmask '255.255.240.0'
   option ip6addr '{{ $node.ipv6.address }}/64'
 	option ip6assign '64'
 
@@ -34,12 +34,12 @@ config interface 'lan_vip'
 
 config route 'lan4'
 	option interface 'lan'
-	option target '10.0.0.0/16'
+	option target '10.0.0.0/10'
 	option type 'unicast'
 
 config route6 'lan6'
 	option interface 'lan'
-	option target 'fd74:6a6f:0::/48'
+	option target 'fd74:6a6f::/32'
 	option type 'unicast'
 
 # WAN

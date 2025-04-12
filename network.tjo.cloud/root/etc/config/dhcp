@@ -7,7 +7,7 @@ config dnsmasq
 	option dhcpleasemax '1024'
 	option authoritative '1'
 	option readethers '1'
-	option leasefile '/tmp/dhcp.leases'
+	option leasefile '/etc/dhcp.leases'
 	option resolvfile '/tmp/resolv.conf.d/resolv.conf.auto'
 	option localservice '1'
 	option ednspacket_max '1232'

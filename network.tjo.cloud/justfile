@@ -65,7 +65,7 @@ configure node:
   echo "- Configuring tailscale"
   tailscale ssh root@${NODE}-network-tjo-cloud <<'EOL'
   tailscale up \
-    --advertise-routes=10.0.0.0/16,fd74:6a6f:0::/48 \
+    --advertise-routes=10.0.0.0/10,fd74:6a6f::/32 \
     --snat-subnet-routes=true \
     --accept-dns=false \
     --ssh \

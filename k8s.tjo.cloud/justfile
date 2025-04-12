@@ -21,10 +21,6 @@ module-cluster-core-crds:
 destroy:
   tofu state rm module.cluster-core || true
   tofu state rm module.cluster-components || true
-  tofu state rm module.cluster.proxmox_virtual_environment_download_file.talos || true
-  tofu state rm module.cluster.proxmox_virtual_environment_file || true
-  tofu state rm module.cluster.proxmox_virtual_environment_file.metadata || true
-  tofu state rm module.cluster.talos_image_factory_schematic.this || true
   tofu destroy -target module.cluster
 
 apply: module-cluster-core-crds
