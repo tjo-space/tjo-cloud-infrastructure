@@ -98,7 +98,7 @@ tofu import 'proxmox_virtual_environment_network_linux_bridge.vmbr0["nevaroo"]' 
 ### 5. Setup initial network.
 
 ```
-# Fix want to use eth1.
+# Fix: we want to use eth1.
 # Remove all mentions of lan.
 vim /etc/config/network
 service network restart
