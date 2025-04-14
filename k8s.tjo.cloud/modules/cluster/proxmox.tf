@@ -41,7 +41,7 @@ resource "proxmox_virtual_environment_download_file" "talos" {
   content_type = "iso"
   datastore_id = var.proxmox.common_storage
   node_name    = values(var.nodes)[0].host
-  file_name    = "talos-${talos_image_factory_schematic.this.id}-${var.talos.version}-amd64.iso"
+  file_name    = "${var.cluster.name}-talos-${talos_image_factory_schematic.this.id}-${var.talos.version}-amd64.iso"
   url          = "https://factory.talos.dev/image/${talos_image_factory_schematic.this.id}/${var.talos.version}/nocloud-amd64.iso"
 }
 
@@ -61,8 +61,10 @@ resource "proxmox_virtual_environment_file" "metadata" {
       zone: ${each.value.host}
       region: ${var.proxmox.name}
     EOF
-    file_name = "cluster-${var.cluster.name}-${each.value.name}.metadata.yaml"
+    file_name = "${var.cluster.name}.${each.value.name}.metadata.yaml"
   }
+
+  timeout_upload = 30
 }
 
 resource "proxmox_virtual_environment_vm" "nodes" {

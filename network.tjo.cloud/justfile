@@ -90,6 +90,7 @@ configure node:
   echo "- Installing Bird"
   tailscale ssh root@${NODE}-network-tjo-cloud "opkg update"
   tailscale ssh root@${NODE}-network-tjo-cloud "opkg install bird2 bird2c"
+  tailscale ssh root@${NODE}-network-tjo-cloud "service bird reload"
 
   echo "- Reboot router in 5 seconds..."
   sleep 5

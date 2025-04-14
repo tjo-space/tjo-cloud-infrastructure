@@ -21,36 +21,45 @@ This is used for the whole SD-WAN.
 
 It is further split as:
 
-| Use                         | IPv4          | IPv6              |
-|-----------------------------|---------------|-------------------|
-| network.tjo.cloud - General | 10.0.0.0/16   | fd74:6a6f:0::/48  |
-| k8s.tjo.cloud               | 10.8.0.0/16   | fd74:6a6f:8::/48  |
+| Use                | IPv4          | IPv6              |
+|--------------------|---------------|-------------------|
+| network.tjo.cloud  | 10.0.0.0/16   | fd74:6a6f:0::/48  |
+| k8s.tjo.cloud      | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 
 Unspecified are unused.
 
 ## network.tjo.cloud
-| Host       | IPv4          | IPv6                  | BGP ASN |
-|------------|---------------|-----------------------|---------|
-| _reserved_   | 10.0.0.0/20   | fd74:6a6f:0:0000::/52 | 65000   |
-| batuu      | 10.0.16.0/20  | fd74:6a6f:0:1000::/52 | 65001   |
-| jakku      | 10.0.32.0/20  | fd74:6a6f:0:2000::/52 | 65002   |
-| nevaroo    | 10.0.48.0/20  | fd74:6a6f:0:3000::/52 | 65003   |
-| mustafar   | 10.0.64.0/20  | fd74:6a6f:0:4000::/52 | 65004   |
-| endor      | 10.0.80.0/20  | fd74:6a6f:0:5000::/52 | 65005   |
-|            | 10.0.96.0/20  | fd74:6a6f:0:6000::/52 | 65006   |
-|            | 10.0.112.0/20 | fd74:6a6f:0:7000::/52 | 65007   |
-|            | 10.0.128.0/20 | fd74:6a6f:0:8000::/52 | 65008   |
-|            | 10.0.144.0/20 | fd74:6a6f:0:9000::/52 | 65009   |
-|            | 10.0.160.0/20 | fd74:6a6f:0:a000::/52 | 65010   |
-|            | 10.0.176.0/20 | fd74:6a6f:0:b000::/52 | 65011   |
-|            | 10.0.192.0/20 | fd74:6a6f:0:c000::/52 | 65012   |
-|            | 10.0.208.0/20 | fd74:6a6f:0:d000::/52 | 65013   |
-|            | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 | 65014   |
-|            | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 | 65015   |
+
+### BGP
+
+Each router instance establishes iBGP peering with all others.
+ASN 65000 is used. Each router also listens on `10.0.0.1`for
+any iBGP peerings. This is used for `k8s.tjo.cloud` where cilium advertises
+pod and external load balancer ips.
+
+### Per Host Subnets
+| Host       | IPv4          | IPv6                  |
+|------------|---------------|-----------------------|
+| _reserved_   | 10.0.0.0/20   | fd74:6a6f:0:0000::/52 |
+| batuu      | 10.0.16.0/20  | fd74:6a6f:0:1000::/52 |
+| jakku      | 10.0.32.0/20  | fd74:6a6f:0:2000::/52 |
+| nevaroo    | 10.0.48.0/20  | fd74:6a6f:0:3000::/52 |
+| mustafar   | 10.0.64.0/20  | fd74:6a6f:0:4000::/52 |
+| endor      | 10.0.80.0/20  | fd74:6a6f:0:5000::/52 |
+|            | 10.0.96.0/20  | fd74:6a6f:0:6000::/52 |
+|            | 10.0.112.0/20 | fd74:6a6f:0:7000::/52 |
+|            | 10.0.128.0/20 | fd74:6a6f:0:8000::/52 |
+|            | 10.0.144.0/20 | fd74:6a6f:0:9000::/52 |
+|            | 10.0.160.0/20 | fd74:6a6f:0:a000::/52 |
+|            | 10.0.176.0/20 | fd74:6a6f:0:b000::/52 |
+|            | 10.0.192.0/20 | fd74:6a6f:0:c000::/52 |
+|            | 10.0.208.0/20 | fd74:6a6f:0:d000::/52 |
+|            | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 |
+|            | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 |
 
 Each subnet gives us 4096 IPv4 addresses per host.
 
-### Per host designations
+#### Usage of per host subnet
 
 First 100 addresses are reserved for network and cloud operations.
 

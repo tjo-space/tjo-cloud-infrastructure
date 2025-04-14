@@ -109,31 +109,33 @@ resource "helm_release" "cilium" {
   })]
 }
 
-resource "kubernetes_manifest" "cilium-bgp-node-config-overrides" {
+resource "kubernetes_manifest" "cilium-bgp-cluster-config" {
   depends_on = [helm_release.cilium]
-  for_each   = var.hosts
 
   manifest = {
     apiVersion = "cilium.io/v2alpha1"
     kind       = "CiliumBGPClusterConfig"
     metadata = {
-      name = each.key
+      name = "default"
     }
     spec = {
-      nodeSelector = {
-        matchLabels = {
-          "k8s.tjo.cloud/bgp"     = true
-          "k8s.tjo.cloud/host"    = each.key
-          "k8s.tjo.cloud/proxmox" = var.proxmox.name
-        }
-      }
       bgpInstances = [
-        { name     = each.key
-          localASN = each.value.asn
+        {
+          name     = "instance-${var.bgp.asn}"
+          localASN = var.bgp.asn
           peers = [
-            { name        = "local-router-vip"
-              peerASN     = each.value.asn
+            {
+              name        = "local-router-ipv4"
+              peerASN     = var.bgp.asn
               peerAddress = "10.0.0.1"
+              peerConfigRef = {
+                name = "default"
+              }
+            },
+            {
+              name        = "local-router-ipv6"
+              peerASN     = var.bgp.asn
+              peerAddress = "fd74:6a6f:0:f000::1"
               peerConfigRef = {
                 name = "default"
               }
@@ -192,9 +194,18 @@ resource "kubernetes_manifest" "cilium-bgp-peer-config" {
       name = "default"
     }
     spec = {
-
+      timers = {
+        connectRetryTimeSeconds = 5
+        holdTimeSeconds         = 9
+        keepAliveTimeSeconds    = 3
+      }
+      gracefulRestart = {
+        enabled            = true
+        restartTimeSeconds = 15
+      }
       families = [
-        { afi  = "ipv4"
+        {
+          afi  = "ipv4"
           safi = "unicast"
           advertisements = {
             matchLabels = {
@@ -202,7 +213,8 @@ resource "kubernetes_manifest" "cilium-bgp-peer-config" {
             }
           }
         },
-        { afi  = "ipv6"
+        {
+          afi  = "ipv6"
           safi = "unicast"
           advertisements = {
             matchLabels = {

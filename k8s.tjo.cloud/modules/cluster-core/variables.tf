@@ -23,7 +23,12 @@ variable "proxmox" {
 
 variable "hosts" {
   type = map(object({
-    asn     = number
     storage = string
   }))
+}
+
+variable "bgp" {
+  type = object({
+    asn = number
+  })
 }

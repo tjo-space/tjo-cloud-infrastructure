@@ -104,17 +104,17 @@ module "cluster-core" {
     name : module.cluster.name,
     load_balancer_cidr = local.load_balancer_cidr
   }
+  bgp = {
+    asn = 65000
+  }
   hosts = {
     nevaroo = {
-      asn     = 65003
       storage = "local-nvme-lvm"
     }
     mustafar = {
-      asn     = 65004
       storage = "local"
     }
     endor = {
-      asn     = 65005
       storage = "local-nvme"
     }
   }

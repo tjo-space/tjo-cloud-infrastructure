@@ -73,7 +73,7 @@ records = {
   "stuff.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "vault.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "yt.tjo.space"        = { to = "any.ingress.tjo.cloud" }
-  "books.tjo.space"        = { to = "any.ingress.tjo.cloud" }
+  "books.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   # CLOUD.TJO.SPACE
   "cloud.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "collabora.tjo.space" = { to = "any.ingress.tjo.cloud" }

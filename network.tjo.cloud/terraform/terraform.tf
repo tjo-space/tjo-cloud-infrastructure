@@ -6,13 +6,11 @@ terraform {
     }
   }
 
-  required_version = "~> 1.7.3"
+  required_version = "~> 1.9.0"
 }
 
 provider "proxmox" {
-  # FIXME: Traefik/NGINX breaks this! 500 ERROR
-  endpoint  = "https://batuu.system.tjo.cloud:8006/api2/json"
-  insecure  = true
+  endpoint  = "https://proxmox.tjo.cloud/api2/json"
   api_token = var.proxmox_token
 
   ssh {
