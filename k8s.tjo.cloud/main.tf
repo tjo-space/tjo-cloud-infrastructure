@@ -62,7 +62,7 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
-    mustafar-2 = {
+    mustafar-1 = {
       id      = 6002
       type    = "worker"
       host    = "mustafar"

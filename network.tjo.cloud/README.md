@@ -12,8 +12,7 @@ __LAN interface__ is an ordinary lan network.
 
 __ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443, 587 etc.). No other VM is accessible from the internet.
 
-__network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud VMs. Using BGP, each node advertises
-it's subnet as well as any other advertisements it receives, like from Kubernetes cluster (Cilium BGP).
+__network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
 
 # Subnet
 We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
@@ -24,6 +23,7 @@ It is further split as:
 | Use                | IPv4          | IPv6              |
 |--------------------|---------------|-------------------|
 | network.tjo.cloud  | 10.0.0.0/16   | fd74:6a6f:0::/48  |
+| tealfleet.com      | 10.4.0.0/16   | fd74:6a6f:4::/48  |
 | k8s.tjo.cloud      | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 
 Unspecified are unused.
@@ -62,13 +62,7 @@ Each subnet gives us 4096 IPv4 addresses per host.
 #### Usage of per host subnet
 
 First 100 addresses are reserved for network and cloud operations.
-
-| Use                      | IPv4             | IPv6                  |
-|--------------------------|------------------|-----------------------|
-| Virtual Machines (DHCP)  | 10.0.(y+0).0/22  | fd74:6a6f:0:y000::/54 |
-|                          | 10.0.(y+4).0/22  | fd74:6a6f:0:y400::/54 |
-|                          | 10.0.(y+8).0/22  | fd74:6a6f:0:y800::/54 |
-| Jakob                    | 10.0.(y+12).0/22 | fd74:6a6f:0:yc00::/54 |
+Next 1021 are provisioned via DHCP. The reset are unused.
 
 ### Special designations
 
@@ -135,15 +129,18 @@ just configure <node>
 
 https://my.zerotier.com/network/b6079f73c6379990
 
-At this point, an ipv4 and ipv6 will be assigned. We have to write that to `configs/common.yaml` and
-run `just configure <node>` again.
-
 # TODO
 
 ## Use gitops for tailscale ACL.
 
-Current version is an snapshot in time, more as an example then actual version used.
+ - [ ] Current version is an snapshot in time, more as an example then actual version used.
 
 ## IPv6 Connectivity.
 
-As we assign private ipv6 addresses, we would have to ise ipv6 nat to translate those to real ipv6 addresses.
+ - [ ] As we assign private ipv6 addresses, we would have to ise ipv6 nat to translate those to real ipv6 addresses.
+ - [ ] BGP IPv6 doesn't work with Cilium. Some configuration must be changed.
+
+## Selfhost Zerotier.
+
+ - [ ] Use [ztnet](https://github.com/sinamics/ztnet).
+ - [ ] Deploy an instance on hetzner cloud. Same as it was done for id.tjo.cloud.
