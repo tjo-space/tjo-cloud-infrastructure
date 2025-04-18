@@ -128,19 +128,11 @@ config zone
 	option forward 'ACCEPT'
 	list network 'lan'
 	list network 'lan_vip'
+	list network 'lan_legacy'
 
 config forwarding
 	option src 'lan'
 	option dest 'wan'
-
-config rule
-	option name 'Drop-Node-Local-To-ZeroTier'
-	option src '*'
-	option dest 'lan'
-	option device 'ztyxa2r2sw'
-	list dest_ip '10.0.0.0/20'
-	list dest_ip 'fd74:6a6f:0:0000::/52'
-	option target 'DROP'
 
 ##
 # TAILSCALE
@@ -163,12 +155,11 @@ config forwarding
 	option dest 'tailscale'
 
 ##
-# INGRESS.TJO.CLOUD
+# PORT FORWARDING
 ##
 {{- range (ds "config").firewall }}
 {{ $nodeName := getenv "NODE" }}
-{{ $node := index (ds "config").nodes $nodeName }}
-{{ $host := index $node.hosts .host }}
+{{ $host := .host }}
 {{ $name := .name }}
 {{- range $port := .ports }}
 

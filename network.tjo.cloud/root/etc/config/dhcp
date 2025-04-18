@@ -19,19 +19,16 @@ config dnsmasq
 
 config dhcp 'lan'
 	option interface 'lan'
-  # Skip first 100.
-  # Reserved for ingress.tjo.cloud and other.
-	option start '100'
-	# 1/4 of the subnet space.
-  # The rest is reserved for other uses.
-	option limit '1021'
-	option leasetime '24h'
+  # Start from 10.0.4.0 till 10.0.63.254.
+	option start '1024'
+	#option limit '15358'
+	option limit '1024
+	option leasetime '7d'
 	option dhcpv4 'server'
-	option dhcpv6 'server'
+	# Use SLAAC for IPv6
+	option dhcpv6 'disabled'
 	option ra 'server'
-	option ra_default '1'
-	list ra_flags 'managed-config'
-	list ra_flags 'other-config'
+	list ra_flags 'none'
 
 config dhcp 'wan'
 	option interface 'wan'

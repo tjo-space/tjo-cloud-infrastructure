@@ -1,6 +1,8 @@
 firewall:
   - name: "ingress.tjo.cloud"
-    host: "ingress.tjo.cloud"
+    host:
+      ipv4: "10.0.0.10"
+      ipv6: "fd74:6a6f:0:0010::"
     ports:
       - 22   # SSH
       - 25   # SMTP (explicit TLS => STARTTLS)
@@ -19,56 +21,36 @@ bgp:
 nodes:
   batuu:
     ipv4:
-      subnet: "10.0.16.0/20"
-      address: "10.0.16.1"
+      address: "10.0.1.1"
+      legacy: "10.0.16.1"
     ipv6:
-      subnet: "fd74:6a6f:0:1000::/52"
-      address: "fd74:6a6f:0:1000::1"
-    hosts:
-      ingress.tjo.cloud:
-        ipv4: "10.0.16.10"
-        ipv6: "fd74:6a6f:0:1010::1"
+      address: "fd74:6a6f:0:01ff::"
+      legacy: "fd74:6a6f:0:1000::1"
   jakku:
     ipv4:
-      subnet: "10.0.32.0/20"
-      address: "10.0.32.1"
+      address: "10.0.1.2"
+      legacy: "10.0.32.1"
     ipv6:
-      subnet: "fd74:6a6f:0:2000::/52"
-      address: "fd74:6a6f:0:2000::1"
-    hosts:
-      ingress.tjo.cloud:
-        ipv4: "10.0.32.10"
-        ipv6: "fd74:6a6f:0:2010::1"
+      address: "fd74:6a6f:0:02ff::"
+      legacy: "fd74:6a6f:0:2000::1"
   nevaroo:
     ipv4:
-      subnet: "10.0.48.0/20"
-      address: "10.0.48.1"
+      address: "10.0.1.3"
+      legacy: "10.0.48.1"
     ipv6:
-      subnet: "fd74:6a6f:0:3000::/52"
-      address: "fd74:6a6f:0:3000::1"
-    hosts:
-      ingress.tjo.cloud:
-        ipv4: "10.0.48.10"
-        ipv6: "fd74:6a6f:0:3010::1"
+      address: "fd74:6a6f:0:03ff::"
+      legacy: "fd74:6a6f:0:3000::1"
   mustafar:
     ipv4:
-      subnet: "10.0.64.0/20"
-      address: "10.0.64.1"
+      address: "10.0.1.4"
+      legacy: "10.0.64.1"
     ipv6:
-      subnet: "fd74:6a6f:0:4000::/52"
-      address: "fd74:6a6f:0:4000::1"
-    hosts:
-      ingress.tjo.cloud:
-        ipv4: "10.0.64.10"
-        ipv6: "fd74:6a6f:0:4010::1"
+      address: "fd74:6a6f:0:04ff::"
+      legacy: "fd74:6a6f:0:4000::1"
   endor:
     ipv4:
-      subnet: "10.0.80.0/20"
-      address: "10.0.80.1"
+      address: "10.0.1.5"
+      legacy: "10.0.80.1"
     ipv6:
-      subnet: "fd74:6a6f:0:5000::/52"
-      address: "fd74:6a6f:0:5000::1"
-    hosts:
-      ingress.tjo.cloud:
-        ipv4: "10.0.80.10"
-        ipv6: "fd74:6a6f:0:5010::1"
+      address: "fd74:6a6f:0:05ff::"
+      legacy: "fd74:6a6f:0:5000::1"

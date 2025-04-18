@@ -15,22 +15,25 @@ config device
 
 # LAN
 config globals 'globals'
-	option ula_prefix '{{ $node.ipv6.subnet }}'
+	option ula_prefix 'fd74:6a6f:0::/48'
 
 config interface 'lan'
 	option device  'br-lan'
 	option proto   'static'
-	option ipaddr  '{{ $node.ipv4.address }}'
-	option netmask '255.255.240.0'
-  option ip6addr '{{ $node.ipv6.address }}/64'
-	option ip6assign '64'
+	list ipaddr  '{{ $node.ipv4.address }}/10'
+  list ip6addr '{{ $node.ipv6.address }}/48'
 
 config interface 'lan_vip'
 	option proto 'static'
 	option device 'br-lan'
-	option ipaddr '10.0.0.1'
-	option netmask '255.255.255.255'
-	option ip6addr 'fd74:6a6f:0:f000::1/128'
+	list ipaddr '10.0.0.1/32'
+	list ip6addr 'fd74:6a6f:0:0001::/128'
+
+config interface 'lan_legacy'
+	option proto 'static'
+	option device 'br-lan'
+	list ipaddr '{{ $node.ipv4.legacy }}/32'
+	list ip6addr '{{ $node.ipv6.legacy }}/128'
 
 config route 'lan4'
 	option interface 'lan'

@@ -10,7 +10,7 @@ __WAN interface__ either represents an actual public interface (on Hetzner) or a
 
 __LAN interface__ is an ordinary lan network.
 
-__ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443, 587 etc.). No other VM is accessible from the internet.
+__ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443, 587 etc.). No other internal service is accessible from the internet.
 
 __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
 
@@ -33,42 +33,32 @@ Unspecified are unused.
 ### BGP
 
 Each router instance establishes iBGP peering with all others.
-ASN 65000 is used. Each router also listens on `10.0.0.1`for
+ASN 65000 is used. Each router also listens on `10.0.0.1` for
 any iBGP peerings. This is used for `k8s.tjo.cloud` where cilium advertises
 pod and external load balancer ips.
 
-### Per Host Subnets
-| Host       | IPv4          | IPv6                  |
-|------------|---------------|-----------------------|
-| _reserved_   | 10.0.0.0/20   | fd74:6a6f:0:0000::/52 |
-| batuu      | 10.0.16.0/20  | fd74:6a6f:0:1000::/52 |
-| jakku      | 10.0.32.0/20  | fd74:6a6f:0:2000::/52 |
-| nevaroo    | 10.0.48.0/20  | fd74:6a6f:0:3000::/52 |
-| mustafar   | 10.0.64.0/20  | fd74:6a6f:0:4000::/52 |
-| endor      | 10.0.80.0/20  | fd74:6a6f:0:5000::/52 |
-|            | 10.0.96.0/20  | fd74:6a6f:0:6000::/52 |
-|            | 10.0.112.0/20 | fd74:6a6f:0:7000::/52 |
-|            | 10.0.128.0/20 | fd74:6a6f:0:8000::/52 |
-|            | 10.0.144.0/20 | fd74:6a6f:0:9000::/52 |
-|            | 10.0.160.0/20 | fd74:6a6f:0:a000::/52 |
-|            | 10.0.176.0/20 | fd74:6a6f:0:b000::/52 |
-|            | 10.0.192.0/20 | fd74:6a6f:0:c000::/52 |
-|            | 10.0.208.0/20 | fd74:6a6f:0:d000::/52 |
-|            | 10.0.224.0/20 | fd74:6a6f:0:e000::/52 |
-|            | 10.0.240.0/20 | fd74:6a6f:0:f000::/52 |
-
-Each subnet gives us 4096 IPv4 addresses per host.
-
-#### Usage of per host subnet
-
-First 100 addresses are reserved for network and cloud operations.
-Next 1021 are provisioned via DHCP. The reset are unused.
 
 ### Special designations
 
-| Use            | IPv4             | IPv6                    |
-|----------------|------------------|-------------------------|
-| Router LAN VIP | 10.0.0.1/32      | fd74:6a6f:0:f000::1/128 |
+Subnet `10.0.0.0/24` and `fd74:6a6f:0:0000::/56` are reserved to be
+"node local". Which means any traffic destioned to these IP addresses
+won't be forwarded via ZeroTier (SD-WAN).
+
+The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud
+operations. These addresses are not provided via DHCP.
+
+DHCP starts with `10.0.4.0` and up to `10.0.63.254`, par of first `/18` subnet.
+
+| Use                   | IPv4             | IPv6                     |
+|-----------------------|------------------|--------------------------|
+| Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f:0:0001::/128   |
+| ingress.tjo.cloud VIP | 10.0.0.10/32     | fd74:6a6f:0:0010::/64  |
+| # |  #    |  # |
+| batuu.network.tjo.cloud | 10.0.1.1/32     | fd74:6a6f:0:01ff::/64  |
+| jakku.network.tjo.cloud | 10.0.1.2/32     | fd74:6a6f:0:02ff::/64  |
+| nevaroo.network.tjo.cloud | 10.0.1.3/32     | fd74:6a6f:0:03ff::/64  |
+| mustafar.network.tjo.cloud | 10.0.1.4/32     | fd74:6a6f:0:04ff::/64  |
+| endor.network.tjo.cloud | 10.0.1.5/32     | fd74:6a6f:0:05ff::/64  |
 
 ## k8s.tjo.cloud
 

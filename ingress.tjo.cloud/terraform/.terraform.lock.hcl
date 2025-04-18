@@ -30,6 +30,7 @@ provider "registry.opentofu.org/dnsimple/dnsimple" {
   constraints = "1.8.0"
   hashes = [
     "h1:Nwu+3tVJnNmSJQoctRSWAamUX3AiTCZ5mOMtAUPtg7Q=",
+    "h1:uxMck1OicFKHnTF6Fwe8es07LHE3k3nS5B7fzN99/fc=",
     "zh:0852fd9523268b30fb637a03a0cb6d6a5878cbbf7e0e4219615c9ba073fbdf17",
     "zh:0ac43193082dd467abad4937b0abb97ea349205726fc450cb3a94dc0db6e9a49",
     "zh:10e4aad54c2d6cbd9328a1661d72a978357743eda7099a3f120a497119be4ff1",

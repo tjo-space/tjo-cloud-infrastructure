@@ -66,6 +66,7 @@ resource "proxmox_virtual_environment_file" "userdata" {
       filename: /swapfile
       size: 512M
     runcmd:
+      - echo "ubuntu:ubuntu" | chpasswd
       - git clone --depth 1 --no-checkout --filter=tree:0 https://github.com/tjo-space/tjo-cloud-infrastructure.git /srv
       - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
       - /srv/ingress.tjo.cloud/install.sh
@@ -77,7 +78,6 @@ resource "proxmox_virtual_environment_file" "userdata" {
 resource "proxmox_virtual_environment_vm" "nodes" {
   for_each = local.nodes
 
-  vm_id     = each.value.id
   name      = "${each.value.host}.${each.value.domain}"
   node_name = each.value.host
 
@@ -115,6 +115,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
 
   agent {
     enabled = true
+    timeout = "1m"
   }
 
   network_device {
@@ -139,12 +140,10 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
 
     ip_config {
       ipv4 {
-        address = each.value.ipv4_address
-        gateway = each.value.ipv4_gateway
+        address = "dhcp"
       }
       ipv6 {
-        address = each.value.ipv6_address
-        gateway = each.value.ipv6_gateway
+        address = "dhcp"
       }
     }
   }

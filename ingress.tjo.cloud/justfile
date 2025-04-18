@@ -24,7 +24,7 @@ destroy-only node:
   tofu init
   tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
-configure:
+configure-all:
   #!/usr/bin/env sh
   set -eou pipefail
 
@@ -38,7 +38,7 @@ configure:
     cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
   done
 
-configure-only node:
+configure node:
   #!/usr/bin/env sh
   set -eou pipefail
 

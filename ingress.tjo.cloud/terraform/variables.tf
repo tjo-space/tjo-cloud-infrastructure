@@ -1,13 +1,6 @@
 variable "nodes" {
   type = map(object({
-    id   = number
     host = string
-
-    ipv4_address = string
-    ipv4_gateway = string
-
-    ipv6_address = string
-    ipv6_gateway = string
 
     cores  = optional(number, 1)
     memory = optional(number, 512)
@@ -30,8 +23,6 @@ variable "records" {
     type = optional(string, "ALIAS")
   }))
 }
-
-
 
 variable "ssh_keys" {
   type = list(string)
@@ -60,4 +51,3 @@ variable "dnsimple_token" {
 variable "dnsimple_account_id" {
   type = string
 }
-

@@ -22,6 +22,19 @@ fi
 cd /srv/ingress.tjo.cloud
 
 ##
+echo "== Add VIP"
+cat <<EOF >/etc/networkd-dispatcher/routable.d/vip.sh
+#!/bin/bash
+
+if [ "\$IFACE" == "eth0" ];
+then
+  ip address add 10.0.0.10/32 dev eth0
+fi
+EOF
+chmod +x /etc/networkd-dispatcher/routable.d/vip.sh
+systemctl restart networkd-dispatcher
+
+##
 echo "== Configure Metadata"
 SERVICE_NAME="ingress.tjo.cloud"
 SERVICE_VERSION="$(git describe --tags --always --dirty)"
@@ -96,7 +109,6 @@ systemctl enable --now tailscaled
 if tailscale status --json | jq -e -r '.BackendState != "Running"' >/dev/null; then
   tailscale up \
     --ssh=true \
-    --accept-routes=true \
     --accept-dns=false \
     --advertise-tags="tag:ingress-tjo-cloud" \
     --hostname="$(hostname -f | sed 's/\./-/g')" \
