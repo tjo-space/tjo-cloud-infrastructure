@@ -21,8 +21,7 @@ config dhcp 'lan'
 	option interface 'lan'
   # Start from 10.0.4.0 till 10.0.63.254.
 	option start '1024'
-	#option limit '15358'
-	option limit '1024
+	option limit '15358'
 	option leasetime '7d'
 	option dhcpv4 'server'
 	# Use SLAAC for IPv6
