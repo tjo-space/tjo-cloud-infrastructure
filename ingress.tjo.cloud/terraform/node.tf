@@ -115,6 +115,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
 
   agent {
     enabled = true
+    timeout = "1m"
   }
 
   network_device {
@@ -136,16 +137,5 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
     interface         = "scsi0"
     datastore_id      = each.value.boot_storage
     user_data_file_id = proxmox_virtual_environment_file.userdata[each.key].id
-
-    ip_config {
-      ipv4 {
-        address = each.value.ipv4_address
-        gateway = each.value.ipv4_gateway
-      }
-      ipv6 {
-        address = each.value.ipv6_address
-        gateway = each.value.ipv6_gateway
-      }
-    }
   }
 }

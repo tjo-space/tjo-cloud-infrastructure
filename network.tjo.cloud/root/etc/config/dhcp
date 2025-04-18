@@ -25,13 +25,12 @@ config dhcp 'lan'
 	# 1/4 of the subnet space.
   # The rest is reserved for other uses.
 	option limit '1021'
-	option leasetime '24h'
+	option leasetime '7d'
 	option dhcpv4 'server'
-	option dhcpv6 'server'
+	# Use SLAAC for IPv6
+	option dhcpv6 'disabled'
 	option ra 'server'
-	option ra_default '1'
-	list ra_flags 'managed-config'
-	list ra_flags 'other-config'
+	list ra_flags 'none'
 
 config dhcp 'wan'
 	option interface 'wan'

@@ -22,6 +22,20 @@ fi
 cd /srv/ingress.tjo.cloud
 
 ##
+echo "== Add VIP"
+mkdir -p /etc/systemd/network/eth0.network.d/
+cat <<EOF >/etc/systemd/network/eth0.network.d/vip.conf
+[Match]
+Name = eth0
+
+[Address]
+Address=10.0.0.10/32
+
+[Address]
+Address=fd74:6a6f:0:0000:10/128
+EOF
+
+##
 echo "== Configure Metadata"
 SERVICE_NAME="ingress.tjo.cloud"
 SERVICE_VERSION="$(git describe --tags --always --dirty)"
@@ -96,7 +110,6 @@ systemctl enable --now tailscaled
 if tailscale status --json | jq -e -r '.BackendState != "Running"' >/dev/null; then
   tailscale up \
     --ssh=true \
-    --accept-routes=true \
     --accept-dns=false \
     --advertise-tags="tag:ingress-tjo-cloud" \
     --hostname="$(hostname -f | sed 's/\./-/g')" \

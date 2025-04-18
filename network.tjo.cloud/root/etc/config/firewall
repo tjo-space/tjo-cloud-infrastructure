@@ -126,6 +126,7 @@ config zone
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
+	option subnet '10.0.0.0/10'
 	list network 'lan'
 	list network 'lan_vip'
 	list network 'zerotier'
@@ -155,12 +156,11 @@ config forwarding
 	option dest 'tailscale'
 
 ##
-# INGRESS.TJO.CLOUD
+# PORT FORWARDING
 ##
 {{- range (ds "config").firewall }}
 {{ $nodeName := getenv "NODE" }}
-{{ $node := index (ds "config").nodes $nodeName }}
-{{ $host := index $node.hosts .host }}
+{{ $host := .host }}
 {{ $name := .name }}
 {{- range $port := .ports }}
 
