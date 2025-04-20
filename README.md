@@ -8,3 +8,7 @@ Each subfolder represent a project.
 * [network.tjo.cloud](network.tjo.cloud/README.md)
 * [ingress.tjo.cloud](ingress.tjo.cloud/README.md)
 * [k8s.tjo.cloud](k8s.tjo.cloud/README.md)
+
+Projects to be added:
+* postgresql.tjo.cloud
+* valkey.tjo.cloud

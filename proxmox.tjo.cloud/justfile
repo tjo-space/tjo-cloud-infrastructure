@@ -5,7 +5,7 @@ configure-all:
   #!/usr/bin/env bash
   set -eou pipefail
 
-  for node in `cat configs/nodes.yaml | yq -r '.nodes | keys | .[]'`
+  for node in `cat {{source_directory()}}/config.yaml | yq -r '.nodes | keys | .[]'`
   do
     echo "== Configuring $node"
     just configure $node

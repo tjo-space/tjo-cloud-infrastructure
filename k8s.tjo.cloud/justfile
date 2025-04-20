@@ -1,6 +1,7 @@
 GATEWAY_CRDS_VERSION := "v1.1.0"
 PROMETHEUS_CRDS_VERSION := "main"
 ENVOY_CRDS_VERSION := "1.2.8"
+ARGOCD_CRDS_VERSION := "2.14.10"
 
 default:
   @just --list
@@ -8,15 +9,26 @@ default:
 module-cluster-core-crds:
   @rm -rf modules/cluster-core/crds
   @mkdir -p modules/cluster-core/crds
+
+  # Prometheus
   @curl -L -o modules/cluster-core/crds/podmonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-podmonitors.yaml"
   @curl -L -o modules/cluster-core/crds/servicemonitors.yaml \
     "https://raw.githubusercontent.com/prometheus-community/helm-charts/{{PROMETHEUS_CRDS_VERSION}}/charts/kube-prometheus-stack/charts/crds/crds/crd-servicemonitors.yaml"
+
+  # Gateway API
   @curl -L -o modules/cluster-core/crds/gateway-api.yaml \
     "https://github.com/kubernetes-sigs/gateway-api/releases/download/{{GATEWAY_CRDS_VERSION}}/experimental-install.yaml"
+
+  # Envoy Proxy
   @curl -L -o - \
     "https://github.com/envoyproxy/gateway/archive/refs/tags/v{{ENVOY_CRDS_VERSION}}.tar.gz" \
     | tar -xz -C modules/cluster-core/crds --strip-components=5 --wildcards "gateway-{{ENVOY_CRDS_VERSION}}/charts/gateway-helm/crds/generated/*.yaml"
+
+  # Argo CD
+  @curl -L -o - \
+    "https://github.com/argoproj/argo-cd/archive/refs/tags/v{{ARGOCD_CRDS_VERSION}}.tar.gz" \
+    | tar -xz -C modules/cluster-core/crds --strip-components=3 --wildcards "argo-cd-{{ARGOCD_CRDS_VERSION}}/manifests/crds/*.yaml"
 
 destroy:
   tofu state rm module.cluster-core || true
