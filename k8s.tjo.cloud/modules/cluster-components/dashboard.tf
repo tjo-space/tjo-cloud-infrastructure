@@ -23,13 +23,9 @@ resource "kubernetes_manifest" "dashoard-http-route" {
     }
     spec = {
       parentRefs = [
-        {
-          name = kubernetes_manifest.gateway.object.metadata.name
-        }
+        { name = kubernetes_manifest.gateway.object.metadata.name }
       ]
-      hostnames = [
-        "dashboard.k8s.tjo.cloud"
-      ]
+      hostnames = ["dashboard.k8s.tjo.cloud"]
       rules = [
         {
           matches = [
