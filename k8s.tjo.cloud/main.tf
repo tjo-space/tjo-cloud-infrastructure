@@ -79,6 +79,14 @@ module "cluster" {
       memory    = 4096
       bootstrap = true
     }
+    endor-2 = {
+      id      = 6007
+      type    = "worker"
+      host    = "endor"
+      storage = "local-nvme"
+      cores   = 4
+      memory  = 4096
+    }
   }
 }
 
@@ -121,7 +129,6 @@ module "cluster-core" {
   proxmox = module.cluster.proxmox
 }
 
-# TODO: Move to be managed by argocd
 module "cluster-components" {
   source = "./modules/cluster-components"
 

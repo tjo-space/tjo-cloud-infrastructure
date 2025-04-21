@@ -29,6 +29,7 @@ module-cluster-core-crds:
   @curl -L -o - \
     "https://github.com/argoproj/argo-cd/archive/refs/tags/v{{ARGOCD_CRDS_VERSION}}.tar.gz" \
     | tar -xz -C modules/cluster-core/crds --strip-components=3 --wildcards "argo-cd-{{ARGOCD_CRDS_VERSION}}/manifests/crds/*.yaml"
+  rm modules/cluster-core/crds/kustomization.yaml
 
 destroy:
   tofu state rm module.cluster-core || true

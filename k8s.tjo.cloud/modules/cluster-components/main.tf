@@ -16,7 +16,7 @@ resource "kubernetes_secret" "dnsimple" {
 }
 
 resource "helm_release" "external-dns" {
-  name       = "external-dns-user-content"
+  name       = "external-dns"
   chart      = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
   version    = "v1.15.0"
@@ -86,7 +86,7 @@ resource "kubernetes_manifest" "issuer" {
     apiVersion = "cert-manager.io/v1"
     kind       = "Issuer"
     metadata = {
-      name      = "domains"
+      name      = "primary"
       namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
     }
     spec = {
@@ -114,59 +114,9 @@ resource "kubernetes_manifest" "issuer" {
             selector = {
               dnsZones = [for domain in var.domains : domain.domain]
             }
-          }
+          },
         ]
       }
-    }
-  }
-}
-
-resource "kubernetes_manifest" "gateway" {
-  manifest = {
-    apiVersion = "gateway.networking.k8s.io/v1"
-    kind       = "Gateway"
-    metadata = {
-      name      = "primary"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
-      annotations = {
-        "cert-manager.io/issuer" = kubernetes_manifest.issuer.object.metadata.name
-      }
-    }
-    spec = {
-      gatewayClassName = "envoy"
-      listeners = [for key, domain in var.domains : {
-        name     = key
-        hostname = "*.${domain.domain}"
-        protocol = "HTTPS"
-        port     = 443
-        tls = {
-          mode = "Terminate"
-          certificateRefs = [
-            {
-              name = "${key}-tls"
-            }
-          ]
-        }
-      }]
-    }
-  }
-}
-
-resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
-  manifest = {
-    apiVersion = "gateway.envoyproxy.io/v1alpha1"
-    kind       = "ClientTrafficPolicy"
-    metadata = {
-      name      = "enable-proxy-protocol-policy"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
-    }
-    spec = {
-      targetRef = {
-        group = "gateway.networking.k8s.io"
-        kind  = "Gateway"
-        name  = kubernetes_manifest.gateway.object.metadata.name
-      }
-      enableProxyProtocol = false
     }
   }
 }
