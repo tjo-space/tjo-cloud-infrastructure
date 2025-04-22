@@ -27,9 +27,6 @@ resource "kubernetes_manifest" "gateway" {
         allowedRoutes = {
           kinds : [
             { kind : "HTTPRoute" },
-            { kind : "TLSRoute" },
-            { kind : "TCPRoute" },
-            { kind : "UDPRoute" },
             { kind : "GRPCRoute" },
           ]
           namespaces = {

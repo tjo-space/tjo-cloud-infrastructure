@@ -15,6 +15,8 @@ resource "helm_release" "argocd" {
       domain: "argocd.k8s.tjo.cloud"
 
     configs:
+      params:
+        server.insecure: true
       cm:
         admin.enabled: false
         statusbadge.enabled: true
