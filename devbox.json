@@ -10,7 +10,8 @@
     "age@latest",
     "tenv@latest",
     "gomplate@latest",
-    "just@latest"
+    "just@latest",
+    "moreutils@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"

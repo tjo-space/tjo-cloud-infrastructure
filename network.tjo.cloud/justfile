@@ -30,7 +30,7 @@ configure-all:
   set -euo pipefail
   for node in $(cat config.yaml | yq -r '.nodes | keys | .[]')
   do
-    just configure ${node}
+    just configure ${node} | ts ${node}
   done
 
 configure node:

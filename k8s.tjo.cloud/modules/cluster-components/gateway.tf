@@ -6,7 +6,8 @@ resource "kubernetes_manifest" "gateway" {
       name      = "primary"
       namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
       annotations = {
-        "cert-manager.io/issuer" = "primary"
+        "cert-manager.io/issuer"                  = "primary"
+        "external-dns.alpha.kubernetes.io/target" = "any.ingress.tjo.cloud"
       }
     }
     spec = {
@@ -36,6 +37,13 @@ resource "kubernetes_manifest" "gateway" {
       }]
     }
   }
+
+  wait {
+    fields = {
+      "status.addresses[0].type"  = "IPAddress"
+      "status.addresses[0].value" = "^(\\d+(\\.|$)){4}"
+    }
+  }
 }
 
 resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
@@ -52,7 +60,7 @@ resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
         kind  = "Gateway"
         name  = kubernetes_manifest.gateway.object.metadata.name
       }
-      enableProxyProtocol = false
+      enableProxyProtocol = true
     }
   }
 }

@@ -35,7 +35,7 @@ configure-all:
   for NODE in $NODES
   do
     echo "= Provisioning node ${NODE}"
-    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s' | ts ${NODE}
   done
 
 configure node:
@@ -53,7 +53,7 @@ configure node:
       echo "============================="
       echo "= Provisioning node ${NODE}"
       echo "============================="
-      cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+      cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s' | ts ${NODE}
     fi
   done
 
