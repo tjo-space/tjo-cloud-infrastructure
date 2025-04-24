@@ -57,42 +57,10 @@ configure node:
   pushd ${TMPDIR}
   for file in $(find * -type f)
   do
+    directory=$(dirname $file)
     echo "- $file"
-    cat $file | tailscale ssh root@${NODE}-network-tjo-cloud "cat > /$file"
+    cat $file | tailscale ssh root@${NODE}-network-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  echo "- Configuring tailscale"
-  tailscale ssh root@${NODE}-network-tjo-cloud <<'EOL'
-  tailscale up \
-    --advertise-routes=10.0.0.0/10,fd74:6a6f::/32 \
-    --snat-subnet-routes=true \
-    --accept-dns=false \
-    --ssh \
-    --reset
-  EOL
-
-  echo "- Installing zerotier"
-  tailscale ssh root@${NODE}-network-tjo-cloud "opkg update"
-  tailscale ssh root@${NODE}-network-tjo-cloud "opkg install zerotier"
-
-  echo "- Configuring zerotier"
-  tailscale ssh root@${NODE}-network-tjo-cloud <<'EOL'
-  uci set zerotier.global.enabled='1'
-  uci set zerotier.global.local_conf_path=/etc/zerotier.conf
-  uci delete zerotier.earth
-  uci delete zerotier.mynet
-  uci set zerotier.tjo_cloud=network
-  uci set zerotier.tjo_cloud.id=b6079f73c6379990
-  uci commit zerotier
-  EOL
-
-  echo "- Installing Bird"
-  tailscale ssh root@${NODE}-network-tjo-cloud "opkg update"
-  tailscale ssh root@${NODE}-network-tjo-cloud "opkg install bird2 bird2c"
-  tailscale ssh root@${NODE}-network-tjo-cloud "service bird reload"
-
-  echo "- Reboot router in 5 seconds..."
-  sleep 5
-  echo "- Rebooting router..."
-  tailscale ssh root@${NODE}-network-tjo-cloud "reboot"
+  cat {{source_directory()}}/configure.sh | tailscale ssh root@${NODE}-network-tjo-cloud 'sh' | ts ${NODE}

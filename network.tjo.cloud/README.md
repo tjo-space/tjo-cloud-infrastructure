@@ -37,6 +37,9 @@ ASN 65000 is used. Each router also listens on `10.0.0.1` for
 any iBGP peerings. This is used for `k8s.tjo.cloud` where cilium advertises
 pod and external load balancer ips.
 
+### DHCP
+DHCP Ranges are `10.0.1.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
+
 
 ### Special designations
 
@@ -45,9 +48,7 @@ Subnet `10.0.0.0/24` and `fd74:6a6f:0:0000::/56` are reserved to be
 won't be forwarded via ZeroTier (SD-WAN).
 
 The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud
-operations. These addresses are not provided via DHCP.
-
-DHCP starts with `10.0.4.0` and up to `10.0.63.254`, par of first `/18` subnet.
+operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|

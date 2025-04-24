@@ -18,10 +18,10 @@ config globals 'globals'
 	option ula_prefix 'fd74:6a6f:0::/48'
 
 config interface 'lan'
-	option device  'br-lan'
-	option proto   'static'
-	list ipaddr  '{{ $node.ipv4.address }}/10'
-  list ip6addr '{{ $node.ipv6.address }}/48'
+	option device 'br-lan'
+	option proto  'static'
+	list ipaddr   '{{ $node.ipv4.address }}/10'
+	list ip6addr  '{{ $node.ipv6.address }}/48'
 
 config interface 'lan_vip'
 	option proto 'static'
@@ -50,20 +50,20 @@ config interface 'wan'
 	option device 'eth0'
 	option proto 'dhcp'
 	option peerdns '0'
-	list dns '1.1.1.1'         # cloudflare primary
-	list dns '9.9.9.9'         # quad9 primary
-	list dns '1.0.0.1'         # cloudflare backup
-	list dns '149.112.112.112' # quad9 backup
+	list dns '193.110.81.0'    # dns0.eu
+	list dns '185.253.5.0'     # dns0.eu
+	list dns '9.9.9.9'         # quad9
+	list dns '149.112.112.112' # quad9
 
 config interface 'wan6'
 	option device 'eth0'
 	option proto 'dhcpv6'
 	option peerdns '0'
 	option sourcefilter '0'
-	list dns '2606:4700:4700::1111' # cloudflare primary
-	list dns '2620:fe::fe'          # quad9 primary
-	list dns '2606:4700:4700::1001' # cloudflare backup
-	list dns '2620:fe::9'           # quad9 backup
+	list dns '2a0f:fc80::' # dns0.eu
+	list dns '2a0f:fc81::' # dns0.eu
+	list dns '2620:fe::fe' # quad9
+	list dns '2620:fe::9'  # quad9
 
 ##
 # TAILSCALE
