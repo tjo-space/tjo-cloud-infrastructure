@@ -97,6 +97,54 @@
         }
       }
     },
+    "cmctl@latest": {
+      "last_modified": "2025-03-11T17:52:14Z",
+      "resolved": "github:NixOS/nixpkgs/0d534853a55b5d02a4ababa1d71921ce8f0aee4c#cmctl",
+      "source": "devbox-search",
+      "version": "1.14.7",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f75dxasrk6f9h5jx2rw8z5ykgk5w87ym-cmctl-1.14.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f75dxasrk6f9h5jx2rw8z5ykgk5w87ym-cmctl-1.14.7"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hf3p4jm47mj8khc71qrip9xi0a5wd5d4-cmctl-1.14.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/hf3p4jm47mj8khc71qrip9xi0a5wd5d4-cmctl-1.14.7"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/y4cha0i42yq0qi1wcvgvg6anqmnaxyby-cmctl-1.14.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/y4cha0i42yq0qi1wcvgvg6anqmnaxyby-cmctl-1.14.7"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/3w0z8jaqswy5l4m860qsh8anzhlnwkrd-cmctl-1.14.7",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/3w0z8jaqswy5l4m860qsh8anzhlnwkrd-cmctl-1.14.7"
+        }
+      }
+    },
     "github:NixOS/nixpkgs/nixpkgs-unstable": {
       "resolved": "github:NixOS/nixpkgs/18dd725c29603f582cf1900e0d25f9f1063dbf11?lastModified=1744536153&narHash=sha256-awS2zRgF4uTwrOKwwiJcByDzDOdo3Q1rPZbiHQg%2FN38%3D"
     },

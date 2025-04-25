@@ -43,3 +43,7 @@ apply: module-cluster-core-crds
   tofu apply -target module.cluster-core.kubectl_manifest.crds
   tofu apply -target module.cluster-core
   tofu apply
+
+apply-full:
+  tofu init
+  tofu apply

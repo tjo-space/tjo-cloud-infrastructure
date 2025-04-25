@@ -92,7 +92,7 @@ resource "kubernetes_manifest" "issuer" {
     spec = {
       acme = {
         email  = "tine@tjo.space"
-        server = "https://acme-staging-v02.api.letsencrypt.org/directory"
+        server = "https://acme-v02.api.letsencrypt.org/directory"
         privateKeySecretRef = {
           name = "tjo-cloud-acme-account"
         }

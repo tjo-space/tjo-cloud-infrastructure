@@ -94,7 +94,7 @@ resource "local_file" "kubeconfig" {
   content = templatefile("${path.module}/kubeconfig.tftpl", {
     cluster : {
       name : module.cluster.name,
-      endpoint : module.cluster.api.internal.endpoint,
+      endpoint : module.cluster.api.public.endpoint,
       ca : module.cluster.api.ca,
     }
     oidc : {
@@ -103,6 +103,21 @@ resource "local_file" "kubeconfig" {
     }
   })
   filename = "${path.module}/kubeconfig"
+}
+
+resource "local_file" "kubeconfig-internal" {
+  content = templatefile("${path.module}/kubeconfig.tftpl", {
+    cluster : {
+      name : module.cluster.name,
+      endpoint : module.cluster.api.internal.endpoint,
+      ca : module.cluster.api.ca,
+    }
+    oidc : {
+      issuer : var.oidc_issuer_url,
+      id : var.oidc_client_id,
+    }
+  })
+  filename = "${path.module}/kubeconfig-internal"
 }
 
 module "cluster-core" {

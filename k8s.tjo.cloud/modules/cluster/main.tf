@@ -240,3 +240,11 @@ resource "dnsimple_zone_record" "api-internal-ipv6" {
   value     = each.value.ipv6
   ttl       = 30
 }
+
+resource "dnsimple_zone_record" "api-public" {
+  zone_name = var.cluster.api.public.domain
+  type      = "CNAME"
+  name      = var.cluster.api.public.subdomain
+  value     = "any.ingress.tjo.cloud"
+  ttl       = 600
+}

@@ -61,7 +61,6 @@ resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
         name  = kubernetes_manifest.gateway.object.metadata.name
       }
       enableProxyProtocol = true
-      http3               = {}
     }
   }
 }

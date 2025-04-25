@@ -11,7 +11,8 @@
     "tenv@latest",
     "gomplate@latest",
     "just@latest",
-    "moreutils@latest"
+    "moreutils@latest",
+    "cmctl@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"
