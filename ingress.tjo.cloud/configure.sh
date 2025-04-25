@@ -128,6 +128,7 @@ ufw allow 587  # EMAIL
 ufw allow 993  # EMAIL
 ufw allow 1337 # HTTP (healthcheck)
 ufw allow 4190 # EMAIL
+ufw allow 6443 # KUBERNETES API
 
 ufw allow 2222 # SSH ACCESS
 
