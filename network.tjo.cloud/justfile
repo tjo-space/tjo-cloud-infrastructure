@@ -25,6 +25,15 @@ destroy-only node:
   cd {{source_directory()}}/terraform
   tofu destroy -target='proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
+reboot-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for NODE in $(cat config.yaml | yq -r '.nodes | keys | .[]')
+  do
+    echo "- Rebooting ${NODE}"
+    tailscale ssh root@${NODE}-network-tjo-cloud 'reboot'
+  done
+
 configure-all:
   #!/usr/bin/env sh
   set -euo pipefail

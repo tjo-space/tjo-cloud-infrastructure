@@ -69,7 +69,7 @@ resource "proxmox_virtual_environment_file" "userdata" {
       - echo "ubuntu:ubuntu" | chpasswd
       - git clone --depth 1 --no-checkout --filter=tree:0 https://github.com/tjo-space/tjo-cloud-infrastructure.git /srv
       - cd /srv && git sparse-checkout set --no-cone /ingress.tjo.cloud && git checkout
-      - /srv/ingress.tjo.cloud/install.sh
+      - /srv/ingress.tjo.cloud/configure.sh
     EOF
     file_name = "${each.value.host}.${each.value.domain}.userconfig.yaml"
   }
