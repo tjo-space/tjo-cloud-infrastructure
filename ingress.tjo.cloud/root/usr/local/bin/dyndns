@@ -162,7 +162,9 @@ while (true); do
     log::info "service=$service Discovering public IP address..."
 
     ipv4="$(curl -4 -s -f --connect-timeout 2 "$service" || echo "")"
-    ipv6="$(curl -6 -s -f --connect-timeout 2 "$service" || echo "")"
+    # FIXME: IPv6 Doesn't work! We cant relibly figure out if accessible.
+    #ipv6="$(curl -6 -s -f --connect-timeout 2 "$service" || echo "")"
+    ipv6=""
 
     if [[ -n "$ipv4$ipv6" ]]; then
       break
@@ -172,7 +174,7 @@ while (true); do
   done
 
   if [[ -z $ipv4 ]]; then
-    log::warn "type=A IPv4 address wasn't found." 
+    log::warn "type=A IPv4 address wasn't found."
   else
     log::info "type=A ip=$ipv4 Found IPv4 address."
     if healthcheck "$ipv4"; then
@@ -198,7 +200,7 @@ while (true); do
   fi
 
   if [[ -z $ipv6 ]]; then
-    log::warn "type=AAAA IPv6 address wasn't found." 
+    log::warn "type=AAAA IPv6 address wasn't found."
   else
     log::info "type=AAAA ip=$ipv6 Found IPv6 address"
     if healthcheck "[$ipv6]"; then
