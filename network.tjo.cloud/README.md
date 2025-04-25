@@ -38,33 +38,31 @@ any iBGP peerings. This is used for `k8s.tjo.cloud` where cilium advertises
 pod and external load balancer ips.
 
 ### DHCP
-DHCP Ranges are `10.0.1.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
-
+DHCP Ranges are `10.0.4.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
 
 ### Special designations
-
-Subnet `10.0.0.0/24` and `fd74:6a6f:0:0000::/56` are reserved to be
-"node local". Which means any traffic destioned to these IP addresses
-won't be forwarded via ZeroTier (SD-WAN).
-
-The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud
-operations.
+The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|
 | Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f:0:0001::/128   |
-| ingress.tjo.cloud VIP | 10.0.0.10/32     | fd74:6a6f:0:0010::/64  |
-| # |  #    |  # |
-| batuu.network.tjo.cloud | 10.0.1.1/32     | fd74:6a6f:0:01ff::/64  |
-| jakku.network.tjo.cloud | 10.0.1.2/32     | fd74:6a6f:0:02ff::/64  |
-| nevaroo.network.tjo.cloud | 10.0.1.3/32     | fd74:6a6f:0:03ff::/64  |
-| mustafar.network.tjo.cloud | 10.0.1.4/32     | fd74:6a6f:0:04ff::/64  |
-| endor.network.tjo.cloud | 10.0.1.5/32     | fd74:6a6f:0:05ff::/64  |
+| # | # |  # |
+| batuu.network.tjo.cloud | 10.0.1.1/10     | fd74:6a6f:0:0101::/64  |
+| jakku.network.tjo.cloud | 10.0.1.2/10     | fd74:6a6f:0:0102::/64  |
+| nevaroo.network.tjo.cloud | 10.0.1.3/10     | fd74:6a6f:0:0103::/64  |
+| mustafar.network.tjo.cloud | 10.0.1.4/10     | fd74:6a6f:0:0104::/64  |
+| endor.network.tjo.cloud | 10.0.1.5/10     | fd74:6a6f:0:0105::/64  |
+| # | # | # |
+| batuu.ingress.tjo.cloud | 10.0.2.1/10     | fd74:6a6f:0:0201::/64  |
+| jakku.ingress.tjo.cloud | 10.0.2.2/10     | fd74:6a6f:0:0202::/64  |
+| nevaroo.ingress.tjo.cloud | 10.0.2.3/10     | fd74:6a6f:0:0203::/64  |
+| mustafar.ingress.tjo.cloud | 10.0.2.4/10     | fd74:6a6f:0:0204::/64  |
+| endor.ingress.tjo.cloud | 10.0.2.5/10     | fd74:6a6f:0:0205::/64  |
 
 ## k8s.tjo.cloud
 
 We use `10.8.0.0/16` and `fd74:6a6f:8::/48` subnets for Kubernetes.
-We use BGP to advertise these routes (iBGP to each network.tjo.cloud ASN).
+We use BGP to advertise these routes (iBGP to network.tjo.cloud).
 
 | Use              | IPv4             | IPv6                     |
 |------------------|------------------|--------------------------|

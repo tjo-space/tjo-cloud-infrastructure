@@ -7,6 +7,9 @@ variable "nodes" {
 
     iso_storage = string
 
+    ipv4 = string
+    ipv6 = string
+
     boot_storage = string
     boot_size    = optional(number, 8)
   }))

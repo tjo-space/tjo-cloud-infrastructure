@@ -157,10 +157,10 @@ config forwarding
 ##
 # PORT FORWARDING
 ##
+{{- $nodeName := getenv "NODE" }}
 {{- range (ds "config").firewall }}
-{{ $nodeName := getenv "NODE" }}
-{{ $host := .host }}
-{{ $name := .name }}
+{{- $host := index .nodes $nodeName }}
+{{- $name := .name }}
 {{- range $port := .ports }}
 
 # {{ $port }} - {{ $name }}

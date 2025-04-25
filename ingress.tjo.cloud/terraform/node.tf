@@ -140,10 +140,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
 
     ip_config {
       ipv4 {
-        address = "dhcp"
+        gateway = "10.0.0.1"
+        address = each.value.ipv4
       }
       ipv6 {
-        address = "dhcp"
+        gateway = "fd74:6a6f:0:0001::"
+        address = each.value.ipv6
       }
     }
   }
