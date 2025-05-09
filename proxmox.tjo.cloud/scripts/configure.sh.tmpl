@@ -50,7 +50,18 @@ systemctl disable --now rpcbind.service
 ##
 # SSH
 ##
-echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
+cat <<EOF >/etc/ssh/sshd_config.d/no-password-auth.conf
+PasswordAuthentication no
+EOF
+
+## Sepecial users
+adduser -G sudo -p "$(openssl passwd -6 ${VEEAM_TELFLEAT_COM_PASSWORD})" veeam-tealfleet-com
+cat <<EOF >/etc/ssh/sshd_config.d/veeam-tealfleet-com.conf
+Match User veeam-tealfleet-com Address 10.0.0.0/10
+  PasswordAuthentication yes
+EOF
+
+systemctl reload sshd
 
 ##
 # Networking
