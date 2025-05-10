@@ -45,7 +45,7 @@ resource "proxmox_virtual_environment_file" "userdata" {
       content: ${base64encode(jsonencode(each.value.meta))}
     - path: /tmp/provision.sh
       encoding: base64
-      content: ${base64encode(file("${path.module}/../install.sh"))}
+      content: ${base64encode(file("${path.module}/../provision.sh"))}
     ssh_authorized_keys: ${jsonencode(var.ssh_keys)}
     packages:
       - qemu-guest-agent
@@ -137,12 +137,10 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
 
     ip_config {
       ipv4 {
-        address = each.value.ipv4_address
-        gateway = each.value.ipv4_gateway
+        address = "dhcp"
       }
       ipv6 {
-        address = each.value.ipv6_address
-        gateway = each.value.ipv6_gateway
+        address = "dhcp"
       }
     }
   }
