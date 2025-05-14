@@ -2,7 +2,15 @@
 set -eou pipefail
 export DEBIAN_FRONTEND=noninteractive
 
-{{ $nodes := (ds "nodes").nodes }}
+# {{ $nodes := (ds "nodes").nodes }}
+
+##
+# Folder2Ram
+##
+folder2ram -enablesystemd
+systemctl start folder2ram_startup.service
+systemctl start folder2ram_shutdown.service
+systemctl start folder2ram-sync.timer
 
 ##
 # APT non-free-firmware
@@ -25,6 +33,7 @@ ff00::0   ip6-mcastprefix
 ff02::1   ip6-allnodes
 ff02::2   ip6-allrouters
 ff02::3   ip6-allhosts
+
 
 {{- range $key, $value := $nodes }}
 # {{ $key }}

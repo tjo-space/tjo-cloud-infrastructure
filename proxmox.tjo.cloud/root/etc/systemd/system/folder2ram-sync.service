@@ -1,0 +1,7 @@
+[Unit]
+Description=folder2ram sync service
+
+[Service]
+Type=oneshot
+RemainAfterExit=yes
+ExecStart=/sbin/folder2ram -syncall

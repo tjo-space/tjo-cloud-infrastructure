@@ -1,0 +1,11 @@
+[Unit]
+Description=Folder2ram sync every 5minute
+Requires=folder2ram_startup.service
+After=folder2ram_startup.service
+
+[Timer]
+OnCalendar=*:0/5
+RandomizedDelaySec=15s
+
+[Install]
+WantedBy=timers.target

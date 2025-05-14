@@ -1,7 +1,10 @@
 default:
   @just --list
 
-configure-all:
+dependencies:
+  @curl -sLo root/sbin/folder2ram https://raw.githubusercontent.com/bobafetthotmail/folder2ram/4ba7e71149ed871443cfbefab68e65a016f5a60c/debian_package/sbin/folder2ram
+
+configure-all: dependencies
   #!/usr/bin/env bash
   set -eou pipefail
 
@@ -12,6 +15,19 @@ configure-all:
   done
 
 configure node:
-  gomplate --file {{source_directory()}}/scripts/configure.sh.tmpl \
-    --datasource nodes=configs/nodes.yaml \
+  #!/usr/bin/env bash
+
+  echo "== Copying root files"
+  pushd root
+  for file in $(find * -type f)
+  do
+    directory=$(dirname $file)
+    echo "- $file"
+    cat $file | tailscale ssh root@{{node}}-system-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
+  done
+  popd
+
+  echo "== Running configuration script"
+  gomplate --file {{source_directory()}}/scripts/configure.tmpl.sh \
+    --datasource nodes=config.yaml \
     | tailscale ssh root@{{node}}-system-tjo-cloud
