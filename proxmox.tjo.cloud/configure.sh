@@ -2,8 +2,6 @@
 set -eou pipefail
 export DEBIAN_FRONTEND=noninteractive
 
-# {{ $nodes := (ds "nodes").nodes }}
-
 ##
 # Folder2Ram
 ##
@@ -21,27 +19,6 @@ apt-add-repository --component non-free-firmware --yes
 
 # Intel microcode to fix CPU issues.
 apt install -qq -yy intel-microcode
-
-##
-# /etc/hosts
-##
-cat <<EOF >/etc/hosts
-127.0.0.1 localhost.localdomain localhost
-::1       localhost.localdomain localhost ip6-localhost ip6-loopback
-fe00::0   ip6-localnet
-ff00::0   ip6-mcastprefix
-ff02::1   ip6-allnodes
-ff02::2   ip6-allrouters
-ff02::3   ip6-allhosts
-
-
-{{- range $key, $value := $nodes }}
-# {{ $key }}
-{{ $value.ipv4 }} {{ $key }}.system.tjo.cloud {{ $key }}
-# We have issues with IPv6
-#{{ $value.ipv6 }} {{ $key }}.system.tjo.cloud {{ $key }}
-{{ end }}
-EOF
 
 ##
 # FIREWALL

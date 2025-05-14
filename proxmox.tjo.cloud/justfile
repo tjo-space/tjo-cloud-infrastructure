@@ -15,19 +15,33 @@ configure-all: dependencies
   done
 
 configure node:
-  #!/usr/bin/env bash
+  #!/usr/bin/env sh
+  set -euo pipefail
 
-  echo "== Copying root files"
-  pushd root
+  export NODE="{{node}}"
+  export TMPDIR="$(mktemp -d)"
+  export CONFIG="{{source_directory()}}/config.yaml"
+
+  cd {{source_directory()}}/root
+
+  echo "Configuring ${NODE}.system.tjo.cloud"
+
+  echo "- Generating configuration ${TMPDIR}..."
+  for file in $(find * -type f)
+  do
+    echo " - $file"
+    mkdir -p ${TMPDIR}/$(dirname $file)
+    gomplate --file $file --datasource config=${CONFIG} > ${TMPDIR}/${file}
+  done
+
+  echo "- Copying configuration to node..."
+  pushd ${TMPDIR}
   for file in $(find * -type f)
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | tailscale ssh root@{{node}}-system-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | tailscale ssh root@${NODE}-system-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  echo "== Running configuration script"
-  gomplate --file {{source_directory()}}/scripts/configure.tmpl.sh \
-    --datasource nodes=config.yaml \
-    | tailscale ssh root@{{node}}-system-tjo-cloud
+  cat {{source_directory()}}/configure.sh | tailscale ssh root@${NODE}-system-tjo-cloud 'bash' | ts ${NODE}
