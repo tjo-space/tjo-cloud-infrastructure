@@ -5,6 +5,7 @@ export DEBIAN_FRONTEND=noninteractive
 ##
 # Folder2Ram
 ##
+chmod +x /usr/sbin/folder2ram
 folder2ram -enablesystemd
 systemctl start folder2ram_startup.service
 systemctl start folder2ram_shutdown.service
