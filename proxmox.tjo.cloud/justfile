@@ -4,6 +4,17 @@ default:
 dependencies:
   @curl -sLo root/sbin/folder2ram https://raw.githubusercontent.com/bobafetthotmail/folder2ram/4ba7e71149ed871443cfbefab68e65a016f5a60c/debian_package/sbin/folder2ram
 
+secrets-encrypt:
+  #!/usr/bin/env sh
+  age --encrypt -R {{source_directory()}}/secrets.keys \
+    secrets.env > secrets.env.encrypted
+
+secrets-decrypt:
+  #!/usr/bin/env sh
+  age --decrypt \
+    -i ${HOME}/.config/sops/age/keys.txt \
+    secrets.env.encrypted > secrets.env
+
 configure-all: dependencies
   #!/usr/bin/env bash
   set -eou pipefail
@@ -14,13 +25,16 @@ configure-all: dependencies
     just configure $node
   done
 
-configure node:
+configure node: secrets-decrypt
   #!/usr/bin/env sh
   set -euo pipefail
 
   export NODE="{{node}}"
   export TMPDIR="$(mktemp -d)"
   export CONFIG="{{source_directory()}}/config.yaml"
+
+  echo "Reading Secrets"
+  set -a && source {{source_directory()}}/secrets.env && set +a
 
   cd {{source_directory()}}/root
 

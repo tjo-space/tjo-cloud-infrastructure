@@ -133,7 +133,7 @@ ufw allow 6443 # KUBERNETES API
 ufw allow 2222 # SSH ACCESS
 
 ufw --force enable
-systemctl enable ufw
+systemctl enable --now ufw
 
 ##
 echo "== Configure NGINX"

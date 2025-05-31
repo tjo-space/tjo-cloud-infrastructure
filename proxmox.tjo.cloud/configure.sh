@@ -24,8 +24,18 @@ apt install -qq -yy intel-microcode
 ##
 # FIREWALL
 ##
-# Disable Web Portal on public IP
-iptables -A INPUT -p tcp -i vmbr0 --dport 8006 -j DROP
+apt install -qq -yy ufw
+
+ufw default deny incoming
+ufw default allow outgoing
+ufw default deny routed
+
+ufw allow in on tailscale0
+ufw route allow in on vmbr0 out on vmbr0
+ufw route allow in on vmbr1 out on vmbr1
+
+ufw --force enable
+systemctl enable --now ufw
 
 ##
 # RPC BIND
@@ -55,3 +65,10 @@ systemctl disable --now frr.service
 ##
 systemctl restart pve-cluster.service
 systemctl restart corosync.service
+
+##
+# Proxmox Prometheus Exporter
+##
+apt install -qq -yy pipx
+pipx install prometheus-pve-exporter
+systemctl enable --now prometheus-pve-exporter.service

@@ -1,25 +1,25 @@
 {
 	// Declare static groups of users. Use autogroups for all users or users with a specific role.
 	"groups": {
-		"group:admin": ["tine.jozelj@tjo.space"],
+		"group:admin": ["tine.jozelj@tjo.space", "jakobjozelj@proton.me"],
 	},
 
 	// Define the tags which can be applied to devices and by which users.
 	"tagOwners": {
 		// Cloud
-		"tag:system-tjo-cloud":     ["group:admin"],
-		"tag:network-tjo-cloud":    ["group:admin"],
-		"tag:kubernetes-tjo-cloud": ["group:admin"],
-		"tag:ingress-tjo-cloud":    ["group:admin"],
+		"tag:system-tjo-cloud":  ["group:admin"],
+		"tag:network-tjo-cloud": ["group:admin"],
+		"tag:ingress-tjo-cloud": ["group:admin"],
+		"tag:storage-tjo-cloud": ["group:admin"],
 		// Space
 		"tag:system-tjo-space": ["group:admin"],
 	},
 
 	"autoApprovers": {
 		"routes": {
-			// VM Subnets
-			"10.0.0.0/8":     ["tag:network-tjo-cloud"],
-			"fd9b:5314::/32": ["tag:network-tjo-cloud"],
+			// network.tjo.cloud configuration
+			"10.0.0.0/10":    ["tag:network-tjo-cloud"],
+			"fd74:6a6f::/32": ["tag:network-tjo-cloud"],
 		},
 	},
 
@@ -47,15 +47,31 @@
 		{
 			"action": "accept",
 			"src":    ["tag:system-tjo-space"],
-			"dst":    ["tag:system-tjo-cloud:8006"],
+			"dst":    [
+				"tag:system-tjo-cloud:8006",
+				"tag:system-tjo-cloud:9221",
+			],
 		},
-		// Network to VM Subnets
+		// VMs and system.tjo.cloud to storage-tjo-cloud
 		{
 			"action": "accept",
-			"src":    ["tag:network-tjo-cloud"],
+			"src": [
+				"tag:system-tjo-cloud",
+				// VMs
+				"10.0.0.0/8",
+				"fd74:6a6f::/32",
+			],
 			"dst": [
-				"10.0.0.0/8:*",
-				"fd9b:5314::/32:*",
+				"tag:storage-tjo-cloud:*",
+			],
+		},
+		// Ingress to all system.tjo.space and system.tjo.cloud
+		{
+			"action": "accept",
+			"src":    ["tag:ingress-tjo-cloud"],
+			"dst": [
+				"tag:system-tjo-cloud:*",
+				"tag:system-tjo-space:*",
 			],
 		},
 		// Admins Everywhere
@@ -88,7 +104,7 @@
 			"dst":    ["tag:system-tjo-space"],
 			"users":  ["autogroup:nonroot", "root"],
 		},
-		// Admins to Systems Access
+		// Admins Everywhere
 		{
 			"action": "accept",
 			"src":    ["group:admin"],
@@ -97,6 +113,7 @@
 				"tag:system-tjo-cloud",
 				"tag:ingress-tjo-cloud",
 				"tag:network-tjo-cloud",
+				"tag:storage-tjo-cloud",
 			],
 			"users": ["autogroup:nonroot", "root"],
 		},

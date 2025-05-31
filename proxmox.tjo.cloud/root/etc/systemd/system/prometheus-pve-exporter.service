@@ -1,0 +1,18 @@
+[Unit]
+Description=Prometheus PVE Exporter
+Wants=network-online.target
+Wants=tailscaled.service
+After=network-online.target
+After=tailscaled.service
+
+[Service]
+Type=simple
+Restart=always
+Environment=PVE_VERIFY_SSL=false
+Environment="PVE_USER={{env.Getenv "PROMETHEUS_PVE_EXPORTER_USER"}}"
+Environment="PVE_TOKEN_NAME={{env.Getenv "PROMETHEUS_PVE_EXPORTER_TOKEN_NAME"}}"
+Environment="PVE_TOKEN_VALUE={{env.Getenv "PROMETHEUS_PVE_EXPORTER_TOKEN_VALUE"}}"
+ExecStart=/root/.local/bin/pve_exporter
+
+[Install]
+WantedBy=multi-user.target
