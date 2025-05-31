@@ -10,7 +10,7 @@ resource "authentik_user" "service_account" {
   name     = "${each.value.host}.${local.domain}"
 
   type = "service_account"
-  path = "ingress.tjo.cloud"
+  path = "postgresql.tjo.cloud"
 
   groups = [
     data.authentik_group.monitoring_publisher.id,

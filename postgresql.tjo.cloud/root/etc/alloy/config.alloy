@@ -10,10 +10,20 @@ prometheus.exporter.self "default" {
 }
 prometheus.exporter.unix "default" {
 }
+prometheus.exporter.postgres "default" {
+    data_source_names = [
+      env("ALLOY_POSTGRESQL_DATA_SOURCE")
+    ]
+
+    autodiscovery {
+      enabled = true
+    }
+}
 prometheus.scrape "exporters" {
   targets    = concat(
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
+    prometheus.exporter.postgres.default.targets,
   )
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,
