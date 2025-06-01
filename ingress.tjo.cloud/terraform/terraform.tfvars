@@ -74,6 +74,7 @@ records = {
   "matrix.chat.tjo.space"  = { to = "any.ingress.tjo.cloud" }
   "webhook.chat.tjo.space" = { to = "any.ingress.tjo.cloud" }
   "turn.chat.tjo.space"    = { to = "any.ingress.tjo.cloud" }
+  "mas.chat.tjo.space"    = { to = "any.ingress.tjo.cloud" }
   # MEDIA.TJO.SPACE
   "media.tjo.space"   = { to = "any.ingress.tjo.cloud" }
   "*.media.tjo.space" = { to = "any.ingress.tjo.cloud" }

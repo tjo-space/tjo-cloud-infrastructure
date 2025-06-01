@@ -8,6 +8,7 @@ mod k8s 'k8s.tjo.cloud'
 mod network 'network.tjo.cloud'
 mod ingress 'ingress.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'
+mod postgresql 'postgresql.tjo.cloud'
 
 default:
   @just --list

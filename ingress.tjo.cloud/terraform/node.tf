@@ -149,4 +149,10 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [
+      disk[0].file_id,
+    ]
+  }
 }
