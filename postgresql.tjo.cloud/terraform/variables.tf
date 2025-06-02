@@ -2,8 +2,8 @@ variable "nodes" {
   type = map(object({
     host = string
 
-    cores  = optional(number, 1)
-    memory = optional(number, 512)
+    cores  = optional(number, 6)
+    memory = optional(number, 8192)
 
     iso_storage = string
 
@@ -11,7 +11,10 @@ variable "nodes" {
     boot_size    = optional(number, 8)
 
     data_storage = string
-    data_size    = optional(number, 64)
+    data_size    = optional(number, 16)
+
+    backup_storage = string
+    backup_size    = optional(number, 64)
   }))
 }
 

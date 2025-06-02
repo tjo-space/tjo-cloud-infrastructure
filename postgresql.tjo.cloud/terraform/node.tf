@@ -51,9 +51,6 @@ resource "proxmox_virtual_environment_file" "userdata" {
       - qemu-guest-agent
     power_state:
       mode: reboot
-    swap:
-      filename: /swapfile
-      size: 512M
     runcmd:
       - "chmod +x /tmp/provision.sh"
       - "/tmp/provision.sh"
@@ -116,7 +113,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
     interface    = "virtio0"
     datastore_id = each.value.boot_storage
     size         = each.value.boot_size
-    backup       = true
+    backup       = false
     cache        = "none"
     iothread     = true
   }
@@ -125,6 +122,15 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
     interface    = "virtio1"
     datastore_id = each.value.data_storage
     size         = each.value.data_size
+    backup       = true
+    cache        = "none"
+    iothread     = true
+  }
+
+  disk {
+    interface    = "virtio2"
+    datastore_id = each.value.backup_storage
+    size         = each.value.backup_size
     backup       = true
     cache        = "none"
     iothread     = true
@@ -143,5 +149,11 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
         address = "dhcp"
       }
     }
+  }
+
+  lifecycle {
+    ignore_changes = [
+      disk[0].file_id,
+    ]
   }
 }

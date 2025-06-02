@@ -3,6 +3,8 @@ nodes = {
     host         = "nevaroo"
     iso_storage  = "local"
     boot_storage = "local"
+    data_storage = "local"
+    backup_storage = "local"
   }
 }
 
