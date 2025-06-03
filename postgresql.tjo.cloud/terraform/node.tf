@@ -1,12 +1,16 @@
 locals {
-  domain = "postgresql.tjo.cloud"
+  nodes_with_name = {
+    for k, v in var.nodes : k => merge(v, {
+      name = k
+      fqdn = "${k}.${var.domain}"
+    })
+  }
 
   nodes = {
-    for k, v in var.nodes : k => merge(v, {
-      domain = local.domain
+    for k, v in local.nodes_with_name : k => merge(v, {
       meta = {
-        name   = v.host
-        domain = local.domain
+        name = k
+        fqdn = "${k}.${var.domain}"
         service_account = {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
@@ -14,14 +18,34 @@ locals {
       }
     })
   }
+
+  ipv4_addresses = {
+    for key, node in local.nodes : key => {
+      for k, v in proxmox_virtual_environment_vm.nodes[key].ipv4_addresses :
+      proxmox_virtual_environment_vm.nodes[key].network_interface_names[k] => v
+    }
+  }
+  ipv6_addresses = {
+    for key, node in local.nodes : key => {
+      for k, v in proxmox_virtual_environment_vm.nodes[key].ipv6_addresses :
+      proxmox_virtual_environment_vm.nodes[key].network_interface_names[k] => v
+    }
+  }
+
+  nodes_with_address = {
+    for k, v in local.nodes :
+    k => merge(v, {
+      ipv4 = local.ipv4_addresses[k]["eth0"][0]
+      ipv6 = local.ipv6_addresses[k]["eth0"][0]
+    })
+  }
 }
 
 resource "proxmox_virtual_environment_download_file" "ubuntu" {
-  for_each = local.nodes
-
   content_type = "iso"
-  datastore_id = each.value.iso_storage
-  node_name    = each.value.host
+  datastore_id = "synology.storage.tjo.cloud"
+  node_name    = "nevaroo"
+  file_name    = "${var.domain}-ubuntu-noble-server-cloudimg-amd64.img"
   url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
   overwrite    = true
 }
@@ -31,14 +55,39 @@ resource "proxmox_virtual_environment_file" "userdata" {
 
   node_name    = each.value.host
   content_type = "snippets"
-  datastore_id = each.value.iso_storage
+  datastore_id = "synology.storage.tjo.cloud"
 
   source_raw {
     data      = <<-EOF
     #cloud-config
-    hostname: ${each.value.host}
-    fqdn: ${each.value.host}.${each.value.domain}
+    hostname: ${each.value.name}
+    fqdn: ${each.value.fqdn}
     prefer_fqdn_over_hostname: true
+
+    disk_setup:
+      /dev/vdb:
+          table_type: 'mbr'
+          overwrite: true
+          layout:
+            - 100
+      /dev/vdc:
+          table_type: 'mbr'
+          overwrite: true
+          layout:
+            - 100
+
+    fs_setup:
+      - label: data
+        filesystem: 'ext4'
+        device: '/dev/vdb'
+        partition: vdb1
+        overwrite: true
+      - label: backup
+        filesystem: 'ext4'
+        device: '/dev/vdc'
+        partition: vdc1
+        overwrite: true
+
     write_files:
     - path: /etc/tjo.cloud/meta.json
       encoding: base64
@@ -46,41 +95,44 @@ resource "proxmox_virtual_environment_file" "userdata" {
     - path: /tmp/provision.sh
       encoding: base64
       content: ${base64encode(file("${path.module}/../provision.sh"))}
+
     ssh_authorized_keys: ${jsonencode(var.ssh_keys)}
+
     packages:
       - qemu-guest-agent
+
     power_state:
       mode: reboot
+
     runcmd:
       - "chmod +x /tmp/provision.sh"
       - "/tmp/provision.sh"
       - "rm /tmp/provision.sh"
     EOF
-    file_name = "${each.value.host}.${each.value.domain}.userconfig.yaml"
+    file_name = "${each.value.fqdn}.userconfig.yaml"
   }
 }
 
 resource "proxmox_virtual_environment_vm" "nodes" {
   for_each = local.nodes
 
-  vm_id     = each.value.id
-  name      = "${each.value.host}.${each.value.domain}"
+  name      = each.value.fqdn
   node_name = each.value.host
 
   description = <<EOT
-An ${each.value.domain} instance for ${each.value.host}.
+An ${var.domain} instance for ${each.value.name}.
 
 Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
   EOT
 
-  tags = [each.value.domain]
+  tags = [var.domain]
 
   stop_on_destroy     = true
   timeout_start_vm    = 60
   timeout_stop_vm     = 60
   timeout_shutdown_vm = 60
   timeout_reboot      = 60
-  timeout_create      = 60
+  timeout_create      = 120
 
   cpu {
     cores = each.value.cores
@@ -109,7 +161,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
 
   scsi_hardware = "virtio-scsi-single"
   disk {
-    file_id      = proxmox_virtual_environment_download_file.ubuntu[each.key].id
+    file_id      = proxmox_virtual_environment_download_file.ubuntu.id
     interface    = "virtio0"
     datastore_id = each.value.boot_storage
     size         = each.value.boot_size
@@ -143,10 +195,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
 
     ip_config {
       ipv4 {
-        address = "dhcp"
+        gateway = "10.0.0.1"
+        address = each.value.ipv4
       }
       ipv6 {
-        address = "dhcp"
+        gateway = "fd74:6a6f:0:0001::"
+        address = each.value.ipv6
       }
     }
   }

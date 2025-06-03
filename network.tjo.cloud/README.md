@@ -23,6 +23,7 @@ It is further split as:
 | Use                | IPv4          | IPv6              |
 |--------------------|---------------|-------------------|
 | network.tjo.cloud  | 10.0.0.0/16   | fd74:6a6f:0::/48  |
+| tjo.cloud          | 10.1.0.0/16   | fd74:6a6f:1::/48  |
 | tealfleet.com      | 10.4.0.0/16   | fd74:6a6f:4::/48  |
 | k8s.tjo.cloud      | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 

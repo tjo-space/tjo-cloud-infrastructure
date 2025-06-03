@@ -5,7 +5,8 @@ variable "nodes" {
     cores  = optional(number, 6)
     memory = optional(number, 8192)
 
-    iso_storage = string
+    ipv4 = string
+    ipv6 = string
 
     boot_storage = string
     boot_size    = optional(number, 8)
@@ -16,6 +17,11 @@ variable "nodes" {
     backup_storage = string
     backup_size    = optional(number, 64)
   }))
+}
+
+variable "domain" {
+  type    = string
+  default = "v2.postgresql.tjo.cloud"
 }
 
 variable "ssh_keys" {

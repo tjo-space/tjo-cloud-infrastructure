@@ -1,5 +1,5 @@
 output "nodes" {
   value = [
-    for key, node in local.nodes : replace("${key}.${node.domain}", ".", "-")
+    for key, node in local.nodes : replace(node.fqdn, ".", "-")
   ]
 }

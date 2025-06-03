@@ -4,13 +4,13 @@ data "authentik_group" "monitoring_publisher" {
 }
 
 resource "authentik_user" "service_account" {
-  for_each = var.nodes
+  for_each = local.nodes_with_name
 
-  username = "${each.value.host}.${local.domain}"
-  name     = "${each.value.host}.${local.domain}"
+  username = each.value.fqdn
+  name     = each.value.fqdn
 
   type = "service_account"
-  path = "postgresql.tjo.cloud"
+  path = var.domain
 
   groups = [
     data.authentik_group.monitoring_publisher.id,
@@ -18,11 +18,11 @@ resource "authentik_user" "service_account" {
 }
 
 resource "authentik_token" "service_account" {
-  for_each = var.nodes
+  for_each = local.nodes_with_name
 
-  identifier   = replace("service-account-${each.value.host}-${local.domain}", ".", "-")
+  identifier   = replace("service-account-${each.value.fqdn}", ".", "-")
   user         = authentik_user.service_account[each.key].id
-  description  = "Service account for ${each.value.host}.${local.domain} node."
+  description  = "Service account for ${each.value.fqdn} node."
   expiring     = false
   intent       = "app_password"
   retrieve_key = true

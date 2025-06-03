@@ -2,11 +2,11 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.61.1"
+      version = "0.78.1"
     }
     authentik = {
       source  = "goauthentik/authentik"
-      version = "2024.8.3"
+      version = "2025.4.0"
     }
     dnsimple = {
       source  = "dnsimple/dnsimple"
