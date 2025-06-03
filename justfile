@@ -36,7 +36,13 @@ tofu-state-encrypt:
   for file in $(find -name tofu.tfstate -o -name terraform.tfstate)
   do
     echo "Encrypting $file"
-    cat $file | gzip --stdout | age --encrypt -R {{source_directory()}}/tofu.keys > ${file}.encrypted
+    if cat ${file}.sha256sum | sha256sum --check --status
+    then
+      echo " - matches existing hash, skipping"
+    else
+      cat $file | gzip --stdout | age --encrypt -R {{source_directory()}}/tofu.keys > ${file}.encrypted
+      sha256sum $file > ${file}.sha256sum
+    fi
   done
 
 # We do not use sops as state files can be large.

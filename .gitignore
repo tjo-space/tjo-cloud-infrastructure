@@ -7,6 +7,7 @@
 *.tfstate
 *.tfstate.*
 !*.tfstate.encrypted
+!*.tfstate.sha256sum
 
 # Crash log files
 crash.log
