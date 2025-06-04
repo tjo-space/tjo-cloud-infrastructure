@@ -25,7 +25,7 @@ variable "domain" {
 }
 
 variable "ssh_keys" {
-  type = map(string)
+  type = list(string)
 }
 
 variable "proxmox_token" {

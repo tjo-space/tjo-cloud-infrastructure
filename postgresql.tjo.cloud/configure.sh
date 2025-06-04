@@ -24,8 +24,19 @@ echo "=== Copy Configuration Files"
 rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
-echo "=== Prepare srv directories"
-mkdir -p /srv/postgresql/{data,backups}
+echo "=== Read Secrets"
+age -d -i /etc/age/key.txt postgresql.tjo.cloud/secrets.env.encrypted >postgresql.tjo.cloud/secrets.env
+set -a && source postgresql.tjo.cloud/secrets.env && set +a
+
+echo "=== Prepare Configurations"
+cat <<EOF >/etc/postgresql/secrets.env
+POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+EOF
+cat <<EOF >/etc/pgadmin/secrets.env
+EOF
+
+echo "=== Setup Caddy"
+systemctl restart caddy
 
 echo "=== Setup Postgresql"
 systemctl restart postgresql

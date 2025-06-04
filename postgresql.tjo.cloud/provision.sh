@@ -9,7 +9,17 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   rsync \
   jq \
   podman \
-  age
+  age \
+  gpg \
+  git \
+  ufw
+
+# Grafana Alloy
+mkdir -p /etc/apt/keyrings/
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor >/etc/apt/keyrings/grafana.gpg
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" >/etc/apt/sources.list.d/grafana.list
+apt update -y
+apt install -y alloy
 
 echo "=== Generating Age Key"
 mkdir -p /etc/age
