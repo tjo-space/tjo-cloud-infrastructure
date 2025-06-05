@@ -4,7 +4,7 @@ Requires=main-network.service
 Requires=postgresql.service
 After=main-network.service
 After=postgresql.service
-RequiresMountsFor=/srv/postgresql/backup
+RequiresMountsFor=/srv/backup
 RequiresMountsFor=%t/containers
 
 [Service]
@@ -17,7 +17,7 @@ KillMode=mixed
 
 EnvironmentFile=/etc/postgresql/secrets.env
 EnvironmentFile=/etc/postgresql/postgresql.env
-Environment=BACKUP_DIR=/srv/postgresql/backups
+Environment=BACKUP_DIR=/srv/backups
 Environment=POSTGRES_HOST=systemd-postgresql
 
 ExecStartPre=/usr/bin/systemctl stop authentik-server authentik-worker
