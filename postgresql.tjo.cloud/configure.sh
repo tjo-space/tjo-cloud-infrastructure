@@ -59,9 +59,6 @@ EOF
 
 ##
 echo "== Configure Grafana Alloy"
-cp -r root/etc/alloy/* /etc/alloy/
-cp -r root/etc/default/alloy /etc/default/alloy
-# Set Attributes
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
