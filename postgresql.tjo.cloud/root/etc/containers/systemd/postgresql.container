@@ -8,7 +8,6 @@ Volume=/srv/data/postgresql:/var/lib/postgresql/data
 EnvironmentFile=/etc/postgresql/secrets.env
 EnvironmentFile=/etc/postgresql/postgresql.env
 Network=main.network
-AutoUpdate=registry
 HealthCmd=pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}
 HealthStartPeriod=20s
 

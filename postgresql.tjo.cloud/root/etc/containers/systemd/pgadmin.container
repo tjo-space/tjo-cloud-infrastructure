@@ -2,7 +2,7 @@
 Description=A PgAdmin Container
 
 [Container]
-Image=docker.io/dpage/pgadmin4:8
+Image=docker.io/dpage/pgadmin4:9
 Volume=/srv/data/pgadmin:/var/lib/pgadmin
 Volume=/etc/pgadmin/config_system.py:/etc/pgadmin/config_system.py:ro
 EnvironmentFile=/etc/pgadmin/secrets.env
