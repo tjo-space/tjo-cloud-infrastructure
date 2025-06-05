@@ -56,4 +56,5 @@ configure node:
   IP=$(tofu output -json | jq -r '.nodes.value[] | select(.name=="{{node}}").ipv4')
   popd > /dev/null
 
+  echo "== {{node}} at ${IP}"
   cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'

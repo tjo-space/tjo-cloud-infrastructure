@@ -24,6 +24,8 @@ echo "=== Copy Configuration Files"
 rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
+echo "=== Secrets public key"
+cat /etc/age/key.txt | grep "public key:"
 echo "=== Read Secrets"
 age -d -i /etc/age/key.txt postgresql.tjo.cloud/secrets.env.encrypted >postgresql.tjo.cloud/secrets.env
 set -a && source postgresql.tjo.cloud/secrets.env && set +a
