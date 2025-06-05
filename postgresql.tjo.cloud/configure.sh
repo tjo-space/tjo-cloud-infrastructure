@@ -25,12 +25,12 @@ rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
 echo "=== Prepare srv directories"
-mkdir -p /srv/{data,backups}/postgresql
+mkdir -p /srv/{data,backup}/postgresql
 
-mkdir -p /srv/{data}/pgadmin
-chown -R 5050:5050 /srv/{data}/pgadmin
+mkdir -p /srv/data/pgadmin
+chown -R 5050:5050 /srv/data/pgadmin
 
-mkdir -p /srv/{data}/caddy
+mkdir -p /srv/data/caddy
 
 echo "=== Secrets public key"
 cat /etc/age/key.txt | grep "public key:"
@@ -51,3 +51,6 @@ systemctl restart caddy
 echo "=== Setup Postgresql"
 systemctl restart postgresql
 systemctl start postgresql-backup.timer
+
+echo "=== Setup PgAdmin"
+systemctl restart pgadmin
