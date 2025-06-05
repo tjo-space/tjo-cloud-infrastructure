@@ -24,6 +24,12 @@ echo "=== Copy Configuration Files"
 rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
+echo "=== Prepare srv directories"
+mkdir -p /srv/{data,backups}/postgresql
+
+mkdir -p /srv/{data}/pgadmin
+chown -R 5050:5050 /srv/{data}/pgadmin
+
 echo "=== Secrets public key"
 cat /etc/age/key.txt | grep "public key:"
 echo "=== Read Secrets"
