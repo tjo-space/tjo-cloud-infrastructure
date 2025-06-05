@@ -11,9 +11,13 @@
       tls
     }
   }
+
+  acme {
+    disable_http_challenge
+  }
 }
 
-postgresql.tjo.cloud {
+v2.postgresql.tjo.cloud {
   respond /healthz "OK"
   reverse_proxy systemd-pgadmin:8000
 }
