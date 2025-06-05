@@ -20,6 +20,14 @@ else
   git reset --hard origin/main
 fi
 
+echo "== Configure Metadata"
+SERVICE_NAME=$(jq -r ".service_name" /etc/tjo.cloud/meta.json)
+SERVICE_VERSION=$(git describe --tags --always --dirty)
+CLOUD_REGION=$(jq -r ".cloud_region" /etc/tjo.cloud/meta.json)
+
+SERVICE_ACCOUNT_USERNAME=$(jq -r ".service_account.username" /etc/tjo.cloud/meta.json)
+SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta.json)
+
 echo "=== Copy Configuration Files"
 rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
@@ -49,6 +57,28 @@ PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
 PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 EOF
 
+##
+echo "== Configure Grafana Alloy"
+cp -r root/etc/alloy/* /etc/alloy/
+cp -r root/etc/default/alloy /etc/default/alloy
+# Set Attributes
+ATTRIBUTES=""
+ATTRIBUTES+="service.name=${SERVICE_NAME},"
+ATTRIBUTES+="service.version=${SERVICE_VERSION},"
+ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
+{
+  echo ""
+  echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}"
+  echo "ALLOY_USERNAME=${SERVICE_ACCOUNT_USERNAME}"
+  echo "ALLOY_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}"
+  echo "ALLOY_POSTGRESQL_DATA_SOURCE=postgresql://admin:${POSTGRESQL_PASSWORD}@localhost:5432/admin?sslmode=disable"
+} >>/etc/default/alloy
+systemctl enable --now alloy
+systemctl restart alloy
+
+echo "=== Setup Alloy"
+systemctl restart alloy
+
 echo "=== Setup Caddy"
 systemctl restart caddy
 
@@ -58,3 +88,14 @@ systemctl start postgresql-backup.timer
 
 echo "=== Setup PgAdmin"
 systemctl restart pgadmin
+
+echo "== Configure UFW"
+ufw default deny incoming
+ufw default allow outgoing
+
+ufw allow 22   # GIT
+ufw allow 443  # HTTPS
+ufw allow 5432 # POSTGRESQL
+
+ufw --force enable
+systemctl enable --now ufw
