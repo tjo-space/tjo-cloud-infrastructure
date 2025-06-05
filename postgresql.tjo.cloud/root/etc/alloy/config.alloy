@@ -25,7 +25,7 @@ prometheus.scrape "exporters" {
     prometheus.exporter.unix.default.targets,
     prometheus.exporter.postgres.default.targets,
     [
-      {"__address__" = "localhost:2019", "instance" = "caddy"},
+      {"__address__" = "127.0.0.1:2019", "instance" = "caddy"},
     ]
   )
   forward_to = [
