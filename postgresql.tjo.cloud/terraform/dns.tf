@@ -49,3 +49,13 @@ resource "dnsimple_zone_record" "any_aaaa" {
   type      = "AAAA"
   ttl       = 300
 }
+
+resource "dnsimple_zone_record" "root" {
+  for_each = local.nodes_with_address
+
+  zone_name = dnsimple_zone.tjo_cloud.name
+  name      = trimsuffix(var.domain, ".tjo.cloud")
+  value     = "any.ingress.tjo.cloud"
+  type      = "ALIAS"
+  ttl       = 300
+}

@@ -7,6 +7,7 @@ PublishPort=[::]:443:443
 PublishPort=0.0.0.0:443:443
 PublishPort=[::]:80:80
 PublishPort=0.0.0.0:80:80
+PublishPort=localhost:2019:2019
 Volume=/etc/caddy:/etc/caddy:ro
 Network=main.network
 AutoUpdate=registry

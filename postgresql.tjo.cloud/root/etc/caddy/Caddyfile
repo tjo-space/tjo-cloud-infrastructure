@@ -1,3 +1,18 @@
+{
+  metrics {
+    per_host
+  }
+
+  servers {
+    listener_wrappers {
+      proxy_protocol {
+        allow 10.0.0.0/22
+      }
+      tls
+    }
+  }
+}
+
 postgresql.tjo.cloud {
   respond /healthz "OK"
   reverse_proxy systemd-pgadmin:8000

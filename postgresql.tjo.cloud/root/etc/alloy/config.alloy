@@ -24,6 +24,9 @@ prometheus.scrape "exporters" {
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
     prometheus.exporter.postgres.default.targets,
+    [
+      {"__address__" = "localhost:2019", "instance" = "caddy"},
+    ]
   )
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,
