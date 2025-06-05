@@ -2,4 +2,10 @@ id.tjo.cloud,
 id.tjo.space {
   respond /healthz "OK"
   reverse_proxy systemd-authentik-server:9000
+
+  tls {
+    issuer acme {
+      disable_http_challenge
+    }
+  }
 }
