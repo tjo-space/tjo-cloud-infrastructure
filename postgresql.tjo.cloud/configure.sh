@@ -33,10 +33,13 @@ rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
 echo "=== Prepare srv directories"
-mkdir -p /srv/{data,backup}/postgresql
+mkdir -p /srv/data/postgresql
 
 mkdir -p /srv/data/pgadmin
 chown -R 5050:5050 /srv/data/pgadmin
+
+mkdir -p /srv/backup/postgresql
+chown -R barman:barman /srv/backup/postgresql
 
 mkdir -p /srv/data/caddy
 
