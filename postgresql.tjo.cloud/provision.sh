@@ -14,7 +14,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   git \
   ufw \
   barman \
-  barman-cli
+  barman-cli \
+  postgresql
 
 # Grafana Alloy
 mkdir -p /etc/apt/keyrings/

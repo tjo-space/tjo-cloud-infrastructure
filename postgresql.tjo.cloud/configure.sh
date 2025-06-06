@@ -49,6 +49,11 @@ echo "=== Read Secrets"
 age -d -i /etc/age/key.txt postgresql.tjo.cloud/secrets.env.encrypted >postgresql.tjo.cloud/secrets.env
 set -a && source postgresql.tjo.cloud/secrets.env && set +a
 
+echo "=== Setup Postgresql"
+systemctl enable postgresql
+systemctl restart postgresql
+sudo -u postgres psql template1 --command="ALTER USER postgres with encrypted password '${POSTGRESQL_PASSWORD}';"
+
 echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
@@ -59,19 +64,13 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
   echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}"
   echo "ALLOY_USERNAME=${SERVICE_ACCOUNT_USERNAME}"
   echo "ALLOY_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}"
-  echo "ALLOY_POSTGRESQL_DATA_SOURCE=postgresql://admin:${POSTGRESQL_PASSWORD}@localhost:5432/admin?sslmode=disable"
+  echo "ALLOY_POSTGRESQL_DATA_SOURCE=postgresql://postgres:${POSTGRESQL_PASSWORD}@localhost:5432/postgres?sslmode=disable"
 } >>/etc/default/alloy
 systemctl enable --now alloy
 systemctl restart alloy
 
 echo "=== Setup Caddy"
 systemctl restart caddy
-
-echo "=== Setup Postgresql"
-cat <<EOF >/etc/postgresql/secrets.env
-POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
-EOF
-systemctl restart postgresql
 
 echo "=== Setup PgAdmin"
 cat <<EOF >/etc/pgadmin/secrets.env
@@ -87,8 +86,8 @@ cat <<EOF >/etc/barman.d/local.conf
 [local]
 description = "Local Postgresql server"
 streaming_archiver = on
-streaming_conninfo = host=localhost user=admin dbname=admin password=${POSTGRESQL_PASSWORD}
-conninfo = host=localhost user=admin dbname=admin password=${POSTGRESQL_PASSWORD}
+streaming_conninfo = host=localhost user=barman_streaming dbname=postgres
+conninfo = host=localhost user=barman dbname=postgres
 slot_name = barman
 create_slot = auto
 
@@ -102,14 +101,17 @@ retention_policy = RECOVERY WINDOW OF 2 WEEKS
 minimum_redundancy = 7
 last_backup_maximum_age = 1 WEEKS
 EOF
+sudo -u postgres createuser --superuser barman
+sudo -u postgres createuser --replication barman_streaming
 systemctl start barman-cron.timer
 systemctl start barman-backup.timer
+sudo -u barman barman receive-wal --create-slot local || true
 
 echo "=== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
 
-ufw allow 22   # GIT
+ufw allow 22   # SSH
 ufw allow 443  # HTTPS
 ufw allow 5432 # POSTGRESQL
 
