@@ -132,7 +132,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
   timeout_stop_vm     = 60
   timeout_shutdown_vm = 60
   timeout_reboot      = 60
-  timeout_create      = 180
+  timeout_create      = 240
 
   cpu {
     cores = each.value.cores
