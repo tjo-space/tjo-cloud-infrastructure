@@ -12,7 +12,9 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   age \
   gpg \
   git \
-  ufw
+  ufw \
+  barman \
+  barman-cli
 
 # Grafana Alloy
 mkdir -p /etc/apt/keyrings/

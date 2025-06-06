@@ -1,0 +1,8 @@
+[Unit]
+Description=Backup PostgreSQL databases using Barman
+Requires=postgresql.service
+After=postgresql.service
+RequiresMountsFor=/srv/backup/postgresql
+
+[Service]
+ExecStart=/usr/bin/barman backup local

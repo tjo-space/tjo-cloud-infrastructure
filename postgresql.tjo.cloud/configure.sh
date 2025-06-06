@@ -46,19 +46,7 @@ echo "=== Read Secrets"
 age -d -i /etc/age/key.txt postgresql.tjo.cloud/secrets.env.encrypted >postgresql.tjo.cloud/secrets.env
 set -a && source postgresql.tjo.cloud/secrets.env && set +a
 
-echo "=== Prepare Configurations"
-cat <<EOF >/etc/postgresql/secrets.env
-POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
-EOF
-cat <<EOF >/etc/pgadmin/secrets.env
-TJO_OAUTH2_CLIENT_ID=${TJO_OAUTH2_CLIENT_ID}
-TJO_OAUTH2_CLIENT_SECRET=${TJO_OAUTH2_CLIENT_SECRET}
-PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-EOF
-
-##
-echo "== Configure Grafana Alloy"
+echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
@@ -71,22 +59,54 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
   echo "ALLOY_POSTGRESQL_DATA_SOURCE=postgresql://admin:${POSTGRESQL_PASSWORD}@localhost:5432/admin?sslmode=disable"
 } >>/etc/default/alloy
 systemctl enable --now alloy
-systemctl restart alloy
-
-echo "=== Setup Alloy"
-systemctl restart alloy
+systemctl start alloy
 
 echo "=== Setup Caddy"
-systemctl restart caddy
+systemctl start caddy
 
 echo "=== Setup Postgresql"
-systemctl restart postgresql
+cat <<EOF >/etc/postgresql/secrets.env
+POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+EOF
+systemctl start postgresql
 systemctl start postgresql-backup.timer
 
 echo "=== Setup PgAdmin"
-systemctl restart pgadmin
+cat <<EOF >/etc/pgadmin/secrets.env
+TJO_OAUTH2_CLIENT_ID=${TJO_OAUTH2_CLIENT_ID}
+TJO_OAUTH2_CLIENT_SECRET=${TJO_OAUTH2_CLIENT_SECRET}
+PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
+PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
+EOF
+systemctl start pgadmin
 
-echo "== Configure UFW"
+echo "=== Setup Barman"
+cat <<EOF >/etc/barman.d/local.conf
+[local]
+description = "Local Postgresql server"
+streaming_archiver = on
+streaming_conninfo = host=localhost user=admin dbname=admin password=${POSTGRESQL_PASSWORD}
+conninfo = host=localhost user=admin dbname=admin password=${POSTGRESQL_PASSWORD}
+slot_name = barman
+create_slot = auto
+
+compression = lz4
+
+backup_directory = /srv/backup/postgresql
+backup_compression = lz4
+backup_method = postgres
+
+local_staging_path = /srv/backup/postgresql-local-staging
+recovery_staging_path = /srv/backup/postgresql-recovery-staging
+
+retention_policy = RECOVERY WINDOW OF 2 WEEKS
+minimum_redundancy = 7
+last_backup_maximum_age = 1 WEEKS
+EOF
+systemctl start barman-cron.timer
+systemctl start barman-backup.timer
+
+echo "=== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
 

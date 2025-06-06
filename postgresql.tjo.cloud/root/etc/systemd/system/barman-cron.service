@@ -1,0 +1,7 @@
+[Unit]
+Description=Run Barman cron
+Requires=postgresql.service
+After=postgresql.service
+
+[Service]
+ExecStart=/usr/bin/barman cron
