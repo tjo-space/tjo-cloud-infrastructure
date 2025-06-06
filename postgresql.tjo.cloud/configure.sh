@@ -52,6 +52,7 @@ set -a && source postgresql.tjo.cloud/secrets.env && set +a
 echo "=== Setup Postgresql"
 systemctl enable postgresql
 systemctl restart postgresql
+sleep 10
 sudo -u postgres psql template1 --command="ALTER USER postgres with encrypted password '${POSTGRESQL_PASSWORD}';"
 
 echo "=== Configure Grafana Alloy"
