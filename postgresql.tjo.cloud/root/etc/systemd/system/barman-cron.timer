@@ -1,13 +1,13 @@
 [Unit]
-Description=Backup PostgreSQL databases daily
+Description=Run Barman cron every minute
 Requires=postgresql.service
 After=postgresql.service
 
 [Timer]
-OnCalendar=daily
-AccuracySec=1h
+OnCalendar=*-*-* *:*:00
+AccuracySec=30s
 Persistent=true
-RandomizedDelaySec=4h
+RandomizedDelaySec=10s
 
 [Install]
 WantedBy=timers.target

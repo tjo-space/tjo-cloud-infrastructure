@@ -50,8 +50,8 @@ age -d -i /etc/age/key.txt postgresql.tjo.cloud/secrets.env.encrypted >postgresq
 set -a && source postgresql.tjo.cloud/secrets.env && set +a
 
 echo "=== Setup Postgresql"
-systemctl enable postgresql
-systemctl restart postgresql
+systemctl enable postgresql@16-main
+systemctl restart postgresql@16-main
 sleep 10
 sudo -u postgres psql template1 --command="ALTER USER postgres with encrypted password '${POSTGRESQL_PASSWORD}';"
 
