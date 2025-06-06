@@ -59,16 +59,16 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
   echo "ALLOY_POSTGRESQL_DATA_SOURCE=postgresql://admin:${POSTGRESQL_PASSWORD}@localhost:5432/admin?sslmode=disable"
 } >>/etc/default/alloy
 systemctl enable --now alloy
-systemctl start alloy
+systemctl restart alloy
 
 echo "=== Setup Caddy"
-systemctl start caddy
+systemctl restart caddy
 
 echo "=== Setup Postgresql"
 cat <<EOF >/etc/postgresql/secrets.env
 POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
-systemctl start postgresql
+systemctl restart postgresql
 
 echo "=== Setup PgAdmin"
 cat <<EOF >/etc/pgadmin/secrets.env
@@ -77,7 +77,7 @@ TJO_OAUTH2_CLIENT_SECRET=${TJO_OAUTH2_CLIENT_SECRET}
 PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
 PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
 EOF
-systemctl start pgadmin
+systemctl restart pgadmin
 
 echo "=== Setup Barman"
 cat <<EOF >/etc/barman.d/local.conf
