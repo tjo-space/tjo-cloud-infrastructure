@@ -69,7 +69,6 @@ cat <<EOF >/etc/postgresql/secrets.env
 POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
 systemctl start postgresql
-systemctl start postgresql-backup.timer
 
 echo "=== Setup PgAdmin"
 cat <<EOF >/etc/pgadmin/secrets.env
@@ -95,9 +94,6 @@ compression = lz4
 backup_directory = /srv/backup/postgresql
 backup_compression = lz4
 backup_method = postgres
-
-local_staging_path = /srv/backup/postgresql-local-staging
-recovery_staging_path = /srv/backup/postgresql-recovery-staging
 
 retention_policy = RECOVERY WINDOW OF 2 WEEKS
 minimum_redundancy = 7

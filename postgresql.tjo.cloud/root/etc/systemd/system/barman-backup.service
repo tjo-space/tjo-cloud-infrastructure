@@ -5,4 +5,6 @@ After=postgresql.service
 RequiresMountsFor=/srv/backup/postgresql
 
 [Service]
+Type=simple
+User=barman
 ExecStart=/usr/bin/barman backup local

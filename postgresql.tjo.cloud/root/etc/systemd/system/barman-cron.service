@@ -4,4 +4,6 @@ Requires=postgresql.service
 After=postgresql.service
 
 [Service]
+Type=simple
+User=barman
 ExecStart=/usr/bin/barman cron
