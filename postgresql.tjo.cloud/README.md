@@ -5,15 +5,19 @@ An PostgreSQL cluster used for other `tjo.cloud` and `tjo.space` services.
 ### Components
 
 - Ubuntu
+- PostgreSQL
+- PgBarman
+  - Managing Postgresql Backups.
+- Restic
+  - Shipping backups to https://backup.tjo.cloud.
 - Podman
   - Container management, using Systemd.
-- PostgreSQL Container
 - PgAdmin Container
   - For administration. Accessible at https://postgresql.tjo.cloud.
-- Restic
-  - Backup storage.
-- Caddy
+- Caddy Container
   - SSL Termination and reverse proxy for https://postgresql.tjo.cloud.
+- Grafana Alloy
+  - Metrics and Logs being shipped to https://monitor.tjo.cloud.
 
 ### Filesystem
 

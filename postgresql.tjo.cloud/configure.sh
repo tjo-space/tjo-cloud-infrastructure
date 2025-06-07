@@ -87,26 +87,28 @@ cat <<EOF >/etc/barman.d/local.conf
 [local]
 description = "Local Postgresql server"
 streaming_archiver = on
-streaming_conninfo = host=localhost user=barman_streaming dbname=postgres
-conninfo = host=localhost user=barman dbname=postgres
+streaming_conninfo = host=/var/run/postgresql user=barman dbname=postgres
+conninfo = host=/var/run/postgresql user=barman dbname=postgres
 slot_name = barman
 create_slot = auto
 
-compression = lz4
+compression = gzip
 
 backup_directory = /srv/backup/postgresql
-backup_compression = lz4
 backup_method = postgres
 
 retention_policy = RECOVERY WINDOW OF 2 WEEKS
 minimum_redundancy = 7
 last_backup_maximum_age = 1 WEEKS
 EOF
-sudo -u postgres createuser --superuser barman
-sudo -u postgres createuser --replication barman_streaming
+sudo -u postgres createuser --superuser --replication barman || true
+sudo -u barman barman receive-wal --create-slot local || true
+sudo -u barman barman switch-wal local --force --archive --archive-timeout 30 || true
 systemctl start barman-cron.timer
 systemctl start barman-backup.timer
-sudo -u barman barman receive-wal --create-slot local || true
+
+echo "=== Configure Restic"
+restic --repo sftp:backup.tjo.cloud:restic init
 
 echo "=== Configure UFW"
 ufw default deny incoming

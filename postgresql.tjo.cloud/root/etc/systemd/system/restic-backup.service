@@ -1,0 +1,10 @@
+[Unit]
+Description=Restic Backup
+
+[Service]
+Type=oneshot
+User=restic
+EnvironmentFile=/etc/restic/restic.conf
+WorkingDirectory=/etc/restic/
+IOSchedulingClass=idle
+ExecStart=/usr/libexec/restic/restic-backup
