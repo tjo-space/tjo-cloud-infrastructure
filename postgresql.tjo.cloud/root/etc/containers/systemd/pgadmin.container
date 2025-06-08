@@ -2,8 +2,8 @@
 Description=A PgAdmin Container
 
 [Container]
-Image=docker.io/dpage/pgadmin4:8
-Volume=/srv/pgadmin/data:/var/lib/pgadmin
+Image=docker.io/dpage/pgadmin4:9
+Volume=/srv/data/pgadmin:/var/lib/pgadmin
 Volume=/etc/pgadmin/config_system.py:/etc/pgadmin/config_system.py:ro
 EnvironmentFile=/etc/pgadmin/secrets.env
 Environment=PGADMIN_LISTEN_PORT=8000

@@ -9,8 +9,8 @@ locals {
   nodes = {
     for k, v in local.nodes_with_name : k => merge(v, {
       meta = {
-        name = k
-        fqdn = "${k}.${var.domain}"
+        cloud_region = v.host
+        service_name = var.domain
         service_account = {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
@@ -66,27 +66,27 @@ resource "proxmox_virtual_environment_file" "userdata" {
 
     disk_setup:
       /dev/vdb:
-          table_type: 'mbr'
-          overwrite: true
-          layout:
-            - 100
+        table_type: 'gpt'
+        layout:
+          - 100
       /dev/vdc:
-          table_type: 'mbr'
-          overwrite: true
-          layout:
-            - 100
+        table_type: 'gpt'
+        layout:
+          - 100
 
     fs_setup:
       - label: data
         filesystem: 'ext4'
         device: '/dev/vdb'
-        partition: vdb1
-        overwrite: true
+        cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
       - label: backup
         filesystem: 'ext4'
         device: '/dev/vdc'
-        partition: vdc1
-        overwrite: true
+        cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
+
+    mounts:
+      - [ /dev/vdb1, /srv/data ]
+      - [ /dev/vdc1, /srv/backup ]
 
     write_files:
     - path: /etc/tjo.cloud/meta.json
@@ -132,7 +132,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
   timeout_stop_vm     = 60
   timeout_shutdown_vm = 60
   timeout_reboot      = 60
-  timeout_create      = 120
+  timeout_create      = 240
 
   cpu {
     cores = each.value.cores

@@ -1,4 +1,27 @@
-postgresql.tjo.cloud {
+{
+  admin :2019
+
+  metrics {
+    per_host
+  }
+
+  servers {
+    listener_wrappers {
+      proxy_protocol {
+        allow 10.0.2.0/24 fd74:6a6f:0:0200::/56
+      }
+      tls
+    }
+  }
+}
+
+v2.postgresql.tjo.cloud {
   respond /healthz "OK"
   reverse_proxy systemd-pgadmin:8000
+
+  tls {
+    issuer acme {
+      disable_http_challenge
+    }
+  }
 }

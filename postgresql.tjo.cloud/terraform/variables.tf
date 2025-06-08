@@ -3,7 +3,7 @@ variable "nodes" {
     host = string
 
     cores  = optional(number, 6)
-    memory = optional(number, 8192)
+    memory = optional(number, 12288)
 
     ipv4 = string
     ipv6 = string
@@ -25,7 +25,7 @@ variable "domain" {
 }
 
 variable "ssh_keys" {
-  type = map(string)
+  type = list(string)
 }
 
 variable "proxmox_token" {

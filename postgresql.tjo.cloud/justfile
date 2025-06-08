@@ -1,6 +1,17 @@
 default:
   @just --list
 
+secrets-encrypt:
+  #!/usr/bin/env sh
+  age --encrypt -R {{source_directory()}}/secrets.keys \
+    secrets.env > secrets.env.encrypted
+
+secrets-decrypt:
+  #!/usr/bin/env sh
+  age --decrypt \
+    -i ${HOME}/.config/sops/age/keys.txt \
+    secrets.env.encrypted > secrets.env
+
 apply:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
@@ -24,33 +35,29 @@ destroy-only node:
   tofu init
   tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
-configure:
+configure-all:
   #!/usr/bin/env sh
   set -eou pipefail
 
   pushd {{source_directory()}}/terraform > /dev/null
-  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  NODES=$(tofu output -json | jq -r '.nodes.value[].name')
   popd > /dev/null
 
   for NODE in $NODES
   do
-    echo "= Provisioning node ${NODE}"
-    cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
+    just configure ${NODE} | ts ${NODE}
   done
 
-configure-only node:
+configure node:
   #!/usr/bin/env sh
   set -eou pipefail
 
   pushd {{source_directory()}}/terraform > /dev/null
-  NODES=$(tofu output -json | jq -r '.nodes.value[]')
+  IP=$(tofu output -json | jq -r '.nodes.value[] | select(.name=="{{node}}").ipv4')
   popd > /dev/null
 
-  for NODE in $NODES
-  do
-    if [ "$NODE" = "{{node}}-ingress-tjo-cloud" ]
-    then
-      echo "= Provisioning node ${NODE}"
-      cat install.sh | tailscale ssh ubuntu@${NODE} 'sudo bash -s'
-    fi
-  done
+  echo "== {{node}} at ${IP}"
+  echo "=== Copying ssh-key to backup.tjo.cloud"
+  ssh -o StrictHostKeyChecking=no -t ubuntu@${IP} 'sudo ssh-copy-id -p 23 -s u409586-sub5@backup.tjo.cloud'
+  echo "=== Running configure.sh"
+  cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'

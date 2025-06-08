@@ -12,7 +12,7 @@ prometheus.exporter.unix "default" {
 }
 prometheus.exporter.postgres "default" {
     data_source_names = [
-      env("ALLOY_POSTGRESQL_DATA_SOURCE")
+      env("ALLOY_POSTGRESQL_DATA_SOURCE"),
     ]
 
     autodiscovery {
@@ -24,6 +24,9 @@ prometheus.scrape "exporters" {
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
     prometheus.exporter.postgres.default.targets,
+    [
+      {"__address__" = "127.0.0.1:2019", "instance" = "caddy"},
+    ],
   )
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,

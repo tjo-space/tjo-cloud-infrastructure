@@ -5,7 +5,9 @@ Description=A Caddy Container
 Image=docker.io/caddy:2
 PublishPort=[::]:443:443
 PublishPort=0.0.0.0:443:443
+PublishPort=127.0.0.1:2019:2019
 Volume=/etc/caddy:/etc/caddy:ro
+Volume=/srv/data/caddy:/data:rw
 Network=main.network
 AutoUpdate=registry
 
