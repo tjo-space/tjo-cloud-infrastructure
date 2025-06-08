@@ -13,3 +13,6 @@ Each subfolder represent a project.
 Projects to be added:
 * valkey.tjo.cloud
 * monitor.tjo.cloud
+  * Prometheus + Loki + Grafana
+* mail.tjo.cloud
+  * https://stalw.art/ and https://roundcube.net/
