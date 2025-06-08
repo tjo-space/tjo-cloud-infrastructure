@@ -19,9 +19,6 @@ An PostgreSQL cluster used for other `tjo.cloud` and `tjo.space` services.
 - Grafana Alloy
   - Metrics and Logs being shipped to https://monitor.tjo.cloud.
 
-### Authentication
-We are using [Authentik LDAP Provider](https://docs.goauthentik.io/docs/add-secure-apps/providers/ldap/) for authentication to access Postgresql server.
-
 ### Filesystem
 
 - `/` is the os drive
