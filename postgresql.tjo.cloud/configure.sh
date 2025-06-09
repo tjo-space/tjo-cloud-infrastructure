@@ -50,6 +50,8 @@ mkdir -p /etc/notify
 echo "${WEBHOOK_URL}" >/etc/notify/webhook-url
 
 echo "=== Setup Postgresql"
+# We must init the db first.
+sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /srv/data/postgresql || true
 systemctl enable --now postgresql@16-main
 systemctl restart postgresql@16-main
 # Wait for postgresql to be ready.

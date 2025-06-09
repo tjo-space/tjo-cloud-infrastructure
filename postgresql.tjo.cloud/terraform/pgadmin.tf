@@ -119,7 +119,7 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
 
           volume_mount {
             name       = "pgadmin-config"
-            mount_path = "/etc/pgadmin/config_system.py"
+            mount_path = "/etc/pgadmin"
             read_only  = true
           }
           volume_mount {
