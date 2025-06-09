@@ -35,15 +35,9 @@ rsync -a postgresql.tjo.cloud/root/ /
 systemctl daemon-reload
 
 echo "=== Prepare srv directories"
-mkdir -p /srv/data/postgresql
-
-mkdir -p /srv/data/pgadmin
-chown -R 5050:5050 /srv/data/pgadmin
-
-mkdir -p /srv/backup/postgresql
+mkdir -p /srv/{data,backup}/postgresql
+chown -R postgres:postgres /srv/data/postgresql
 chown -R barman:barman /srv/backup/postgresql
-
-mkdir -p /srv/data/caddy
 
 echo "=== Secrets public key"
 cat /etc/age/key.txt | grep "public key:"
@@ -77,18 +71,6 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 systemctl enable --now alloy
 systemctl restart alloy
 
-echo "=== Setup Caddy"
-systemctl restart caddy
-
-echo "=== Setup PgAdmin"
-cat <<EOF >/etc/pgadmin/secrets.env
-TJO_OAUTH2_CLIENT_ID=${TJO_OAUTH2_CLIENT_ID}
-TJO_OAUTH2_CLIENT_SECRET=${TJO_OAUTH2_CLIENT_SECRET}
-PGADMIN_DEFAULT_EMAIL=${PGADMIN_DEFAULT_EMAIL}
-PGADMIN_DEFAULT_PASSWORD=${PGADMIN_DEFAULT_PASSWORD}
-EOF
-systemctl restart pgadmin
-
 echo "=== Setup Barman"
 sudo -u postgres createuser --superuser --replication barman || true
 sudo -u barman barman receive-wal --create-slot local || true
@@ -107,7 +89,6 @@ ufw default deny incoming
 ufw default allow outgoing
 
 ufw allow 22   # SSH
-ufw allow 443  # HTTPS
 ufw allow 5432 # POSTGRESQL
 
 ufw --force enable

@@ -62,14 +62,6 @@ module "cluster" {
       cores   = 4
       memory  = 4096
     }
-    mustafar-1 = {
-      id      = 6002
-      type    = "worker"
-      host    = "mustafar"
-      storage = "local"
-      cores   = 4
-      memory  = 4096
-    }
     endor-1 = {
       id        = 6006
       type      = "controlplane"
@@ -133,9 +125,6 @@ module "cluster-core" {
   hosts = {
     nevaroo = {
       storage = "local-nvme-lvm"
-    }
-    mustafar = {
-      storage = "local"
     }
     endor = {
       storage = "local-nvme"

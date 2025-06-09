@@ -19,6 +19,16 @@ variable "nodes" {
   }))
 }
 
+variable "pgadmin_client_id" {
+  type      = string
+  sensitive = true
+}
+
+variable "pgadmin_client_secret" {
+  type      = string
+  sensitive = true
+}
+
 variable "domain" {
   type    = string
   default = "v2.postgresql.tjo.cloud"

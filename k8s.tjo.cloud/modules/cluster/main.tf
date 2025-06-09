@@ -231,15 +231,15 @@ resource "dnsimple_zone_record" "api-internal-ipv4" {
   ttl       = 30
 }
 
-resource "dnsimple_zone_record" "api-internal-ipv6" {
-  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
-
-  zone_name = var.cluster.api.internal.domain
-  type      = "AAAA"
-  name      = var.cluster.api.internal.subdomain
-  value     = each.value.ipv6
-  ttl       = 30
-}
+#resource "dnsimple_zone_record" "api-internal-ipv6" {
+#  for_each = { for k, v in local.nodes_with_address : k => v if v.type == "controlplane" }
+#
+#  zone_name = var.cluster.api.internal.domain
+#  type      = "AAAA"
+#  name      = var.cluster.api.internal.subdomain
+#  value     = each.value.ipv6
+#  ttl       = 30
+#}
 
 resource "dnsimple_zone_record" "api-public" {
   zone_name = var.cluster.api.public.domain

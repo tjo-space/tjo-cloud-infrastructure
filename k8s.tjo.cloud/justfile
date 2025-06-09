@@ -36,7 +36,7 @@ destroy:
   tofu state rm module.cluster-components || true
   tofu destroy -target module.cluster
 
-apply: module-cluster-core-crds
+apply:
   tofu init
   tofu apply -target module.cluster
   tofu apply -target module.cluster-core.helm_release.cilium

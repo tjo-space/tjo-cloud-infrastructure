@@ -9,6 +9,11 @@
 !*.tfstate.encrypted
 !*.tfstate.sha256sum
 
+# .tfvars files
+*.tfvars
+*.tfvars.*
+!terraform.tfvars
+
 # Crash log files
 crash.log
 crash.*.log

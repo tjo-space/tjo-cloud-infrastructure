@@ -8,7 +8,6 @@ DEBIAN_FRONTEND=noninteractive apt update -y
 DEBIAN_FRONTEND=noninteractive apt install -y \
   rsync \
   jq \
-  podman \
   age \
   gpg \
   git \

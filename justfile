@@ -16,18 +16,10 @@ default:
   @just --list
 
 dot-env-encrypt:
-  sops \
-    --encrypt \
-    --input-type=dotenv \
-    --output-type=dotenv \
-    .env > .env.encrypted
+  cat .env | age --encrypt -R {{source_directory()}}/age.keys > .env.encrypted
 
 dot-env-decrypt:
-  sops \
-    --decrypt \
-    --input-type=dotenv \
-    --output-type=dotenv \
-    .env.encrypted > .env
+  cat .env.encrypted | age --decrypt -i "${SOPS_AGE_KEY_FILE}" | .env
 
 # We do not use sops as state files can be large.
 # And we want to use gzip on them to make them smaller (from 17MB to 4MB).
@@ -40,7 +32,7 @@ tofu-state-encrypt:
     then
       echo " - matches existing hash, skipping"
     else
-      cat $file | gzip --stdout | age --encrypt -R {{source_directory()}}/tofu.keys > ${file}.encrypted
+      cat $file | gzip --stdout | age --encrypt -R {{source_directory()}}/age.keys > ${file}.encrypted
       sha256sum $file > ${file}.sha256sum
     fi
   done
