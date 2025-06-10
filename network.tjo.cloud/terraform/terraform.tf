@@ -10,7 +10,8 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint  = "https://proxmox.tjo.cloud/api2/json"
+  endpoint  = "https://nevaroo.system.tjo.cloud:8006/api2/json"
+  insecure  = true
   api_token = var.proxmox_token
 
   ssh {

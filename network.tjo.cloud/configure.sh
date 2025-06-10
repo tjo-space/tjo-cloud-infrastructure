@@ -1,4 +1,5 @@
 #!/bin/bash
+set -eou pipefail
 
 echo "- OPKG Update"
 opkg update
@@ -17,8 +18,8 @@ opkg install zerotier
 echo "- Configuring zerotier"
 uci set zerotier.global.enabled='1'
 uci set zerotier.global.local_conf_path='/etc/zerotier.conf'
-uci delete zerotier.earth
-uci delete zerotier.mynet
+uci delete zerotier.earth || true
+uci delete zerotier.mynet || true
 uci set zerotier.tjo_cloud='network'
 uci set zerotier.tjo_cloud.id=b6079f73c6379990
 uci commit zerotier
