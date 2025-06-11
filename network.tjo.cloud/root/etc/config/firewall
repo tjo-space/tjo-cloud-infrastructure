@@ -15,7 +15,7 @@ config zone
 	option output 'ACCEPT'
 	option forward 'REJECT'
 	option masq '1'
-	option masq6 '1'
+	option masq6 '0'
 	option mtu_fix '1'
 
 config rule
@@ -128,7 +128,6 @@ config zone
 	option forward 'ACCEPT'
 	list network 'lan'
 	list network 'lan_vip'
-	list network 'lan_legacy'
 
 config forwarding
 	option src 'lan'

@@ -16,7 +16,7 @@ nodes = {
   nevaroo = {
     host         = "nevaroo"
     iso_storage  = "local"
-    boot_storage = "local"
+    boot_storage = "local-nvme-lvm"
     ipv4         = "10.0.2.3/16"
     ipv6         = "fd74:6a6f:0:0203::/64"
   }

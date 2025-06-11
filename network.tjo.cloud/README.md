@@ -34,9 +34,8 @@ Unspecified are unused.
 ### BGP
 
 Each router instance establishes iBGP peering with all others.
-ASN 65000 is used. Each router also listens on `10.0.0.1` for
-any iBGP peerings. This is used for `k8s.tjo.cloud` where cilium advertises
-pod and external load balancer ips.
+ASN 65000 is used. Each router also listens for any iBGP peerings.
+This is used for `k8s.tjo.cloud` where cilium advertises pod and external load balancer ips.
 
 ### DHCP
 DHCP Ranges are `10.0.4.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
@@ -46,7 +45,7 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|
-| Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f:0:0001::/128   |
+| Primary Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f:0:0001::/128   |
 | # | # |  # |
 | batuu.network.tjo.cloud | 10.0.1.1/10     | fd74:6a6f:0:0101::/48  |
 | jakku.network.tjo.cloud | 10.0.1.2/10     | fd74:6a6f:0:0102::/48  |

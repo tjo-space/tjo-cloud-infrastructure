@@ -30,6 +30,9 @@ ufw default deny incoming
 ufw default allow outgoing
 ufw default deny routed
 
+# We allow SSH.
+ufw allow 22
+
 ufw allow in on tailscale0
 ufw route allow in on vmbr0 out on vmbr0
 ufw route allow in on vmbr1 out on vmbr1
@@ -59,6 +62,22 @@ systemctl disable --now dnsmasq
 # systemctl enable frr.service
 # We do not yet use this, lets disable for now.
 systemctl disable --now frr.service
+
+##
+# DNS
+##
+cat <<EOF >/etc/resolv.conf
+# dns0.eu
+nameserver 193.110.81.0
+nameserver 185.253.5.0
+nameserver 2a0f:fc80::
+nameserver 2a0f:fc81::
+# quad9
+nameserver 9.9.9.9
+nameserver 149.112.112.112
+nameserver 2620:fe::fe
+nameserver 2620:fe::9
+EOF
 
 ##
 # Restart PVE
