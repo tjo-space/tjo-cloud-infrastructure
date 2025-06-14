@@ -31,7 +31,7 @@ variable "pgadmin_client_secret" {
 
 variable "domain" {
   type    = string
-  default = "v2.postgresql.tjo.cloud"
+  default = "postgresql.tjo.cloud"
 }
 
 variable "ssh_keys" {
