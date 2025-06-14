@@ -12,10 +12,10 @@ variable "nodes" {
     boot_size    = optional(number, 8)
 
     data_storage = string
-    data_size    = optional(number, 16)
+    data_size    = optional(number, 64)
 
     backup_storage = string
-    backup_size    = optional(number, 64)
+    backup_size    = optional(number, 128)
   }))
 }
 
