@@ -84,7 +84,6 @@ records = {
   "loki.monitor.tjo.cloud"       = { to = "any.ingress.tjo.cloud" }
   "prometheus.monitor.tjo.cloud" = { to = "any.ingress.tjo.cloud" }
   "monitor.tjo.cloud"            = { to = "any.ingress.tjo.cloud" }
-  "postgresql.tjo.cloud"         = { to = "any.ingress.tjo.cloud" }
   "proxmox.tjo.cloud"            = { to = "any.ingress.tjo.cloud" }
   "vault.tjo.cloud"              = { to = "any.ingress.tjo.cloud" }
   "dashboard.k8s.tjo.cloud"      = { to = "any.ingress.tjo.cloud" }

@@ -221,7 +221,7 @@ resource "kubernetes_manifest" "pgadmin-http-route" {
       parentRefs = [
         { name = "primary", namespace = "tjo-cloud" }
       ]
-      hostnames = ["v2.${var.domain}"]
+      hostnames = [var.domain]
       rules = [
         {
           matches = [
