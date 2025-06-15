@@ -1,9 +1,0 @@
-[Unit]
-Description=Send Systemd Notifications via Webhook
-
-[Service]
-Type=oneshot
-ExecStart=/usr/local/bin/notify-webhook %i "failure"
-
-[Install]
-WantedBy=multi-user.target

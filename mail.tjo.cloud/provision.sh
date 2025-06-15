@@ -8,15 +8,11 @@ DEBIAN_FRONTEND=noninteractive apt update -y
 DEBIAN_FRONTEND=noninteractive apt install -y \
   rsync \
   jq \
-  podman \
   age \
   gpg \
   git \
   ufw \
-  barman \
-  barman-cli \
-  postgresql-16 \
-  restic
+  curl
 
 # Grafana Alloy
 mkdir -p /etc/apt/keyrings/
@@ -29,6 +25,6 @@ echo "=== Generating Age Key"
 mkdir -p /etc/age
 age-keygen -o /etc/age/key.txt
 
-echo "=== Creating ssh key"
-ssh-keygen -N "" -t ed25519 -f /root/.ssh/id_ed25519
-ssh-keyscan -p 23 backup.tjo.cloud >>/root/.ssh/known_hosts
+echo "=== Install Stalwart"
+curl --proto '=https' --tlsv1.2 -sSf https://get.stalw.art/install.sh -o install.sh
+sh install.sh >/var/log/stalwart-init.log

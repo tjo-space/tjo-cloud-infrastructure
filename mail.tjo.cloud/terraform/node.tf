@@ -64,30 +64,6 @@ resource "proxmox_virtual_environment_file" "userdata" {
     fqdn: ${each.value.fqdn}
     prefer_fqdn_over_hostname: true
 
-    disk_setup:
-      /dev/vdb:
-        table_type: 'gpt'
-        layout:
-          - 100
-      /dev/vdc:
-        table_type: 'gpt'
-        layout:
-          - 100
-
-    fs_setup:
-      - label: data
-        filesystem: 'ext4'
-        device: '/dev/vdb'
-        cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
-      - label: backup
-        filesystem: 'ext4'
-        device: '/dev/vdc'
-        cmd: mkfs -t %(filesystem)s -L %(label)s %(device)s
-
-    mounts:
-      - [ /dev/vdb1, /srv/data ]
-      - [ /dev/vdc1, /srv/backup ]
-
     write_files:
     - path: /etc/tjo.cloud/meta.json
       encoding: base64
@@ -122,7 +98,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   description = <<EOT
 An ${var.domain} instance for ${each.value.name}.
 
-Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
+Repo: https://code.tjo.space/tjo-cloud/infrastructure/mail.tjo.cloud
   EOT
 
   tags = [var.domain]
@@ -166,24 +142,6 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
     datastore_id = each.value.boot_storage
     size         = each.value.boot_size
     backup       = false
-    cache        = "none"
-    iothread     = true
-  }
-
-  disk {
-    interface    = "virtio1"
-    datastore_id = each.value.data_storage
-    size         = each.value.data_size
-    backup       = true
-    cache        = "none"
-    iothread     = true
-  }
-
-  disk {
-    interface    = "virtio2"
-    datastore_id = each.value.backup_storage
-    size         = each.value.backup_size
-    backup       = true
     cache        = "none"
     iothread     = true
   }

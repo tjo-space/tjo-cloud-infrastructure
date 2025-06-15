@@ -12,6 +12,10 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "1.8.0"
     }
+    kubernetes = {
+      source  = "hashicorp/kubernetes"
+      version = "2.37.1"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -67,4 +71,8 @@ provider "proxmox" {
       port    = 22
     }
   }
+}
+
+provider "kubernetes" {
+  config_path = "${path.module}/../../k8s.tjo.cloud/kubeconfig"
 }

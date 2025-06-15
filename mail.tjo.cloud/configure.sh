@@ -34,30 +34,17 @@ echo "=== Copy Configuration Files"
 rsync -a mail.tjo.cloud/root/ /
 systemctl daemon-reload
 
-echo "=== Prepare srv directories"
-mkdir -p /srv/data/stalwart
-mkdir -p /srv/data/roundcube
-mkdir -p /srv/data/caddy
-
 echo "=== Secrets public key"
 cat /etc/age/key.txt | grep "public key:"
 echo "=== Read Secrets"
 age -d -i /etc/age/key.txt mail.tjo.cloud/secrets.env.encrypted >mail.tjo.cloud/secrets.env
 set -a && source mail.tjo.cloud/secrets.env && set +a
 
-echo "=== Setup notify-webhook"
-mkdir -p /etc/notify
-echo "${WEBHOOK_URL}" >/etc/notify/webhook-url
-
 echo "=== Setup stalwart"
-systemctl restart stalwart
-
-echo "=== Setup roundcube"
-mkdir -p /etc/roundcube
-echo <<EOF >/etc/roundcube/secrets.env
-ROUNDCUBE_MAIL_DB_PASSWORD=${POSTGRESQL_PASSWORD}
+echo <<EOF >/etc/stalwart/secrets.env
+POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
-systemctl restart roundcube
+systemctl restart stalwart
 
 echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""
@@ -72,15 +59,6 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 } >>/etc/default/alloy
 systemctl enable --now alloy
 systemctl restart alloy
-
-echo "=== Setup Caddy"
-systemctl restart caddy
-
-echo "=== Configure Restic"
-echo "${BACKUP_PASSWORD}" >/etc/restic/restic.password
-restic-helper cat config >/dev/null || restic-helper init
-systemctl enable --now restic-backup.timer
-systemctl enable --now restic-check.timer
 
 echo "=== Configure UFW"
 ufw default deny incoming

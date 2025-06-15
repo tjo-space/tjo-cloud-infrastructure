@@ -72,10 +72,14 @@ tls.enable = false
 type = "postgresql"
 user = "mail.tjo.cloud"
 
-tracer.log.ansi = false
-tracer.log.enable = true
-tracer.log.level = "info"
-tracer.log.path = "/opt/stalwart/logs"
-tracer.log.prefix = "stalwart.log"
-tracer.log.rotate = "daily"
-tracer.log.type = "log"
+[email.encryption]
+enable = true
+
+[tracer.log]
+type = "console"
+level = "info"
+ansi = true
+enable = true
+
+[metrics.prometheus]
+enable = true

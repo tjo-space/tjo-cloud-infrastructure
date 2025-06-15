@@ -2,20 +2,14 @@ variable "nodes" {
   type = map(object({
     host = string
 
-    cores  = optional(number, 6)
-    memory = optional(number, 12288)
+    cores  = optional(number, 1)
+    memory = optional(number, 512)
 
     ipv4 = string
     ipv6 = string
 
     boot_storage = string
     boot_size    = optional(number, 8)
-
-    data_storage = string
-    data_size    = optional(number, 16)
-
-    backup_storage = string
-    backup_size    = optional(number, 64)
   }))
 }
 
