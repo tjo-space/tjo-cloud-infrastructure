@@ -14,18 +14,24 @@ secrets-decrypt:
 
 apply:
   #!/usr/bin/env sh
+  source {{source_directory()}}/secrets.env
+  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu init
   tofu apply
 
 apply-only node:
   #!/usr/bin/env sh
+  source {{source_directory()}}/secrets.env
+  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu init
   tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
 destroy:
   #!/usr/bin/env sh
+  source {{source_directory()}}/secrets.env
+  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu  destroy
 
@@ -57,7 +63,5 @@ configure node:
   popd > /dev/null
 
   echo "== {{node}} at ${IP}"
-  echo "=== Copying ssh-key to backup.tjo.cloud"
-  ssh -o StrictHostKeyChecking=no -t ubuntu@${IP} 'sudo ssh-copy-id -p 23 -s u409586-sub6@backup.tjo.cloud'
   echo "=== Running configure.sh"
   cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'

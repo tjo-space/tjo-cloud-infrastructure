@@ -12,7 +12,7 @@ resource "dnsimple_zone_record" "web" {
 
 resource "dnsimple_zone_record" "admin" {
   zone_name = dnsimple_zone.tjo_cloud.name
-  name      = "admin.${trimsuffix(var.domain, ".tjo.cloud")}"
+  name      = "manage.${trimsuffix(var.domain, ".tjo.cloud")}"
   value     = "any.ingress.tjo.cloud"
   type      = "ALIAS"
   ttl       = 300

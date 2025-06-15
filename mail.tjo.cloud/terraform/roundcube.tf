@@ -1,9 +1,10 @@
 locals {
-  roundcube_version = "9.4.0"
+  roundcube_version = "1.6.x-apache"
 }
 
-resource "random_password" "roundcube" {
-  length = 16
+resource "random_password" "roundcube_des_key" {
+  length  = 16
+  special = false
 }
 
 resource "kubernetes_namespace" "this" {
@@ -24,7 +25,7 @@ EOF
   }
 }
 
-resource "kubernetes_stateful_set_v1" "roundcube" {
+resource "kubernetes_deployment_v1" "roundcube" {
   metadata {
     name      = "roundcube"
     namespace = kubernetes_namespace.this.metadata[0].name
@@ -35,8 +36,6 @@ resource "kubernetes_stateful_set_v1" "roundcube" {
   }
 
   spec {
-    service_name           = "roundcube"
-    pod_management_policy  = "Parallel"
     replicas               = 1
     revision_history_limit = 5
     selector {
@@ -53,41 +52,49 @@ resource "kubernetes_stateful_set_v1" "roundcube" {
         }
       }
       spec {
-        init_container {
-          name              = "init-chmod-data"
-          image             = "docker.io/dpage/roundcube4:${local.roundcube_version}"
-          image_pull_policy = "IfNotPresent"
-          command           = ["/bin/chown", "-R", "5050:5050", "/var/lib/roundcube"]
-          volume_mount {
-            name       = "roundcube-data"
-            mount_path = "/var/lib/roundcube"
-            sub_path   = ""
-          }
-          security_context {
-            run_as_user = 0
-          }
-          resources {
-            limits = {
-              cpu    = "1000m"
-              memory = "250Mi"
-            }
-          }
-        }
         container {
           name              = "roundcube"
-          image             = "docker.io/dpage/roundcube4:${local.roundcube_version}"
+          image             = "roundcube/roundcubemail:${local.roundcube_version}"
           image_pull_policy = "IfNotPresent"
           env {
-            name  = "roundcube_DEFAULT_EMAIL"
-            value = "admin@tjo.cloud"
+            name  = "ROUNDCUEMAIL_DB_TYPE"
+            value = "psql"
           }
           env {
-            name  = "roundcube_DEFAULT_PASSWORD"
-            value = random_password.roundcube.result
+            name  = "ROUNDCUEMAIL_DB_HST"
+            value = "pink.postgresql.tjo.cloud"
           }
           env {
-            name  = "roundcube_DISABLE_POSTFIX"
-            value = "true"
+            name  = "ROUNDCUEMAIL_DB_PORT"
+            value = "5432"
+          }
+          env {
+            name  = "ROUNDCUEMAIL_DB_USER"
+            value = "mail.tjo.cloud"
+          }
+          env {
+            name  = "ROUNDCUEMAIL_DB_PASSWORD"
+            value = var.postgresql_password
+          }
+          env {
+            name  = "ROUNDCUEMAIL_DB_NAME"
+            value = "mail.tjo.cloud_roundcube"
+          }
+          env {
+            name  = "ROUNDCUEMAIL_DEFAULT_HOST"
+            value = "tls://mail.tjo.cloud"
+          }
+          env {
+            name  = "ROUNDCUEMAIL_SMTP_SERVER"
+            value = "tls://mail.tjo.cloud"
+          }
+          env {
+            name  = "ROUNDCUEMAIL_PLUGINS"
+            value = "archive,zipdownload,newmail_notifier"
+          }
+          env {
+            name  = "ROUNDCUBEMAIL_DES_KEY"
+            value = random_password.roundcube_des_key.result
           }
 
           port {
@@ -101,39 +108,12 @@ resource "kubernetes_stateful_set_v1" "roundcube" {
             mount_path = "/etc/roundcube"
             read_only  = true
           }
-          volume_mount {
-            name       = "roundcube-data"
-            mount_path = "/var/lib/roundcube"
-            sub_path   = ""
-          }
 
           resources {
             limits = {
               cpu    = "1000m"
               memory = "250Mi"
             }
-          }
-
-          liveness_probe {
-            http_get {
-              path = "/misc/ping"
-              port = "http"
-            }
-            initial_delay_seconds = 30
-          }
-          startup_probe {
-            http_get {
-              path = "/misc/ping"
-              port = "http"
-            }
-            initial_delay_seconds = 30
-          }
-          readiness_probe {
-            http_get {
-              path = "/misc/ping"
-              port = "http"
-            }
-            initial_delay_seconds = 10
           }
         }
 
@@ -144,26 +124,6 @@ resource "kubernetes_stateful_set_v1" "roundcube" {
           }
         }
       }
-    }
-
-    volume_claim_template {
-      metadata {
-        name = "roundcube-data"
-      }
-      spec {
-        access_modes       = ["ReadWriteOnce"]
-        storage_class_name = "common"
-        resources {
-          requests = {
-            storage = "3Gi"
-          }
-        }
-      }
-    }
-
-    persistent_volume_claim_retention_policy {
-      when_deleted = "Delete"
-      when_scaled  = "Delete"
     }
   }
 }
