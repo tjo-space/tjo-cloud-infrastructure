@@ -58,6 +58,6 @@ configure node:
 
   echo "== {{node}} at ${IP}"
   echo "=== Copying ssh-key to backup.tjo.cloud"
-  ssh -o StrictHostKeyChecking=no -t ubuntu@${IP} 'sudo ssh-copy-id -p 23 -s u409586-sub5@backup.tjo.cloud'
+  ssh -o StrictHostKeyChecking=no -t ubuntu@${IP} 'sudo ssh-copy-id -p 23 -s u409586-sub6@backup.tjo.cloud'
   echo "=== Running configure.sh"
   cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'

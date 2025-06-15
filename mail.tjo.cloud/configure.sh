@@ -49,7 +49,14 @@ echo "=== Setup notify-webhook"
 mkdir -p /etc/notify
 echo "${WEBHOOK_URL}" >/etc/notify/webhook-url
 
-echo "=== Setup mail"
+echo "=== Setup stalwart"
+systemctl restart stalwart
+
+echo "=== Setup roundcube"
+echo <<EOF >/etc/roundcube/secrets.env
+ROUNDCUBE_MAIL_DB_PASSWORD=${POSTGRESQL_PASSWORD}
+EOF
+systemctl restart roundcube
 
 echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""
