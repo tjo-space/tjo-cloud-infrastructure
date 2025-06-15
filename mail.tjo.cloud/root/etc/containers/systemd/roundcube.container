@@ -1,0 +1,22 @@
+[Unit]
+Description=A Roundcube Container
+
+[Container]
+Image=docker.io/roundcube/roundcubemail:1.6.x-apache
+Volume=/srv/data/roundcube:/var/www/html
+Environment=ROUNDCUBEMAIL_DEFAULT_HOST=tls://mail.tjo.cloud
+Environment=ROUNDCUBEMAIL_SMTP_SERVER=tls://mail.tjo.cloud
+Environment=ROUNDCUBEMAIL_DB_TYPE=pgsql
+Environment=ROUNDCUBEMAIL_DB_HOST=pink.postgresql.tjo.cloud
+Environment=ROUNDCUBEMAIL_DB_PORT=5432
+Environment=ROUNDCUBEMAIL_DB_USER=mail.tjo.cloud
+Environment=ROUNDCUBEMAIL_DB_NAME=mail.tjo.cloud_roundcube
+EnvironmentFile=/etc/roundcube/secrets.env
+Network=main.network
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,23 @@
+[Unit]
+Description=A Stalwart Container
+
+[Container]
+Image=docker.io/stalwartlabs/stalwart:v0.12.4
+Volume=/srv/data/stalwart:/opt/stalwart
+Network=main.network
+AutoUpdate=registry
+PublishPort=8080:8080
+PublishPort=25:25
+PublishPort=110:110
+PublishPort=143:143
+PublishPort=465:465
+PublishPort=587:587
+PublishPort=993:993
+PublishPort=995:995
+PublishPort=4190:4190
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
