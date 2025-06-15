@@ -1,0 +1,81 @@
+[authentication.fallback-admin]
+secret = "$6$cOtCnhy1ZJNBHlET$9F5DFBKkSApLvDEFXy44Hk4y9eIyuC3B0mjsqrIOjvfc1ZrHncoHL4bmTLvbirqOAzJ1hh8lDmMwsI7pj0N9S1"
+user = "admin"
+
+[server]
+hostname = "mail.tjo.cloud"
+max-connections = 8192
+[server.socket]
+backlog = 1024
+nodelay = true
+reuse-addr = true
+reuse-port = true
+
+[server.listener.http]
+bind = "[::]:8080"
+protocol = "http"
+
+[server.listener.https]
+bind = "[::]:443"
+protocol = "http"
+tls.implicit = true
+
+[server.listener.imaptls]
+bind = "[::]:993"
+protocol = "imap"
+tls.implicit = true
+
+[server.listener.sieve]
+bind = "[::]:4190"
+protocol = "managesieve"
+
+[server.listener.smtp]
+bind = "[::]:25"
+protocol = "smtp"
+
+[server.listener."submissions"]
+bind = "[::]:465"
+protocol = "smtp"
+tls.implicit = true
+
+storage.directory = "id.tjo.cloud"
+storage.blob = "postgresql.tjo.cloud"
+storage.data = "postgresql.tjo.cloud"
+storage.fts = "postgresql.tjo.cloud"
+storage.lookup = "postgresql.tjo.cloud"
+
+[directory."id.tjo.cloud"]
+bind.auth.method = "default"
+cache.size = 1048576
+cache.ttl.negative = "10m"
+cache.ttl.positive = "1h"
+endpoint.method = "userinfo"
+endpoint.url = "https://id.tjo.cloud/application/o/userinfo/"
+fields.email = "email"
+fields.full-name = "name"
+fields.username = "preferred_username"
+timeout = "15s"
+type = "oidc"
+
+[store."postgresql.tjo.cloud"]
+compression = "lz4"
+database = "mail.tjo.cloud_stalwart"
+host = "pink.postgresql.tjo.cloud"
+password = "%{env:POSTGRESQL_PASSWORD}%"
+pool.max-connections = 10
+port = 5432
+purge.frequency = "0 3 *"
+read-from-replicas = true
+timeout = "15s"
+tls.allow-invalid-certs = false
+tls.enable = false
+type = "postgresql"
+user = "mail.tjo.cloud"
+
+tracer.log.ansi = false
+tracer.log.enable = true
+tracer.log.level = "info"
+tracer.log.path = "/opt/stalwart/logs"
+tracer.log.prefix = "stalwart.log"
+tracer.log.rotate = "daily"
+tracer.log.type = "log"

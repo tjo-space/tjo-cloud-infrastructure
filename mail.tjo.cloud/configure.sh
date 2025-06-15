@@ -53,6 +53,7 @@ echo "=== Setup stalwart"
 systemctl restart stalwart
 
 echo "=== Setup roundcube"
+mkdir -p /etc/roundcube
 echo <<EOF >/etc/roundcube/secrets.env
 ROUNDCUBE_MAIL_DB_PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
@@ -86,14 +87,10 @@ ufw default deny incoming
 ufw default allow outgoing
 
 ufw allow 22   # SSH
-ufw allow 25   # EMAIL
-ufw allow 110  # EMAIL
-ufw allow 143  # EMAIL
+ufw allow 25   # EMAIL SMTP
 ufw allow 443  # HTTPS
-ufw allow 465  # EMAIL
-ufw allow 587  # EMAIL
-ufw allow 993  # EMAIL
-ufw allow 995  # EMAIL
-ufw allow 4190 # EMAIL
+ufw allow 465  # EMAIL SMTPS
+ufw allow 993  # EMAIL IMAPS
+ufw allow 4190 # EMAIL ManageSieve
 ufw --force enable
 systemctl enable --now ufw
