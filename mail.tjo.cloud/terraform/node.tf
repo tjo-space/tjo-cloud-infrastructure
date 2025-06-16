@@ -151,6 +151,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/mail.tjo.cloud
     datastore_id      = each.value.boot_storage
     user_data_file_id = proxmox_virtual_environment_file.userdata[each.key].id
 
+    dns {
+      servers = [
+        "10.0.0.1"
+      ]
+    }
+
     ip_config {
       ipv4 {
         gateway = "10.0.0.1"

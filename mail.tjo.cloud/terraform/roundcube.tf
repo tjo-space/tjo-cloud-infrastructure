@@ -178,7 +178,7 @@ resource "kubernetes_manifest" "roundcube-http-route" {
       parentRefs = [
         { name = "primary", namespace = "tjo-cloud" }
       ]
-      hostnames = [var.domain]
+      hostnames = ["web-${var.domain}"]
       rules = [
         {
           matches = [
