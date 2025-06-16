@@ -1,5 +1,10 @@
 locals {
-  roundcube_version = "1.6.x-apache"
+  roundcube_version = "1.6.11-apache"
+
+  postgresql_password = sensitive(provider::dotenv::get_by_key("POSTGRESQL_PASSWORD", "${path.module}/../secrets.env"))
+
+  oauth_client_id     = sensitive(provider::dotenv::get_by_key("OAUTH_CLIENT_ID", "${path.module}/../secrets.env"))
+  oauth_client_secret = sensitive(provider::dotenv::get_by_key("OAUTH_CLIENT_SECRET", "${path.module}/../secrets.env"))
 }
 
 resource "random_password" "roundcube_des_key" {
@@ -21,6 +26,19 @@ resource "kubernetes_config_map" "roundcube_config" {
 
   data = {
     "config_system.py" = <<EOF
+$config['oauth_login_redirect'] = true;
+$config['oauth_provider'] = 'generic';
+$config['oauth_provider_name'] = 'id.tjo.cloud';
+$config['oauth_client_id'] = '${local.oauth_client_id}';
+$config['oauth_client_secret'] = '${local.oauth_client_secret}';
+$config['oauth_auth_uri'] = 'https://id.tjo.cloud/application/o/authorize/';
+$config['oauth_token_uri'] = 'https://id.tjo.cloud/application/o/token/';
+$config['oauth_identity_uri'] = 'https://id.tjo.cloud/application/o/userinfo/';
+# FIXME(tine): With roundcube 1.7 release:
+#  $config['oauth_config_uri'] = 'https://manage.mail.tjo.cloud/.well-known/openid-configuration';
+$config['oauth_scope'] = "email openid";
+$config['oauth_auth_parameters'] = [];
+$config['oauth_identity_fields'] = ['email'];
 EOF
   }
 }
@@ -61,7 +79,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
             value = "psql"
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_HST"
+            name  = "ROUNDCUEMAIL_DB_HOST"
             value = "pink.postgresql.tjo.cloud"
           }
           env {
@@ -74,7 +92,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
           }
           env {
             name  = "ROUNDCUEMAIL_DB_PASSWORD"
-            value = var.postgresql_password
+            value = local.postgresql_password
           }
           env {
             name  = "ROUNDCUEMAIL_DB_NAME"
@@ -82,11 +100,11 @@ resource "kubernetes_deployment_v1" "roundcube" {
           }
           env {
             name  = "ROUNDCUEMAIL_DEFAULT_HOST"
-            value = "tls://mail.tjo.cloud"
+            value = "ssl://mail.tjo.cloud"
           }
           env {
             name  = "ROUNDCUEMAIL_SMTP_SERVER"
-            value = "tls://mail.tjo.cloud"
+            value = "ssl://mail.tjo.cloud"
           }
           env {
             name  = "ROUNDCUEMAIL_PLUGINS"
@@ -112,7 +130,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
           resources {
             limits = {
               cpu    = "1000m"
-              memory = "250Mi"
+              memory = "512Mi"
             }
           }
         }

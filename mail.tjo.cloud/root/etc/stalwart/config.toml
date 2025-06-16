@@ -5,6 +5,10 @@ user = "admin"
 [server]
 hostname = "mail.tjo.cloud"
 max-connections = 8192
+
+[server.proxy]
+trusted-networks = ["10.0.2.0/24", "fd74:6a6f:0:0200::/56"]
+
 [server.socket]
 backlog = 1024
 nodelay = true
@@ -33,18 +37,14 @@ protocol = "managesieve"
 bind = "[::]:25"
 protocol = "smtp"
 
-[server.listener."submissions"]
+[server.listener.submissions]
 bind = "[::]:465"
 protocol = "smtp"
 tls.implicit = true
 
-storage.directory = "id.tjo.cloud"
-storage.blob = "postgresql.tjo.cloud"
-storage.data = "postgresql.tjo.cloud"
-storage.fts = "postgresql.tjo.cloud"
-storage.lookup = "postgresql.tjo.cloud"
-
-[directory."id.tjo.cloud"]
+[directory.id]
+type = "oidc"
+timeout = "15s"
 bind.auth.method = "default"
 cache.size = 1048576
 cache.ttl.negative = "10m"
@@ -54,13 +54,13 @@ endpoint.url = "https://id.tjo.cloud/application/o/userinfo/"
 fields.email = "email"
 fields.full-name = "name"
 fields.username = "preferred_username"
-timeout = "15s"
-type = "oidc"
 
-[store."postgresql.tjo.cloud"]
+[store.postgresql]
+type = "postgresql"
 compression = "lz4"
 database = "mail.tjo.cloud_stalwart"
 host = "pink.postgresql.tjo.cloud"
+user = "mail.tjo.cloud"
 password = "%{env:POSTGRESQL_PASSWORD}%"
 pool.max-connections = 10
 port = 5432
@@ -69,11 +69,24 @@ read-from-replicas = true
 timeout = "15s"
 tls.allow-invalid-certs = false
 tls.enable = false
-type = "postgresql"
-user = "mail.tjo.cloud"
+
+[storage]
+directory = "id"
+blob = "postgresql"
+data = "postgresql"
+fts = "postgresql"
+lookup = "postgresql"
 
 [email.encryption]
 enable = true
+
+[acme.letsencrypt]
+directory = "https://acme-v02.api.letsencrypt.org/directory"
+challenge = "tls-alpn-01"
+contact = ["postmaster@%{DEFAULT_DOMAIN}%"]
+domains = ["mail.tjo.cloud"]
+cache = "%{BASE_PATH}%/etc/acme"
+renew-before = "30d"
 
 [tracer.log]
 type = "console"

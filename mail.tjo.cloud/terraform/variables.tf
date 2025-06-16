@@ -13,11 +13,6 @@ variable "nodes" {
   }))
 }
 
-variable "postgresql_password" {
-  type      = string
-  sensitive = true
-}
-
 variable "domain" {
   type    = string
   default = "mail.tjo.cloud"

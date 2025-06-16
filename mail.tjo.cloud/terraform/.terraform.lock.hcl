@@ -49,6 +49,29 @@ provider "registry.opentofu.org/dnsimple/dnsimple" {
   ]
 }
 
+provider "registry.opentofu.org/germanbrew/dotenv" {
+  version     = "1.2.6"
+  constraints = "1.2.6"
+  hashes = [
+    "h1:niuXdh8DISz5Jxdo/+EtjDeoVtQd9NewlBclJIfVdh4=",
+    "zh:030c62a975bc821178ff22e55f62fc5994de27bfdbb01df17c87e1e4a4c4cdfb",
+    "zh:2a1179f12b4930943b0fb7e61e745cb9b936915864f2de5fe1503588f84ff4e1",
+    "zh:4161a396f877fd83017a41253dd4de637cfb093b3f9f6accadaef3d9fb1e549c",
+    "zh:44fe9924baccdf21d4e23fc5fe75a41fb0087314c3f2581de127ad20e6b3d006",
+    "zh:610ad3093e8f0be0312e596db4cccc23d96e19792debe4d8334c8dd8e0782695",
+    "zh:749441f7b5c49e6676201d67f3126cff7a889c52fda32b8c6cf57af878394dad",
+    "zh:890df766e9b839623b1f0437355032a3c006226a6c200cd911e15ee1a9014e9f",
+    "zh:9537c5c8c28401cb2cc00137de35e0cfd888bd883c5ce7624e26c87cbe1f89d7",
+    "zh:abc0d7740d689e4daf6a8967a8ac4768a47ea588739378b4c19b13f9641f99ee",
+    "zh:b85076cc77a4c6e51a8a9c3aed864ccfccd6e90ae461f68ede82d915414715a9",
+    "zh:b8d4b56b159e958e10e7c7017a43dd2c716aaf569bcb7219d1f18f867944c038",
+    "zh:cd066c9e978fe7d276876d3e85730ac4b958db03e8df13295f657746fa233488",
+    "zh:d9ffbdf3588c4ff5872d29a54c822b4c3bbbdd54a7ab07f09cc1c9bf0ce2a4f0",
+    "zh:ea4eb7e0483b84e56b03bd10cc321d1aeebc75d12d4d193c690a12a33c1d5548",
+    "zh:fad2b0efdea4c91540f8ae54868c0b71ad6cb1d728d852833b7d61b9b3b17910",
+  ]
+}
+
 provider "registry.opentofu.org/goauthentik/authentik" {
   version     = "2025.4.0"
   constraints = "2025.4.0"

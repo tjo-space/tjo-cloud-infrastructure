@@ -41,7 +41,7 @@ age -d -i /etc/age/key.txt mail.tjo.cloud/secrets.env.encrypted >mail.tjo.cloud/
 set -a && source mail.tjo.cloud/secrets.env && set +a
 
 echo "=== Setup stalwart"
-echo <<EOF >/etc/stalwart/secrets.env
+cat <<EOF >/etc/stalwart/secrets.env
 POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
 systemctl restart stalwart

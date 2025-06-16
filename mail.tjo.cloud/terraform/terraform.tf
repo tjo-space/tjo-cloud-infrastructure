@@ -16,6 +16,10 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.37.1"
     }
+    dotenv = {
+      source  = "germanbrew/dotenv"
+      version = "1.2.6"
+    }
   }
 
   required_version = "~> 1.9.0"

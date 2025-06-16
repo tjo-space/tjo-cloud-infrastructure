@@ -14,24 +14,18 @@ secrets-decrypt:
 
 apply:
   #!/usr/bin/env sh
-  source {{source_directory()}}/secrets.env
-  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu init
   tofu apply
 
 apply-only node:
   #!/usr/bin/env sh
-  source {{source_directory()}}/secrets.env
-  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu init
   tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
 destroy:
   #!/usr/bin/env sh
-  source {{source_directory()}}/secrets.env
-  export TF_VAR_postgresql_password=${POSTGRESQL_PASSWORD}
   cd {{source_directory()}}/terraform
   tofu  destroy
 
