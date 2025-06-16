@@ -56,6 +56,10 @@ fields.email = "email"
 fields.full-name = "name"
 fields.username = "preferred_username"
 
+[directory.postgresql]
+type = "internal"
+store = "postgresql"
+
 [store.postgresql]
 type = "postgresql"
 compression = "lz4"
@@ -72,7 +76,7 @@ tls.allow-invalid-certs = false
 tls.enable = false
 
 [storage]
-directory = "id"
+directory = "postgresql"
 blob = "postgresql"
 data = "postgresql"
 fts = "postgresql"

@@ -12,7 +12,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   gpg \
   git \
   ufw \
-  curl
+  curl \
+  podman
 
 # Grafana Alloy
 mkdir -p /etc/apt/keyrings/
