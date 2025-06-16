@@ -25,7 +25,7 @@ resource "kubernetes_config_map" "roundcube_config" {
   }
 
   data = {
-    "config_system.py" = <<EOF
+    "custom.inc.php" = <<EOF
 $config['oauth_login_redirect'] = true;
 $config['oauth_provider'] = 'generic';
 $config['oauth_provider_name'] = 'id.tjo.cloud';
@@ -123,7 +123,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
 
           volume_mount {
             name       = "roundcube-config"
-            mount_path = "/etc/roundcube"
+            mount_path = "/var/roundcube/config"
             read_only  = true
           }
 
