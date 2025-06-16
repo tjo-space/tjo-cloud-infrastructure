@@ -1,5 +1,6 @@
 [authentication.fallback-admin]
-secret = "$6$cOtCnhy1ZJNBHlET$9F5DFBKkSApLvDEFXy44Hk4y9eIyuC3B0mjsqrIOjvfc1ZrHncoHL4bmTLvbirqOAzJ1hh8lDmMwsI7pj0N9S1"
+# openssl passwd -6
+secret = "$6$gxZSzKLDHK5d3fVJ$xKXp7PpC3uLBn0wuw7gbcvfIG5agmBEjBOGQ4nB8xqBglV10eakrllisniFGeyZT.C8CRksVTJ8uNY40oGrcP."
 user = "admin"
 
 [server]
