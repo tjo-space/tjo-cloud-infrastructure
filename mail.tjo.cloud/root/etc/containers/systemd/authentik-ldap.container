@@ -1,0 +1,16 @@
+[Unit]
+Description=An Authentik Ldap Outpost
+
+[Container]
+Image=ghcr.io/goauthentik/ldap:2025.4.1
+EnvironmentFile=/etc/authentik/secrets.env
+Environment=AUTHENTIK_HOST=https://id.tjo.cloud
+Environment=AUTHENTIK_INSECURE=false
+Network=main.network
+AutoUpdate=registry
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

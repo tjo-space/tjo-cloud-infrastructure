@@ -25,7 +25,3 @@ apt install -y alloy
 echo "=== Generating Age Key"
 mkdir -p /etc/age
 age-keygen -o /etc/age/key.txt
-
-echo "=== Install Stalwart"
-curl --proto '=https' --tlsv1.2 -sSf https://get.stalw.art/install.sh -o install.sh
-sh install.sh >/var/log/stalwart-init.log

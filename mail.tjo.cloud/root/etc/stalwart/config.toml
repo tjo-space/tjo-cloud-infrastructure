@@ -43,24 +43,27 @@ bind = "[::]:465"
 protocol = "smtp"
 tls.implicit = true
 
-[directory.id]
-type = "oidc"
-timeout = "15s"
-bind.auth.method = "default"
-cache.size = 1048576
-cache.ttl.negative = "10m"
-cache.ttl.positive = "1h"
-endpoint.method = "userinfo"
-endpoint.url = "https://id.tjo.cloud/application/o/userinfo/"
-fields.email = "email"
-fields.full-name = "name"
-fields.username = "preferred_username"
+[directory.ldap_id_tjo_cloud]
+type = "ldap"
+url = "ldap://systemd-authentik-ldap:3389"
+bind.dn = "cn=%{env.SERVICE_ACCOUNT_USERNAME}%,dc=mail,dc=tjo,dc=cloud"
+bind.secret = "%{env:SERVICE_ACCOUNT_PASSWORD}%"
+bind.base-dn = "ou=users,dc=mail,dc=tjo,dc=cloud"
+bind.auth.method="template"
+bind.auth.dn = "cn={local},ou=users,dc=mail,dc=tjo,dc=cloud"
+bind.auth.search = true
+name = "(&(|(objectClass=user)(objectClass=group))(cn=?))"
+email = "(&(|(objectClass=user)(objectClass=group))(|(mail=?)(mailAlias=?)))"
+filter.name = "(&(objectClass=user)(cn=?))"
+filter.email = "(&(objectClass=user)(mail=?))"
 
-[directory.postgresql]
-type = "internal"
-store = "postgresql"
+[directory.ldap_id_tjo_cloud.attributes]
+name = "cn"
+class = "objectClass"
+groups = ["memberOf"]
+email = "mail"
 
-[store.postgresql]
+[store.pink_postgresql_tjo_cloud]
 type = "postgresql"
 compression = "lz4"
 database = "mail.tjo.cloud_stalwart"
@@ -76,11 +79,11 @@ tls.allow-invalid-certs = false
 tls.enable = false
 
 [storage]
-directory = "postgresql"
-blob = "postgresql"
-data = "postgresql"
-fts = "postgresql"
-lookup = "postgresql"
+directory = "ldap_id_tjo_cloud"
+blob = "pink_postgresql_tjo_cloud"
+data = "pink_postgresql_tjo_cloud"
+fts = "pink_postgresql_tjo_cloud"
+lookup = "pink_postgresql_tjo_cloud"
 
 [email.encryption]
 enable = true
