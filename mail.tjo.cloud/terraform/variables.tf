@@ -1,16 +1,5 @@
 variable "nodes" {
-  type = map(object({
-    host = string
-
-    cores  = optional(number, 1)
-    memory = optional(number, 512)
-
-    ipv4 = string
-    ipv6 = string
-
-    boot_storage = string
-    boot_size    = optional(number, 8)
-  }))
+  type = set(string)
 }
 
 variable "domain" {
@@ -22,9 +11,9 @@ variable "ssh_keys" {
   type = list(string)
 }
 
-variable "proxmox_token" {
-  type      = string
+variable "hcloud_token" {
   sensitive = true
+  type      = string
 }
 
 variable "authentik_token" {
