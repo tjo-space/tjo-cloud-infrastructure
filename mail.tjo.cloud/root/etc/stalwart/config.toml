@@ -43,9 +43,9 @@ tls.implicit = true
 [directory.ldap_id_tjo_cloud]
 type = "ldap"
 url = "ldap://systemd-authentik-ldap:3389"
+base-dn = "ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.dn = "cn=%{env.SERVICE_ACCOUNT_USERNAME}%,dc=mail,dc=tjo,dc=cloud"
 bind.secret = "%{env:SERVICE_ACCOUNT_PASSWORD}%"
-bind.base-dn = "ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.auth.method="template"
 bind.auth.dn = "cn={local},ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.auth.search = true
