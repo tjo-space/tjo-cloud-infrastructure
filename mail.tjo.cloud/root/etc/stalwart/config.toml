@@ -1,3 +1,9 @@
+[config]
+local-keys = [ "store.*", "directory.*", "tracer.*", "!server.blocked-ip.*", "!server.allowed-ip.*", "server.*",
+               "authentication.fallback-admin.*", "cluster.*",   "config.local-keys.*",
+               "storage.data", "storage.blob", "storage.lookup", "storage.fts", "storage.directory", "certificate.*",
+               "metrics.*"]
+
 [authentication.fallback-admin]
 # openssl passwd -6
 secret = "$6$gxZSzKLDHK5d3fVJ$xKXp7PpC3uLBn0wuw7gbcvfIG5agmBEjBOGQ4nB8xqBglV10eakrllisniFGeyZT.C8CRksVTJ8uNY40oGrcP."
@@ -81,17 +87,6 @@ blob = "pink_postgresql_tjo_cloud"
 data = "pink_postgresql_tjo_cloud"
 fts = "pink_postgresql_tjo_cloud"
 lookup = "pink_postgresql_tjo_cloud"
-
-[email.encryption]
-enable = true
-
-[acme.letsencrypt]
-directory = "https://acme-v02.api.letsencrypt.org/directory"
-challenge = "tls-alpn-01"
-contact = ["postmaster@%{DEFAULT_DOMAIN}%"]
-domains = ["mail.tjo.cloud"]
-cache = "%{BASE_PATH}%/etc/acme"
-renew-before = "30d"
 
 [tracer.log]
 type = "console"
