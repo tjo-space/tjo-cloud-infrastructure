@@ -55,14 +55,14 @@ echo "=== Configure Authentik LDAP"
 mkdir -p /etc/authentik
 cat <<EOF >/etc/authentik/secrets.env
 AUTHENTIK_TOKEN=${AUTHENTIK_TOKEN}
-SERVICE_ACCOUNT_USERNAME=${SERVICE_ACCOUNT_USERNAME}
-SERVICE_ACCOUNT_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}
 EOF
 systemctl restart authentik-ldap
 
 echo "=== Configure stalwart"
 cat <<EOF >/etc/stalwart/secrets.env
 POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
+SERVICE_ACCOUNT_USERNAME=${SERVICE_ACCOUNT_USERNAME}
+SERVICE_ACCOUNT_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}
 EOF
 systemctl restart stalwart
 

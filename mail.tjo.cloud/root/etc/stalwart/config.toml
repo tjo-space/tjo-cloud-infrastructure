@@ -20,7 +20,7 @@ reuse-addr = true
 reuse-port = true
 
 [server.listener.http]
-bind = "[::]:8080"
+bind = "[::]:80"
 protocol = "http"
 
 [server.listener.https]
@@ -52,8 +52,8 @@ url = "ldap://systemd-authentik-ldap:3389"
 base-dn = "ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.dn = "cn=%{env.SERVICE_ACCOUNT_USERNAME}%,dc=mail,dc=tjo,dc=cloud"
 bind.secret = "%{env:SERVICE_ACCOUNT_PASSWORD}%"
-bind.auth.method="template"
-bind.auth.dn = "cn={local},ou=users,dc=mail,dc=tjo,dc=cloud"
+bind.auth.method ="template"
+bind.auth.template = "cn={local},ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.auth.search = true
 name = "(&(|(objectClass=user)(objectClass=group))(cn=?))"
 email = "(&(|(objectClass=user)(objectClass=group))(|(mail=?)(mailAlias=?)))"
@@ -62,6 +62,7 @@ filter.email = "(&(objectClass=user)(mail=?))"
 
 [directory.ldap_id_tjo_cloud.attributes]
 name = "cn"
+description = "description"
 class = "objectClass"
 groups = ["memberOf"]
 email = "mail"
@@ -92,7 +93,4 @@ lookup = "pink_postgresql_tjo_cloud"
 type = "console"
 level = "info"
 ansi = true
-enable = true
-
-[metrics.prometheus]
 enable = true
