@@ -1,4 +1,4 @@
-variable "hcloud_token" {
+variable "id_hcloud_token" {
   sensitive = true
   type      = string
 }

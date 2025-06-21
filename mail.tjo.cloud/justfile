@@ -58,4 +58,4 @@ configure node:
 
   echo "== {{node}} at ${IP}"
   echo "=== Running configure.sh"
-  cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'
+  cat configure.sh | ssh -o StrictHostKeyChecking=no root@${IP} 'bash -s'

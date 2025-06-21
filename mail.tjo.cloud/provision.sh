@@ -22,6 +22,9 @@ echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stab
 apt update -y
 apt install -y alloy
 
+echo "=== Install zerotier"
+curl -s https://install.zerotier.com | sudo bash
+
 echo "=== Generating Age Key"
 mkdir -p /etc/age
 age-keygen -o /etc/age/key.txt

@@ -14,7 +14,7 @@ terraform {
 }
 
 provider "hcloud" {
-  token = var.hcloud_token
+  token = var.id_hcloud_token
 }
 
 provider "dnsimple" {

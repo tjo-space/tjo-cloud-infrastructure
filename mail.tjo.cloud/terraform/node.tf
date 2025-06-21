@@ -1,21 +1,22 @@
 locals {
   nodes_with_name = {
-    for k, v in var.nodes : k => merge(v, {
-      name = k
-      fqdn = "${k}.${var.domain}"
-    })
+    for node in var.nodes : node => {
+      name = node
+      fqdn = "${node}.${var.domain}"
+    }
   }
 
   nodes = {
     for k, v in local.nodes_with_name : k => merge(v, {
       meta = {
-        cloud_region = v.host
         service_name = var.domain
         service_account = {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
         }
         zerotier = {
+          public_key  = zerotier_identity.main[k].public_key
+          private_key = zerotier_identity.main[k].private_key
         }
       }
     })
@@ -38,7 +39,7 @@ resource "hcloud_ssh_key" "main" {
 }
 
 resource "hcloud_server" "main" {
-  for_each = { for node in var.nodes : node => {} }
+  for_each = local.nodes
 
   name = each.value.fqdn
 
@@ -74,4 +75,20 @@ resource "hcloud_server" "main" {
       - "/tmp/provision.sh"
       - "rm /tmp/provision.sh"
     EOF
+}
+
+resource "hcloud_rdns" "ipv4" {
+  for_each = local.nodes
+
+  server_id  = hcloud_server.main[each.key].id
+  ip_address = hcloud_server.main[each.key].ipv4_address
+  dns_ptr    = each.value.fqdn
+}
+
+resource "hcloud_rdns" "ipv6" {
+  for_each = local.nodes
+
+  server_id  = hcloud_server.main[each.key].id
+  ip_address = hcloud_server.main[each.key].ipv6_address
+  dns_ptr    = each.value.fqdn
 }

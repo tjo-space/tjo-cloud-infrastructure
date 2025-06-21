@@ -30,6 +30,14 @@ CLOUD_REGION=$(jq -r ".cloud_region" /etc/tjo.cloud/meta.json)
 SERVICE_ACCOUNT_USERNAME=$(jq -r ".service_account.username" /etc/tjo.cloud/meta.json)
 SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta.json)
 
+ZEROTIER_PUBLIC_KEY=$(jq -r ".zerotier.public_key" /etc/tjo.cloud/meta.json)
+ZEROTIER_PRIVATE_KEY=$(jq -r ".zerotier.private_key" /etc/tjo.cloud/meta.json)
+
+echo "=== Configure zerotier"
+echo "${ZEROTIER_PUBLIC_KEY}" >/var/lib/zerotier-one/identity.secret
+echo "${ZEROTIER_PRIVATE_KEY}" >/var/lib/zerotier-one/identity.public
+zerotier-cli join cfb8bf9836c2fc3a
+
 echo "=== Copy Configuration Files"
 rsync -a mail.tjo.cloud/root/ /
 systemctl daemon-reload

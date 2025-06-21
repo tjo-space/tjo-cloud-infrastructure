@@ -8,10 +8,20 @@ variable "domain" {
 }
 
 variable "ssh_keys" {
-  type = list(string)
+  type = map(string)
 }
 
-variable "hcloud_token" {
+variable "proxmox_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "zerotier_token" {
+  sensitive = true
+  type      = string
+}
+
+variable "mail_hcloud_token" {
   sensitive = true
   type      = string
 }
