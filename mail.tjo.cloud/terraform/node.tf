@@ -82,7 +82,7 @@ resource "hcloud_rdns" "ipv4" {
 
   server_id  = hcloud_server.main[each.key].id
   ip_address = hcloud_server.main[each.key].ipv4_address
-  dns_ptr    = each.value.fqdn
+  dns_ptr    = var.domain
 }
 
 resource "hcloud_rdns" "ipv6" {
@@ -90,5 +90,5 @@ resource "hcloud_rdns" "ipv6" {
 
   server_id  = hcloud_server.main[each.key].id
   ip_address = hcloud_server.main[each.key].ipv6_address
-  dns_ptr    = each.value.fqdn
+  dns_ptr    = var.domain
 }

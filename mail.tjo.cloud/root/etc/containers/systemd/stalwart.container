@@ -3,7 +3,7 @@ Description=A Stalwart Container
 
 [Container]
 Image=docker.io/stalwartlabs/stalwart:v0.12.4
-Volume=/etc/stalwart/config.toml:/stalwart.config
+Volume=/etc/stalwart/config.toml:/opt/stalwart/etc/config.toml:ro
 Network=main.network
 AutoUpdate=registry
 PublishPort=[::]:25:25
