@@ -7,9 +7,6 @@ user = "admin"
 hostname = "mail.tjo.cloud"
 max-connections = 8192
 
-[server.proxy]
-trusted-networks = ["10.0.2.0/24", "fd74:6a6f:0:0200::/56"]
-
 [server.socket]
 backlog = 1024
 nodelay = true
