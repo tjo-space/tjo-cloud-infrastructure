@@ -20,12 +20,12 @@ This is used for the whole SD-WAN.
 
 It is further split as:
 
-| Use                | IPv4          | IPv6              |
-|--------------------|---------------|-------------------|
-| network.tjo.cloud  | 10.0.0.0/16   | fd74:6a6f:0::/48  |
-| tjo.cloud          | 10.1.0.0/16   | fd74:6a6f:1::/48  |
-| tealfleet.com      | 10.4.0.0/16   | fd74:6a6f:4::/48  |
-| k8s.tjo.cloud      | 10.8.0.0/16   | fd74:6a6f:8::/48  |
+| Use                  | IPv4          | IPv6              |
+|----------------------|---------------|-------------------|
+| DHCP Assignments     | 10.0.0.0/16   | fd74:6a6f:0::/48  |
+| ZeroTier Assignments | 10.1.0.0/16   | fd74:6a6f:1::/48  |
+| tealfleet.com        | 10.4.0.0/16   | fd74:6a6f:4::/48  |
+| k8s.tjo.cloud        | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 
 Unspecified are unused.
 
@@ -37,8 +37,12 @@ Each router instance establishes iBGP peering with all others.
 ASN 65000 is used. Each router also listens for any iBGP peerings.
 This is used for `k8s.tjo.cloud` where cilium advertises pod and external load balancer ips.
 
-### DHCP
-DHCP Ranges are `10.0.4.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
+### DHCP Assignments
+Ranges are `10.0.4.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:ffff:ffff:ffff`.
+
+### ZeroTier Assignments
+
+Ranges are `10.1.0.0-10.0.255.255` and `fd74:6a6f:1::-fd74:6a6f:1:ffff:ffff:ffff:ffff:ffff`.
 
 ### Special designations
 The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.

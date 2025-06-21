@@ -34,9 +34,12 @@ ZEROTIER_PUBLIC_KEY=$(jq -r ".zerotier.public_key" /etc/tjo.cloud/meta.json)
 ZEROTIER_PRIVATE_KEY=$(jq -r ".zerotier.private_key" /etc/tjo.cloud/meta.json)
 
 echo "=== Configure zerotier"
-echo "${ZEROTIER_PUBLIC_KEY}" >/var/lib/zerotier-one/identity.secret
-echo "${ZEROTIER_PRIVATE_KEY}" >/var/lib/zerotier-one/identity.public
-zerotier-cli join cfb8bf9836c2fc3a
+systemctl stop zerotier-one.service || true
+echo "${ZEROTIER_PUBLIC_KEY}" >/var/lib/zerotier-one/identity.public
+echo "${ZEROTIER_PRIVATE_KEY}" >/var/lib/zerotier-one/identity.secret
+systemctl start zerotier-one.service
+sleep 5
+zerotier-cli join b6079f73c6379990
 
 echo "=== Copy Configuration Files"
 rsync -a mail.tjo.cloud/root/ /
@@ -49,6 +52,7 @@ age -d -i /etc/age/key.txt mail.tjo.cloud/secrets.env.encrypted >mail.tjo.cloud/
 set -a && source mail.tjo.cloud/secrets.env && set +a
 
 echo "=== Configure Authentik LDAP"
+mkdir -p /etc/authentik
 cat <<EOF >/etc/authentik/secrets.env
 AUTHENTIK_TOKEN=${AUTHENTIK_TOKEN}
 SERVICE_ACCOUNT_USERNAME=${SERVICE_ACCOUNT_USERNAME}

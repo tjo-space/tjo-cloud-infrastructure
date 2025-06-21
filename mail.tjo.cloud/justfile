@@ -22,7 +22,7 @@ apply-only node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu init
-  tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+  tofu apply --target 'hcloud_server.main["{{node}}"]'
 
 destroy:
   #!/usr/bin/env sh
@@ -33,7 +33,7 @@ destroy-only node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu init
-  tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+  tofu destroy --target 'hcloud_server.main["{{node}}"]'
 
 configure-all:
   #!/usr/bin/env sh
