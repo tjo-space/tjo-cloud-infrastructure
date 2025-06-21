@@ -196,6 +196,70 @@
         }
       }
     },
+    "inetutils@latest": {
+      "last_modified": "2025-05-16T20:19:48Z",
+      "resolved": "github:NixOS/nixpkgs/12a55407652e04dcf2309436eb06fef0d3713ef3#inetutils",
+      "source": "devbox-search",
+      "version": "2.6",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/326jcn3fnxx7cfvgmmh6bp8bsn5jgnd8-inetutils-2.6",
+              "default": true
+            },
+            {
+              "name": "apparmor",
+              "path": "/nix/store/gvhzhsl4576xv460q7fvfjhzk91pp9ir-inetutils-2.6-apparmor"
+            }
+          ],
+          "store_path": "/nix/store/326jcn3fnxx7cfvgmmh6bp8bsn5jgnd8-inetutils-2.6"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/jzrazx3z97fvrraj7cvqlx51had364kn-inetutils-2.6",
+              "default": true
+            },
+            {
+              "name": "apparmor",
+              "path": "/nix/store/splw0fny7pvf80pn9ivcazf5kj1hmij2-inetutils-2.6-apparmor"
+            }
+          ],
+          "store_path": "/nix/store/jzrazx3z97fvrraj7cvqlx51had364kn-inetutils-2.6"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/d45b4r8yh4x67501kb9sm31f3nhw7n28-inetutils-2.6",
+              "default": true
+            },
+            {
+              "name": "apparmor",
+              "path": "/nix/store/5pkyxvy28bi7jqc95f4209a6y5hq9i4y-inetutils-2.6-apparmor"
+            }
+          ],
+          "store_path": "/nix/store/d45b4r8yh4x67501kb9sm31f3nhw7n28-inetutils-2.6"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/mv739swiym6vh5jiaq3ckam172da7ajg-inetutils-2.6",
+              "default": true
+            },
+            {
+              "name": "apparmor",
+              "path": "/nix/store/gd0jri8d60823bj6cmlnwv3gd1bil1ib-inetutils-2.6-apparmor"
+            }
+          ],
+          "store_path": "/nix/store/mv739swiym6vh5jiaq3ckam172da7ajg-inetutils-2.6"
+        }
+      }
+    },
     "just@latest": {
       "last_modified": "2024-12-23T21:10:33Z",
       "resolved": "github:NixOS/nixpkgs/de1864217bfa9b5845f465e771e0ecb48b30e02d#just",
