@@ -11,7 +11,6 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   age \
   gpg \
   git \
-  ufw \
   curl \
   podman
 

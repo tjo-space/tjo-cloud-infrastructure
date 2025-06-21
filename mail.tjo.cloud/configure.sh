@@ -79,16 +79,3 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 } >>/etc/default/alloy
 systemctl enable --now alloy
 systemctl restart alloy
-
-echo "=== Configure UFW"
-ufw default deny incoming
-ufw default allow outgoing
-
-ufw allow 22   # SSH
-ufw allow 25   # EMAIL SMTP
-ufw allow 443  # HTTPS
-ufw allow 465  # EMAIL SMTPS
-ufw allow 993  # EMAIL IMAPS
-ufw allow 4190 # EMAIL ManageSieve
-ufw --force enable
-systemctl enable --now ufw
