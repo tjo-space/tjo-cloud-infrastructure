@@ -23,6 +23,6 @@ An mail cluster used for other `tjo.cloud` and `tjo.space` services as well pers
 - Roundcube deployed on k8s.tjo.cloud.
   - Web Email access.
 
-### Filesystem
+### TODO
 
-- `/` is the os drive
+- [ ] UFW not working with Podman. What do?

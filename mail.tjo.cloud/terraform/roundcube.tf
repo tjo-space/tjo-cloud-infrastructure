@@ -75,8 +75,16 @@ resource "kubernetes_deployment_v1" "roundcube" {
             value = "ssl://mail.tjo.cloud"
           }
           env {
+            name  = "ROUNDCUEMAIL_DEFAULT_PORT"
+            value = "993"
+          }
+          env {
             name  = "ROUNDCUEMAIL_SMTP_SERVER"
             value = "ssl://mail.tjo.cloud"
+          }
+          env {
+            name  = "ROUNDCUBEMAIL_SMTP_PORT"
+            value = "465"
           }
           env {
             name  = "ROUNDCUEMAIL_PLUGINS"

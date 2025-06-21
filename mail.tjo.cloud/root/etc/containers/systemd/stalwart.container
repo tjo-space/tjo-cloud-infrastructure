@@ -7,6 +7,7 @@ Volume=/etc/stalwart/config.toml:/opt/stalwart/etc/config.toml:ro
 EnvironmentFile=/etc/stalwart/secrets.env
 Network=main.network
 AutoUpdate=registry
+PublishPort=127.0.0.1:8080:8080
 PublishPort=[::]:25:25
 PublishPort=0.0.0.0:25:25
 PublishPort=[::]:443:443

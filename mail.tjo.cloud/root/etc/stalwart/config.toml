@@ -13,6 +13,10 @@ nodelay = true
 reuse-addr = true
 reuse-port = true
 
+[server.listener.http]
+bind = "[::]:8080"
+protocol = "http"
+
 [server.listener.https]
 bind = "[::]:443"
 protocol = "http"
