@@ -131,6 +131,7 @@ https://my.zerotier.com/network/b6079f73c6379990
 ## IPv6 Connectivity.
 
  - [ ] As we assign private ipv6 addresses, we would have to ise ipv6 nat to translate those to real ipv6 addresses.
+   - [ ] Maybe we can use nevaroo's /56 pool and route traffic through it?
  - [ ] BGP IPv6 doesn't work with Cilium. Some configuration must be changed.
 
 ## Selfhost Zerotier.
