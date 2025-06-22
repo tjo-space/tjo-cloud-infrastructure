@@ -20,7 +20,7 @@ dot-env-encrypt:
   cat .env | age --encrypt -R {{source_directory()}}/age.keys > .env.encrypted
 
 dot-env-decrypt:
-  cat .env.encrypted | age --decrypt -i "${SOPS_AGE_KEY_FILE}" | .env
+  cat .env.encrypted | age --decrypt -i "${SOPS_AGE_KEY_FILE}" > .env
 
 # We do not use sops as state files can be large.
 # And we want to use gzip on them to make them smaller (from 17MB to 4MB).

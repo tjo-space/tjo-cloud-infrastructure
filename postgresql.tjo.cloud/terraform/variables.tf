@@ -15,7 +15,7 @@ variable "nodes" {
     data_size    = optional(number, 64)
 
     backup_storage = string
-    backup_size    = optional(number, 128)
+    backup_size    = optional(number, 148)
   }))
 }
 
