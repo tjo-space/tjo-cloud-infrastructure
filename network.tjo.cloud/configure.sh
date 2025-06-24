@@ -31,13 +31,17 @@ echo "- Installing Kea"
 opkg install kea-dhcp4 kea-dhcp6 kea-uci kea-lfc
 rm /etc/config/kea-opkg || true
 
+echo "- Installing unbound"
+opkg install luci-app-unbound unbound-control adblock
+opkg remove --autoremove dnsmasq odhcpd odhcpd-ipv6only
+
 echo "- Reloading Services"
 service bird reload
 service kea reload
 service network reload
 sleep 5
 service firewall reload
-service dnsmasq reload
-service odhcpd reload
+service unbound reload
+service adblock reload
 
 echo "- Done!"

@@ -16,9 +16,7 @@ __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.
 
 # Subnet
 We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
-This is used for the whole SD-WAN.
 
-It is further split as:
 
 | Use                  | IPv4          | IPv6              |
 |----------------------|---------------|-------------------|

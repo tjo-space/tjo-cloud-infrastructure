@@ -1,0 +1,31 @@
+config unbound
+  option dns64 '1'
+
+  option domain 'lan'
+
+  option listen_port '53'
+  option rebind_protection '0'
+
+  option recursion 'aggressive'
+  option resource 'large'
+
+  option unbound_control '1'
+
+config zone
+  option zone_type 'forward_zone'
+  option enabled '1'
+  option fallback '1'
+  option tls_upstream '1'
+  list zone_name '.'
+
+  # DNS0.eu
+  list server '193.110.81.0#dns0.eu'
+  list server '2a0f:fc80::#dns0.eu'
+  list server '2a0f:fc80::#dns0.eu'
+  list server '2a0f:fc81::#dns0.eu'
+
+  # Quad9
+  list server '9.9.9.9@443#dns.quad9.net'
+  list server '149.112.112.112@443#dns.quad9.net'
+  list server '2620:fe::fe@443#dns.quad9.net'
+  list server '2620:fe::9@443#dns.quad9.net'
