@@ -138,6 +138,10 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
     datastore_id      = each.value.boot_storage
     user_data_file_id = proxmox_virtual_environment_file.userdata[each.key].id
 
+    dns {
+      servers = ["10.0.0.1", "fd74:6a6f:0:0001::"]
+    }
+
     ip_config {
       ipv4 {
         gateway = "10.0.0.1"
