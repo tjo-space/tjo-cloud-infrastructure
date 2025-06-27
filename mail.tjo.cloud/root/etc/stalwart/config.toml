@@ -87,7 +87,7 @@ tls.allow-invalid-certs = false
 tls.enable = false
 
 [storage]
-directory = "ldap_id_tjo_cloud"
+directory = "internal"
 blob = "pink_postgresql_tjo_cloud"
 data = "pink_postgresql_tjo_cloud"
 fts = "pink_postgresql_tjo_cloud"
