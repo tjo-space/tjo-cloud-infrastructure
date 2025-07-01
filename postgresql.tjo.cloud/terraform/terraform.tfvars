@@ -1,12 +1,12 @@
 nodes = {
   pink = {
-    host         = "nevaroo"
-    boot_storage = "local-nvme-lvm"
-    data_storage = "local-nvme-lvm"
+    host           = "nevaroo"
+    boot_storage   = "local-nvme-lvm"
+    data_storage   = "local-nvme-lvm"
     backup_storage = "local-nvme-lvm"
 
-    ipv4         = "10.1.10.1/16"
-    ipv6         = "fd74:6a6f:1:1001::/64"
+    ipv4 = "10.1.10.1/16"
+    ipv6 = "fd74:6a6f:1:1001::/64"
   }
 }
 

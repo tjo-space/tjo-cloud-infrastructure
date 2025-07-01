@@ -6,7 +6,7 @@ locals {
       domain = local.domain
       hash   = sha1(v.host)
 
-      wan_mac_address     = v.mac_address != null ? v.mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+      wan_mac_address     = v.vmbr0.mac_address != null ? v.vmbr0.mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
       private_mac_address = "AA:BB:00:11:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
     })
   }
@@ -24,9 +24,13 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
   name      = "vmbr0"
   comment   = "Main interface bridge for VMs."
 
-  address = each.value.address
-  gateway = each.value.gateway
-  ports   = each.value.bridge_ports
+  address = each.value.vmbr0.address
+  gateway = each.value.vmbr0.gateway
+
+  address6 = each.value.vmbr0.address6
+  gateway6 = each.value.vmbr0.gateway6
+
+  ports = each.value.vmbr0.bridge_ports
 }
 
 
@@ -36,6 +40,12 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
   node_name = each.value.host
   name      = "vmbr1"
   comment   = "Private network for VMs."
+
+  address = each.value.vmbr1.address
+  gateway = each.value.vmbr1.gateway
+
+  address6 = each.value.vmbr1.address6
+  gateway6 = each.value.vmbr1.gateway6
 }
 
 resource "proxmox_virtual_environment_file" "iso" {
