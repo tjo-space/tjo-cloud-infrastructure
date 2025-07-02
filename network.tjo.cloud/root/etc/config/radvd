@@ -1,0 +1,39 @@
+{{ $nodeName := getenv "NODE" }}
+{{ $node := index (ds "config").nodes $nodeName }}
+
+config interface
+	option interface 'lan'
+	option AdvSendAdvert '1'
+	list client ''
+	option ignore '{{ if $node.primary }}0{{ else }}1{{ end }}'
+	option IgnoreIfMissing '1'
+	option AdvSourceLLAddress '1'
+	option AdvDefaultPreference 'high'
+	# Use DHCPv6 alongside SLAAC
+	option AdvManagedFlag '1'
+
+config prefix
+	option interface 'lan'
+	option AdvOnLink '1'
+	option AdvAutonomous '1'
+	option ignore '{{ if $node.primary }}0{{ else }}1{{ end }}'
+	list prefix '{{ $node.wan.ipv6.prefix }}'
+	list prefix 'fd74:6a6f:0::/48'
+
+config route
+	option interface 'lan'
+	list prefix ''
+	option ignore '1'
+
+# DNS to be advertised
+config rdnss
+	option interface 'lan'
+	list addr 'fd74:6a6f:0:0001::'
+	option ignore '{{ if $node.primary }}0{{ else }}1{{ end }}'
+
+# DNS Search List
+config dnssl
+	option interface 'lan'
+	list suffix ''
+	option ignore '1'
+{{ end }}
