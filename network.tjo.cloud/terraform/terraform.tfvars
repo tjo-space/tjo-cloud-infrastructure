@@ -37,10 +37,6 @@ nodes = {
       gateway6 = "fe80::1"
       address6 = "2a01:4f8:120:7700::1/128"
     }
-
-    vmbr1 = {
-      address6 = "2a01:4f8:120:7700::2/56"
-    }
   }
   mustafar = {
     id           = 703
