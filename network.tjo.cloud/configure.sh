@@ -33,10 +33,7 @@ rm /etc/config/kea-opkg || true
 
 echo "- Installing unbound"
 opkg install luci-app-unbound unbound-control adblock
-opkg remove --autoremove dnsmasq odhcpd
-
-echo "- Install dhcpd for ipv6"
-opkg install odhcpd-ipv6only
+opkg remove --autoremove dnsmasq odhcpd odhcpd-ipv6only
 
 echo "- Reloading Services"
 service bird reload
@@ -46,6 +43,5 @@ sleep 5
 service firewall reload
 service unbound reload
 service adblock reload
-service odhcpd reload
 
 echo "- Done!"
