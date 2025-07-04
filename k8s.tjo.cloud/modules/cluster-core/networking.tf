@@ -39,7 +39,7 @@ resource "helm_release" "cilium" {
     ipv6 = {
       enabled = false
     }
-    enableIPv6Masquerade = false
+    enableIPv6Masquerade = true
 
     kubeProxyReplacement = true
 
