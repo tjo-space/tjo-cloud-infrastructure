@@ -75,3 +75,21 @@ config interface 'wan6'
 config interface 'tailscale'
 	option proto 'none'
 	option device 'tailscale0'
+
+##
+# JOOL
+##
+config interface 'jool'
+  option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
+	option proto 'static'
+	option device 'jool'
+	option ipaddr '192.168.164.1'
+	option netmask '255.255.255.0'
+	option ip6assign '64'
+	option ip6hint '64'
+
+config route6
+  option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
+	option interface 'jool'
+	option target '64:ff9b::/96'
+	option gateway 'fe80::64'

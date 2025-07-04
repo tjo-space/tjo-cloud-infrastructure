@@ -154,6 +154,24 @@ config forwarding
 	option dest 'tailscale'
 
 ##
+# JOOL
+##
+config zone
+	option name 'jool'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'REJECT'
+	list network 'jool'
+
+config forwarding
+	option src 'jool'
+	option dest 'wan'
+
+config forwarding
+	option src 'lan'
+	option dest 'jool'
+
+##
 # PORT FORWARDING
 ##
 {{- $nodeName := getenv "NODE" }}
