@@ -15,7 +15,7 @@ prometheus.scrape "exporters" {
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
     [
-      {"__address__" = "127.0.0.1:8080", "__metrics_path__" = "/metrics/prometheus", "instance" = "stalwart"},
+      {"__address__" = "localhost:8405", "__metrics_path__" = "/metrics", "instance" = "haproxy"},
     ],
   )
   forward_to = [

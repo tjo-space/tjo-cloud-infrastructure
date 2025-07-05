@@ -10,6 +10,7 @@ folder2ram -enablesystemd
 systemctl start folder2ram_startup.service
 systemctl start folder2ram_shutdown.service
 systemctl start folder2ram-sync.timer
+chown -R www-data:www-data /var/log/pveproxy
 
 ##
 # APT non-free-firmware
@@ -62,6 +63,13 @@ systemctl disable --now dnsmasq
 # systemctl enable frr.service
 # We do not yet use this, lets disable for now.
 systemctl disable --now frr.service
+
+# Disable IPv6 SLAAC/DHCPv6 on vmbr1.
+#  Otherwise Proxmox Host will receive IP from the
+#  network.tjo.cloud VM's.
+cat <<EOF >/etc/network/interfaces.d/vmbr1.conf
+iface vmbr1 inet6 static
+EOF
 
 ##
 # DNS
