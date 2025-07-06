@@ -53,13 +53,13 @@ loki.process "geoip" {
     mapping = { "client_ip" = "" }
   }
   stage.geoip {
-    source = "client_ip"
-    database = "/usr/share/GeoIP/GeoLite2-City.mmdb"
+    source  = "client_ip"
+    db      = "/usr/share/GeoIP/GeoLite2-City.mmdb"
     db_type = "city"
   }
   stage.geoip {
-    source = "client_ip"
-    database = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
+    source  = "client_ip"
+    db      = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
     db_type = "asn"
   }
   stage.labels {
