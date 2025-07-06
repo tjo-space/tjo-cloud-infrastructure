@@ -50,7 +50,7 @@ loki.process "drop_old" {
 }
 loki.process "geoip" {
   stage.logfmt {
-    mapping = { "client_ip" = "" }
+    mapping = { client_ip = "" }
   }
   stage.geoip {
     source  = "client_ip"
