@@ -20,5 +20,10 @@ echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stab
 apt update -y
 apt install -y alloy
 
+# Haproxy
+apt install -y --no-install-recommends software-properties-common
+add-apt-repository -y ppa:vbernat/haproxy-3.2
+apt install -y haproxy=3.2.\*
+
 echo "=== Install zerotier"
 curl -s https://install.zerotier.com | sudo bash

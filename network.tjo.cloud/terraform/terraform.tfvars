@@ -34,8 +34,8 @@ nodes = {
       bridge_ports = ["eno1"]
       gateway      = "178.63.49.193"
       address      = "178.63.49.225/26"
-      gateway6 = "fe80::1"
-      address6 = "2a01:4f8:120:7700::1/128"
+      gateway6     = "fe80::1"
+      address6     = "2a01:4f8:120:7700::1/128"
     }
   }
   mustafar = {

@@ -1,5 +1,9 @@
-variable "nodes" {
-  type = set(string)
+variable "nodes_hetzner_cloud" {
+  type = map(object({
+    datacenter  = string
+    image       = optional(string, "ubuntu-24.04")
+    server_type = optional(string, "cax11")
+  }))
 }
 
 variable "domain" {
@@ -9,11 +13,6 @@ variable "domain" {
 
 variable "ssh_keys" {
   type = map(string)
-}
-
-variable "proxmox_token" {
-  type      = string
-  sensitive = true
 }
 
 variable "zerotier_token" {
@@ -38,4 +37,16 @@ variable "dnsimple_token" {
 
 variable "dnsimple_account_id" {
   type = string
+}
+
+variable "zones" {
+  type = set(string)
+}
+
+variable "records" {
+  type = map(object({
+    to   = string
+    ttl  = optional(number, 600)
+    type = optional(string, "ALIAS")
+  }))
 }

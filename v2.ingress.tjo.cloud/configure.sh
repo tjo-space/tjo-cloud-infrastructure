@@ -33,7 +33,7 @@ SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta
 ZEROTIER_PUBLIC_KEY=$(jq -r ".zerotier.public_key" /etc/tjo.cloud/meta.json)
 ZEROTIER_PRIVATE_KEY=$(jq -r ".zerotier.private_key" /etc/tjo.cloud/meta.json)
 
-echo "=== Configure zerotier"
+echo "== Configure zerotier"
 systemctl stop zerotier-one.service || true
 echo "${ZEROTIER_PUBLIC_KEY}" >/var/lib/zerotier-one/identity.public
 echo "${ZEROTIER_PRIVATE_KEY}" >/var/lib/zerotier-one/identity.secret
@@ -41,11 +41,11 @@ systemctl start zerotier-one.service
 sleep 5
 zerotier-cli join b6079f73c6379990
 
-echo "=== Copy Configuration Files"
+echo "== Copy Configuration Files"
 rsync -a v2.ingress.tjo.cloud/root/ /
 systemctl daemon-reload
 
-echo "=== Configure Grafana Alloy"
+echo "== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
@@ -59,6 +59,10 @@ ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
 systemctl enable --now alloy
 systemctl restart alloy
 
+echo "== Configure Haproxy"
+systemctl restart haproxy
+systemctl enable --now haproxy
+
 echo "== Configure SSH"
 cat <<EOF >/etc/ssh/sshd_config.d/port-2222.conf
 Port 2222
@@ -68,8 +72,6 @@ systemctl restart ssh
 echo "== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
-# FIXME: Zerotier correct interface name!
-ufw allow out on zerotierinterfacefixme
 
 ufw allow 22  # SSH for GIT
 ufw allow 443 # HTTPS
