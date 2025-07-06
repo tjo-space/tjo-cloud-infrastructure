@@ -68,8 +68,16 @@ systemctl disable --now frr.service
 #  Otherwise Proxmox Host will receive IP from the
 #  network.tjo.cloud VM's.
 cat <<EOF >/etc/network/interfaces.d/vmbr1.conf
-iface vmbr1 inet6 static
+iface vmbr1 inet manual
+iface vmbr1 inet6 manual
+  pre-up /sbin/sysctl -w net.ipv6.conf.vmbr1.autoconf=0
+  pre-up /sbin/sysctl -w net.ipv6.conf.vmbr1.accept_ra=0
 EOF
+ip addr flush dev vmbr1
+ip route flush dev vmbr1
+ip -6 addr flush dev vmbr1
+ip -6 route flush dev vmbr1
+ifup vmbr1
 
 ##
 # DNS

@@ -63,12 +63,6 @@ echo "== Configure Haproxy"
 systemctl restart haproxy
 systemctl enable --now haproxy
 
-echo "== Configure SSH"
-cat <<EOF >/etc/ssh/sshd_config.d/port-2222.conf
-Port 2222
-EOF
-systemctl restart ssh
-
 echo "== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
