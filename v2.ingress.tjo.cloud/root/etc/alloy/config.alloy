@@ -64,7 +64,7 @@ loki.process "geoip" {
   }
   stage.labels {
     values = {
-      # CITY
+      // CITY
       geoip_city_name          = "",
       geoip_country_name       = "",
       geoip_country_code       = "",
@@ -74,7 +74,7 @@ loki.process "geoip" {
       geoip_location_longitude = "",
       geoip_subdivision_name   = "",
       geoip_subdivision_code   = "",
-      # ASN
+      // ASN
       geoip_autonomous_system_number       = "",
       geoip_autonomous_system_organization = "",
     }

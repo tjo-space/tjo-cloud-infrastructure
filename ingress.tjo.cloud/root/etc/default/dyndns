@@ -8,7 +8,7 @@
 DOMAIN=ingress.tjo.cloud
 
 # Enable to make DELETE requests.
-DESTRUCTIVE=true
+DESTRUCTIVE=false
 
 # Account ID
 DNSIMPLE_ACCOUNT_ID=155200

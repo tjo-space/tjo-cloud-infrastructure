@@ -1,38 +1,10 @@
 nodes = {
-  batuu = {
-    host         = "batuu"
-    iso_storage  = "local"
-    boot_storage = "local-nvme"
-    ipv4         = "10.0.2.1/16"
-    ipv6         = "fd74:6a6f:0:0201::/64"
-  }
-  jakku = {
-    host         = "jakku"
-    iso_storage  = "local"
-    boot_storage = "local-nvme"
-    ipv4         = "10.0.2.2/16"
-    ipv6         = "fd74:6a6f:0:0202::/64"
-  }
   nevaroo = {
     host         = "nevaroo"
     iso_storage  = "local"
     boot_storage = "local-nvme-lvm"
     ipv4         = "10.0.2.3/16"
     ipv6         = "fd74:6a6f:0:0203::/64"
-  }
-  mustafar = {
-    host         = "mustafar"
-    iso_storage  = "local"
-    boot_storage = "local"
-    ipv4         = "10.0.2.4/16"
-    ipv6         = "fd74:6a6f:0:0204::/64"
-  }
-  endor = {
-    host         = "endor"
-    iso_storage  = "local"
-    boot_storage = "local-nvme"
-    ipv4         = "10.0.2.5/16"
-    ipv6         = "fd74:6a6f:0:0205::/64"
   }
 }
 
