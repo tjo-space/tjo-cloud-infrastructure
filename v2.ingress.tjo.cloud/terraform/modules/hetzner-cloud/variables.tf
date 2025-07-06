@@ -6,7 +6,8 @@ variable "nodes" {
     image       = optional(string, "ubuntu-24.04")
     server_type = optional(string, "cax11")
     meta = object({
-      service_name = string
+      cloud_provider = string
+      service_name   = string
       service_account = object({
         username = string
         password = string

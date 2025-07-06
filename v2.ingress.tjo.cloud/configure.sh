@@ -26,6 +26,7 @@ git describe --tags --always --dirty >/etc/tjo.cloud/version.txt
 SERVICE_NAME=$(jq -r ".service_name" /etc/tjo.cloud/meta.json)
 SERVICE_VERSION=$(cat /etc/tjo.cloud/version.txt)
 CLOUD_REGION=$(jq -r ".cloud_region" /etc/tjo.cloud/meta.json)
+CLOUD_PROVIDER=$(jq -r ".cloud_provider" /etc/tjo.cloud/meta.json)
 
 SERVICE_ACCOUNT_USERNAME=$(jq -r ".service_account.username" /etc/tjo.cloud/meta.json)
 SERVICE_ACCOUNT_PASSWORD=$(jq -r ".service_account.password" /etc/tjo.cloud/meta.json)
@@ -49,7 +50,8 @@ echo "== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
-ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
+ATTRIBUTES+="cloud.region=${CLOUD_REGION},"
+ATTRIBUTES+="cloud.provider=${CLOUD_PROVIDER}"
 {
   echo ""
   echo "OTEL_RESOURCE_ATTRIBUTES=${ATTRIBUTES}"

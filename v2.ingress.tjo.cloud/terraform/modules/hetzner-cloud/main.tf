@@ -29,7 +29,7 @@ resource "hcloud_server" "main" {
     write_files:
     - path: /etc/tjo.cloud/meta.json
       encoding: base64
-      content: ${base64encode(jsonencode(each.value.meta))}
+      content: ${base64encode(jsonencode(merge(each.value.meta, { cloud_region = each.value.datacenter })))}
     - path: /tmp/provision.sh
       encoding: base64
       content: ${base64encode(file("${path.module}/../../../provision.sh"))}

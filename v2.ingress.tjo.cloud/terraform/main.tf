@@ -15,7 +15,8 @@ locals {
   nodes_with_meta = {
     for k, v in local.nodes_with_name : k => merge(v, {
       meta = {
-        service_name = var.domain
+        cloud_provider = v.provider
+        service_name   = var.domain
         service_account = {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
