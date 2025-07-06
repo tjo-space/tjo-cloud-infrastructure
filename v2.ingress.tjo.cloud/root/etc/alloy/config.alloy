@@ -45,7 +45,7 @@ loki.process "drop_old" {
     drop_counter_reason = "too old"
   }
   forward_to = [
-    loki.process.geoip.receiver
+    loki.process.geoip.receiver,
   ]
 }
 loki.process "geoip" {
