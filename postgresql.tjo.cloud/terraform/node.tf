@@ -199,7 +199,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
         address = each.value.ipv4
       }
       ipv6 {
-        gateway = "fd74:6a6f:0:0001::"
+        gateway = "fd74:6a6f::1"
         address = each.value.ipv6
       }
     }

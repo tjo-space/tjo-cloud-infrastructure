@@ -139,7 +139,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
     user_data_file_id = proxmox_virtual_environment_file.userdata[each.key].id
 
     dns {
-      servers = ["10.0.0.1", "fd74:6a6f:0:0001::"]
+      servers = ["10.0.0.1", "fd74:6a6f::1"]
     }
 
     ip_config {
@@ -148,7 +148,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/ingress.tjo.cloud
         address = each.value.ipv4
       }
       ipv6 {
-        gateway = "fd74:6a6f:0:0001::"
+        gateway = "fd74:6a6f::1"
         address = each.value.ipv6
       }
     }

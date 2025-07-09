@@ -2,7 +2,7 @@ resource "helm_release" "cilium" {
   name            = "cilium"
   chart           = "cilium"
   repository      = "https://helm.cilium.io/"
-  version         = "1.16.4"
+  version         = "1.17.5"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -127,7 +127,7 @@ resource "kubernetes_manifest" "cilium-bgp-cluster-config" {
             {
               name        = "local-router"
               peerASN     = var.bgp.asn
-              peerAddress = "10.0.0.1"
+              peerAddress = "fd74:6a6f::1"
               peerConfigRef = {
                 name = "default"
               }

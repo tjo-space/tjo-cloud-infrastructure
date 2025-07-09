@@ -21,7 +21,7 @@ We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
 | Use                  | IPv4          | IPv6              |
 |----------------------|---------------|-------------------|
 | DHCP/SLAAC Assignments     | 10.0.0.0/16   | fd74:6a6f:0::/48  |
-| ZeroTier Assignments | 10.1.0.0/16   | fd74:6a6f:1::/48  |
+| ZeroTier Assignments | 10.1.0.0/16   | Use SLAAC/DHCP  |
 | tealfleet.com        | 10.4.0.0/16   | fd74:6a6f:4::/48  |
 | k8s.tjo.cloud        | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 
@@ -47,19 +47,15 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|
-| Primary Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f:0:0001::/128   |
+| Primary Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f::1/128   |
 | # | # |  # |
-| batuu.network.tjo.cloud | 10.0.1.1/10     | fd74:6a6f:0:0001::1/128  |
-| jakku.network.tjo.cloud | 10.0.1.2/10     | fd74:6a6f:0:0001::2/128  |
-| nevaroo.network.tjo.cloud | 10.0.1.3/10     | fd74:6a6f:0:0001::3/128  |
-| mustafar.network.tjo.cloud | 10.0.1.4/10     | fd74:6a6f:0:0001::4/128  |
-| endor.network.tjo.cloud | 10.0.1.5/10     | fd74:6a6f:0:0001::5/128  |
+| batuu.network.tjo.cloud | 10.0.0.2/10     | fd74:6a6f::2/128  |
+| jakku.network.tjo.cloud | 10.0.0.3/10     | fd74:6a6f::3/128  |
+| nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
+| mustafar.network.tjo.cloud | 10.0.0.5/10     | fd74:6a6f::5/128  |
+| endor.network.tjo.cloud | 10.0.0.6/10     | fd74:6a6f::6/128  |
 | # | # | # |
-| batuu.ingress.tjo.cloud | 10.0.2.1/16     | fd74:6a6f:0:0201::/64  |
-| jakku.ingress.tjo.cloud | 10.0.2.2/16     | fd74:6a6f:0:0202::/64  |
 | nevaroo.ingress.tjo.cloud | 10.0.2.3/16     | fd74:6a6f:0:0203::/64  |
-| mustafar.ingress.tjo.cloud | 10.0.2.4/16     | fd74:6a6f:0:0204::/64  |
-| endor.ingress.tjo.cloud | 10.0.2.5/16     | fd74:6a6f:0:0205::/64  |
 
 ## k8s.tjo.cloud
 
@@ -128,8 +124,6 @@ https://my.zerotier.com/network/b6079f73c6379990
 
 ## IPv6 Connectivity.
 
- - [ ] As we assign private ipv6 addresses, we would have to ise ipv6 nat to translate those to real ipv6 addresses.
-   - [ ] Maybe we can use nevaroo's /56 pool and route traffic through it?
  - [ ] BGP IPv6 doesn't work with Cilium. Some configuration must be changed.
 
 ## Selfhost Zerotier.
