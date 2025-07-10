@@ -47,7 +47,7 @@ resource "proxmox_virtual_environment_download_file" "ubuntu" {
   node_name    = "nevaroo"
   file_name    = "${var.domain}-ubuntu-noble-server-cloudimg-amd64.img"
   url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-  overwrite    = true
+  overwrite    = false
 }
 
 resource "proxmox_virtual_environment_file" "userdata" {

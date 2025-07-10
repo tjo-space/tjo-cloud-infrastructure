@@ -24,6 +24,9 @@ terraform.rc
 .tofurc
 tofu.rc
 
+# Sensitive secrets documentation
+SECRETS.md
+
 # ENV
 .env
 admin.*config
