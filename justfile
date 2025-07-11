@@ -17,7 +17,7 @@ export SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/ke
 import 'secrets.justfile'
 
 post-pull: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt
-pre-commit: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt
+pre-commit: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt lint format
 
 default:
   @just --list
