@@ -5,7 +5,7 @@ locals {
     })
   }
   hashes = {
-    for k, v in local.nodes_with_names : k => sha1("${v.name}:${var.cluster.name}")
+    for k, v in local.nodes_with_names : k => sha1(v.name)
   }
   nodes = {
     for k, v in local.nodes_with_names : k => merge(v, {
@@ -31,8 +31,8 @@ locals {
   nodes_with_address = {
     for k, v in local.nodes :
     k => merge(v, {
-      ipv4 = local.ipv4_addresses[k]["eth0"][0]
-      ipv6 = local.ipv6_addresses[k]["eth0"][0]
+      ipv4 = lookup(local.ipv4_addresses[k], "ens18", lookup(local.ipv4_addresses[k], "eth0", [""]))[0]
+      ipv6 = lookup(local.ipv6_addresses[k], "ens18", lookup(local.ipv6_addresses[k], "eth0", [""]))[0]
     })
   }
 }
@@ -40,7 +40,7 @@ locals {
 resource "proxmox_virtual_environment_download_file" "talos" {
   content_type = "iso"
   datastore_id = var.proxmox.common_storage
-  node_name    = values(var.nodes)[0].host
+  node_name    = "endor"
   file_name    = "${var.cluster.name}-talos-${talos_image_factory_schematic.this.id}-${var.talos.version}-amd64.iso"
   url          = "https://factory.talos.dev/image/${talos_image_factory_schematic.this.id}/${var.talos.version}/nocloud-amd64.iso"
 }
@@ -55,13 +55,13 @@ resource "proxmox_virtual_environment_file" "metadata" {
   source_raw {
     data      = <<-EOF
       hostname: ${each.value.name}
-      id: ${each.value.id}
-      providerID: proxmox://${var.proxmox.name}/${each.value.id}
-      type: ${each.value.cores}VCPU-${floor(each.value.memory / 1024)}GB
-      zone: ${each.value.host}
+      instance-id: ${each.value.id}
+      instance-type: ${each.value.cores}VCPU-${floor(each.value.memory / 1024)}GB
+      provider-id: proxmox://${var.proxmox.name}/${each.value.id}
       region: ${var.proxmox.name}
+      zone: ${each.value.host}
     EOF
-    file_name = "${var.cluster.name}.${each.value.name}.metadata.yaml"
+    file_name = "${each.value.name}.metadata.yaml"
   }
 
   timeout_upload = 30
@@ -84,7 +84,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   timeout_reboot      = 60
   timeout_create      = 120
 
-  boot_order = ["virtio0", "ide3", "net0"]
+  boot_order = ["virtio0", "ide3"]
 
   cpu {
     cores = each.value.cores
@@ -92,6 +92,12 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
   memory {
     dedicated = each.value.memory
+  }
+
+  machine = "q35"
+  bios    = "ovmf"
+  efi_disk {
+    datastore_id = each.value.storage
   }
 
   operating_system {
@@ -120,10 +126,12 @@ resource "proxmox_virtual_environment_vm" "nodes" {
     size         = each.value.boot_size
     backup       = true
     cache        = "none"
+    discard      = "on"
     iothread     = true
   }
 
   initialization {
+    interface         = "scsi0"
     datastore_id      = each.value.storage
     meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
   }

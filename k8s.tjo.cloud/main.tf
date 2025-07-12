@@ -17,8 +17,8 @@ module "cluster" {
   source = "./modules/cluster"
 
   talos = {
-    version    = "v1.9.5"
-    kubernetes = "v1.32.3"
+    version    = "v1.10.5"
+    kubernetes = "v1.33.2"
   }
 
   cluster = {
@@ -38,24 +38,24 @@ module "cluster" {
   }
 
   nodes = {
-    nevaroo-1 = {
-      id      = 6001
+    nevaroo-cyan = {
+      id      = 6011
       type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
     }
-    nevaroo-3 = {
-      id      = 6004
+    nevaroo-purple = {
+      id      = 6012
       type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 4096
     }
-    endor-1 = {
-      id        = 6006
+    endor-pink = {
+      id        = 6021
       type      = "controlplane"
       host      = "endor"
       storage   = "local-nvme"
@@ -63,8 +63,8 @@ module "cluster" {
       memory    = 4096
       bootstrap = true
     }
-    endor-2 = {
-      id      = 6007
+    endor-orange = {
+      id      = 6022
       type    = "worker"
       host    = "endor"
       storage = "local-nvme"

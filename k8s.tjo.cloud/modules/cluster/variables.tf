@@ -16,8 +16,8 @@ variable "nodes" {
 
 variable "talos" {
   type = object({
-    version    = optional(string, "v1.9.0")
-    kubernetes = optional(string, "v1.32.0")
+    version    = string
+    kubernetes = string
   })
 }
 

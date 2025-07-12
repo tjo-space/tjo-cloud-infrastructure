@@ -2,6 +2,7 @@ GATEWAY_CRDS_VERSION := "v1.1.0"
 PROMETHEUS_CRDS_VERSION := "main"
 ENVOY_CRDS_VERSION := "1.2.8"
 ARGOCD_CRDS_VERSION := "2.14.10"
+GRAFANA_ALLOY_CRDS_VERSION := "0.3.4"
 
 default:
   @just --list
@@ -31,6 +32,10 @@ module-cluster-core-crds:
     | tar -xz -C modules/cluster-core/crds --strip-components=3 --wildcards "argo-cd-{{ARGOCD_CRDS_VERSION}}/manifests/crds/*.yaml"
   rm modules/cluster-core/crds/kustomization.yaml
 
+  # Grafana Alloy
+  @curl -L -o modules/cluster-core/crds/grafana-alloy.yaml \
+    "https://github.com/grafana/alloy-operator/releases/download/alloy-operator-{{GRAFANA_ALLOY_CRDS_VERSION}}/collectors.grafana.com_alloy.yaml"
+
 destroy:
   tofu state rm module.cluster-core || true
   tofu state rm module.cluster-components || true
@@ -39,10 +44,28 @@ destroy:
 apply:
   tofu init
   tofu apply -target module.cluster
-  tofu apply -target module.cluster-core.helm_release.cilium
+  tofu apply -target module.cluster-core.helm_release.talos-ccm
+  tofu apply -target module.cluster-core.helm_release.proxmox-ccm
   tofu apply -target module.cluster-core.kubectl_manifest.crds
+  tofu apply -target module.cluster-core.helm_release.cilium
   tofu apply -target module.cluster-core
   tofu apply
+
+remove node:
+  #!/usr/bin/env bash
+  # TODO: Do at some point :)
+  NODE="{{node}}"
+  IP=TODO_FETCH_FROM_K8S_OUTPUT
+
+  talosctl -n ${IP} reset
+  kubectl delete node ${NODE}
+  echo "Node removed from kubernetes. Now remove it from terraform configuration!"
+
+etcd-snapshot:
+  #!/usr/bin/env bash
+  # TODO: https://www.talos.dev/v1.10/advanced/disaster-recovery/
+  talosctl -n <IP> etcd snapshot db.snapshot
+  talosctl -n <IP> cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-$(date +%F_%H-%M-%S)
 
 apply-full:
   tofu init

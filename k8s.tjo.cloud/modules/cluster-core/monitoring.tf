@@ -42,13 +42,12 @@ resource "helm_release" "monitoring" {
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "2.0.22"
+  version         = "3.1.2"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
   values = [<<-EOF
-    # FOo
     cluster:
       name: "${var.cluster.name}"
 
