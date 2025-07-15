@@ -58,6 +58,9 @@ AUTHENTIK_TOKEN=${AUTHENTIK_TOKEN}
 EOF
 systemctl restart authentik-ldap
 
+echo "=== Configure Valkey"
+systemctl restart valkey
+
 echo "=== Configure stalwart"
 cat <<EOF >/etc/stalwart/secrets.env
 POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
