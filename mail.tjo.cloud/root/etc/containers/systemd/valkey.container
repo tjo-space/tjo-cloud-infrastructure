@@ -12,7 +12,6 @@ Exec=valkey-server --supervised systemd --save 60 1
 Notify=true
 Volume=/opt/valkey:/data
 PublishPort=127.0.0.1:6379:6379
-Memory=1g
 
 [Service]
 Restart=always
