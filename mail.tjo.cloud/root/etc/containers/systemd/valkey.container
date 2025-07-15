@@ -1,0 +1,21 @@
+[Unit]
+Description=A Valkey Container
+
+[Container]
+Image=docker.io/valkey/valkey:8
+Network=main.network
+AutoUpdate=registry
+HealthCmd=valkey-cli ping | grep PONG
+HealthStartPeriod=20s
+HealthTimeout=3s
+Exec=valkey-server --supervised systemd --save 60 1
+Notify=true
+Volume=/opt/valkey:/data
+PublishPort=127.0.0.1:6379:6379
+Memory=1g
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

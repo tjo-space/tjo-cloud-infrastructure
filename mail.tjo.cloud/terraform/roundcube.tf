@@ -47,39 +47,39 @@ resource "kubernetes_deployment_v1" "roundcube" {
           image             = "roundcube/roundcubemail:${local.roundcube_version}"
           image_pull_policy = "IfNotPresent"
           env {
-            name  = "ROUNDCUEMAIL_DB_TYPE"
-            value = "psql"
+            name  = "ROUNDCUBEMAIL_DB_TYPE"
+            value = "pgsql"
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_HOST"
+            name  = "ROUNDCUBEMAIL_DB_HOST"
             value = "pink.postgresql.tjo.cloud"
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_PORT"
+            name  = "ROUNDCUBEMAIL_DB_PORT"
             value = "5432"
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_USER"
+            name  = "ROUNDCUBEMAIL_DB_USER"
             value = "mail.tjo.cloud"
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_PASSWORD"
+            name  = "ROUNDCUBEMAIL_DB_PASSWORD"
             value = local.postgresql_password
           }
           env {
-            name  = "ROUNDCUEMAIL_DB_NAME"
+            name  = "ROUNDCUBEMAIL_DB_NAME"
             value = "mail.tjo.cloud_roundcube"
           }
           env {
-            name  = "ROUNDCUEMAIL_DEFAULT_HOST"
+            name  = "ROUNDCUBEMAIL_DEFAULT_HOST"
             value = "ssl://mail.tjo.cloud"
           }
           env {
-            name  = "ROUNDCUEMAIL_DEFAULT_PORT"
+            name  = "ROUNDCUBEMAIL_DEFAULT_PORT"
             value = "993"
           }
           env {
-            name  = "ROUNDCUEMAIL_SMTP_SERVER"
+            name  = "ROUNDCUBEMAIL_SMTP_SERVER"
             value = "ssl://mail.tjo.cloud"
           }
           env {
@@ -87,7 +87,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
             value = "465"
           }
           env {
-            name  = "ROUNDCUEMAIL_PLUGINS"
+            name  = "ROUNDCUBEMAIL_PLUGINS"
             value = "archive,zipdownload,newmail_notifier"
           }
           env {

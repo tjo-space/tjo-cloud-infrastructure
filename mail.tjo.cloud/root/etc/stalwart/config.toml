@@ -86,12 +86,17 @@ timeout = "15s"
 tls.allow-invalid-certs = false
 tls.enable = false
 
+[store.localhost_valkey]
+type = "redis"
+redis-type = "single"
+urls = "redis://127.0.0.1:6379"
+
 [storage]
 directory = "internal"
 blob = "pink_postgresql_tjo_cloud"
 data = "pink_postgresql_tjo_cloud"
 fts = "pink_postgresql_tjo_cloud"
-lookup = "pink_postgresql_tjo_cloud"
+lookup = "localhost_valkey"
 
 [tracing.history]
 enable = true
