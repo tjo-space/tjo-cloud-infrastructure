@@ -8,6 +8,7 @@ Environment=AUTHENTIK_HOST=https://id.tjo.cloud
 Environment=AUTHENTIK_INSECURE=false
 Network=main.network
 AutoUpdate=registry
+PublishPort=127.0.0.1:389:389
 
 [Service]
 Restart=always

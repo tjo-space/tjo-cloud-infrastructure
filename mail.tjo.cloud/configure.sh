@@ -64,7 +64,17 @@ POSTGRESQL_PASSWORD=${POSTGRESQL_PASSWORD}
 SERVICE_ACCOUNT_USERNAME=${SERVICE_ACCOUNT_USERNAME}
 SERVICE_ACCOUNT_PASSWORD=${SERVICE_ACCOUNT_PASSWORD}
 EOF
+export STALWART_VERSION="v0.13.0"
+export STALWART_ARCH="$(arch)"
+pushd "$(mktemp -d)"
+for bin in "stalwart" "stalwart-cli"; do
+  curl -sL "https://github.com/stalwartlabs/stalwart/releases/download/${STALWART_VERSION}/${bin}-${STALWART_ARCH}-unknown-linux-gnu.tar.gz" | tar xvz
+  mv ${bin} /usr/local/bin/${bin}
+  chmod +x /usr/local/bin/${bin}
+done
+popd
 systemctl restart stalwart
+systemctl enable --now stalwart
 
 echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""

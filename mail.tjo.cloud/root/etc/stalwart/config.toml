@@ -48,7 +48,7 @@ tls.implicit = true
 
 [directory.ldap_id_tjo_cloud]
 type = "ldap"
-url = "ldap://systemd-authentik-ldap:3389"
+url = "ldap://127.0.0.1:389"
 base-dn = "ou=users,dc=mail,dc=tjo,dc=cloud"
 bind.dn = "cn=%{env:SERVICE_ACCOUNT_USERNAME}%,dc=mail,dc=tjo,dc=cloud"
 bind.secret = "%{env:SERVICE_ACCOUNT_PASSWORD}%"
@@ -93,8 +93,18 @@ data = "pink_postgresql_tjo_cloud"
 fts = "pink_postgresql_tjo_cloud"
 lookup = "pink_postgresql_tjo_cloud"
 
+[tracing.history]
+enable = true
+store = "pink_postgresql_tjo_cloud"
+retention = "30d"
+
+[metrics.history]
+enable = true
+store = "pink_postgresql_tjo_cloud"
+retention = "90d"
+interval = "0 * *"
+
 [tracer.log]
-type = "console"
+type = "journal"
 level = "info"
-ansi = true
 enable = true
