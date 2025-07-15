@@ -2,7 +2,7 @@
 Description=A Stalwart Container
 
 [Container]
-Image=docker.io/stalwartlabs/stalwart:v0.12.5
+Image=docker.io/stalwartlabs/stalwart:v0.13.0
 Volume=/etc/stalwart/config.toml:/opt/stalwart/etc/config.toml:rw
 EnvironmentFile=/etc/stalwart/secrets.env
 Network=main.network

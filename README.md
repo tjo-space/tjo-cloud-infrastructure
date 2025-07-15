@@ -12,6 +12,5 @@ Each subfolder represent a project.
 * [mail.tjo.cloud](mail.tjo.cloud/README.md)
 
 Projects to be added:
-* valkey.tjo.cloud
 * monitor.tjo.cloud
   * Prometheus + Loki + Grafana
