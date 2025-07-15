@@ -59,6 +59,7 @@ EOF
 systemctl restart authentik-ldap
 
 echo "=== Configure Valkey"
+mkdir -p /opt/valkey
 systemctl restart valkey
 
 echo "=== Configure stalwart"
