@@ -1,9 +1,9 @@
 locals {
   nodes_with_name = {
-    for node in var.nodes : node => {
-      name = node
-      fqdn = "${node}.${var.domain}"
-    }
+    for k, v in var.nodes : k => merge(v, {
+      name = k
+      fqdn = "${k}.${var.domain}"
+    })
   }
 
   nodes = {
@@ -43,9 +43,9 @@ resource "hcloud_server" "main" {
 
   name = each.value.fqdn
 
-  image       = "ubuntu-24.04"
-  server_type = "cax11"
-  datacenter  = "hel1-dc2"
+  image       = each.value.image
+  server_type = each.value.server_type
+  datacenter  = each.value.datacenter
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true

@@ -1,6 +1,8 @@
-nodes = [
-  "pink",
-]
+nodes = {
+  pink = {
+    datacenter = "fsn1-dc14"
+  }
+}
 
 ssh_keys = {
   "tine+pc"     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXAlzwziqfUUb2qmFwNF/nrBYc5MNT1MMOx81ohBmB+ tine+pc@tjo.space"

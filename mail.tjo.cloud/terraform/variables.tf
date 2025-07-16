@@ -1,5 +1,9 @@
 variable "nodes" {
-  type = set(string)
+  type = map(object({
+    datacenter  = string
+    image       = optional(string, "ubuntu-24.04")
+    server_type = optional(string, "cax11")
+  }))
 }
 
 variable "domain" {
