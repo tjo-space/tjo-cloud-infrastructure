@@ -8,6 +8,16 @@ nodes = {
     ipv4 = "10.1.10.1/16"
     ipv6 = "fd74:6a6f:1:1001::/64"
   }
+
+  purple = {
+    host           = "endor"
+    boot_storage   = "local-nvme"
+    data_storage   = "local-nvme"
+    backup_storage = "local-nvme"
+
+    ipv4 = "10.1.10.2/16"
+    ipv6 = "fd74:6a6f:1:1002::/64"
+  }
 }
 
 ssh_keys = [

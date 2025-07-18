@@ -95,6 +95,7 @@ provider "registry.opentofu.org/hashicorp/random" {
   constraints = "3.7.1"
   hashes = [
     "h1:mV0IpNNTXywcEHuCRfvvjsaaVPPDFRrH7YQmd7/FD24=",
+    "h1:v8+6umuoWwD1nKm+3tPcPO8rKHthran7ZSbm7J2xQEc=",
     "zh:1011387a5127d46e2bf0bd5124a8469506272b2110613d9eb80d178f94bd67a9",
     "zh:28785c36d6dc331d49e8bf6a30d4ba21ae4378f5d98c43c0aeb42f51efb2e42f",
     "zh:50fc0e52f0255950404681455420344a16263f91622bd481954606e6e3be9eb2",
