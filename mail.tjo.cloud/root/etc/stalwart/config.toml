@@ -103,6 +103,11 @@ enable = true
 store = "pink_postgresql_tjo_cloud"
 retention = "30d"
 
+[metrics.prometheus]
+enable = true
+auth.username = "prometheus"
+auth.secret = "%{env:PROMETHEUS_PASSWORD}%"
+
 [metrics.history]
 enable = true
 store = "pink_postgresql_tjo_cloud"

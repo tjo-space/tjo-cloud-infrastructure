@@ -14,10 +14,19 @@ prometheus.scrape "exporters" {
   targets    = concat(
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
-    [
-      {"__address__" = "127.0.0.1:8080", "__metrics_path__" = "/metrics/prometheus", "instance" = "stalwart"},
-    ],
   )
+  forward_to = [
+    otelcol.receiver.prometheus.default.receiver,
+  ]
+}
+prometheus.scrape "stalwart" {
+  targets    = [
+    {"__address__" = "127.0.0.1:8080", "__metrics_path__" = "/metrics/prometheus", "instance" = "stalwart"},
+  ]
+  basic_auth {
+    username = "prometheus"
+    password = env("PROMETHEUS_PASSWORD")
+  }
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,
   ]
