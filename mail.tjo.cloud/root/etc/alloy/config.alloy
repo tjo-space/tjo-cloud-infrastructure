@@ -21,7 +21,7 @@ prometheus.scrape "exporters" {
 }
 prometheus.scrape "stalwart" {
   targets    = [
-    {"__address__" = "127.0.0.1:8080", "__metrics_path__" = "/metrics/prometheus", "instance" = "stalwart"},
+    {"__address__" = "127.0.0.1:80", "__metrics_path__" = "/metrics/prometheus", "instance" = "stalwart"},
   ]
   basic_auth {
     username = "prometheus"
