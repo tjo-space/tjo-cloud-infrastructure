@@ -20,6 +20,11 @@ variable "nodes" {
   }))
 }
 
+variable "provision_sh" {
+  type        = string
+  description = "Provision Script to be executed."
+}
+
 variable "domain" {
   type = string
 }

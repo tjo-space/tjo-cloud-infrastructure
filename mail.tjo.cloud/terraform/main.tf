@@ -38,11 +38,13 @@ locals {
 }
 
 module "hetzner-cloud" {
-  source = "./modules/hetzner-cloud"
+  source = "../../shared/terraform/modules/hetzner-cloud"
 
   nodes = {
     for k, v in local.nodes_with_meta : k => v if v.provider == "hetzner-cloud"
   }
   ssh_keys = var.ssh_keys
   domain   = var.domain
+
+  provision_sh = file("${path.module}/../provision.sh")
 }

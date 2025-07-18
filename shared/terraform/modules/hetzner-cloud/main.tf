@@ -32,7 +32,7 @@ resource "hcloud_server" "main" {
       content: ${base64encode(jsonencode(merge(each.value.meta, { cloud_region = each.value.datacenter })))}
     - path: /tmp/provision.sh
       encoding: base64
-      content: ${base64encode(file("${path.module}/../../../provision.sh"))}
+      content: ${base64encode(var.provision_sh)}
 
     power_state:
       mode: reboot
