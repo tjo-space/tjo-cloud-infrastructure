@@ -1,4 +1,4 @@
-variable "nodes" {
+variable "nodes_hetzner_cloud" {
   type = map(object({
     datacenter  = string
     image       = optional(string, "ubuntu-24.04")

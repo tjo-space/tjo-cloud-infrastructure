@@ -1,4 +1,4 @@
-nodes = {
+nodes_hetzner_cloud = {
   pink = {
     datacenter = "fsn1-dc14"
   }
