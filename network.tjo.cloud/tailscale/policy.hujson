@@ -9,7 +9,6 @@
 		// Cloud
 		"tag:system-tjo-cloud":  ["group:admin"],
 		"tag:network-tjo-cloud": ["group:admin"],
-		"tag:ingress-tjo-cloud": ["group:admin"],
 		"tag:storage-tjo-cloud": ["group:admin"],
 		// Space
 		"tag:system-tjo-space": ["group:admin"],
@@ -47,7 +46,7 @@
 		{
 			"action": "accept",
 			"src":    ["tag:system-tjo-space"],
-			"dst":    [
+			"dst": [
 				"tag:system-tjo-cloud:8006",
 				"tag:system-tjo-cloud:9221",
 			],
@@ -63,15 +62,6 @@
 			],
 			"dst": [
 				"tag:storage-tjo-cloud:*",
-			],
-		},
-		// Ingress to all system.tjo.space and system.tjo.cloud
-		{
-			"action": "accept",
-			"src":    ["tag:ingress-tjo-cloud"],
-			"dst": [
-				"tag:system-tjo-cloud:*",
-				"tag:system-tjo-space:*",
 			],
 		},
 		// Admins Everywhere
@@ -111,7 +101,6 @@
 			"dst": [
 				"tag:system-tjo-space",
 				"tag:system-tjo-cloud",
-				"tag:ingress-tjo-cloud",
 				"tag:network-tjo-cloud",
 				"tag:storage-tjo-cloud",
 			],

@@ -170,32 +170,3 @@ config forwarding
 config forwarding
 	option src 'lan'
 	option dest 'jool'
-
-##
-# PORT FORWARDING
-##
-{{- $nodeName := getenv "NODE" }}
-{{- range (ds "config").firewall }}
-{{- $host := index .nodes $nodeName }}
-{{- $name := .name }}
-{{- range $port := .ports }}
-
-# {{ $port }} - {{ $name }}
-config redirect
-	option name 'IPv4 - WAN - {{ $port }} - {{ $name }}'
-	option target 'DNAT'
-	option src 'wan'
-	option src_dport '{{ $port }}'
-	option dest 'lan'
-	option dest_ip '{{ $host.ipv4 }}'
-	option family 'ipv4'
-config redirect
-	option name 'IPv6 - WAN - {{ $port }} - {{ $name }}'
-	option target 'DNAT'
-	option src 'wan'
-	option src_dport '{{ $port }}'
-	option dest 'lan'
-	option dest_ip '{{ $host.ipv6 }}'
-	option family 'ipv6'
-{{- end }}
-{{- end }}

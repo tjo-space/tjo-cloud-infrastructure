@@ -10,8 +10,6 @@ __WAN interface__ either represents an actual public interface (on Hetzner) or a
 
 __LAN interface__ is an ordinary lan network.
 
-__ingress.tjo.cloud__ has port-forwarded all public ports to it (22, 25, 80, 443, 587 etc.). No other internal service is accessible from the internet.
-
 __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
 
 # Subnet
@@ -40,7 +38,7 @@ Ranges are `10.0.4.0-10.0.255.255` and `fd74:6a6f:0:400::-fd74:6a6f:0:ffff:ffff:
 
 ### ZeroTier Assignments
 
-Ranges are `10.1.0.0-10.0.255.255` and `fd74:6a6f:1::-fd74:6a6f:1:ffff:ffff:ffff:ffff:ffff`.
+Ranges are `10.1.0.0-10.0.255.255` and SLAAC for IPv6.
 
 ### Special designations
 The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
@@ -54,8 +52,6 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 | nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
 | mustafar.network.tjo.cloud | 10.0.0.5/10     | fd74:6a6f::5/128  |
 | endor.network.tjo.cloud | 10.0.0.6/10     | fd74:6a6f::6/128  |
-| # | # | # |
-| nevaroo.ingress.tjo.cloud | 10.0.2.3/16     | fd74:6a6f:0:0203::/64  |
 
 ## k8s.tjo.cloud
 
@@ -121,10 +117,6 @@ https://my.zerotier.com/network/b6079f73c6379990
 ## Use gitops for tailscale ACL.
 
  - [ ] Current version is an snapshot in time, more as an example then actual version used.
-
-## IPv6 Connectivity.
-
- - [ ] BGP IPv6 doesn't work with Cilium. Some configuration must be changed.
 
 ## Selfhost Zerotier.
 
