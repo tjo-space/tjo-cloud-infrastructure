@@ -1,18 +1,42 @@
-variable "nodes" {
+variable "nodes_hetzner_cloud" {
   type = map(object({
-    host = string
-
-    cores  = optional(number, 1)
-    memory = optional(number, 512)
-
-    iso_storage = string
-
-    ipv4 = string
-    ipv6 = string
-
-    boot_storage = string
-    boot_size    = optional(number, 8)
+    datacenter  = string
+    image       = optional(string, "ubuntu-24.04")
+    server_type = optional(string, "cax11")
   }))
+}
+
+variable "domain" {
+  type    = string
+  default = "ingress.tjo.cloud"
+}
+
+variable "ssh_keys" {
+  type = map(string)
+}
+
+variable "zerotier_token" {
+  sensitive = true
+  type      = string
+}
+
+variable "ingress_hcloud_token" {
+  sensitive = true
+  type      = string
+}
+
+variable "authentik_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "dnsimple_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "dnsimple_account_id" {
+  type = string
 }
 
 variable "zones" {
@@ -27,30 +51,11 @@ variable "records" {
   }))
 }
 
-variable "ssh_keys" {
-  type = list(string)
-}
-
 variable "proxmox_token" {
   type      = string
   sensitive = true
 }
-
-variable "authentik_token" {
-  type      = string
-  sensitive = true
-}
-
 variable "tailscale_apikey" {
   type      = string
   sensitive = true
-}
-
-variable "dnsimple_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "dnsimple_account_id" {
-  type = string
 }

@@ -1,18 +1,12 @@
-# ingress
+# ingress.tjo.cloud
 
-Handling all Ingress traffic
+Handling public traffic for `tjo.cloud`, `tjo.space` and others.
 
-## Rolling out changes
+### Components
 
-```sh
-# Apply code changes to single node.
-# Make sure to commit and push the changes first.
-just configure-only nevaroo
-
-# Apply infrastructure changes to single node.
-just apply-only nevaroo
-
-# Apply to all nodes
-just configure
-just apply
-```
+- Ubuntu
+- UFW Firewall
+- Zerotier (SD-WAN)
+- ??proxy??
+- Grafana Alloy
+  - Metrics and Logs being shipped to https://monitor.tjo.cloud.

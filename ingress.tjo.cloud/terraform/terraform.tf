@@ -1,20 +1,28 @@
 terraform {
   required_providers {
+    hcloud = {
+      source  = "hetznercloud/hcloud"
+      version = "1.50.0"
+    }
+    authentik = {
+      source  = "goauthentik/authentik"
+      version = "2025.4.0"
+    }
+    dnsimple = {
+      source  = "dnsimple/dnsimple"
+      version = "1.10.0"
+    }
+    zerotier = {
+      source  = "zerotier/zerotier"
+      version = "1.6.0"
+    }
     proxmox = {
       source  = "bpg/proxmox"
       version = "0.61.1"
     }
-    authentik = {
-      source  = "goauthentik/authentik"
-      version = "2024.8.3"
-    }
     tailscale = {
       source  = "tailscale/tailscale"
       version = "0.17.2"
-    }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.8.0"
     }
   }
 
@@ -29,6 +37,14 @@ provider "dnsimple" {
 provider "authentik" {
   url   = "https://id.tjo.space"
   token = var.authentik_token
+}
+
+provider "hcloud" {
+  token = var.ingress_hcloud_token
+}
+
+provider "zerotier" {
+  zerotier_central_token = var.zerotier_token
 }
 
 provider "tailscale" {

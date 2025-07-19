@@ -1,33 +1,25 @@
-nodes = {
-  nevaroo = {
-    host         = "nevaroo"
-    iso_storage  = "local"
-    boot_storage = "local-nvme-lvm"
-    ipv4         = "10.0.2.3/16"
-    ipv6         = "fd74:6a6f:0:0203::/64"
+nodes_hetzner_cloud = {
+  "pink" = {
+    datacenter = "fsn1-dc14"
   }
 }
 
-ssh_keys = [
-  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXAlzwziqfUUb2qmFwNF/nrBYc5MNT1MMOx81ohBmB+ tine@little.sys.tjo.space",
-  "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdKdeca1pqJfT5SbvbOVxjvGXdIny29gqRrQbrNht3m tine@Anas-MacBook-Pro.local",
-]
+ssh_keys = {
+  "tine+pc"     = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAICXAlzwziqfUUb2qmFwNF/nrBYc5MNT1MMOx81ohBmB+ tine+pc@tjo.space"
+  "tine+mobile" = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdPg/nG/Qzk110SBukHHEDqH6/3IJHsIKKHWTrqjaOh tine+mobile@tjo.space"
+  "tine+ipad"   = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIHrX2u82zWpVhjWng1cR4Kj76SajLJQ/Nmwd2GPaJpt1 tine+ipad@tjo.cloud"
+  "tine+mac"    = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIAdKdeca1pqJfT5SbvbOVxjvGXdIny29gqRrQbrNht3m tine+mac@tjo.space"
+}
 
 zones = [
   "tjo.space",
   "tjo.cloud",
-  # Used for automated A and AAAA records creation.
-  "ingress.tjo.cloud",
 ]
 
 records = {
   # TJO.SPACE
-  "tjo.space"      = { to = "any.ingress.tjo.cloud" }
-  "code.tjo.space" = { to = "any.ingress.tjo.cloud" }
-  # mail.tjo.space requires specific ports to be accessible,
-  # which is often not the case for home internet providers.
-  # so we should only ever use "cloud" ingresses.
-  "mail.tjo.space"      = { to = "nevaroo.ingress.tjo.cloud" }
+  "tjo.space"           = { to = "any.ingress.tjo.cloud" }
+  "code.tjo.space"      = { to = "any.ingress.tjo.cloud" }
   "paperless.tjo.space" = { to = "any.ingress.tjo.cloud" }
   "penpot.tjo.space"    = { to = "any.ingress.tjo.cloud" }
   "rss.tjo.space"       = { to = "any.ingress.tjo.cloud" }
