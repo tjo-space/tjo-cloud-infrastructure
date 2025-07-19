@@ -13,7 +13,7 @@ if [ ! -d .git ]; then
     --no-checkout \
     --filter=tree:0 \
     https://github.com/tjo-space/tjo-cloud-infrastructure.git .
-  git sparse-checkout set --no-cone /v2.ingress.tjo.cloud
+  git sparse-checkout set --no-cone /ingress.tjo.cloud
   git checkout
 else
   git fetch --depth=1
@@ -43,7 +43,7 @@ sleep 5
 zerotier-cli join b6079f73c6379990
 
 echo "== Copy Configuration Files"
-rsync -a v2.ingress.tjo.cloud/root/ /
+rsync -a ingress.tjo.cloud/root/ /
 systemctl daemon-reload
 
 echo "== Configure Grafana Alloy"
