@@ -116,5 +116,5 @@ interval = "0 * *"
 
 [tracer.log]
 type = "journal"
-level = "debug"
+level = "trace"
 enable = true
