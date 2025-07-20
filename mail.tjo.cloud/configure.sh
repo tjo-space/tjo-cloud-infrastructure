@@ -87,7 +87,7 @@ echo "=== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
 ATTRIBUTES+="service.version=${SERVICE_VERSION},"
-ATTRIBUTES+="cloud.region=${CLOUD_REGION}"
+ATTRIBUTES+="cloud.region=${CLOUD_REGION},"
 ATTRIBUTES+="cloud.provider=${CLOUD_PROVIDER}"
 {
   echo ""
