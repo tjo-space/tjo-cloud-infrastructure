@@ -47,7 +47,7 @@ loki.relabel "journal" {
   // to the labels.
   rule {
     action = "labelmap"
-    source_labels = ["__journal_[a-zA-Z0-9].*"]
+    source_labels = ["__journal_([a-zA-Z0-9].*)"]
     target_label  = "${1}"
   }
 
