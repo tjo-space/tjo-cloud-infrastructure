@@ -47,8 +47,7 @@ loki.relabel "journal" {
   // to the labels.
   rule {
     action = "labelmap"
-    source_labels = ["__journal_([a-zA-Z0-9].*)"]
-    target_label  = "${1}"
+    regex  = ["__journal_([a-zA-Z0-9].*)"]
   }
 
   // message label is duplicated. The loki.source
