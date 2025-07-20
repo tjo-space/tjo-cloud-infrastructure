@@ -40,13 +40,14 @@ loki.relabel "journal" {
 
   rule {
     source_labels = ["__journal__systemd_unit"]
-    target_label  = "journal_unit"
+    target_label  = "unit"
   }
 }
 
 loki.source.journal "default" {
-  forward_to    = [loki.process.drop_old.receiver]
-  relabel_rules = loki.relabel.journal.rules
+  forward_to     = [loki.process.drop_old.receiver]
+  relabel_rules  = loki.relabel.journal.rules
+  format_as_json = true
 }
 loki.process "drop_old" {
   stage.drop {
