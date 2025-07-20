@@ -54,7 +54,7 @@ loki.relabel "journal" {
   // already reads it and sets it as the message itself.
   rule {
     action = "labeldrop"
-    source_labels = ["message"]
+    regex = "message"
   }
 }
 
