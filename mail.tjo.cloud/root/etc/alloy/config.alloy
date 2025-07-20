@@ -54,7 +54,7 @@ loki.relabel "journal" {
   // message label is duplicated. The loki.source
   // already reads it and sets it as the message itself.
   rule {
-    action = "drop"
+    action = "labeldrop"
     source_labels = ["message"]
   }
 }
