@@ -8,3 +8,16 @@ output "nodes" {
     }
   ]
 }
+
+output "users" {
+  sensitive = true
+  value = {
+    for k, v in var.users : k => merge(v, {
+      password = random_password.this[k].result
+    })
+  }
+}
+
+output "databases" {
+  value = var.databases
+}

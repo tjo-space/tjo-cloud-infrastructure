@@ -19,6 +19,26 @@ variable "nodes" {
   }))
 }
 
+variable "users" {
+  type = map(object({
+    node             = string
+    name             = string
+    connection_limit = optional(number, 20)
+  }))
+}
+
+variable "databases" {
+  type = map(object({
+    node             = string
+    name             = string
+    owner            = string
+    encoding         = optional(string, "UTF8")
+    lc_collate       = optional(string, "C")
+    lc_ctype         = optional(string, "C")
+    connection_limit = optional(number, 20)
+  }))
+}
+
 variable "pgadmin_client_id" {
   type      = string
   sensitive = true

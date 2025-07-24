@@ -33,7 +33,7 @@ variable "cluster" {
       public = optional(object({
         domain    = optional(string, "k8s.tjo.cloud")
         subdomain = optional(string, "api")
-        port      = optional(number, 6443)
+        port      = optional(number, 443)
       }), {})
     }), {})
     oidc = object({

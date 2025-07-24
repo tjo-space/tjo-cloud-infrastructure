@@ -20,6 +20,14 @@ terraform {
       source  = "hashicorp/random"
       version = "3.7.1"
     }
+    postgresql = {
+      source  = "cyrilgdn/postgresql"
+      version = "1.25.0"
+    }
+    dotenv = {
+      source  = "germanbrew/dotenv"
+      version = "1.2.6"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -79,4 +87,17 @@ provider "proxmox" {
 
 provider "kubernetes" {
   config_path = "${path.module}/../../k8s.tjo.cloud/kubeconfig"
+}
+
+provider "postgresql" {
+  alias    = "for_node"
+  for_each = var.nodes
+
+  host            = split("/", each.value.ipv4)[0]
+  port            = 5432
+  database        = "postgres"
+  username        = "postgres"
+  password        = provider::dotenv::get_by_key("POSTGRESQL_PASSWORD", "${path.module}/../secrets.env")
+  sslmode         = "disable"
+  connect_timeout = 15
 }
