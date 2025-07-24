@@ -28,7 +28,6 @@ records = {
   "status.tjo.space"    = { to = "tjo-space.github.io", type = "CNAME" }
   "stuff.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "vault.tjo.space"     = { to = "any.ingress.tjo.cloud" }
-  "yt.tjo.space"        = { to = "any.ingress.tjo.cloud" }
   "books.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   # CLOUD.TJO.SPACE
   "cloud.tjo.space"     = { to = "any.ingress.tjo.cloud" }
