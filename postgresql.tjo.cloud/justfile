@@ -61,3 +61,6 @@ configure node:
   ssh -o StrictHostKeyChecking=no -t ubuntu@${IP} 'sudo ssh-copy-id -p 23 -s u409586-sub5@backup.tjo.cloud'
   echo "=== Running configure.sh"
   cat configure.sh | ssh -o StrictHostKeyChecking=no ubuntu@${IP} 'sudo bash -s'
+
+get-users:
+  cd {{source_directory()}}/terraform && tofu output -json | jq '.users.value '

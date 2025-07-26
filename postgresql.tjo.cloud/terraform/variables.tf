@@ -20,22 +20,19 @@ variable "nodes" {
 }
 
 variable "users" {
-  type = map(object({
+  type = list(object({
     node             = string
     name             = string
     connection_limit = optional(number, 20)
-  }))
-}
-
-variable "databases" {
-  type = map(object({
-    node             = string
-    name             = string
-    owner            = string
-    encoding         = optional(string, "UTF8")
-    lc_collate       = optional(string, "C")
-    lc_ctype         = optional(string, "C")
-    connection_limit = optional(number, 20)
+    databases = list(object({
+      name     = string
+      encoding = optional(string, "UTF8")
+      # Collation
+      lc_collate = optional(string, "en_US.UTF-8")
+      # Character Type
+      lc_ctype         = optional(string, "en_US.UTF-8")
+      connection_limit = optional(number, 20)
+    }))
   }))
 }
 

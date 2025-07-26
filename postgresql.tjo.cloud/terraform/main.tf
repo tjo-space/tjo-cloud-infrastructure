@@ -1,6 +1,17 @@
+locals {
+  users = { for user in var.users : "${user.name}@${user.node}" => user }
+  databases = {
+    for database in flatten([
+      for user in local.users : [
+        for database in user.databases : merge(database, { owner : user.name, node : user.node })
+      ]
+    ]) : "${database.name}@${database.node}" => database
+  }
+}
+
 resource "random_password" "this" {
-  for_each = var.users
-  length   = 16
+  for_each = local.users
+  length   = 22
   special  = false
   lower    = true
   upper    = false
@@ -8,7 +19,7 @@ resource "random_password" "this" {
 }
 
 resource "postgresql_role" "this" {
-  for_each = var.users
+  for_each = local.users
   provider = postgresql.for_node[each.value.node]
 
   name             = each.value.name
@@ -18,7 +29,7 @@ resource "postgresql_role" "this" {
 }
 
 resource "postgresql_database" "this" {
-  for_each = var.databases
+  for_each = local.databases
   provider = postgresql.for_node[each.value.node]
 
   depends_on = [postgresql_role.this]

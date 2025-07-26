@@ -12,12 +12,12 @@ output "nodes" {
 output "users" {
   sensitive = true
   value = {
-    for k, v in var.users : k => merge(v, {
+    for k, user in local.users : k => merge(user, {
       password = random_password.this[k].result
     })
   }
 }
 
 output "databases" {
-  value = var.databases
+  value = local.databases
 }

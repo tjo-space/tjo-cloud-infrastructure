@@ -27,22 +27,25 @@ nodes = {
   }
 }
 
-users = {
-  //chat_tjo_space_pink = {
-  //  node = "pink"
-  //  name = "chat.tjo.space_test"
-  //}
-}
-
-databases = {
-  //chat_tjo_space_mas_pink = {
-  //  node = "pink"
-  //  name = "chat.tjo.space_mas_test"
-  //  owner = "chat.tjo.space_test"
-  //}
-  //chat_tjo_space_matrix_pink = {
-  //  node = "pink"
-  //  name = "chat.tjo.space_matrix_test"
-  //  owner = "chat.tjo.space_test"
-  //}
-}
+users = [
+  {
+    node      = "purple"
+    name      = "code.tjo.space"
+    databases = [{ name = "code.tjo.space" }]
+  },
+  {
+    node      = "purple"
+    name      = "cloud.tjo.space"
+    databases = [{ name = "cloud.tjo.space" }]
+  },
+  {
+    node      = "purple"
+    name      = "paperless.tjo.space"
+    databases = [{ name = "paperless.tjo.space" }]
+  },
+  {
+    node      = "purple"
+    name      = "penpot.tjo.space"
+    databases = [{ name = "penpot.tjo.space" }]
+  },
+]
