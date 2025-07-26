@@ -12,7 +12,7 @@ nodes = {
     data_storage   = "local-nvme-lvm"
     backup_storage = "local-nvme-lvm"
 
-    ipv4 = "10.1.10.1/16"
+    ipv4 = "10.1.10.1/10"
     ipv6 = "fd74:6a6f:1:1001::/64"
   }
 
@@ -22,7 +22,7 @@ nodes = {
     data_storage   = "local-nvme"
     backup_storage = "local-nvme"
 
-    ipv4 = "10.1.10.2/16"
+    ipv4 = "10.1.10.2/10"
     ipv6 = "fd74:6a6f:1:1002::/64"
   }
 }
