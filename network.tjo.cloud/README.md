@@ -13,7 +13,9 @@ __LAN interface__ is an ordinary lan network.
 __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
 
 # Subnet
-We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
+
+### Layer 2
+We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6 for L2 Network.
 
 
 | Use                  | IPv4          | IPv6              |
@@ -21,9 +23,14 @@ We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6.
 | DHCP/SLAAC Assignments     | 10.0.0.0/16   | fd74:6a6f:0::/48  |
 | ZeroTier Assignments | 10.1.0.0/16   | Use SLAAC/DHCP  |
 | tealfleet.com        | 10.4.0.0/16   | fd74:6a6f:4::/48  |
-| k8s.tjo.cloud        | 10.8.0.0/16   | fd74:6a6f:8::/48  |
 
 Unspecified are unused.
+
+### Layer 3
+We do BGP Peering with other networks. This should also be counted as used.
+
+See [k8s.tjo.cloud](../k8s.tjo.cloud/README.md) where the `10.100.0.0/16` and `fd9b:7c3d:7f6a::/48`
+subnets are being used.
 
 ## network.tjo.cloud
 
@@ -52,20 +59,6 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 | nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
 | mustafar.network.tjo.cloud | 10.0.0.5/10     | fd74:6a6f::5/128  |
 | endor.network.tjo.cloud | 10.0.0.6/10     | fd74:6a6f::6/128  |
-
-## k8s.tjo.cloud
-
-We use `10.8.0.0/16` and `fd74:6a6f:8::/48` subnets for Kubernetes.
-We use BGP to advertise these routes (iBGP to network.tjo.cloud).
-
-| Use              | IPv4             | IPv6                     |
-|------------------|------------------|--------------------------|
-| Pods             | 10.8.0.0/20     | fd74:6a6f:8:0000::/52        |
-| Load Balanancers | 10.8.16.0/20    | fd74:6a6f:8:1000::/52   |
-| _unused_         | xxx              | xxx                      |
-| Services         | 10.8.252.0/22   | fd74:6a6f:8::3e80::/108 |
-
-For Services we use last possible subnets.
 
 # Setting up new Host
 

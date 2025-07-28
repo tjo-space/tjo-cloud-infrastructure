@@ -31,15 +31,13 @@ resource "helm_release" "cilium" {
       datapathMode = "netkit"
     }
 
-    ipv4 = {
-      enabled = true
-    }
-    enableIPv4Masquerade = false
+    ipv4                  = { enabled = true }
+    enableIPv4Masquerade  = true
+    ipv4NativeRoutingCIDR = var.cluster.pod_cidr.ipv4
 
-    ipv6 = {
-      enabled = false
-    }
-    enableIPv6Masquerade = true
+    ipv6                  = { enabled = true }
+    enableIPv6Masquerade  = true
+    ipv6NativeRoutingCIDR = var.cluster.pod_cidr.ipv6
 
     kubeProxyReplacement = true
 

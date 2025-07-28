@@ -5,6 +5,10 @@ variable "cluster" {
       ipv4 = string
       ipv6 = string
     })
+    pod_cidr = object({
+      ipv4 = string
+      ipv6 = string
+    })
   })
 }
 

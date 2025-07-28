@@ -1,15 +1,15 @@
 locals {
   pod_cidr = {
-    ipv4 = "10.8.0.0/20"
-    ipv6 = "fd74:6a6f:8:0000::/52"
+    ipv4 = "10.100.0.0/20"
+    ipv6 = "fd9b:7c3d:7f6a::/52"
   }
   load_balancer_cidr = {
-    ipv4 = "10.8.16.0/20"
-    ipv6 = "fd74:6a6f:8:1000::/52"
+    ipv4 = "10.100.16.0/20"
+    ipv6 = "fd9b:7c3d:7f6a:1000::/52"
   }
   service_cidr = {
-    ipv4 = "10.8.252.0/22"
-    ipv6 = "fd74:6a6f:8:3e80::/108"
+    ipv4 = "10.100.252.0/22"
+    ipv6 = "fd9b:7c3d:7f6a:3e80::/108"
   }
 }
 
@@ -76,14 +76,14 @@ module "cluster" {
 
 resource "local_file" "kubeconfig" {
   content = templatefile("${path.module}/kubeconfig.tftpl", {
-    cluster : {
-      name : module.cluster.name,
-      endpoint : module.cluster.api.public.endpoint,
-      ca : module.cluster.api.ca,
+    cluster = {
+      name     = module.cluster.name,
+      endpoint = module.cluster.api.public.endpoint,
+      ca       = module.cluster.api.ca,
     }
-    oidc : {
-      issuer : var.oidc_issuer_url,
-      id : var.oidc_client_id,
+    oidc = {
+      issuer = var.oidc_issuer_url,
+      id     = var.oidc_client_id,
     }
   })
   filename = "${path.module}/kubeconfig"
@@ -91,14 +91,14 @@ resource "local_file" "kubeconfig" {
 
 resource "local_file" "kubeconfig-internal" {
   content = templatefile("${path.module}/kubeconfig.tftpl", {
-    cluster : {
-      name : module.cluster.name,
-      endpoint : module.cluster.api.internal.endpoint,
-      ca : module.cluster.api.ca,
+    cluster = {
+      name     = module.cluster.name,
+      endpoint = module.cluster.api.internal.endpoint,
+      ca       = module.cluster.api.ca,
     }
-    oidc : {
-      issuer : var.oidc_issuer_url,
-      id : var.oidc_client_id,
+    oidc = {
+      issuer = var.oidc_issuer_url,
+      id     = var.oidc_client_id,
     }
   })
   filename = "${path.module}/kubeconfig-internal"
@@ -108,8 +108,9 @@ module "cluster-core" {
   source = "./modules/cluster-core"
 
   cluster = {
-    name : module.cluster.name,
+    name               = module.cluster.name,
     load_balancer_cidr = local.load_balancer_cidr
+    pod_cidr           = local.pod_cidr
   }
   bgp = {
     asn = 65000
