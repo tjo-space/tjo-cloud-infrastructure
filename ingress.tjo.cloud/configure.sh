@@ -61,6 +61,11 @@ ATTRIBUTES+="cloud.provider=${CLOUD_PROVIDER}"
 systemctl enable --now alloy
 systemctl restart alloy
 
+echo "== Configure Routes"
+# k8s.tjo.cloud
+ip -4 route add 10.100.0.0/16 via 10.0.0.1
+ip -6 route add fd9b:7c3d:7f6a::/48 via fd74:6a6f::1
+
 echo "== Configure Haproxy"
 systemctl restart haproxy
 systemctl enable --now haproxy
