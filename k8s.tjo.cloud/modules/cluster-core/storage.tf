@@ -2,7 +2,7 @@ resource "helm_release" "proxmox-csi" {
   name            = "proxmox-csi-plugin"
   chart           = "proxmox-csi-plugin"
   repository      = "oci://ghcr.io/sergelogvinov/charts"
-  version         = "0.2.14"
+  version         = "0.3.13"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -37,7 +37,7 @@ resource "helm_release" "hybrid-csi" {
   name            = "hybrid-csi-plugin"
   chart           = "hybrid-csi-plugin"
   repository      = "oci://ghcr.io/sergelogvinov/charts"
-  version         = "0.1.6"
+  version         = "0.1.8"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
