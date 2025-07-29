@@ -1,0 +1,12 @@
+[Unit]
+Description=Renew certificate using lego
+
+[Timer]
+OnCalendar=daily
+AccuracySec=1h
+Persistent=true
+RandomizedDelaySec=4h
+Unit=lego-renew.service
+
+[Install]
+WantedBy=timers.target

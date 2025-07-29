@@ -111,6 +111,12 @@ resource "proxmox_virtual_environment_file" "userdata" {
     EOF
     file_name = "${each.value.fqdn}.userconfig.yaml"
   }
+
+  lifecycle {
+    ignore_changes = [
+      source_raw,
+    ]
+  }
 }
 
 resource "proxmox_virtual_environment_vm" "nodes" {
@@ -207,6 +213,7 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/postgresql.tjo.cloud
 
   lifecycle {
     ignore_changes = [
+      initialization[0].user_data_file_id,
       disk[0].file_id,
     ]
   }

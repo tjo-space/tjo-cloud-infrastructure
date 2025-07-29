@@ -1,0 +1,18 @@
+[Unit]
+Description=Lets Encrypt client and ACME library written in Go
+AssertPathExists=/var/lib/postgresql
+
+[Service]
+EnvironmentFile=/etc/lego/lego.env
+EnvironmentFile=/etc/lego/secrets.env
+Environment=HOSTNAME=%H
+StateDirectory=lego
+ExecStart=/usr/local/bin/lego \
+  --path=${STATE_DIRECTORY} \
+  --email=${EMAIL} \
+  --domain=${HOSTNAME} \
+  --dns=dnsimple renew
+ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${DOMAIN}.crt /var/lib/postgresql/ssl.crt
+ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${DOMAIN}.key /var/lib/postgresql/ssl.key
+ExecStartPost=/usr/bin/systemctl reload postgresql@*
+Type=oneshot

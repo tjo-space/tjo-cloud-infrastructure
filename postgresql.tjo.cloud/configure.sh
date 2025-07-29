@@ -49,6 +49,11 @@ echo "=== Setup notify-webhook"
 mkdir -p /etc/notify
 echo "${WEBHOOK_URL}" >/etc/notify/webhook-url
 
+echo "== Provision SSL certificate"
+echo "DNSIMPLE_OAUTH_TOKEN=${DNSIMPLE_OAUTH_TOKEN}" >/etc/lego/secrets.env
+systemctl run lego-run
+systemctl enable lego-renew.timer
+
 echo "=== Setup Postgresql"
 # We must init the db first.
 sudo -u postgres /usr/lib/postgresql/16/bin/initdb -D /srv/data/postgresql || true

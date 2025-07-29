@@ -15,7 +15,8 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   barman \
   barman-cli \
   postgresql-16 \
-  restic
+  restic \
+  lego
 
 # Grafana Alloy
 mkdir -p /etc/apt/keyrings/
