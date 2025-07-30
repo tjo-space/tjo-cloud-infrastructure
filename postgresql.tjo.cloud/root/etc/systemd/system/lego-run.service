@@ -11,6 +11,6 @@ StateDirectory=lego
 # As in, we have not yet run "lego run".
 ExecCondition=/usr/bin/sh -c '[ -z "$(find ${STATE_DIRECTORY} -mindepth 1 -maxdepth 1)" ]'
 ExecStart=/usr/local/bin/lego --accept-tos --path=${STATE_DIRECTORY} --email=${EMAIL} --domains=${HOSTNAME} --dns=dnsimple run
-ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${DOMAIN}.crt /var/lib/postgresql/ssl.crt
-ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${DOMAIN}.key /var/lib/postgresql/ssl.key
+ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${HOSTNAME}.crt /var/lib/postgresql/ssl.crt
+ExecStartPost=/usr/bin/install -o postgres -g postgres -m 400 /var/run/lego/certificates/${HOSTNAME}.key /var/lib/postgresql/ssl.key
 Type=oneshot
