@@ -9,13 +9,10 @@ An PostgreSQL cluster used for other `tjo.cloud` and `tjo.space` services.
 - PgBarman
   - Managing Postgresql Backups.
 - Restic
-  - Shipping backups to https://backup.tjo.cloud.
-- Podman
-  - Container management, using Systemd.
-- PgAdmin Container
+  - Shipping backups to backup.tjo.cloud.
+- PgAdmin
   - For administration. Accessible at https://postgresql.tjo.cloud.
-- Caddy Container
-  - SSL Termination and reverse proxy for https://postgresql.tjo.cloud.
+  - Deployed on k8s.tjo.cloud.
 - Grafana Alloy
   - Metrics and Logs being shipped to https://monitor.tjo.cloud.
 

@@ -1,14 +1,16 @@
+export SHA256SUM := if os() == "linux" {`echo "sha256sum"`} else { `echo "shasum --algorithm 256"` }
+
 _encrypt path:
   #!/usr/bin/env bash
   file="{{path}}"
 
   echo "Encrypting ${file}"
-  if cat ${file}.sha256sum | shasum --algorithm 256 --check --status
+  if cat ${file}.sha256sum | $SHA256SUM --check --status
   then
     echo " - matches existing hash, skipping"
   else
     cat $file | gzip --stdout | age --encrypt -R {{source_directory()}}/age.keys > ${file}.encrypted
-    shasum --algorithm 256 $file > ${file}.sha256sum
+    $SHA256SUM $file > ${file}.sha256sum
   fi
 
 _decrypt path:

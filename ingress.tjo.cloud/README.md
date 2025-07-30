@@ -7,6 +7,6 @@ Handling public traffic for `tjo.cloud`, `tjo.space` and others.
 - Ubuntu
 - UFW Firewall
 - Zerotier (SD-WAN)
-- ??proxy??
+- Haproxy
 - Grafana Alloy
   - Metrics and Logs being shipped to https://monitor.tjo.cloud.
