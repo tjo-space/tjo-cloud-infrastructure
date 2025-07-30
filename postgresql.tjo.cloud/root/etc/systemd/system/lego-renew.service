@@ -7,7 +7,7 @@ EnvironmentFile=/etc/lego/lego.env
 EnvironmentFile=/etc/lego/secrets.env
 Environment=HOSTNAME=%H
 StateDirectory=lego
-ExecStart=/usr/local/bin/lego \
+ExecStart=/usr/bin/lego \
   --path=${STATE_DIRECTORY} \
   --email=${EMAIL} \
   --domain=${HOSTNAME} \
