@@ -4,7 +4,7 @@ resource "kubernetes_manifest" "gateway" {
     kind       = "Gateway"
     metadata = {
       name      = "primary"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       annotations = {
         "cert-manager.io/issuer"                  = "primary"
         "external-dns.alpha.kubernetes.io/target" = "any.ingress.tjo.cloud"
@@ -52,7 +52,7 @@ resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
     kind       = "ClientTrafficPolicy"
     metadata = {
       name      = "enable-proxy-protocol-policy"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
     }
     spec = {
       targetRef = {

@@ -3,7 +3,7 @@ resource "helm_release" "argocd" {
   chart           = "argo-cd"
   repository      = "https://argoproj.github.io/argo-helm"
   version         = "8.2.4"
-  namespace       = kubernetes_namespace.tjo-cloud.metadata[0].name
+  namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
@@ -82,7 +82,7 @@ resource "kubernetes_manifest" "argocd-http-route" {
     kind       = "HTTPRoute"
     metadata = {
       name      = "argocd"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
     }
     spec = {
       parentRefs = [
@@ -117,7 +117,7 @@ resource "kubernetes_manifest" "argocd-projects" {
     kind       = "Application"
     metadata = {
       name      = "projects"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       finalizers = [
         "resources-finalizer.argocd.argoproj.io"
       ]
@@ -135,7 +135,7 @@ resource "kubernetes_manifest" "argocd-projects" {
       }
       destination = {
         server    = "k8s.tjo.cloud"
-        namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+        namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       }
       syncPolicy = {
         automated = {

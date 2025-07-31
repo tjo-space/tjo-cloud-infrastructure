@@ -3,7 +3,7 @@ resource "helm_release" "dashboard" {
   repository      = "https://kubernetes.github.io/dashboard"
   chart           = "kubernetes-dashboard"
   version         = "7.5.0"
-  namespace       = kubernetes_namespace.tjo-cloud.metadata[0].name
+  namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
@@ -19,7 +19,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
     kind       = "HTTPRoute"
     metadata = {
       name      = "dashboard"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
     }
     spec = {
       parentRefs = [
@@ -95,7 +95,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
 resource "kubernetes_secret" "dashboard-oidc" {
   metadata {
     name      = "dashboard-oidc"
-    namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   }
   data = {
     client-secret = "null"
@@ -108,7 +108,7 @@ resource "kubernetes_manifest" "dashboard-oidc" {
     kind       = "SecurityPolicy"
     metadata = {
       name      = "dashboard-oidc"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
     }
     spec = {
       targetRef = {

@@ -1,13 +1,13 @@
-resource "kubernetes_namespace" "tjo-cloud" {
+resource "kubernetes_namespace" "k8s-tjo-cloud" {
   metadata {
-    name = "tjo-cloud"
+    name = "k8s-tjo-cloud"
   }
 }
 
 resource "kubernetes_secret" "dnsimple" {
   metadata {
     name      = "dnsimple"
-    namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   }
   data = {
     token      = var.dnsimple.token
@@ -20,7 +20,7 @@ resource "helm_release" "external-dns" {
   chart      = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
   version    = "v1.15.0"
-  namespace  = kubernetes_namespace.tjo-cloud.metadata[0].name
+  namespace  = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
 
   values = [yamlencode({
     provider : "dnsimple"
@@ -65,7 +65,7 @@ resource "helm_release" "cert-manager-dnsimple" {
   chart           = "cert-manager-webhook-dnsimple"
   repository      = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
   version         = "v0.1.6"
-  namespace       = kubernetes_namespace.tjo-cloud.metadata[0].name
+  namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
@@ -87,14 +87,14 @@ resource "kubernetes_manifest" "issuer" {
     kind       = "Issuer"
     metadata = {
       name      = "primary"
-      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
     }
     spec = {
       acme = {
         email  = "tine@tjo.space"
         server = "https://acme-v02.api.letsencrypt.org/directory"
         privateKeySecretRef = {
-          name = "tjo-cloud-acme-account"
+          name = "k8s-tjo-cloud-acme-account"
         }
         solvers = [
           {
