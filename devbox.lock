@@ -49,6 +49,54 @@
         }
       }
     },
+    "argocd@latest": {
+      "last_modified": "2025-07-13T22:45:35Z",
+      "resolved": "github:NixOS/nixpkgs/a421ac6595024edcfbb1ef950a3712b89161c359#argocd",
+      "source": "devbox-search",
+      "version": "2.14.11",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/q5gnhizjcfb2sw744j81217zchzn4dw4-argocd-2.14.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/q5gnhizjcfb2sw744j81217zchzn4dw4-argocd-2.14.11"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/f78dyj5c4djl1j82k917b3mac3c0qbyb-argocd-2.14.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/f78dyj5c4djl1j82k917b3mac3c0qbyb-argocd-2.14.11"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/9m1kfvvb02f4405mkb7naqhdp38la6kn-argocd-2.14.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/9m1kfvvb02f4405mkb7naqhdp38la6kn-argocd-2.14.11"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/h9z8mbd276m3jm6iq9zxgsiv8cxlpv6g-argocd-2.14.11",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/h9z8mbd276m3jm6iq9zxgsiv8cxlpv6g-argocd-2.14.11"
+        }
+      }
+    },
     "cilium-cli@latest": {
       "last_modified": "2024-07-13T12:58:17Z",
       "resolved": "github:NixOS/nixpkgs/b729601a9e6c459fd8884dea513af143111bed54#cilium-cli",

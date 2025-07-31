@@ -13,7 +13,8 @@
     "just@latest",
     "moreutils@latest",
     "cmctl@latest",
-    "inetutils@latest"
+    "inetutils@latest",
+    "argocd@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"
