@@ -117,3 +117,48 @@ resource "kubernetes_manifest" "argocd-http-route" {
     }
   }
 }
+
+resource "kubernetes_manifest" "argocd-projects" {
+  manifest = {
+    apiVersion = "argoproj.io/v1alpha1"
+    kind       = "Application"
+    metadata = {
+      name      = "projects"
+      namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      finalizers = [
+        "resources-finalizer.argocd.argoproj.io"
+      ]
+    }
+    spec = {
+      project = "default"
+      info = [
+        { name = "Defined in", value = "https://code.tjo.space/tjo-cloud/infrastructure" },
+        { name = "Description", value = "Provisions ArgoCD Projects." },
+      ]
+      source = {
+        repoURL        = "https://code.tjo.space/tjo-cloud/projects.git"
+        targetRevision = "HEAD"
+        path           = "src"
+      }
+      destination = {
+        server    = "k8s.tjo.cloud"
+        namespace = kubernetes_namespace.tjo-cloud.metadata[0].name
+      }
+      syncPolicy = {
+        automated = {
+          prune      = true
+          selfHeal   = true
+          allowEmpty = false
+        }
+        retry = {
+          limit = 5
+          backoff = {
+            duration    = "5s"
+            factor      = 2
+            maxDuration = "5m"
+          }
+        }
+      }
+    }
+  }
+}
