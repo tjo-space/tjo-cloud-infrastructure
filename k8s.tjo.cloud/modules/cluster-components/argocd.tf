@@ -37,7 +37,7 @@ resource "kubernetes_cluster_role_binding_v1" "argocd" {
   subject {
     kind      = "ServiceAccount"
     name      = kubernetes_service_account_v1.argocd-auth-manager.metadata[0].name
-    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].nam
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   }
 }
 
