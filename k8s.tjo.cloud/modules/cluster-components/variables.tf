@@ -14,8 +14,9 @@ variable "dnsimple" {
 
 variable "domains" {
   type = map(object({
-    zone   = string
-    domain = string
+    zone     = string
+    domain   = string
+    wildcard = optional(bool, true)
   }))
   description = "Domains to be managed via cert-manager and external-dns."
 }

@@ -138,6 +138,10 @@ module "cluster-components" {
   }
 
   domains = {
+    "tjo-space" = {
+      zone   = "tjo.space"
+      domain = "tjo.space"
+    }
     "tjo-cloud" = {
       zone   = "tjo.cloud"
       domain = "tjo.cloud"

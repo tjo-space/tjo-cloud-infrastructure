@@ -12,29 +12,48 @@ resource "kubernetes_manifest" "gateway" {
     }
     spec = {
       gatewayClassName = "envoy"
-      listeners = [for key, domain in var.domains : {
-        name     = key
-        hostname = "*.${domain.domain}"
-        protocol = "HTTPS"
-        port     = 443
-        tls = {
-          mode = "Terminate"
-          certificateRefs = [
-            {
-              name = "${key}-tls"
-            }
-          ]
-        }
-        allowedRoutes = {
-          kinds : [
-            { kind : "HTTPRoute" },
-            { kind : "GRPCRoute" },
-          ]
-          namespaces = {
-            from = "All"
+      listeners = concat(
+        # Precise Domain
+        [for key, domain in var.domains : {
+          name     = "${key}-precise"
+          hostname = domain.domain
+          protocol = "HTTPS"
+          port     = 443
+          tls = {
+            mode = "Terminate"
+            certificateRefs = [{
+              name = "${key}-precise-tls"
+            }]
           }
-        }
-      }]
+          allowedRoutes = {
+            kinds : [
+              { kind : "HTTPRoute" },
+              { kind : "GRPCRoute" }
+            ]
+            namespaces = { from = "All" }
+          }
+        }],
+        # Wildcard Domain
+        [for key, domain in var.domains : {
+          name     = "${key}-wildcard"
+          hostname = "*.${domain.domain}"
+          protocol = "HTTPS"
+          port     = 443
+          tls = {
+            mode = "Terminate"
+            certificateRefs = [{
+              name = "${key}-wildcard-tls"
+            }]
+          }
+          allowedRoutes = {
+            kinds : [
+              { kind : "HTTPRoute" },
+              { kind : "GRPCRoute" }
+            ]
+            namespaces = { from = "All" }
+          }
+        } if domain.wildcard == true],
+      )
     }
   }
 
