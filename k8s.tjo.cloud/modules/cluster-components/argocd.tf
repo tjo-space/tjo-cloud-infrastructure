@@ -32,12 +32,12 @@ resource "kubernetes_cluster_role_binding_v1" "argocd" {
   role_ref {
     api_group = "rbac.authorization.k8s.io"
     kind      = "ClusterRole"
-    name      = "argocd-manager-role"
+    name      = kubernetes_cluster_role_v1.argocd.metadata[0].name
   }
   subject {
     kind      = "ServiceAccount"
-    name      = "argocd-manager"
-    namespace = "kube-system"
+    name      = kubernetes_service_account_v1.argocd-auth-manager.metadata[0].name
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].nam
   }
 }
 
@@ -98,15 +98,15 @@ resource "helm_release" "argocd" {
           EOF
       }
       clusterCredentials = {
-        "k8s.tjo.cloud" = {
-          server = "https://kubernetes.default.svc"
-          config = jsonencode({
+        "k8s-tjo-cloud" = {
+          server = "https://api.internal.k8s.tjo.cloud:6443"
+          config = {
             bearerToken = kubernetes_secret_v1.argocd_secret.data["token"]
             tlsClientConfig = {
               insecure = false
-              caData   = kubernetes_secret_v1.argocd_secret.data["ca.crt"]
+              caData   = base64encode(kubernetes_secret_v1.argocd_secret.data["ca.crt"])
             }
-          })
+          }
         }
       }
     }
@@ -183,7 +183,7 @@ resource "kubernetes_manifest" "argocd-projects" {
         path           = "src"
       }
       destination = {
-        server    = "k8s.tjo.cloud"
+        name      = "k8s-tjo-cloud"
         namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       }
       syncPolicy = {
