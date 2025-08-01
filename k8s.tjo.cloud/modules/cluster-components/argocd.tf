@@ -1,3 +1,46 @@
+resource "kubernetes_service_account_v1" "argocd-auth-manager" {
+  metadata {
+    name      = "argocd-manager"
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
+  }
+}
+resource "kubernetes_secret_v1" "argocd_secret" {
+  metadata {
+    name      = "argocd-manager-token"
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
+    annotations = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account_v1.argocd-auth-manager.metadata[0].name
+    }
+  }
+  type                           = "kubernetes.io/service-account-token"
+  wait_for_service_account_token = true
+}
+resource "kubernetes_cluster_role_v1" "argocd" {
+  metadata {
+    name = "argocd-manager-role"
+  }
+  rule {
+    api_groups = ["*"]
+    resources  = ["*"]
+    verbs      = ["*"]
+  }
+}
+resource "kubernetes_cluster_role_binding_v1" "argocd" {
+  metadata {
+    name = "argocd-manager-role-binding"
+  }
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "ClusterRole"
+    name      = "argocd-manager-role"
+  }
+  subject {
+    kind      = "ServiceAccount"
+    name      = "argocd-manager"
+    namespace = "kube-system"
+  }
+}
+
 resource "helm_release" "argocd" {
   name            = "argo-cd"
   chart           = "argo-cd"
@@ -57,7 +100,13 @@ resource "helm_release" "argocd" {
       clusterCredentials = {
         "k8s.tjo.cloud" = {
           server = "https://kubernetes.default.svc"
-          config = {}
+          config = jsonencode({
+            bearerToken = kubernetes_secret_v1.argocd_secret.data["token"]
+            tlsClientConfig = {
+              insecure = false
+              caData   = kubernetes_secret_v1.argocd_secret.data["ca.crt"]
+            }
+          })
         }
       }
     }
