@@ -14,7 +14,7 @@ resource "kubernetes_manifest" "gateway" {
       name      = "primary"
       namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       annotations = {
-        "cert-manager.io/issuer"                  = "acme"
+        "cert-manager.io/cluster-issuer"          = "acme"
         "external-dns.alpha.kubernetes.io/target" = "${join(",", data.dns_a_record_set.ingress.addrs)},${join(",", data.dns_aaaa_record_set.ingress.addrs)}"
       }
     }
