@@ -10,6 +10,11 @@ variable "dnsimple_token" {
   sensitive = true
 }
 
+variable "desec_token" {
+  type      = string
+  sensitive = true
+}
+
 variable "dnsimple_account_id" {
   type = string
 }

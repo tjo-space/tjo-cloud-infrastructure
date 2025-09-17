@@ -32,6 +32,10 @@ terraform {
       source  = "gavinbunney/kubectl"
       version = "1.19.0"
     }
+    desec = {
+      source  = "Valodim/desec"
+      version = "0.6.1"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -79,6 +83,10 @@ provider "proxmox" {
 provider "dnsimple" {
   token   = var.dnsimple_token
   account = var.dnsimple_account_id
+}
+
+provider "desec" {
+  api_token = var.desec_token
 }
 
 provider "kubectl" {

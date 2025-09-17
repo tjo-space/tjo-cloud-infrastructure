@@ -18,6 +18,10 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "1.9.0"
     }
+    desec = {
+      source  = "Valodim/desec"
+      version = "0.6.1"
+    }
     random = {
       source  = "hashicorp/random"
       version = "3.7.1"

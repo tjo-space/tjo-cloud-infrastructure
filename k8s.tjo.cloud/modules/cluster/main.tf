@@ -241,10 +241,33 @@ resource "dnsimple_zone_record" "api-internal-ipv4" {
 #  ttl       = 30
 #}
 
+resource "desec_rrset" "api-internal-ipv4" {
+  domain  = var.cluster.api.internal.domain
+  subname = var.cluster.api.internal.subdomain
+  type    = "A"
+  records = [for k, v in local.nodes_with_address : v.ipv4 if v.type == "controlplane"]
+  ttl     = 3600
+}
+resource "desec_rrset" "api-internal-ipv6" {
+  domain  = var.cluster.api.internal.domain
+  subname = var.cluster.api.internal.subdomain
+  type    = "AAAA"
+  records = [for k, v in local.nodes_with_address : v.ipv6 if v.type == "controlplane"]
+  ttl     = 3600
+}
+
 resource "dnsimple_zone_record" "api-public" {
   zone_name = var.cluster.api.public.domain
   type      = "CNAME"
   name      = var.cluster.api.public.subdomain
   value     = "any.ingress.tjo.cloud"
   ttl       = 600
+}
+
+resource "desec_rrset" "api-public" {
+  domain  = var.cluster.api.public.domain
+  subname = var.cluster.api.public.subdomain
+  type    = "CNAME"
+  records = ["any.ingress.tjo.cloud."]
+  ttl     = 3600
 }

@@ -5,10 +5,9 @@ variable "oidc_issuer_url" {
   type = string
 }
 
-variable "dnsimple" {
+variable "desec" {
   type = object({
-    token      = string
-    account_id = string
+    token = string
   })
 }
 

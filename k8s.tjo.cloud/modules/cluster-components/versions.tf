@@ -14,5 +14,9 @@ terraform {
       source  = "hashicorp/kubernetes"
       version = "2.36.0"
     }
+    dns = {
+      source  = "hashicorp/dns"
+      version = "3.4.3"
+    }
   }
 }

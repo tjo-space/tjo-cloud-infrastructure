@@ -4,14 +4,13 @@ resource "kubernetes_namespace" "k8s-tjo-cloud" {
   }
 }
 
-resource "kubernetes_secret" "dnsimple" {
+resource "kubernetes_secret" "desec" {
   metadata {
-    name      = "dnsimple"
+    name      = "desec"
     namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   }
   data = {
-    token      = var.dnsimple.token
-    account_id = var.dnsimple.account_id
+    token = var.desec.token
   }
 }
 
@@ -19,35 +18,50 @@ resource "helm_release" "external-dns" {
   name       = "external-dns"
   chart      = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
-  version    = "v1.15.0"
+  version    = "v1.19.0"
   namespace  = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
 
   values = [yamlencode({
-    provider : "dnsimple"
-    env : [
-      {
-        name : "DNSIMPLE_OAUTH"
-        valueFrom : {
-          secretKeyRef : {
-            name : kubernetes_secret.dnsimple.metadata[0].name
-            key : "token"
-          }
+    provider = {
+      name = "webhook"
+      webhook = {
+        image = {
+          repository = "ghcr.io/michelangelomo/external-dns-desec-provider"
+          tag        = "v0.1.1"
         }
-      },
-      {
-        name : "DNSIMPLE_ACCOUNT_ID"
-        valueFrom : {
-          secretKeyRef : {
-            name : kubernetes_secret.dnsimple.metadata[0].name
-            key : "account_id"
+        env = [
+          {
+            name = "WEBHOOK_APITOKEN"
+            valueFrom = {
+              secretKeyRef = {
+                name = "desec"
+                key  = "token"
+              }
+            }
+          },
+          {
+            name  = "WEBHOOK_DOMAINFILTERS"
+            value = join(",", [for domain in var.domains : domain.zone])
           }
+        ]
+        livenessProbe = {
+          httpGet = {
+            path = "/healthz"
+            port = "http-webhook"
+          }
+          initialDelaySeconds = 10
+          timeoutSeconds      = 5
         }
-      },
-      {
-        name : "DNSIMPLE_ZONES"
-        value = join(",", [for domain in var.domains : domain.zone])
+        readinessProbe = {
+          httpGet = {
+            path = "/readyz"
+            port = "http-webhook"
+          }
+          initialDelaySeconds = 10
+          timeoutSeconds      = 5
+        }
       }
-    ]
+    }
     sources : [
       "ingress",
       "service",
@@ -60,34 +74,12 @@ resource "helm_release" "external-dns" {
   })]
 }
 
-resource "helm_release" "cert-manager-dnsimple" {
-  name            = "cert-manager-webhook-dnsimple"
-  chart           = "cert-manager-webhook-dnsimple"
-  repository      = "https://puzzle.github.io/cert-manager-webhook-dnsimple"
-  version         = "v0.1.6"
-  namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
-  atomic          = true
-  cleanup_on_fail = true
-
-  values = [<<-EOF
-      dnsimple:
-        tokenSecretName:  "${kubernetes_secret.dnsimple.metadata[0].name}"
-        existingTokenSecret: true
-        account_id: "${var.dnsimple.account_id}"
-      certManager:
-        namespace: "kube-system"
-        serviceAccountName: "cert-manager"
-    EOF
-  ]
-}
-
 resource "kubernetes_manifest" "issuer" {
   manifest = {
     apiVersion = "cert-manager.io/v1"
-    kind       = "Issuer"
+    kind       = "ClusterIssuer"
     metadata = {
-      name      = "primary"
-      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
+      name = "acme"
     }
     spec = {
       acme = {
@@ -98,23 +90,15 @@ resource "kubernetes_manifest" "issuer" {
         }
         solvers = [
           {
-            dns01 = {
-              webhook = {
-                solverName = "dnsimple"
-                groupName  = "acme.dnsimple.com"
-                config = {
-                  tokenSecretRef = {
-                    name = kubernetes_secret.dnsimple.metadata[0].name
-                    key  = "token"
-                  }
-                  accountID = var.dnsimple.account_id
-                }
+            http01 = {
+              gatewayHTTPRoute = {
+                parentRefs = [{
+                  name = kubernetes_manifest.gateway.object.metadata.name
+                  kind = "Gateway"
+                }]
               }
             }
-            selector = {
-              dnsZones = [for domain in var.domains : domain.domain]
-            }
-          },
+          }
         ]
       }
     }

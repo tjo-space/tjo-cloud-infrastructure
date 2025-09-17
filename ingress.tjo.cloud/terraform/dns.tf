@@ -2,9 +2,32 @@ resource "dnsimple_zone" "ingress_tjo_cloud" {
   name = "ingress.tjo.cloud"
 }
 
-moved {
-  from = dnsimple_zone.all["ingress.tjo.cloud"]
-  to   = dnsimple_zone.ingress_tjo_cloud
+resource "desec_rrset" "any" {
+  for_each = {
+    A    = [for k, v in local.nodes_with_address : v.ipv4]
+    AAAA = [for k, v in local.nodes_with_address : v.ipv6]
+  }
+  domain  = "tjo.cloud"
+  subname = "any.ingress"
+  type    = each.key
+  records = each.value
+  ttl     = 3600
+}
+resource "desec_rrset" "node_a" {
+  for_each = local.nodes_with_address
+  domain   = "tjo.cloud"
+  subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
+  type     = "A"
+  records  = [each.value.ipv4]
+  ttl      = 3600
+}
+resource "desec_rrset" "node_aaaa" {
+  for_each = local.nodes_with_address
+  domain   = "tjo.cloud"
+  subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
+  type     = "AAAA"
+  records  = [each.value.ipv6]
+  ttl      = 3600
 }
 
 resource "dnsimple_zone_record" "any_a" {
@@ -62,4 +85,31 @@ resource "dnsimple_zone_record" "all" {
   value     = each.value.to
   type      = each.value.type
   ttl       = each.value.ttl
+}
+resource "desec_rrset" "all" {
+  for_each = { for key, value in local.records_with_zones : key => value if value.type != "ALIAS" }
+
+  domain  = each.value.zone
+  subname = trimsuffix(each.key, ".${each.value.zone}")
+  type    = each.value.type
+  records = each.value.type == "CNAME" ? ["${each.value.to}."] : [each.value.to]
+  ttl     = max(3600, each.value.ttl)
+}
+resource "desec_rrset" "alias_a" {
+  for_each = { for key, value in local.records_with_zones : key => value if value.type == "ALIAS" && value.to == "any.ingress.tjo.cloud" }
+
+  domain  = each.value.zone
+  subname = trimsuffix(each.key, ".${each.value.zone}")
+  type    = "A"
+  records = [for k, v in local.nodes_with_address : v.ipv4]
+  ttl     = max(3600, each.value.ttl)
+}
+resource "desec_rrset" "alias_aaaa" {
+  for_each = { for key, value in local.records_with_zones : key => value if value.type == "ALIAS" && value.to == "any.ingress.tjo.cloud" }
+
+  domain  = each.value.zone
+  subname = trimsuffix(each.key, ".${each.value.zone}")
+  type    = "AAAA"
+  records = [for k, v in local.nodes_with_address : v.ipv6]
+  ttl     = max(3600, each.value.ttl)
 }

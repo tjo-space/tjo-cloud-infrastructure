@@ -132,9 +132,8 @@ module "cluster-components" {
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
 
-  dnsimple = {
-    token      = var.dnsimple_token
-    account_id = var.dnsimple_account_id
+  desec = {
+    token = var.desec_token
   }
 
   domains = {

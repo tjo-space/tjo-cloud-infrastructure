@@ -1,3 +1,11 @@
+data "dns_a_record_set" "ingress" {
+  host = "any.ingress.tjo.cloud"
+}
+
+data "dns_aaaa_record_set" "ingress" {
+  host = "any.ingress.tjo.cloud"
+}
+
 resource "kubernetes_manifest" "gateway" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -6,14 +14,30 @@ resource "kubernetes_manifest" "gateway" {
       name      = "primary"
       namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       annotations = {
-        "cert-manager.io/issuer"                  = "primary"
-        "external-dns.alpha.kubernetes.io/target" = "any.ingress.tjo.cloud"
+        "cert-manager.io/issuer"                  = "acme"
+        "external-dns.alpha.kubernetes.io/target" = "${join(",", data.dns_a_record_set.ingress.addrs)},${join(",", data.dns_aaaa_record_set.ingress.addrs)}"
       }
     }
     spec = {
       gatewayClassName = "envoy"
       listeners = concat(
-        # Precise Domain
+        # HTTP
+        [{
+          name     = "http"
+          protocol = "HTTP"
+          port     = 80
+          allowedRoutes = {
+            kinds : [
+              { kind : "HTTPRoute" },
+            ]
+            # Only allow HTTPRoute from the same namespace
+            # as we only need this for cert-manager.
+            # All other namespaces should use HTTPS instead.
+            namespaces = { from = "All" }
+          }
+        }],
+        # HTTPS
+        ## Precise Domain
         [for key, domain in var.domains : {
           name     = "${key}-precise"
           hostname = domain.domain
@@ -33,7 +57,7 @@ resource "kubernetes_manifest" "gateway" {
             namespaces = { from = "All" }
           }
         }],
-        # Wildcard Domain
+        ## Wildcard Domain
         [for key, domain in var.domains : {
           name     = "${key}-wildcard"
           hostname = "*.${domain.domain}"
