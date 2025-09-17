@@ -14,7 +14,8 @@
     "moreutils@latest",
     "cmctl@latest",
     "inetutils@latest",
-    "argocd@latest"
+    "argocd@latest",
+    "haproxy@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"

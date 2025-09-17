@@ -74,8 +74,9 @@ echo "== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
 
-ufw allow 22  # SSH for GIT
-ufw allow 443 # HTTPS
+ufw allow 22  # SSH   for PROXY
+ufw allow 80  # HTTP  for PROXY
+ufw allow 443 # HTTPS for PROXY
 
 ufw allow 1337 # HTTP (healthcheck)
 ufw allow 2222 # SSH MANAGEMENT ACCESS
