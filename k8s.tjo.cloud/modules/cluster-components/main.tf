@@ -62,7 +62,18 @@ resource "helm_release" "external-dns" {
         }
       }
     }
-    sources : [
+    # Adjust interval, events and caching
+    # to reduce number of API calls done.
+    # Ref: https://github.com/michelangelomo/external-dns-desec-provider/issues/8
+    # Ref: https://github.com/kubernetes-sigs/external-dns/issues/5796#issuecomment-3303361778
+    interval           = "10m"
+    triggerLoopOnEvent = true
+    extraArgs = [
+      "--provider-cache-time=30m",
+      "--txt-cache-interval=1m",
+      "--min-event-sync-interval=1m",
+    ]
+    sources = [
       "ingress",
       "service",
       "gateway-httproute",
@@ -70,7 +81,7 @@ resource "helm_release" "external-dns" {
       "gateway-tlsroute",
       "gateway-tcproute"
     ]
-    domainFilters : [for domain in var.domains : domain.domain]
+    domainFilters = [for domain in var.domains : domain.domain]
   })]
 }
 
