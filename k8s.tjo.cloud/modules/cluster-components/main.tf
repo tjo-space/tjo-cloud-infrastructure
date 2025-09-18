@@ -63,15 +63,17 @@ resource "helm_release" "external-dns" {
       }
     }
     # Adjust interval, events and caching
-    # to reduce number of API calls done.
+    #  to reduce number of API calls done.
+    # In theory, on interval every 10min or in case of events then at most once per two minutes,
+    #  once every 30 minutes there are also provider cache expiery and txt cache refresh.
     # Ref: https://github.com/michelangelomo/external-dns-desec-provider/issues/8
     # Ref: https://github.com/kubernetes-sigs/external-dns/issues/5796#issuecomment-3303361778
     interval           = "10m"
     triggerLoopOnEvent = true
     extraArgs = [
       "--provider-cache-time=30m",
-      "--txt-cache-interval=1m",
-      "--min-event-sync-interval=1m",
+      "--txt-cache-interval=30m",
+      "--min-event-sync-interval=2m",
     ]
     sources = [
       "ingress",
