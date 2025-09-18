@@ -15,6 +15,9 @@ resource "kubernetes_secret" "desec" {
 }
 
 resource "helm_release" "external-dns" {
+  # TODO: Enable once we switch dns provider
+  count = 0
+
   name       = "external-dns"
   chart      = "external-dns"
   repository = "https://kubernetes-sigs.github.io/external-dns/"
