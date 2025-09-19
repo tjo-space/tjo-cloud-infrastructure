@@ -16,7 +16,7 @@ resource "kubernetes_secret" "desec" {
 
 resource "helm_release" "external-dns" {
   # TODO: Enable once we switch dns provider
-  count = 0
+  #count = 0
 
   name       = "external-dns"
   chart      = "external-dns"
@@ -44,7 +44,7 @@ resource "helm_release" "external-dns" {
           },
           {
             name  = "WEBHOOK_DOMAINFILTERS"
-            value = join(",", [for domain in var.domains : domain.zone])
+            value = "tjo.cloud"
           }
         ]
         livenessProbe = {
@@ -76,7 +76,7 @@ resource "helm_release" "external-dns" {
     extraArgs = [
       "--provider-cache-time=30m",
       "--txt-cache-interval=30m",
-      "--min-event-sync-interval=2m",
+      "--min-event-sync-interval=10m",
     ]
     sources = [
       "ingress",
@@ -86,7 +86,7 @@ resource "helm_release" "external-dns" {
       "gateway-tlsroute",
       "gateway-tcproute"
     ]
-    domainFilters = [for domain in var.domains : domain.domain]
+    domainFilters = ["tjo.cloud"]
   })]
 }
 
@@ -99,7 +99,7 @@ resource "kubernetes_manifest" "issuer" {
     }
     spec = {
       acme = {
-        email  = "tine@tjo.space"
+        email  = "hostmaster@tjo.cloud"
         server = "https://acme-v02.api.letsencrypt.org/directory"
         privateKeySecretRef = {
           name = "k8s-tjo-cloud-acme-account"

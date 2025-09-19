@@ -33,3 +33,8 @@ variable "additional_domains" {
     zone = string
   }))
 }
+
+variable "desec_token" {
+  type      = string
+  sensitive = true
+}

@@ -68,5 +68,5 @@ etcd-snapshot:
   talosctl -n <IP> cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-$(date +%F_%H-%M-%S)
 
 apply-full:
-  tofu init
+  #tofu init
   tofu apply

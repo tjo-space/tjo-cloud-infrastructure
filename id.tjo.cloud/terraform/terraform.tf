@@ -8,6 +8,10 @@ terraform {
       source  = "dnsimple/dnsimple"
       version = "1.8.0"
     }
+    desec = {
+      source  = "Valodim/desec"
+      version = "0.6.1"
+    }
   }
 
   required_version = "~> 1.7.3"
@@ -20,4 +24,8 @@ provider "hcloud" {
 provider "dnsimple" {
   token   = var.dnsimple_token
   account = var.dnsimple_account_id
+}
+
+provider "desec" {
+  api_token = var.desec_token
 }

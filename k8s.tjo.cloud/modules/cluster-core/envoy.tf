@@ -17,6 +17,7 @@ resource "kubernetes_manifest" "gateway_class_config" {
       namespace = "kube-system"
     }
     spec = {
+      ipFamily      = "DualStack"
       mergeGateways = true
       provider = {
         type = "Kubernetes"

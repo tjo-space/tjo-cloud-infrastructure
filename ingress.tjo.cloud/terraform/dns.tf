@@ -86,30 +86,3 @@ resource "dnsimple_zone_record" "all" {
   type      = each.value.type
   ttl       = each.value.ttl
 }
-resource "desec_rrset" "all" {
-  for_each = { for key, value in local.records_with_zones : key => value if value.type != "ALIAS" }
-
-  domain  = each.value.zone
-  subname = trimsuffix(each.key, ".${each.value.zone}")
-  type    = each.value.type
-  records = each.value.type == "CNAME" ? ["${each.value.to}."] : [each.value.to]
-  ttl     = max(3600, each.value.ttl)
-}
-resource "desec_rrset" "alias_a" {
-  for_each = { for key, value in local.records_with_zones : key => value if value.type == "ALIAS" && value.to == "any.ingress.tjo.cloud" }
-
-  domain  = each.value.zone
-  subname = trimsuffix(each.key, ".${each.value.zone}")
-  type    = "A"
-  records = [for k, v in local.nodes_with_address : v.ipv4]
-  ttl     = max(3600, each.value.ttl)
-}
-resource "desec_rrset" "alias_aaaa" {
-  for_each = { for key, value in local.records_with_zones : key => value if value.type == "ALIAS" && value.to == "any.ingress.tjo.cloud" }
-
-  domain  = each.value.zone
-  subname = trimsuffix(each.key, ".${each.value.zone}")
-  type    = "AAAA"
-  records = [for k, v in local.nodes_with_address : v.ipv6]
-  ttl     = max(3600, each.value.ttl)
-}

@@ -26,13 +26,13 @@ variable "cluster" {
     name = string
     api = optional(object({
       internal = optional(object({
-        domain    = optional(string, "k8s.tjo.cloud")
-        subdomain = optional(string, "api.internal")
+        domain    = optional(string, "tjo.cloud")
+        subdomain = optional(string, "api.internal.k8s")
         port      = optional(number, 6443)
       }), {})
       public = optional(object({
-        domain    = optional(string, "k8s.tjo.cloud")
-        subdomain = optional(string, "api")
+        domain    = optional(string, "tjo.cloud")
+        subdomain = optional(string, "api.k8s")
         port      = optional(number, 443)
       }), {})
     }), {})

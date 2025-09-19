@@ -17,6 +17,7 @@ zones = [
 ]
 
 records = {
+  ###
   # TJO.SPACE
   "tjo.space"           = { to = "any.ingress.tjo.cloud" }
   "code.tjo.space"      = { to = "any.ingress.tjo.cloud" }
@@ -29,18 +30,20 @@ records = {
   "stuff.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "vault.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "books.tjo.space"     = { to = "any.ingress.tjo.cloud" }
-  # CLOUD.TJO.SPACE
+  ## CLOUD.TJO.SPACE
   "cloud.tjo.space"     = { to = "any.ingress.tjo.cloud" }
   "collabora.tjo.space" = { to = "any.ingress.tjo.cloud" }
-  # CHAT.TJO.SPACE
+  ## CHAT.TJO.SPACE
   "chat.tjo.space"         = { to = "any.ingress.tjo.cloud" }
   "matrix.chat.tjo.space"  = { to = "any.ingress.tjo.cloud" }
   "webhook.chat.tjo.space" = { to = "any.ingress.tjo.cloud" }
   "turn.chat.tjo.space"    = { to = "any.ingress.tjo.cloud" }
   "mas.chat.tjo.space"     = { to = "any.ingress.tjo.cloud" }
-  # MEDIA.TJO.SPACE
+  ## MEDIA.TJO.SPACE
   "media.tjo.space"   = { to = "any.ingress.tjo.cloud" }
   "*.media.tjo.space" = { to = "any.ingress.tjo.cloud" }
+
+  ###
   # TJO.CLOUD
   "grpc.otel.monitor.tjo.cloud"  = { to = "any.ingress.tjo.cloud" }
   "http.otel.monitor.tjo.cloud"  = { to = "any.ingress.tjo.cloud" }

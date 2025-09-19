@@ -5,6 +5,7 @@ set dotenv-load
 
 export SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/keys.txt"`} else { `echo "$HOME/Library/Application Support/sops/age/keys.txt"` }
 
+mod dns 'dns'
 mod id 'id.tjo.cloud'
 mod k8s 'k8s.tjo.cloud'
 mod network 'network.tjo.cloud'

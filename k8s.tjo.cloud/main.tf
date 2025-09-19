@@ -135,19 +135,4 @@ module "cluster-components" {
   desec = {
     token = var.desec_token
   }
-
-  domains = {
-    "tjo-space" = {
-      zone   = "tjo.space"
-      domain = "tjo.space"
-    }
-    "tjo-cloud" = {
-      zone   = "tjo.cloud"
-      domain = "tjo.cloud"
-    }
-    "k8s-tjo-cloud" = {
-      zone   = "k8s.tjo.cloud"
-      domain = "k8s.tjo.cloud"
-    }
-  }
 }

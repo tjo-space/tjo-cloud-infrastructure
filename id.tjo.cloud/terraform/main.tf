@@ -44,6 +44,10 @@ resource "hcloud_server" "main" {
       - "/tmp/provision.sh"
       - "rm /tmp/provision.sh"
     EOF
+
+  lifecycle {
+    ignore_changes = [ssh_keys]
+  }
 }
 
 resource "dnsimple_zone_record" "tjo_cloud_a" {
@@ -74,4 +78,16 @@ resource "dnsimple_zone_record" "additional_alias" {
   value     = var.domain.name
   type      = "ALIAS"
   ttl       = 300
+}
+
+resource "desec_rrset" "main" {
+  for_each = {
+    A = [for k, v in hcloud_server.main : v.ipv4_address]
+    #AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
+  }
+  domain  = var.domain.zone
+  subname = trimsuffix(var.domain.name, ".${var.domain.zone}")
+  type    = each.key
+  records = each.value
+  ttl     = 3600
 }

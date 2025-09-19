@@ -11,7 +11,7 @@ resource "kubernetes_manifest" "gateway" {
     apiVersion = "gateway.networking.k8s.io/v1"
     kind       = "Gateway"
     metadata = {
-      name      = "primary"
+      name      = "tjo-cloud"
       namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
       annotations = {
         "cert-manager.io/cluster-issuer"          = "acme"
@@ -37,16 +37,18 @@ resource "kubernetes_manifest" "gateway" {
           }
         }],
         # HTTPS
-        ## Precise Domain
-        [for key, domain in var.domains : {
-          name     = "${key}-precise"
-          hostname = domain.domain
+        [for domain in [
+          "argocd.k8s.tjo.cloud",
+          "dashboard.k8s.tjo.cloud",
+          ] : {
+          name     = domain
+          hostname = domain
           protocol = "HTTPS"
           port     = 443
           tls = {
             mode = "Terminate"
             certificateRefs = [{
-              name = "${key}-precise-tls"
+              name = "${domain}-tls"
             }]
           }
           allowedRoutes = {
@@ -54,29 +56,9 @@ resource "kubernetes_manifest" "gateway" {
               { kind : "HTTPRoute" },
               { kind : "GRPCRoute" }
             ]
-            namespaces = { from = "All" }
+            namespaces = { from = "Same" }
           }
         }],
-        ## Wildcard Domain
-        [for key, domain in var.domains : {
-          name     = "${key}-wildcard"
-          hostname = "*.${domain.domain}"
-          protocol = "HTTPS"
-          port     = 443
-          tls = {
-            mode = "Terminate"
-            certificateRefs = [{
-              name = "${key}-wildcard-tls"
-            }]
-          }
-          allowedRoutes = {
-            kinds : [
-              { kind : "HTTPRoute" },
-              { kind : "GRPCRoute" }
-            ]
-            namespaces = { from = "All" }
-          }
-        } if domain.wildcard == true],
       )
     }
   }
