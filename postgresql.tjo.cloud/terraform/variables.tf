@@ -73,3 +73,8 @@ variable "dnsimple_token" {
 variable "dnsimple_account_id" {
   type = string
 }
+
+variable "desec_token" {
+  type      = string
+  sensitive = true
+}

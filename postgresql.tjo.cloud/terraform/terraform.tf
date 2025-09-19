@@ -28,6 +28,10 @@ terraform {
       source  = "germanbrew/dotenv"
       version = "1.2.6"
     }
+    desec = {
+      source  = "Valodim/desec"
+      version = "0.6.1"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -36,6 +40,10 @@ terraform {
 provider "dnsimple" {
   token   = var.dnsimple_token
   account = var.dnsimple_account_id
+}
+
+provider "desec" {
+  api_token = var.desec_token
 }
 
 provider "authentik" {
