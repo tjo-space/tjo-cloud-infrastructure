@@ -35,15 +35,6 @@ variable "authentik_token" {
   sensitive = true
 }
 
-variable "dnsimple_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "dnsimple_account_id" {
-  type = string
-}
-
 variable "desec_token" {
   type      = string
   sensitive = true

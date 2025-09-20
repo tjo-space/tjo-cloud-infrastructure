@@ -3,15 +3,6 @@ variable "id_hcloud_token" {
   type      = string
 }
 
-variable "dnsimple_token" {
-  sensitive = true
-  type      = string
-}
-
-variable "dnsimple_account_id" {
-  type = string
-}
-
 variable "ssh_keys" {
   type = map(string)
 }
@@ -25,13 +16,6 @@ variable "domain" {
     name = string
     zone = string
   })
-}
-
-variable "additional_domains" {
-  type = list(object({
-    name = string
-    zone = string
-  }))
 }
 
 variable "desec_token" {

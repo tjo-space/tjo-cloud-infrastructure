@@ -12,10 +12,6 @@ terraform {
       source  = "hashicorp/local"
       version = "2.5.2"
     }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.9.0"
-    }
     random = {
       source  = "hashicorp/random"
       version = "3.7.1"
@@ -78,11 +74,6 @@ provider "proxmox" {
       port    = 22
     }
   }
-}
-
-provider "dnsimple" {
-  token   = var.dnsimple_token
-  account = var.dnsimple_account_id
 }
 
 provider "desec" {

@@ -30,30 +30,9 @@ variable "authentik_token" {
   sensitive = true
 }
 
-variable "dnsimple_token" {
-  type      = string
-  sensitive = true
-}
-
 variable "desec_token" {
   type      = string
   sensitive = true
-}
-
-variable "dnsimple_account_id" {
-  type = string
-}
-
-variable "zones" {
-  type = set(string)
-}
-
-variable "records" {
-  type = map(object({
-    to   = string
-    ttl  = optional(number, 600)
-    type = optional(string, "ALIAS")
-  }))
 }
 
 variable "proxmox_token" {

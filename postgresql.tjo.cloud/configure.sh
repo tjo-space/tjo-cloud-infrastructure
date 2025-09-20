@@ -50,7 +50,7 @@ mkdir -p /etc/notify
 echo "${WEBHOOK_URL}" >/etc/notify/webhook-url
 
 echo "== Provision SSL certificate"
-echo "DNSIMPLE_OAUTH_TOKEN=${DNSIMPLE_OAUTH_TOKEN}" >/etc/lego/secrets.env
+echo "DESEC_TOKEN=${DESEC_TOKEN}" >/etc/lego/secrets.env
 systemctl start lego-run
 systemctl enable lego-renew.timer
 

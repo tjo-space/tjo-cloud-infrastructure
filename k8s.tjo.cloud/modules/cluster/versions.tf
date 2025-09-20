@@ -14,10 +14,6 @@ terraform {
       source  = "hashicorp/local"
       version = "2.5.2"
     }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.9.0"
-    }
     desec = {
       source  = "Valodim/desec"
       version = "0.6.1"

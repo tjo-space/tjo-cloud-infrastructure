@@ -8,10 +8,6 @@ terraform {
       source  = "goauthentik/authentik"
       version = "2025.4.0"
     }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.10.0"
-    }
     zerotier = {
       source  = "zerotier/zerotier"
       version = "1.6.0"
@@ -31,11 +27,6 @@ terraform {
   }
 
   required_version = "~> 1.9.0"
-}
-
-provider "dnsimple" {
-  token   = var.dnsimple_token
-  account = var.dnsimple_account_id
 }
 
 provider "desec" {

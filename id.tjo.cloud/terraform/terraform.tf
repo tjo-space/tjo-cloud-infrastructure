@@ -4,10 +4,6 @@ terraform {
       source  = "hetznercloud/hcloud"
       version = "1.50.0"
     }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.8.0"
-    }
     desec = {
       source  = "Valodim/desec"
       version = "0.6.1"
@@ -19,11 +15,6 @@ terraform {
 
 provider "hcloud" {
   token = var.id_hcloud_token
-}
-
-provider "dnsimple" {
-  token   = var.dnsimple_token
-  account = var.dnsimple_account_id
 }
 
 provider "desec" {

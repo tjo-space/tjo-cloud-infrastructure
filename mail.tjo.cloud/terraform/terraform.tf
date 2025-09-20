@@ -12,10 +12,6 @@ terraform {
       source  = "goauthentik/authentik"
       version = "2025.4.0"
     }
-    dnsimple = {
-      source  = "dnsimple/dnsimple"
-      version = "1.8.0"
-    }
     kubernetes = {
       source  = "hashicorp/kubernetes"
       version = "2.37.1"
@@ -41,10 +37,6 @@ terraform {
   required_version = "~> 1.9.0"
 }
 
-provider "dnsimple" {
-  token   = var.dnsimple_token
-  account = var.dnsimple_account_id
-}
 provider "desec" {
   api_token = var.desec_token
 }

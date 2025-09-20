@@ -50,40 +50,10 @@ resource "hcloud_server" "main" {
   }
 }
 
-resource "dnsimple_zone_record" "tjo_cloud_a" {
-  for_each = hcloud_server.main
-
-  zone_name = var.domain.zone
-  name      = trimsuffix(var.domain.name, ".${var.domain.zone}")
-  value     = each.value.ipv4_address
-  type      = "A"
-  ttl       = 300
-}
-
-#resource "dnsimple_zone_record" "tjo_cloud_aaaa" {
-#  for_each = hcloud_server.main
-#
-#  zone_name = var.domain.zone
-#  name      = trimsuffix(var.domain.name, ".${var.domain.zone}")
-#  value     = each.value.ipv6_address
-#  type      = "AAAA"
-#  ttl       = 300
-#}
-
-resource "dnsimple_zone_record" "additional_alias" {
-  for_each = { for domain in var.additional_domains : domain.name => domain }
-
-  zone_name = each.value.zone
-  name      = trimsuffix(each.value.name, ".${each.value.zone}")
-  value     = var.domain.name
-  type      = "ALIAS"
-  ttl       = 300
-}
-
 resource "desec_rrset" "main" {
   for_each = {
-    A = [for k, v in hcloud_server.main : v.ipv4_address]
-    #AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
+    A    = [for k, v in hcloud_server.main : v.ipv4_address]
+    AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
   }
   domain  = var.domain.zone
   subname = trimsuffix(var.domain.name, ".${var.domain.zone}")
