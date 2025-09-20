@@ -131,8 +131,4 @@ module "cluster-components" {
 
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
-
-  desec = {
-    token = var.desec_token
-  }
 }
