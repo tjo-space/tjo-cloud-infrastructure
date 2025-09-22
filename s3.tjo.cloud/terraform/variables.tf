@@ -1,14 +1,30 @@
 variable "nodes_hetzner_cloud" {
   type = map(object({
+    garage_zone = string
+    garage_kind = string
     datacenter  = string
     image       = optional(string, "ubuntu-24.04")
     server_type = optional(string, "cax11")
   }))
 }
 
+variable "nodes_proxmox" {
+  type = map(object({
+    garage_zone    = string
+    garage_kind    = string
+    garage_storage = string
+    garage_size    = number
+    host           = string
+    cores          = optional(number, 2)
+    memory         = optional(number, 4096)
+    boot_storage   = string
+    boot_size      = optional(number, 32)
+  }))
+}
+
 variable "domain" {
   type    = string
-  default = "ingress.tjo.cloud"
+  default = "s3.tjo.cloud"
 }
 
 variable "ssh_keys" {
@@ -20,7 +36,7 @@ variable "zerotier_token" {
   type      = string
 }
 
-variable "ingress_hcloud_token" {
+variable "s3_hcloud_token" {
   sensitive = true
   type      = string
 }

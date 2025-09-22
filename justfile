@@ -8,6 +8,7 @@ export SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/ke
 mod dns 'dns'
 mod id 'id.tjo.cloud'
 mod k8s 'k8s.tjo.cloud'
+mod s3 's3.tjo.cloud'
 mod network 'network.tjo.cloud'
 mod ingress 'ingress.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'

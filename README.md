@@ -10,6 +10,7 @@ Each subfolder represent a project.
 * [k8s.tjo.cloud](k8s.tjo.cloud/README.md)
 * [postgresql.tjo.cloud](postgresql.tjo.cloud/README.md)
 * [mail.tjo.cloud](mail.tjo.cloud/README.md)
+* [s3.tjo.cloud](s3.tjo.cloud/README.md)
 
 Projects to be added:
 * monitor.tjo.cloud

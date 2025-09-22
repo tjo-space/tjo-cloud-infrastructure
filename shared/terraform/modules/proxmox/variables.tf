@@ -8,11 +8,14 @@ variable "nodes" {
     cores        = number
     boot_storage = string
     boot_size    = number
+    ipv4         = optional(string, "dhcp")
+    ipv6         = optional(string, "dhcp")
     userdata     = optional(any, {})
     disks = optional(list(object({
       storage = string
       size    = number
     })), [])
+    tags = optional(set(string), [])
     meta = object({
       cloud_provider = string
       service_name   = string
@@ -26,6 +29,7 @@ variable "nodes" {
 
 variable "tags" {
   type        = set(string)
+  default     = []
   description = "Tags to be added on instances."
 }
 

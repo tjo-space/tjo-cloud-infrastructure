@@ -14,7 +14,7 @@ terraform {
     }
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.61.1"
+      version = "0.84.0"
     }
     desec = {
       source  = "Valodim/desec"
@@ -35,7 +35,7 @@ provider "authentik" {
 }
 
 provider "hcloud" {
-  token = var.ingress_hcloud_token
+  token = var.s3_hcloud_token
 }
 
 provider "zerotier" {

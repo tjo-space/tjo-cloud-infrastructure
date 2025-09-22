@@ -15,7 +15,8 @@
     "cmctl@latest",
     "inetutils@latest",
     "argocd@latest",
-    "haproxy@latest"
+    "haproxy@latest",
+    "garage@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"

@@ -2,14 +2,14 @@ locals {
   nodes = {
     for k, v in var.nodes : k => merge(v, {
       userdata = merge(v.userdata, {
-        hostname                  = each.value.name
-        fqdn                      = each.value.fqdn
+        hostname                  = v.name
+        fqdn                      = v.fqdn
         prefer_fqdn_over_hostname = true
         write_files = [
           {
             path     = "/etc/tjo.cloud/meta.json"
             encoding = "base64"
-            content  = base64encode(jsonencode(each.value.meta))
+            content  = base64encode(jsonencode(merge(v.meta, { cloud_region = v.host, cloud_provider = "proxmox" })))
             }, {
             path     = "/tmp/provision.sh"
             encoding = "base64"
@@ -86,7 +86,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   node_name   = each.value.host
   description = each.value.description
 
-  tags = concat(var.tags, each.value.tags)
+  tags = setunion(var.tags, each.value.tags)
 
   stop_on_destroy     = true
   timeout_start_vm    = 60
@@ -139,9 +139,9 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   dynamic "disk" {
     for_each = each.value.disks
     content {
-      interface    = "virtio${each.key}"
-      datastore_id = each.value.storage
-      size         = each.value.size
+      interface    = "virtio${disk.key}"
+      datastore_id = disk.value.storage
+      size         = disk.value.size
       backup       = true
       cache        = "none"
       iothread     = true
@@ -154,7 +154,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
     user_data_file_id = proxmox_virtual_environment_file.userdata[each.key].id
 
-    dns = {
+    dns {
       servers = ["10.0.0.1", "fd74:6a6f::1"]
     }
 
