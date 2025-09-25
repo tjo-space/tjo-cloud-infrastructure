@@ -80,7 +80,6 @@ module "proxmox" {
           label      = "garage"
           filesystem = "xfs"
           device     = "/dev/vdb"
-          cmd        = "mkfs -t %(filesystem)s -L %(label)s %(device)s"
         }]
         mounts = [["/dev/vdb1", "/srv/garage"]]
       }

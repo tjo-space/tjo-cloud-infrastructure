@@ -4,6 +4,17 @@ default:
 dependencies:
   @curl -sLo root/sbin/folder2ram https://raw.githubusercontent.com/bobafetthotmail/folder2ram/4ba7e71149ed871443cfbefab68e65a016f5a60c/debian_package/sbin/folder2ram
 
+apply:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init -upgrade
+  tofu apply
+
+destroy:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu  destroy
+
 secrets-encrypt:
   #!/usr/bin/env sh
   age --encrypt -R {{source_directory()}}/secrets.keys \

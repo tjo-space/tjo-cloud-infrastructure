@@ -18,7 +18,7 @@ variable "nodes_proxmox" {
     cores          = optional(number, 2)
     memory         = optional(number, 4096)
     boot_storage   = string
-    boot_size      = optional(number, 32)
+    boot_size      = optional(number, 8)
   }))
 }
 

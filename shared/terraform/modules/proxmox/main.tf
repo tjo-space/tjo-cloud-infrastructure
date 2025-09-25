@@ -10,13 +10,14 @@ locals {
             path     = "/etc/tjo.cloud/meta.json"
             encoding = "base64"
             content  = base64encode(jsonencode(merge(v.meta, { cloud_region = v.host, cloud_provider = "proxmox" })))
-            }, {
+          },
+          {
             path     = "/tmp/provision.sh"
             encoding = "base64"
             content  = base64encode(var.provision_sh)
           }
         ]
-        ssh_authorized_keys = jsonencode(var.ssh_keys)
+        ssh_authorized_keys = toset(values(var.ssh_keys))
         packages = [
           "qemu-guest-agent"
         ]
@@ -54,13 +55,13 @@ locals {
   }
 }
 
-resource "proxmox_virtual_environment_download_file" "ubuntu" {
+data "proxmox_virtual_environment_file" "boot_image" {
+  for_each = local.nodes
+
+  node_name    = each.value.host
+  datastore_id = "local"
   content_type = "iso"
-  datastore_id = "synology.storage.tjo.cloud"
-  node_name    = "nevaroo"
-  file_name    = "${var.domain}-ubuntu-noble-server-cloudimg-amd64.img"
-  url          = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
-  overwrite    = false
+  file_name    = each.value.boot_image
 }
 
 resource "proxmox_virtual_environment_file" "userdata" {
@@ -68,12 +69,12 @@ resource "proxmox_virtual_environment_file" "userdata" {
 
   node_name    = each.value.host
   content_type = "snippets"
-  datastore_id = "synology.storage.tjo.cloud"
+  datastore_id = "local"
 
   source_raw {
     data      = <<EOF
-    #cloud-config
-    ${yamlencode(each.value.userdata)}
+#cloud-config
+${yamlencode(each.value.userdata)}
     EOF
     file_name = "${each.value.fqdn}.userconfig.yaml"
   }
@@ -117,6 +118,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
   agent {
     enabled = true
+    timeout = "1m"
   }
 
   network_device {
@@ -126,7 +128,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   scsi_hardware = "virtio-scsi-single"
 
   disk {
-    file_id      = proxmox_virtual_environment_download_file.ubuntu.id
+    file_id      = data.proxmox_virtual_environment_file.boot_image[each.key].id
     interface    = "virtio0"
     datastore_id = each.value.boot_storage
     size         = each.value.boot_size
@@ -139,12 +141,13 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   dynamic "disk" {
     for_each = each.value.disks
     content {
-      interface    = "virtio${disk.key}"
+      interface    = "virtio${index(each.value.disks, disk.value) + 1}"
       datastore_id = disk.value.storage
       size         = disk.value.size
       backup       = true
       cache        = "none"
       iothread     = true
+      discard      = "on"
     }
   }
 

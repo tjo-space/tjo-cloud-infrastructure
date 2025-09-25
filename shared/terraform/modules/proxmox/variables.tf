@@ -8,6 +8,7 @@ variable "nodes" {
     cores        = number
     boot_storage = string
     boot_size    = number
+    boot_image   = optional(string, "ubuntu_2404_server_cloudimg_amd64.img")
     ipv4         = optional(string, "dhcp")
     ipv6         = optional(string, "dhcp")
     userdata     = optional(any, {})
@@ -36,10 +37,6 @@ variable "tags" {
 variable "provision_sh" {
   type        = string
   description = "Provision Script to be executed."
-}
-
-variable "domain" {
-  type = string
 }
 
 variable "ssh_keys" {
