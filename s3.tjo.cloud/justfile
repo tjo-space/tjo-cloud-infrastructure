@@ -1,9 +1,6 @@
 default:
   @just --list
 
-check:
-  haproxy -c -f root/etc/haproxy/haproxy.cfg
-
 secrets-encrypt:
   #!/usr/bin/env sh
   age --encrypt -R {{source_directory()}}/secrets.keys \
