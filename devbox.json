@@ -16,7 +16,8 @@
     "inetutils@latest",
     "argocd@latest",
     "haproxy@latest",
-    "garage@latest"
+    "garage@latest",
+    "cloud-init@latest"
   ],
   "env": {
     "TFENV_AUTO_INSTALL": "true"

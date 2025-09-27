@@ -20,28 +20,51 @@ resource "hcloud_server" "main" {
   backups  = false
   ssh_keys = [for key, value in var.ssh_keys : hcloud_ssh_key.main[key].id]
 
-  user_data = <<-EOF
-    #cloud-config
-    hostname: "${each.value.name}"
-    fqdn: "${each.value.fqdn}"
-    prefer_fqdn_over_hostname: true
+  user_data = <<EOF
+#cloud-config
+${yamlencode({
+  hostname                  = each.value.name
+  fqdn                      = each.value.fqdn
+  prefer_fqdn_over_hostname = true
 
-    write_files:
-    - path: /etc/tjo.cloud/meta.json
-      encoding: base64
-      content: ${base64encode(jsonencode(merge(each.value.meta, { cloud_region = each.value.datacenter, cloud_provider = "hetzner-cloud" })))}
-    - path: /tmp/provision.sh
-      encoding: base64
-      content: ${base64encode(var.provision_sh)}
+  users = [
+    {
+      name                = "admin"
+      shell               = "/bin/bash"
+      groups              = "users, admin"
+      sudo                = "ALL=(ALL) NOPASSWD:ALL"
+      ssh_authorized_keys = values(var.ssh_keys)
+    }
+  ]
 
-    power_state:
-      mode: reboot
+  write_files = [
+    {
+      path     = "/etc/tjo.cloud/meta.json"
+      encoding = "base64"
+      content  = base64encode(jsonencode(merge(each.value.meta, { cloud_region = each.value.datacenter, cloud_provider = "hetzner-cloud" })))
+    },
+    {
+      path     = "/tmp/provision.sh"
+      encoding = "base64"
+      content  = base64encode(var.provision_sh)
+    }
+  ]
 
-    runcmd:
-      - "chmod +x /tmp/provision.sh"
-      - "/tmp/provision.sh"
-      - "rm /tmp/provision.sh"
-    EOF
+  package_update  = true
+  package_upgrade = true
+
+  power_state = {
+    mode = "reboot"
+  }
+
+  runcmd = [
+    "chmod +x /tmp/provision.sh",
+    "/tmp/provision.sh",
+    "rm /tmp/provision.sh",
+  ]
+})
+}
+EOF
 }
 
 resource "hcloud_rdns" "ipv4" {

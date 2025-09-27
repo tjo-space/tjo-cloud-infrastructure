@@ -43,8 +43,8 @@ locals {
 
   nodes_with_address = {
     for k, v in local.nodes_with_meta : k => merge(v, {
-      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv4 : module.proxmox.nodes[k].ipv4
-      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv6 : module.proxmox.nodes[k].ipv6
+      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv4 : module.proxmox_node[k].address.ipv4
+      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv6 : module.proxmox_node[k].address.ipv6
     })
   }
 }
@@ -61,32 +61,47 @@ module "hetzner-cloud" {
   provision_sh = file("${path.module}/../provision.sh")
 }
 
-module "proxmox" {
+module "proxmox_node" {
   source = "../../shared/terraform/modules/proxmox"
 
-  nodes = {
-    for k, v in local.nodes_with_meta : k => merge(v, {
-      tags = []
-      disks = [{
-        storage = v.garage_storage
-        size    = v.garage_size
-      }]
-      userdata = {
-        disk_setup = { "/dev/vdb" = {
-          table_type = "gpt"
-          layout     = [100]
-        } }
-        fs_setup = [{
-          label      = "garage"
-          filesystem = "xfs"
-          device     = "/dev/vdb"
-        }]
-        mounts = [["/dev/vdb1", "/srv/garage"]]
-      }
-    }) if v.provider == "proxmox"
+  for_each = {
+    for k, v in local.nodes_with_meta : k => v if v.provider == "proxmox"
   }
+
+  name        = each.value.name
+  fqdn        = each.value.fqdn
+  description = "s3.tjo.cloud node ${each.value.name}"
+  host        = each.value.host
+
+  cores  = each.value.cores
+  memory = each.value.memory
+
+  boot = {
+    storage = each.value.boot_storage
+    size    = each.value.boot_size
+    image   = "ubuntu_2404_server_cloudimg_amd64.img"
+  }
+
+  disks = [{
+    storage = each.value.garage_storage
+    size    = each.value.garage_size
+  }]
+
+  userdata = {
+    disk_setup = { "/dev/vdb" = {
+      table_type = "gpt"
+      layout     = [100]
+    } }
+    fs_setup = [{
+      label      = "garage"
+      filesystem = "xfs"
+      device     = "/dev/vdb"
+    }]
+    mounts = [["/dev/vdb1", "/srv/garage"]]
+  }
+  metadata = each.value.meta
+
   ssh_keys = var.ssh_keys
-  domain   = var.domain
   tags     = ["s3.tjo.cloud"]
 
   provision_sh = file("${path.module}/../provision.sh")

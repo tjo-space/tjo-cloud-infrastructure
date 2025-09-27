@@ -145,6 +145,42 @@
         }
       }
     },
+    "cloud-init@latest": {
+      "last_modified": "2025-09-21T00:54:27Z",
+      "resolved": "github:NixOS/nixpkgs/51c8f9cfaae8306d135095bcdb3df9027f95542d#cloud-init",
+      "source": "devbox-search",
+      "version": "25.2",
+      "systems": {
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/pw6gij94pip1sp9ka4l31s9jmn5r2k5h-cloud-init-25.2",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/kzb0m0prirl05ql6r96afzvncdgc96yk-cloud-init-25.2-dist"
+            }
+          ],
+          "store_path": "/nix/store/pw6gij94pip1sp9ka4l31s9jmn5r2k5h-cloud-init-25.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/xl861px2rzxrj2hbm5972wg88hfln9kk-cloud-init-25.2",
+              "default": true
+            },
+            {
+              "name": "dist",
+              "path": "/nix/store/vpmb12mizd9rph1n6n952n2l7jd37jdz-cloud-init-25.2-dist"
+            }
+          ],
+          "store_path": "/nix/store/xl861px2rzxrj2hbm5972wg88hfln9kk-cloud-init-25.2"
+        }
+      }
+    },
     "cmctl@latest": {
       "last_modified": "2025-03-11T17:52:14Z",
       "resolved": "github:NixOS/nixpkgs/0d534853a55b5d02a4ababa1d71921ce8f0aee4c#cmctl",
