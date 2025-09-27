@@ -1,3 +1,9 @@
+variable "username" {
+  type        = string
+  default     = "bine"
+  description = "Linux Username"
+}
+
 variable "name" {
   type = string
 }

@@ -20,9 +20,7 @@ ${yamlencode(merge(var.userdata, {
 
     users = [
       {
-        name                = "admin"
-        shell               = "/bin/bash"
-        groups              = "users, admin"
+        name                = var.username
         sudo                = "ALL=(ALL) NOPASSWD:ALL"
         ssh_authorized_keys = values(var.ssh_keys)
       }

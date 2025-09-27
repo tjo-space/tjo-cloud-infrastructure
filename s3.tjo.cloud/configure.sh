@@ -88,8 +88,10 @@ echo "== Configure UFW"
 ufw default deny incoming
 ufw default allow outgoing
 
-ufw allow 80  # HTTP for CADDY
-ufw allow 443 # HTTPS for CADDY
+if [ "${GARAGE_KIND}" == "gateway" ]; then
+  ufw allow 80  # HTTP for CADDY
+  ufw allow 443 # HTTPS for CADDY
+fi
 
 ufw allow 2222 # SSH MANAGEMENT ACCESS
 

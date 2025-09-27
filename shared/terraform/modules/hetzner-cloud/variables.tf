@@ -20,6 +20,12 @@ variable "nodes" {
   }))
 }
 
+variable "username" {
+  type        = string
+  default     = "bine"
+  description = "Linux Username"
+}
+
 variable "provision_sh" {
   type        = string
   description = "Provision Script to be executed."
