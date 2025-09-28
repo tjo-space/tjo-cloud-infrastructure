@@ -1,15 +1,19 @@
 metadata_dir = "/var/lib/garage/meta"
 data_dir = "/var/lib/garage/data"
+
 db_engine = "lmdb"
 metadata_auto_snapshot_interval = "6h"
 
 replication_factor = 3
-compression_level = 2
+consistency_mode = "consistent"
+compression_level = 3
+
+block_size = "1M"
+block_ram_buffer_max = "1Gi"
+block_max_concurrent_reads = 16
 
 rpc_bind_addr = "[::]:3901"
-#rpc_public_addr = "<this node's public IP>:3901"
-rpc_public_addr_subnet = "10.100.0.0/16"
-rpc_secret = "<RPC secret>"
+rpc_public_addr_subnet = "10.0.0.0/16"
 
 [s3_api]
 s3_region = "tjo-cloud"

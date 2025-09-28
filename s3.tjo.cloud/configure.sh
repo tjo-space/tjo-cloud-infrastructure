@@ -20,6 +20,12 @@ else
   git reset --hard origin/main
 fi
 
+echo "== Install Garage"
+export GARAGE_VERSION="2.1.0"
+export GARAGE_ARCH="$(arch)"
+curl -sLo garage https://garagehq.deuxfleurs.fr/_releases/v${GARAGE_VERSION}/${GARAGE_ARCH}-unknown-linux-musl/garage
+install garage /usr/local/bin/garage
+
 echo "== Configure Metadata"
 git describe --tags --always --dirty >/etc/tjo.cloud/version.txt
 
@@ -55,6 +61,12 @@ echo "== Copy Configuration Files"
 rsync -a s3.tjo.cloud/root/ /
 systemctl daemon-reload
 
+echo "=== Secrets public key"
+cat /etc/age/key.txt | grep "public key:"
+echo "=== Read Secrets"
+age -d -i /etc/age/key.txt s3.tjo.cloud/secrets.env.encrypted >s3.tjo.cloud/secrets.env
+set -a && source s3.tjo.cloud/secrets.env && set +a
+
 echo "== Configure Grafana Alloy"
 ATTRIBUTES=""
 ATTRIBUTES+="service.name=${SERVICE_NAME},"
@@ -81,8 +93,15 @@ else
 fi
 
 echo "== Configure Garage"
+cat <<EOF >/etc/garage/secrets.env
+GARAGE_ADMIN_TOKEN="${GARAGE_ADMIN_TOKEN}"
+GARAGE_RPC_SECRET="${GARAGE_RPC_SECRET}"
+EOF
 systemctl restart garage
 systemctl enable --now garage
+
+garage status
+garage node id
 
 echo "== Configure UFW"
 ufw default deny incoming
@@ -94,6 +113,10 @@ if [ "${GARAGE_KIND}" == "gateway" ]; then
 fi
 
 ufw allow 2222 # SSH MANAGEMENT ACCESS
+
+ufw allow from 10.0.0.0/16 proto tcp to any port 3900 # S3 API
+ufw allow from 10.0.0.0/16 proto tcp to any port 3901 # RPC
+ufw allow from 10.0.0.0/16 proto tcp to any port 3902 # S3 WEB
 
 ufw --force enable
 systemctl enable --now ufw

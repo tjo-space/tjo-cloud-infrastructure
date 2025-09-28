@@ -55,7 +55,7 @@ resource "desec_rrset" "any" {
   ttl     = 3600
 }
 resource "desec_rrset" "node_a" {
-  for_each = { for k, v in local.nodes_with_address : k => v if v.garage_kind != "gateway" }
+  for_each = { for k, v in local.nodes_with_address : k => v }
   domain   = "tjo.cloud"
   subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
   type     = "A"
@@ -63,7 +63,7 @@ resource "desec_rrset" "node_a" {
   ttl      = 3600
 }
 resource "desec_rrset" "node_aaaa" {
-  for_each = { for k, v in local.nodes_with_address : k => v if v.garage_kind != "gateway" }
+  for_each = { for k, v in local.nodes_with_address : k => v }
   domain   = "tjo.cloud"
   subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
   type     = "AAAA"

@@ -11,6 +11,7 @@ DEBIAN_FRONTEND=noninteractive apt install -y \
   gpg \
   git \
   curl \
+  age \
   ufw
 
 echo "== Install Grafana Alloy"
@@ -29,12 +30,6 @@ chmod o+r /etc/apt/sources.list.d/caddy-stable.list
 apt update
 apt install caddy
 
-echo "== Install Garage"
-export GARAGE_VERSION="2.1.0"
-export GARAGE_ARCH="$(arch)"
-curl -sLo garage https://garagehq.deuxfleurs.fr/_releases/v${GARAGE_VERSION}/${GARAGE_ARCH}-unknown-linux-musl/garage
-install garage /usr/local/bin/garage
-
 echo "== Configure SSH"
 cat <<EOF >/etc/ssh/sshd_config.d/port-2222.conf
 Port 2222
@@ -43,3 +38,7 @@ systemctl restart ssh
 
 echo "=== Install zerotier"
 curl -s https://install.zerotier.com | sudo bash
+
+echo "=== Generating Age Key"
+mkdir -p /etc/age
+age-keygen -o /etc/age/key.txt

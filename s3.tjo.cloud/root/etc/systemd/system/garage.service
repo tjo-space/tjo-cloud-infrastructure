@@ -4,13 +4,17 @@ After=network-online.target
 Wants=network-online.target
 
 [Service]
-Environment='RUST_LOG=garage=info' 'RUST_BACKTRACE=1'
+Environment=RUST_LOG=garage=info
+Environment=RUST_BACKTRACE=1
+Environment=GARAGE_LOG_TO_JOURNALD=true
+EnvironmentFile=/etc/garage/secrets.env
 ExecStart=/usr/local/bin/garage server
 StateDirectory=garage
 DynamicUser=true
 ProtectHome=true
 NoNewPrivileges=true
 LimitNOFILE=42000
+SyslogIdentifier=garage
 
 [Install]
 WantedBy=multi-user.target

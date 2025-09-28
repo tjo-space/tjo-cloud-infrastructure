@@ -1,6 +1,12 @@
 default:
   @just --list
 
+get-nodes:
+  #!/usr/bin/env sh
+  pushd {{source_directory()}}/terraform > /dev/null
+  tofu output -json | jq -r '.nodes.value[]'
+  popd > /dev/null
+
 secrets-encrypt:
   #!/usr/bin/env sh
   age --encrypt -R {{source_directory()}}/secrets.keys \
@@ -22,6 +28,22 @@ destroy:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu  destroy
+
+get-all-age-pub-keys:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  NODES=$(tofu output -json | jq -r '.nodes.value[].name')
+  popd > /dev/null
+
+  for NODE in $NODES
+  do
+    pushd {{source_directory()}}/terraform > /dev/null
+    IP=$(tofu output -json | jq -r ".nodes.value[] | select(.name==\"${NODE}\").ipv4")
+    popd > /dev/null
+    ssh -o StrictHostKeyChecking=no -p 2222 bine@${IP} 'sudo cat /etc/age/key.txt | grep "public key:"'
+  done
 
 configure-all:
   #!/usr/bin/env sh
