@@ -10,7 +10,6 @@ folder2ram -enablesystemd
 systemctl start folder2ram_startup.service
 systemctl start folder2ram_shutdown.service
 systemctl start folder2ram-sync.timer
-chown -R www-data:www-data /var/log/pveproxy
 
 ##
 # APT non-free-firmware
