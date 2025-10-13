@@ -52,17 +52,6 @@ systemctl disable --now rpcbind.service
 ##
 echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
 
-##
-# Networking
-# Ref: https://pve.proxmox.com/pve-docs/chapter-pvesdn.html#pvesdn_installation
-##
-apt install -qq -yy libpve-network-perl dnsmasq frr-pythontools
-
-systemctl disable --now dnsmasq
-# systemctl enable frr.service
-# We do not yet use this, lets disable for now.
-systemctl disable --now frr.service
-
 # Disable IPv6 SLAAC/DHCPv6 on vmbr1.
 #  Otherwise Proxmox Host will receive IP from the
 #  network.tjo.cloud VM's.
@@ -100,9 +89,16 @@ EOF
 systemctl restart pve-cluster.service
 systemctl restart corosync.service
 
-##
-# Proxmox Prometheus Exporter
-##
+echo "=== Proxmox Prometheus Exporter"
 apt install -qq -yy pipx
 pipx install prometheus-pve-exporter
 systemctl enable --now prometheus-pve-exporter.service
+
+echo "=== Install Grafana Alloy"
+mkdir -p /etc/apt/keyrings/
+wget -q -O - https://apt.grafana.com/gpg.key | gpg --dearmor >/etc/apt/keyrings/grafana.gpg
+echo "deb [signed-by=/etc/apt/keyrings/grafana.gpg] https://apt.grafana.com stable main" >/etc/apt/sources.list.d/grafana.list
+apt update -y
+apt install -y alloy
+systemctl enable --now alloy
+systemctl restart alloy

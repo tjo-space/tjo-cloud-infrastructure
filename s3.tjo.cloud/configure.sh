@@ -21,6 +21,7 @@ else
 fi
 
 echo "== Install Garage"
+id -u garage &>/dev/null || useradd garage -s /usr/sbin/nologin --no-create-home --system --user-group
 export GARAGE_VERSION="2.1.0"
 export GARAGE_ARCH="$(arch)"
 curl -sLo garage https://garagehq.deuxfleurs.fr/_releases/v${GARAGE_VERSION}/${GARAGE_ARCH}-unknown-linux-musl/garage

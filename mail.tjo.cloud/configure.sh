@@ -79,7 +79,7 @@ for bin in "stalwart" "stalwart-cli"; do
   chmod +x /usr/local/bin/${bin}
 done
 popd
-useradd stalwart -s /usr/sbin/nologin -M -r -U || true
+id -u stalwart &>/dev/null || useradd stalwart -s /usr/sbin/nologin --no-create-home --system --user-group
 systemctl restart stalwart
 systemctl enable --now stalwart
 

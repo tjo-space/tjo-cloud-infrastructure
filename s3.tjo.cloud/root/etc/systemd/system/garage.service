@@ -10,8 +10,9 @@ Environment=GARAGE_LOG_TO_JOURNALD=true
 EnvironmentFile=/etc/garage/secrets.env
 ExecStart=/usr/local/bin/garage server
 StateDirectory=garage
-DynamicUser=true
+ProtectSystem=strict
 ProtectHome=true
+ReadWritePaths=/srv/garage
 NoNewPrivileges=true
 LimitNOFILE=42000
 SyslogIdentifier=garage

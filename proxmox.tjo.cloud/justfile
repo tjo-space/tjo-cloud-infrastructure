@@ -33,7 +33,7 @@ configure-all: dependencies
   for node in `cat {{source_directory()}}/config.yaml | yq -r '.nodes | keys | .[]'`
   do
     echo "== Configuring $node"
-    just configure $node
+    just configure $node | ts "$node"
   done
 
 configure node: secrets-decrypt
