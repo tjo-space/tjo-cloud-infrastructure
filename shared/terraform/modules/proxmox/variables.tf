@@ -81,6 +81,7 @@ variable "tags" {
 
 variable "provision_sh" {
   type        = string
+  default     = ""
   description = "Provision Script to be executed."
 }
 

@@ -20,10 +20,12 @@
     "cloud-init": {
       "version":            "latest",
       "excluded_platforms": ["aarch64-darwin"]
-    }
+    },
+    "ansible": "latest"
   },
   "env": {
-    "TFENV_AUTO_INSTALL": "true"
+    "TFENV_AUTO_INSTALL": "true",
+    "ANSIBLE_HOST_KEY_CHECKING": "false"
   },
   "shell": {
     "init_hook": [],

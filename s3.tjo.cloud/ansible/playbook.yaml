@@ -1,0 +1,43 @@
+---
+- name: Configure s3.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars/main.yaml
+
+  tasks:
+    - name: Install and Configure Firewall
+      ansible.builtin.import_tasks:
+        file: tasks/firewall.yaml
+
+    - name: Install Alloy
+      ansible.builtin.include_role:
+        name: alloy
+
+    - name: Install Zerotier
+      ansible.builtin.include_role:
+        name: zerotier
+
+    - name: Install Caddy
+      ansible.builtin.include_role:
+        name: caddy
+      when: garage_kind == "gateway"
+
+    - name: Check garage version
+      ansible.builtin.include_tasks:
+        file: tasks/garage_check_version.yaml
+
+    - name: Upgrade Garage
+      ansible.builtin.import_tasks:
+        file: tasks/garage_install.yaml
+      when: current_garage_version is defined and current_garage_version is version(garage_version, '<')
+      throttle: 1
+
+    - name: Install Garage
+      ansible.builtin.include_tasks:
+        file: tasks/garage_install.yaml
+      when: current_garage_version is not defined or not (current_garage_version is defined and current_garage_version == garage_version)
+
+    - name: Configure Garage
+      ansible.builtin.include_tasks:
+        file: tasks/garage_configure.yaml

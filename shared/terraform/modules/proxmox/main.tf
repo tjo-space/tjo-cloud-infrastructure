@@ -32,6 +32,15 @@ ${yamlencode(merge(var.userdata, {
         encoding = "base64"
         content  = base64encode(jsonencode(merge(var.metadata, { cloud_region = var.host, cloud_provider = "proxmox" })))
       },
+      {
+        path     = "/tmp/provision.sh"
+        encoding = "base64"
+        content  = base64encode(var.provision_sh)
+      },
+      {
+        path    = "/etc/ssh/sshd_config.d/00-cloud-init-port-change.conf"
+        content = "Port 2222"
+      }
     ]
 
     packages = [
@@ -44,6 +53,16 @@ ${yamlencode(merge(var.userdata, {
     power_state = {
       mode = "reboot"
     }
+
+    # If provision script provided, run it.
+    # Else we remove the empty file.
+    runcmd = var.provision_sh != "" ? [
+      "chmod +x /tmp/provision.sh",
+      "/tmp/provision.sh",
+      "rm /tmp/provision.sh",
+      ] : [
+      "rm /tmp/provision.sh",
+    ]
 })
 )}
 EOF

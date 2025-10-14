@@ -1,4 +1,4 @@
-- name: Install ufw
+- name: UFW - Install
   ansible.builtin.apt:
     name: ufw
     state: present
@@ -23,6 +23,12 @@
     - '3900'
     - '3902'
     - '3901'
+
+- name: UFW - Allow SSH
+  community.general.ufw:
+    rule: allow
+    port: '2222'
+    proto: tcp
 
 - name: UFW - Enable and deny by default
   community.general.ufw:

@@ -1,17 +1,6 @@
 default:
   @just --list
 
-secrets-encrypt:
-  #!/usr/bin/env sh
-  age --encrypt -R {{source_directory()}}/secrets.keys \
-    secrets.env > secrets.env.encrypted
-
-secrets-decrypt:
-  #!/usr/bin/env sh
-  age --decrypt \
-    -i ${HOME}/.config/sops/age/keys.txt \
-    secrets.env.encrypted > secrets.env
-
 apply:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
@@ -26,4 +15,4 @@ destroy:
 configure:
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
-  ansible do stuff
+  ansible-playbook -i inventory.yaml playbook.yaml

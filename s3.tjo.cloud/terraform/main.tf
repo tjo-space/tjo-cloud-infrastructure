@@ -41,7 +41,7 @@ locals {
     })
   }
 
-  nodes_with_address = {
+  nodes_deployed = {
     for k, v in local.nodes_with_meta : k => merge(v, {
       ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv4 : module.proxmox_node[k].address.ipv4
       ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv6 : module.proxmox_node[k].address.ipv6
@@ -57,8 +57,6 @@ module "hetzner-cloud" {
   }
   ssh_keys = var.ssh_keys
   domain   = var.domain
-
-  provision_sh = file("${path.module}/../provision.sh")
 }
 
 module "proxmox_node" {
@@ -103,6 +101,23 @@ module "proxmox_node" {
 
   ssh_keys = var.ssh_keys
   tags     = ["s3.tjo.cloud"]
+}
 
-  provision_sh = file("${path.module}/../provision.sh")
+resource "local_file" "ansible_inventory" {
+  content = yamlencode({
+    all = {
+      hosts = {
+        for k, v in local.nodes_deployed : v.fqdn => {
+          ansible_host   = v.ipv4
+          ansible_port   = 2222
+          ansible_user   = "bine"
+          ansible_become = true
+          garage_size    = v.meta.garage.size
+          garage_kind    = v.meta.garage.kind
+          garage_zone    = v.meta.garage.zone
+        }
+      }
+    }
+  })
+  filename = "${path.module}/../ansible/inventory.yaml"
 }
