@@ -41,25 +41,17 @@ ${yamlencode({
       encoding = "base64"
       content  = base64encode(jsonencode(merge(each.value.meta, { cloud_region = each.value.datacenter, cloud_provider = "hetzner-cloud" })))
     },
-    {
-      path     = "/tmp/provision.sh"
-      encoding = "base64"
-      content  = base64encode(var.provision_sh)
-    }
   ]
 
+  packages = [
+    "ansible-core",
+  ]
   package_update  = true
   package_upgrade = true
 
   power_state = {
     mode = "reboot"
   }
-
-  runcmd = [
-    "chmod +x /tmp/provision.sh",
-    "/tmp/provision.sh",
-    "rm /tmp/provision.sh",
-  ]
 })
 }
 EOF

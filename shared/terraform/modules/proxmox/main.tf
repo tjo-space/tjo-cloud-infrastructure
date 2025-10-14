@@ -32,15 +32,11 @@ ${yamlencode(merge(var.userdata, {
         encoding = "base64"
         content  = base64encode(jsonencode(merge(var.metadata, { cloud_region = var.host, cloud_provider = "proxmox" })))
       },
-      {
-        path     = "/tmp/provision.sh"
-        encoding = "base64"
-        content  = base64encode(var.provision_sh)
-      }
     ]
 
     packages = [
-      "qemu-guest-agent"
+      "qemu-guest-agent",
+      "ansible-core",
     ]
     package_update  = true
     package_upgrade = true
@@ -48,12 +44,6 @@ ${yamlencode(merge(var.userdata, {
     power_state = {
       mode = "reboot"
     }
-
-    runcmd = [
-      "chmod +x /tmp/provision.sh",
-      "/tmp/provision.sh",
-      "rm /tmp/provision.sh",
-    ]
 })
 )}
 EOF

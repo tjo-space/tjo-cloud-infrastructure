@@ -1,0 +1,5 @@
+garage_binary: /usr/local/bin/garage
+garage_user: garage
+garage_group: garage
+garage_log_level: "netapp=info,garage=info"
+garage_version: "v2.1.0"

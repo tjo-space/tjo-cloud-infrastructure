@@ -1,0 +1,9 @@
+- name: Restart alloy
+  ansible.builtin.systemd:
+    name: alloy
+    state: restarted
+
+- name: Restart garage
+  ansible.builtin.systemd:
+    name: garage
+    state: restarted

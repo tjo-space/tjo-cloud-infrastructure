@@ -1,0 +1,17 @@
+- name: Add Zerotier repository
+  block:
+    - name: Fetch key
+      ansible.builtin.apt_key:
+        url: https://download.zerotier.com/contact@zerotier.com.gpg
+        id: 74A5E9C458E1A431F1DA57A71657198823E52A61
+
+    - name: Add repository
+      ansible.builtin.apt_repository:
+        repo: deb http://download.zerotier.com/debian/{{ ansible_facts['distribution_release'] }} {{ ansible_facts['distribution_release'] }} main
+        state: present
+
+- name: Install Zerotier
+  ansible.builtin.apt:
+    name: zerotier-one
+    state: present
+    update_cache: yes

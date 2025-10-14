@@ -1,24 +1,27 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.12.0/.schema/devbox.schema.json",
-  "packages": [
-    "kubectl@latest",
-    "cilium-cli@latest",
-    "kubelogin-oidc@latest",
-    "talosctl@latest",
-    "kubernetes-helm@latest",
-    "tflint@latest",
-    "age@latest",
-    "tenv@latest",
-    "gomplate@latest",
-    "just@latest",
-    "moreutils@latest",
-    "cmctl@latest",
-    "inetutils@latest",
-    "argocd@latest",
-    "haproxy@latest",
-    "garage@latest",
-    "cloud-init@latest"
-  ],
+  "packages": {
+    "kubectl":         "latest",
+    "cilium-cli":      "latest",
+    "kubelogin-oidc":  "latest",
+    "talosctl":        "latest",
+    "kubernetes-helm": "latest",
+    "tflint":          "latest",
+    "age":             "latest",
+    "tenv":            "latest",
+    "gomplate":        "latest",
+    "just":            "latest",
+    "moreutils":       "latest",
+    "cmctl":           "latest",
+    "inetutils":       "latest",
+    "argocd":          "latest",
+    "haproxy":         "latest",
+    "garage":          "latest",
+    "cloud-init": {
+      "version":            "latest",
+      "excluded_platforms": ["aarch64-darwin"]
+    }
+  },
   "env": {
     "TFENV_AUTO_INSTALL": "true"
   },
