@@ -115,6 +115,7 @@ resource "local_file" "ansible_inventory" {
           garage_size    = v.meta.garage.size
           garage_kind    = v.meta.garage.kind
           garage_zone    = v.meta.garage.zone
+          provider       = v.provider
         }
       }
     }

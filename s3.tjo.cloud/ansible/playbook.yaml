@@ -3,9 +3,25 @@
   hosts: all
 
   vars_files:
-    - vars/main.yaml
+    - vars.yaml
+    - vars.secrets.yaml
+
+  handlers:
+    - name: Restart garage
+      ansible.builtin.systemd:
+        name: garage
+        state: restarted
 
   tasks:
+    - name: Fetch metadata
+      ansible.builtin.shell: |
+        cat /etc/tjo.cloud/meta.json
+      register: tjo_cloud_metadata_raw
+
+    - name: Save metadata as fact
+      set_fact:
+        tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.stdout | from_json }}"
+
     - name: Install and Configure Firewall
       ansible.builtin.import_tasks:
         file: tasks/firewall.yaml
@@ -14,13 +30,18 @@
       ansible.builtin.include_role:
         name: alloy
 
-    - name: Install Zerotier
-      ansible.builtin.include_role:
-        name: zerotier
+    - name: Configure Alloy
+      ansible.builtin.template:
+        src: root/etc/alloy/config.alloy.j2
+        dest: /etc/alloy/config.alloy
+        mode: '0600'
+        owner: "alloy"
+        group: "alloy"
+      notify: Restart alloy
 
-    - name: Install Caddy
-      ansible.builtin.include_role:
-        name: caddy
+    - name: Configure Gateway
+      ansible.builtin.include_tasks:
+        file: tasks/gateway.yaml
       when: garage_kind == "gateway"
 
     - name: Check garage version

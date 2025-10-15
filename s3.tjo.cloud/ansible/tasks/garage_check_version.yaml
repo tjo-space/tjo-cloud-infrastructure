@@ -1,11 +1,11 @@
 - name: Check if garage is already installed
   ansible.builtin.stat:
-    name: "{{ garage_binary }}"
+    name: "/usr/local/bin/garage"
   register: garage_binary_stat
 
 - name: Get current Garage version
   ansible.builtin.command:
-    cmd: "{{ garage_binary }} node --version"
+    cmd: "/usr/local/bin/garage node --version"
   changed_when: false
   register: garage_version_output
   when: garage_binary_stat.stat.exists

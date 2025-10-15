@@ -14,13 +14,21 @@ prometheus.scrape "exporters" {
   targets    = concat(
     prometheus.exporter.self.default.targets,
     prometheus.exporter.unix.default.targets,
+  )
+  forward_to = [
+    otelcol.receiver.prometheus.default.receiver,
+  ]
+}
+prometheus.scrape "garage" {
+  targets    = concat(
     [
-      {"__address__" = "127.0.0.1:8404", "__metrics_path__" = "/metrics", "instance" = "haproxy"},
+      {"__address__" = "127.0.0.1:3903", "instance" = "garage"},
     ],
   )
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,
   ]
+  bearer_token_file = "{{ garage_metrics_token }}"
 }
 
 //===
@@ -43,41 +51,6 @@ loki.process "drop_old" {
   stage.drop {
     older_than          = "1h"
     drop_counter_reason = "too old"
-  }
-  forward_to = [
-    loki.process.geoip.receiver,
-  ]
-}
-loki.process "geoip" {
-  stage.logfmt {
-    mapping = { client_ip = "" }
-  }
-  stage.geoip {
-    source  = "client_ip"
-    db      = "/usr/share/GeoIP/GeoLite2-City.mmdb"
-    db_type = "city"
-  }
-  stage.geoip {
-    source  = "client_ip"
-    db      = "/usr/share/GeoIP/GeoLite2-ASN.mmdb"
-    db_type = "asn"
-  }
-  stage.labels {
-    values = {
-      // CITY
-      geoip_city_name          = "",
-      geoip_country_name       = "",
-      geoip_country_code       = "",
-      geoip_continent_name     = "",
-      geoip_continent_code     = "",
-      geoip_location_latitude  = "",
-      geoip_location_longitude = "",
-      geoip_subdivision_name   = "",
-      geoip_subdivision_code   = "",
-      // ASN
-      geoip_autonomous_system_number       = "",
-      geoip_autonomous_system_organization = "",
-    }
   }
   forward_to = [
     otelcol.receiver.loki.default.receiver,
@@ -135,8 +108,8 @@ otelcol.auth.oauth2 "default" {
   client_secret = "none"
   endpoint_params = {
     grant_type = ["client_credentials"],
-    username = [env("ALLOY_USERNAME")],
-    password = [env("ALLOY_PASSWORD")],
+    username = ["{{ tjo_cloud_metadata.service_account.username }}"],
+    password = ["{{ tjo_cloud_metadata.service_account.password }}"],
   }
 }
 otelcol.exporter.otlp "default" {

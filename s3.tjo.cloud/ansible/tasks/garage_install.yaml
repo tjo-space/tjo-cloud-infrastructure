@@ -1,7 +1,7 @@
 - name: Download Garage
   ansible.builtin.get_url:
-    url: "https://garagehq.deuxfleurs.fr/_releases/{{ garage_version }}/{{ garage_architecture }}-unknown-linux-musl/garage"
-    dest: "{{ garage_binary }}"
+    url: "https://garagehq.deuxfleurs.fr/_releases/{{ garage_version }}/{{ ansible_architecture }}-unknown-linux-musl/garage"
+    dest: "/usr/local/bin/garage"
     mode: '0711'
     owner: root
     group: root
@@ -28,9 +28,9 @@
     owner: "{{ garage_user }}"
     group: "{{ garage_group }}"
   loop:
-    - "{{ garage_metadata_directory }}"
-    - "{{ garage_data_directory }}"
-    - "{{ garage_metadata_snapshot_directory }}"
+    - "/srv/garage/meta"
+    - "/srv/garage/data"
+    - "/srv/garage/snapshots"
 
 - name: Create Garage systemd service file
   ansible.builtin.template:

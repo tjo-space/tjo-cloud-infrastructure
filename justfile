@@ -17,8 +17,8 @@ mod mail 'mail.tjo.cloud'
 
 import 'secrets.justfile'
 
-post-pull: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt
-pre-commit: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt lint format
+post-pull: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt ansible-secrets-decrypt
+pre-commit: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt ansible-secrets-encrypt lint format
 
 default:
   @just --list

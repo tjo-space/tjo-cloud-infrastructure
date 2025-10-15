@@ -19,21 +19,33 @@
 - name: Save garage node id
   ansible.builtin.set_fact:
     garage_node_id: "{{ garage_node_id.stdout }}"
+    # TODO: NOT WORKING!
+    garage_node_ip: "{{ ansible_all_ipv4_addresses | select(ansible.utils.network_in_network('10.0.0.0/16')) | list | first }}"
 
 - name: Loop connect garage nodes
   ansible.builtin.command:
-    cmd: "garage node connect {{ hostvars[item]['garage_node_id'] }}"
+    cmd: |
+      garage node connect \
+      {{ hostvars[item]['garage_node_id'] }}@{{ hostvars[item]['garage_node_ip'] }}:3901
   loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
   delegate_to: "{{ ansible_play_hosts[0] }}"
   changed_when: false
   run_once: true
   when: ansible_play_hosts | length > 1
 
-- name: Assign layout
+- name: Assign layout - Store
   ansible.builtin.command:
-    cmd: "garage layout assign {{ garage_node_id.split('@')[0] }} -z {{ garage_zone_name }} -c {{ garage_node_capacity }}"
+    cmd: "garage layout assign {{ garage_node_id.split('@')[0] }} -z {{ garage_zone }} -c {{ garage_size }}"
   changed_when: false
   delegate_to: "{{ ansible_play_hosts[0] }}"
+  when: garage_kind == "store"
+
+- name: Assign layout - Gateway
+  ansible.builtin.command:
+    cmd: "garage layout assign {{ garage_node_id.split('@')[0] }} --gateway --tag {{ inventory_hostname }} -z {{ garage_zone }}"
+  changed_when: false
+  delegate_to: "{{ ansible_play_hosts[0] }}"
+  when: garage_kind == "gateway"
 
 - name: Get current layout version number
   ansible.builtin.uri:

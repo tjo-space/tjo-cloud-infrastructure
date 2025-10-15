@@ -1,32 +1,6 @@
 #!/bin/bash
 set -euo pipefail
 
-SERVICE_DIR="/root/service"
-mkdir -p ${SERVICE_DIR}
-cd ${SERVICE_DIR}
-
-echo "== Fetch Source Code (from git)"
-# Clone if not yet cloned
-if [ ! -d .git ]; then
-  git clone \
-    --depth 1 \
-    --no-checkout \
-    --filter=tree:0 \
-    https://github.com/tjo-space/tjo-cloud-infrastructure.git .
-  git sparse-checkout set --no-cone /s3.tjo.cloud
-  git checkout
-else
-  git fetch --depth=1
-  git reset --hard origin/main
-fi
-
-echo "== Install Garage"
-id -u garage &>/dev/null || useradd garage -s /usr/sbin/nologin --no-create-home --system --user-group
-export GARAGE_VERSION="2.1.0"
-export GARAGE_ARCH="$(arch)"
-curl -sLo garage https://garagehq.deuxfleurs.fr/_releases/v${GARAGE_VERSION}/${GARAGE_ARCH}-unknown-linux-musl/garage
-install garage /usr/local/bin/garage
-
 echo "== Configure Metadata"
 git describe --tags --always --dirty >/etc/tjo.cloud/version.txt
 

@@ -7,7 +7,7 @@ Wants=network-online.target
 Environment=RUST_LOG=garage=info
 Environment=RUST_BACKTRACE=1
 Environment=GARAGE_LOG_TO_JOURNALD=true
-EnvironmentFile=/etc/garage/secrets.env
+Environment=GARAGE_CONFIG_FILE=/etc/garage.toml
 ExecStart=/usr/local/bin/garage server
 StateDirectory=garage
 ProtectSystem=strict
@@ -16,6 +16,9 @@ ReadWritePaths=/srv/garage
 NoNewPrivileges=true
 LimitNOFILE=42000
 SyslogIdentifier=garage
+User={{ garage_user }}
+Group={{ garage_group }}
+ReadWritePaths=/srv/garage/data /srv/garage/meta /srv/garage/snapshots
 
 [Install]
 WantedBy=multi-user.target
