@@ -28,7 +28,7 @@ prometheus.scrape "garage" {
   forward_to = [
     otelcol.receiver.prometheus.default.receiver,
   ]
-  bearer_token_file = "{{ garage_metrics_token }}"
+  bearer_token = "{{ garage_metrics_token }}"
 }
 
 //===

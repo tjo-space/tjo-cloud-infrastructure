@@ -43,20 +43,37 @@ locals {
 
   nodes_deployed = {
     for k, v in local.nodes_with_meta : k => merge(v, {
-      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv4 : module.proxmox_node[k].address.ipv4
-      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv6 : module.proxmox_node[k].address.ipv6
+      private_ipv4 = v.provider == "hetzner-cloud" ? v.private_ipv4 : module.proxmox_node[k].address.ipv4
+      private_ipv6 = v.provider == "hetzner-cloud" ? v.private_ipv6 : module.proxmox_node[k].address.ipv6
+
+      public_ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv4 : ""
+      public_ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv6 : ""
     })
   }
+}
+
+resource "hcloud_ssh_key" "main" {
+  for_each = var.ssh_keys
+
+  name       = each.key
+  public_key = each.value
 }
 
 module "hetzner-cloud" {
   source = "../../shared/terraform/modules/hetzner-cloud"
 
-  nodes = {
+  for_each = {
     for k, v in local.nodes_with_meta : k => v if v.provider == "hetzner-cloud"
   }
-  ssh_keys = var.ssh_keys
-  domain   = var.domain
+
+  name       = each.value.name
+  fqdn       = each.value.fqdn
+  datacenter = each.value.datacenter
+  metadata   = each.value.meta
+
+  ssh_key_ids = [for key in hcloud_ssh_key.main : key.id]
+  ssh_keys    = var.ssh_keys
+  domain      = var.domain
 }
 
 module "proxmox_node" {
@@ -108,7 +125,7 @@ resource "local_file" "ansible_inventory" {
     all = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host   = v.ipv4
+          ansible_host   = v.private_ipv4 != "" ? v.private_ipv4 : v.public_ipv4
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true

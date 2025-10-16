@@ -1,10 +1,12 @@
 variable "nodes_hetzner_cloud" {
   type = map(object({
-    garage_zone = string
-    garage_kind = string
-    datacenter  = string
-    image       = optional(string, "ubuntu-24.04")
-    server_type = optional(string, "cax11")
+    garage_zone  = string
+    garage_kind  = string
+    datacenter   = string
+    image        = optional(string, "ubuntu-24.04")
+    server_type  = optional(string, "cax11")
+    private_ipv4 = string
+    private_ipv6 = string
   }))
 }
 

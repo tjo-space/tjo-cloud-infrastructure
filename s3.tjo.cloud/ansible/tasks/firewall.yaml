@@ -3,16 +3,17 @@
     name: ufw
     state: present
 
-- name: UFW - Allow S3 API, S3 WEB and RPC ports
+- name: UFW - Allow S3 API, S3 WEB, RPC and ADMIN ports
   community.general.ufw:
     rule: allow
     port: '{{ item }}'
     proto: tcp
-    src: '10.0.0.0/16'
+    src: '10.0.0.0/10'
   loop:
     - '3900'
     - '3902'
     - '3901'
+    - '3903'
 
 - name: UFW - Allow SSH
   community.general.ufw:

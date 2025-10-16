@@ -13,3 +13,5 @@ S3 compatible storage service and static website hosting.
   - Metrics and Logs being shipped to https://monitor.tjo.cloud.
 - Garage
   - S3 compatible storage service.
+- Restic
+  - Shipping backups to backup.tjo.cloud.
