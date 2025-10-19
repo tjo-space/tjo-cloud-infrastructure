@@ -19,9 +19,9 @@ config zone
   list zone_name '.'
 
   # UncensoredDNS
-  list server '91.239.100.100:@443#anycast.uncensoreddns.org'
+  list server '91.239.100.100@443#anycast.uncensoreddns.org'
   list server '2001:67c:28a4::@443#anycast.uncensoreddns.org'
-  list server '89.233.43.71 @443#unicast.uncensoreddns.org'
+  list server '89.233.43.71@443#unicast.uncensoreddns.org'
   list server '2a01:3a0:53:53::@443#unicast.uncensoreddns.org'
 
   # Quad9
