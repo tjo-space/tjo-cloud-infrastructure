@@ -6,7 +6,7 @@ Requires=valkey.service
 After=valkey.service
 
 [Container]
-Image=ghcr.io/goauthentik/server:2025.8.1
+Image=ghcr.io/goauthentik/server:2025.8.4
 Exec=server
 EnvironmentFile=/etc/authentik/authentik.env
 EnvironmentFile=/etc/authentik/secrets.env
