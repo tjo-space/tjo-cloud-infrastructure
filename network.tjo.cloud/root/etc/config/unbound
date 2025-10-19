@@ -18,13 +18,13 @@ config zone
   option tls_upstream '1'
   list zone_name '.'
 
-  # DNS0.eu
-  list server '193.110.81.0#dns0.eu'
-  list server '2a0f:fc80::#dns0.eu'
-  list server '2a0f:fc80::#dns0.eu'
-  list server '2a0f:fc81::#dns0.eu'
+  # UncensoredDNS
+  list server '91.239.100.100:@443#anycast.uncensoreddns.org'
+  list server '2001:67c:28a4::@443#anycast.uncensoreddns.org'
+  list server '89.233.43.71 @443#unicast.uncensoreddns.org'
+  list server '2a01:3a0:53:53::@443#unicast.uncensoreddns.org'
 
-  # Quad9
+# Quad9
   list server '9.9.9.9@443#dns.quad9.net'
   list server '149.112.112.112@443#dns.quad9.net'
   list server '2620:fe::fe@443#dns.quad9.net'

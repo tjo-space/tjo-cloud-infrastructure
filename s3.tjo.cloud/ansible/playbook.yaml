@@ -11,6 +11,10 @@
       ansible.builtin.systemd:
         name: garage
         state: restarted
+    - name: Restart systemd-resolved
+      ansible.builtin.systemd:
+        name: systemd-resolved
+        state: restarted
 
   tasks:
     - name: Fetch metadata
@@ -21,6 +25,15 @@
     - name: Save metadata as fact
       set_fact:
         tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.stdout | from_json }}"
+
+    - name: Configure Systemd Resolved
+      ansible.builtin.template:
+        src: root/etc/systemd/resolved.conf
+        dest: /etc/systemd/resolved.conf
+        mode: '0644'
+        owner: "root"
+        group: "root"
+      notify: Restart systemd-resolved
 
     - name: Install and Configure Firewall
       ansible.builtin.import_tasks:
@@ -38,6 +51,9 @@
         owner: "alloy"
         group: "alloy"
       notify: Restart alloy
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
 
     - name: Configure Gateway
       ansible.builtin.include_tasks:

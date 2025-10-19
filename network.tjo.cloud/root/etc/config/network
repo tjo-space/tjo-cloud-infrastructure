@@ -49,19 +49,19 @@ config interface 'wan'
 	option device 'eth0'
 	option proto 'dhcp'
 	option peerdns '0'
-	list dns '193.110.81.0'    # dns0.eu
-	list dns '185.253.5.0'     # dns0.eu
 	list dns '9.9.9.9'         # quad9
 	list dns '149.112.112.112' # quad9
+	list dns '1.1.1.1'         # cloudflare
+	list dns '1.0.0.1'         # cloudflare
 
 config interface 'wan6'
 	option device 'eth0'
 	option proto '{{ $node.wan.ipv6.proto }}'
 	option peerdns '0'
-	list dns '2a0f:fc80::' # dns0.eu
-	list dns '2a0f:fc81::' # dns0.eu
 	list dns '2620:fe::fe' # quad9
 	list dns '2620:fe::9'  # quad9
+	list dns '2606:4700:4700::1111' # cloudflare
+	list dns '2606:4700:4700::1001' # cloudflare
 
   {{ if eq $node.wan.ipv6.proto "static" }}
   list ip6addr '{{ $node.wan.ipv6.address }}'
