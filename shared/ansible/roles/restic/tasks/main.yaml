@@ -1,0 +1,67 @@
+- name: Install Restic
+  ansible.builtin.apt:
+    name: restic
+    state: present
+    update_cache: yes
+
+- name: Template restic env file
+  ansible.builtin.template:
+    src: "../root/etc/restic/restic.env.j2"
+    dest: "/etc/restic/restic.env"
+    mode: '0600'
+    owner: "root"
+    group: "root"
+
+- name: Write restic password
+  ansible.builtin.copy:
+    content: "{{ restic_password }}"
+    dest: "/etc/restic/restic.password"
+    mode: '0600'
+    owner: "root"
+    group: "root"
+
+- name: Write restic repository
+  ansible.builtin.copy:
+    content: "{{ restic_repository }}"
+    dest: "/etc/restic/restic.repository"
+    mode: '0600'
+    owner: "root"
+    group: "root"
+
+- name: Copy restic systemd files
+  ansible.builtin.template:
+    src: '../root/etc/systemd/system/{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    mode: '0600'
+    owner: "root"
+    group: "root"
+  loop:
+    - restic-backup.service
+    - restic-backup.timer
+    - restic-check.service
+    - restic-check.timer
+
+- name: Copy restic helpers
+  ansible.builtin.template:
+    src: '../root/{{ item }}'
+    dest: '{{ item }}'
+    mode: '0711'
+    owner: "root"
+    group: "root"
+  loop:
+    - /usr/libexec/restic-backup
+    - /usr/local/bin/restic-helper
+
+- name: Restic Init
+  ansible.builtin.command: |
+    restic-helper cat config >/dev/null || restic-helper init
+
+- name: Enable restic timers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  loop:
+    - restic-backup.timer
+    - restic-check.timer

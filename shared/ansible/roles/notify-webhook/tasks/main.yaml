@@ -16,3 +16,11 @@
     mode: '0711'
     owner: "root"
     group: "root"
+
+- name: Write Webhook URL
+  ansible.builtin.copy:
+    content: "{{ notify_webhook_url }}"
+    dest: "/etc/notify-webhook-url"
+    mode: '0600'
+    owner: "root"
+    group: "root"

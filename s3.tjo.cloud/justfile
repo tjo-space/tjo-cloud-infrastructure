@@ -15,4 +15,5 @@ destroy:
 configure:
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
-  ansible-playbook -i inventory.yaml playbook.yaml
+  export VERSION=$(git describe --tags --always --dirty)
+  ansible-playbook --extra-vars "tjo_cloud_version=${VERSION}" -i inventory.yaml playbook.yaml
