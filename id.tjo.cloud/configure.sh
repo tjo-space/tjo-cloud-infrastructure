@@ -51,9 +51,6 @@ echo "=== Setup Postgresql"
 systemctl restart postgresql
 systemctl start postgresql-backup.timer
 
-echo "=== Setup Valkey"
-systemctl restart valkey
-
 echo "=== Setup Authentik Server"
 systemctl restart authentik-server
 
