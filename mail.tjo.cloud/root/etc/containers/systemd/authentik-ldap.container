@@ -2,7 +2,7 @@
 Description=An Authentik Ldap Outpost
 
 [Container]
-Image=ghcr.io/goauthentik/ldap:2025.4.1
+Image=ghcr.io/goauthentik/ldap:2025.10
 EnvironmentFile=/etc/authentik/secrets.env
 Environment=AUTHENTIK_HOST=https://id.tjo.cloud
 Environment=AUTHENTIK_INSECURE=false
