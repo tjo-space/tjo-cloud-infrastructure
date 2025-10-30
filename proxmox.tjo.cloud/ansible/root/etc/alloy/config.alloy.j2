@@ -108,8 +108,8 @@ otelcol.auth.oauth2 "default" {
   client_secret = "none"
   endpoint_params = {
     grant_type = ["client_credentials"],
-    username = [env("ALLOY_USERNAME")],
-    password = [env("ALLOY_PASSWORD")],
+    username = ["{{ tjo_cloud.credentials[inventory_hostname].username }}"],
+    password = ["{{ tjo_cloud.credentials[inventory_hostname].password }}"],
   }
 }
 otelcol.exporter.otlp "default" {

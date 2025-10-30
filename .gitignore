@@ -29,6 +29,7 @@ SECRETS.md
 
 # Ansible
 vars.secrets.yaml
+vars.*.secrets.yaml
 
 # ENV
 .env

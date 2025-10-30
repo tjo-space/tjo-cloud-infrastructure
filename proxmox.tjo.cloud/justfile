@@ -70,3 +70,9 @@ configure node: secrets-decrypt
   popd
 
   cat {{source_directory()}}/configure.sh | tailscale ssh root@${NODE}-system-tjo-cloud 'bash' | ts ${NODE}
+
+configure_ansible:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/ansible
+  export VERSION=$(git describe --tags --always --dirty)
+  ansible-playbook --extra-vars "tjo_cloud_version=${VERSION}" -i inventory.yaml playbook.yaml

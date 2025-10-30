@@ -47,14 +47,14 @@ tofu-state-decrypt:
 
 ansible-secrets-encrypt:
   #!/usr/bin/env bash
-  for file in $(find . -name vars.secrets.yaml)
+  for file in $(find . -name vars.secrets.yaml -o -name "vars.*.secrets.yaml")
   do
     just _encrypt $file
   done
 
 ansible-secrets-decrypt:
   #!/usr/bin/env bash
-  for file in $(find . -name vars.secrets.yaml.encrypted)
+  for file in $(find . -name vars.secrets.yaml.encrypted -o -name "vars.*.secrets.yaml")
   do
     just _decrypt ${file%.encrypted}
   done

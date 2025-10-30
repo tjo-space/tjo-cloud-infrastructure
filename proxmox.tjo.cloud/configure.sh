@@ -52,6 +52,17 @@ systemctl disable --now rpcbind.service
 ##
 echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
 
+##
+# Networking
+# Ref: https://pve.proxmox.com/pve-docs/chapter-pvesdn.html#pvesdn_installation
+##
+apt install -qq -yy libpve-network-perl dnsmasq frr-pythontools
+
+systemctl disable --now dnsmasq
+# systemctl enable frr.service
+# We do not yet use this, lets disable for now.
+systemctl disable --now frr.service
+
 # Disable IPv6 SLAAC/DHCPv6 on vmbr1.
 #  Otherwise Proxmox Host will receive IP from the
 #  network.tjo.cloud VM's.

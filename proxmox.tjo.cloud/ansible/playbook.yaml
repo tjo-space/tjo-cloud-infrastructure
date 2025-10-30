@@ -1,0 +1,28 @@
+---
+- name: Configure proxmox.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars.yaml
+    - vars.secrets.yaml
+    - vars.zerotier.secrets.yaml
+    - vars.tjo_cloud.secrets.yaml
+
+  handlers:
+    - name: Restart prometheus-pve-exporter
+      ansible.builtin.systemd:
+        name: prometheus-pve-exporter
+        state: restarted
+
+  tasks:
+    - name: Install Tailscale
+      ansible.builtin.include_role:
+        name: tailscale
+
+    - name: Configure Observability
+      ansible.builtin.include_tasks:
+        file: tasks/observability.yaml
+
+    - name: Configure SDN
+      ansible.builtin.include_tasks:
+        file: tasks/sdn.yaml

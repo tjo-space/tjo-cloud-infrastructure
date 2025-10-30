@@ -1,0 +1,38 @@
+- name: Install Zerotier
+  ansible.builtin.include_role:
+    name: zerotier
+
+- name: Configure Zerotier
+  ansible.builtin.shell: |
+    systemctl stop zerotier-one
+    echo "{{ zerotier.credentials[inventory_hostname].public_key }}" >/var/lib/zerotier-one/identity.public
+    echo "{{ zerotier.credentials[inventory_hostname].private_key }}" >/var/lib/zerotier-one/identity.secret
+    systemctl start zerotier-one
+    sleep 5
+    zerotier-cli join "{{ zerotier.network }}"
+  args:
+    creates: /var/lib/zerotier-one/networks.d/{{ zerotier.network }}.conf
+
+- name: Refresh facts
+  ansible.builtin.setup:
+    gather_subset:
+      - network
+
+- name: Install SDN Dependencies
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  loop:
+    - 'libpve-network-perl'
+    - 'dnsmasq'
+    - 'frr-pythontools'
+
+- name: Disable SDN Dependencies
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+    enabled: false
+  loop:
+    - 'dnsmasq.service'
+    - 'frr.service'

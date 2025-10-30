@@ -14,7 +14,3 @@ CUSTOM_ARGS=""
 
 # Restart on system upgrade. Defaults to true.
 RESTART_ON_UPGRADE=true
-
-# Service account authentication
-ALLOY_USERNAME="{{env.Getenv "SERVICE_ACCOUNT_USERNAME"}}"
-ALLOY_PASSWORD="{{env.Getenv "SERVICE_ACCOUNT_PASSWORD"}}"

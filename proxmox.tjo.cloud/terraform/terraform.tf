@@ -1,12 +1,41 @@
 terraform {
   required_providers {
+    authentik = {
+      source  = "goauthentik/authentik"
+      version = "2025.4.0"
+    }
+    zerotier = {
+      source  = "zerotier/zerotier"
+      version = "1.6.0"
+    }
     proxmox = {
       source  = "bpg/proxmox"
       version = "0.84.0"
     }
+    desec = {
+      source  = "Valodim/desec"
+      version = "0.6.1"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.3"
+    }
   }
 
   required_version = "~> 1.9.0"
+}
+
+provider "desec" {
+  api_token = var.desec_token
+}
+
+provider "authentik" {
+  url   = "https://id.tjo.space"
+  token = var.authentik_token
+}
+
+provider "zerotier" {
+  zerotier_central_token = var.zerotier_token
 }
 
 provider "proxmox" {

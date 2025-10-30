@@ -1,0 +1,39 @@
+- name: Install PipX
+  ansible.builtin.apt:
+    name: pipx
+    state: present
+    update_cache: yes
+
+- name: Install prometheus-pve-exporter
+  community.general.pipx:
+    name: prometheus-pve-exporter
+    global: true
+
+#- name: Configure prometheus-pve-exporter
+#  ansible.builtin.template:
+#    src: root/etc/systemd/system/prometheus-pve-exporter.service
+#    dest: /etc/systemd/system/prometheus-pve-exporter.service
+#    mode: '0644'
+#    owner: "root"
+#    group: "root"
+#  notify: Restart prometheus-pve-exporter
+
+- name: Start and enable prometheus-pve-exporter service
+  ansible.builtin.systemd:
+    name: prometheus-pve-exporter
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Install Alloy
+  ansible.builtin.include_role:
+    name: alloy
+
+- name: Configure Alloy
+  ansible.builtin.template:
+    src: root/etc/alloy/config.alloy.j2
+    dest: /etc/alloy/config.alloy
+    mode: '0600'
+    owner: "alloy"
+    group: "alloy"
+  notify: Restart alloy
