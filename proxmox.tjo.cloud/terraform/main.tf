@@ -69,7 +69,7 @@ resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
   acl {
     path      = "/"
     propagate = true
-    role_id   = "Sys.Audit"
+    role_id   = "PVEAuditor"
   }
 }
 resource "proxmox_virtual_environment_user_token" "prometheus-pve-exporter" {
@@ -80,7 +80,7 @@ resource "proxmox_virtual_environment_user_token" "prometheus-pve-exporter" {
 
 resource "proxmox_virtual_environment_acl" "prometheus-pve-exporter" {
   token_id  = proxmox_virtual_environment_user_token.prometheus-pve-exporter.id
-  role_id   = "Sys.Audit"
+  role_id   = "PVEAuditor"
   path      = "/"
   propagate = true
 }

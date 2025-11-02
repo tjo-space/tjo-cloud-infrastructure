@@ -44,15 +44,6 @@
     group: "root"
   notify: Restart zerotier
 
-- name: Set vmbr1 to bridge zerotier
-  community.general.interfaces_file:
-    dest: /etc/network/interfaces
-    iface: vmbr1
-    option: bridge-ports
-    value: ""
-    backup: false
-    state: absent
-
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
 
