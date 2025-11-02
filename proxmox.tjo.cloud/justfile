@@ -15,63 +15,13 @@ destroy:
   cd {{source_directory()}}/terraform
   tofu  destroy
 
-secrets-encrypt:
+configure node:
   #!/usr/bin/env sh
-  age --encrypt -R {{source_directory()}}/secrets.keys \
-    secrets.env > secrets.env.encrypted
+  cd {{source_directory()}}/ansible
+  export VERSION=$(git describe --tags --always --dirty)
+  ansible-playbook --extra-vars "tjo_cloud_version=${VERSION}" -i inventory.yaml playbook.yaml --limit {{node}}
 
-secrets-decrypt:
-  #!/usr/bin/env sh
-  age --decrypt \
-    -i ${HOME}/.config/sops/age/keys.txt \
-    secrets.env.encrypted > secrets.env
-
-configure-all: dependencies
-  #!/usr/bin/env bash
-  set -eou pipefail
-
-  for node in `cat {{source_directory()}}/config.yaml | yq -r '.nodes | keys | .[]'`
-  do
-    echo "== Configuring $node"
-    just configure $node | ts "$node"
-  done
-
-configure node: secrets-decrypt
-  #!/usr/bin/env sh
-  set -euo pipefail
-
-  export NODE="{{node}}"
-  export TMPDIR="$(mktemp -d)"
-  export CONFIG="{{source_directory()}}/config.yaml"
-
-  echo "Reading Secrets"
-  set -a && source {{source_directory()}}/secrets.env && set +a
-
-  cd {{source_directory()}}/root
-
-  echo "Configuring ${NODE}.system.tjo.cloud"
-
-  echo "- Generating configuration ${TMPDIR}..."
-  for file in $(find * -type f)
-  do
-    echo " - $file"
-    mkdir -p ${TMPDIR}/$(dirname $file)
-    gomplate --file $file --datasource config=${CONFIG} > ${TMPDIR}/${file}
-  done
-
-  echo "- Copying configuration to node..."
-  pushd ${TMPDIR}
-  for file in $(find * -type f)
-  do
-    directory=$(dirname $file)
-    echo "- $file"
-    cat $file | tailscale ssh root@${NODE}-system-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
-  done
-  popd
-
-  cat {{source_directory()}}/configure.sh | tailscale ssh root@${NODE}-system-tjo-cloud 'bash' | ts ${NODE}
-
-configure_ansible:
+configure-all:
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)

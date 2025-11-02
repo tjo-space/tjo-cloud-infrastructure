@@ -9,14 +9,14 @@
     name: prometheus-pve-exporter
     global: true
 
-#- name: Configure prometheus-pve-exporter
-#  ansible.builtin.template:
-#    src: root/etc/systemd/system/prometheus-pve-exporter.service
-#    dest: /etc/systemd/system/prometheus-pve-exporter.service
-#    mode: '0644'
-#    owner: "root"
-#    group: "root"
-#  notify: Restart prometheus-pve-exporter
+- name: Configure prometheus-pve-exporter
+  ansible.builtin.template:
+    src: root/etc/systemd/system/prometheus-pve-exporter.service
+    dest: /etc/systemd/system/prometheus-pve-exporter.service
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart prometheus-pve-exporter
 
 - name: Start and enable prometheus-pve-exporter service
   ansible.builtin.systemd:
@@ -36,4 +36,13 @@
     mode: '0600'
     owner: "alloy"
     group: "alloy"
+  notify: Restart alloy
+
+- name: Configure Alloy
+  ansible.builtin.template:
+    src: root/etc/default/alloy
+    dest: /etc/default/alloy
+    mode: '0644'
+    owner: "root"
+    group: "root"
   notify: Restart alloy

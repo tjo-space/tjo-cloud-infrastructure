@@ -54,21 +54,11 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 |-----------------------|------------------|--------------------------|
 | Primary Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f::1/128   |
 | # | # |  # |
-| batuu.network.tjo.cloud | 10.0.0.2/10     | fd74:6a6f::2/128  |
-| jakku.network.tjo.cloud | 10.0.0.3/10     | fd74:6a6f::3/128  |
 | nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
-| mustafar.network.tjo.cloud | 10.0.0.5/10     | fd74:6a6f::5/128  |
-| endor.network.tjo.cloud | 10.0.0.6/10     | fd74:6a6f::6/128  |
 
 # Setting up new Host
 
 ### 1. Add new device to terraform.tfvars.
-
-### 2. Manually configure vmbr0 and use import to import it.
-
-```
-tofu import 'proxmox_virtual_environment_network_linux_bridge.vmbr0["nevaroo"]' nevaroo:vmbr0
-```
 
 ### 3. Deploy terraform.
 
@@ -100,10 +90,6 @@ We can use automated way of maintaining config.
 just configure <node>
 ```
 
-
-### 7. Approve ZeroTier member.
-
-https://my.zerotier.com/network/b6079f73c6379990
 
 # TODO
 

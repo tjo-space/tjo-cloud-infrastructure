@@ -19,13 +19,6 @@ config zone
 	option mtu_fix '1'
 
 config rule
-	option name 'Allow-ZeroTier-Inbound'
-	option src 'wan'
-	option proto 'udp'
-	option dest_port '9993'
-	option target 'ACCEPT'
-
-config rule
 	option name 'Allow-DHCP-Renew'
 	option src 'wan'
 	option proto 'udp'

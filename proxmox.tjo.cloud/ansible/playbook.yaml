@@ -7,11 +7,16 @@
     - vars.secrets.yaml
     - vars.zerotier.secrets.yaml
     - vars.tjo_cloud.secrets.yaml
+    - vars.prometheus_pve_exporter.secrets.yaml
 
   handlers:
     - name: Restart prometheus-pve-exporter
       ansible.builtin.systemd:
         name: prometheus-pve-exporter
+        state: restarted
+    - name: Restart networking
+      ansible.builtin.systemd:
+        name: networking
         state: restarted
 
   tasks:
@@ -22,6 +27,15 @@
     - name: Configure Observability
       ansible.builtin.include_tasks:
         file: tasks/observability.yaml
+
+    - name: Add custom networking options
+      ansible.builtin.template:
+        src: root/etc/network/interfaces.d/custom.conf
+        dest: /etc/network/interfaces.d/custom.conf
+        mode: '0644'
+        owner: "root"
+        group: "root"
+      notify: Restart networking
 
     - name: Configure SDN
       ansible.builtin.include_tasks:

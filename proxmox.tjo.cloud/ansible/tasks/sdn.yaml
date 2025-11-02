@@ -2,6 +2,24 @@
   ansible.builtin.include_role:
     name: zerotier
 
+- name: Ensure zerotier systemd override dir exists
+  file:
+    path: /etc/systemd/system/zerotier-one.service.d
+    state: directory
+
+- name: Configure zerotier overrides
+  ansible.builtin.template:
+    src: root/etc/systemd/system/zerotier-one.service.d/override.conf
+    dest: /etc/systemd/system/zerotier-one.service.d/override.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart zerotier
+
+- name: Daemon reload in case we changed zerotier config overrides
+  ansible.builtin.systemd_service:
+    daemon_reload: true
+
 - name: Configure Zerotier
   ansible.builtin.shell: |
     systemctl stop zerotier-one
@@ -10,8 +28,33 @@
     systemctl start zerotier-one
     sleep 5
     zerotier-cli join "{{ zerotier.network }}"
+    zerotier-cli set "{{ zerotier.network }}" allowDefault=0
+    zerotier-cli set "{{ zerotier.network }}" allowGlobal=0
+    zerotier-cli set "{{ zerotier.network }}" allowManaged=0
+    zerotier-cli set "{{ zerotier.network }}" allowDNS=0
   args:
     creates: /var/lib/zerotier-one/networks.d/{{ zerotier.network }}.conf
+
+- name: Configure zerotier local.conf
+  ansible.builtin.template:
+    src: root/var/lib/zerotier-one/local.conf
+    dest: /var/lib/zerotier-one/local.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart zerotier
+
+- name: Set vmbr1 to bridge zerotier
+  community.general.interfaces_file:
+    dest: /etc/network/interfaces
+    iface: vmbr1
+    option: bridge-ports
+    value: ""
+    backup: false
+    state: absent
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
 
 - name: Refresh facts
   ansible.builtin.setup:
@@ -36,3 +79,6 @@
   loop:
     - 'dnsmasq.service'
     - 'frr.service'
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

@@ -6,46 +6,10 @@ locals {
       domain = local.domain
       hash   = sha1(v.host)
 
-      wan_mac_address     = v.vmbr0.mac_address != null ? v.vmbr0.mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+      wan_mac_address     = v.wan_mac_address != null ? v.wan_mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
       private_mac_address = "AA:BB:00:11:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
     })
   }
-}
-
-import {
-  to = proxmox_virtual_environment_network_linux_bridge.vmbr0["endor"]
-  id = "endor:vmbr0"
-}
-
-resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
-  for_each = local.nodes
-
-  node_name = each.value.host
-  name      = "vmbr0"
-  comment   = "Main interface bridge for VMs."
-
-  address = each.value.vmbr0.address
-  gateway = each.value.vmbr0.gateway
-
-  address6 = each.value.vmbr0.address6
-  gateway6 = each.value.vmbr0.gateway6
-
-  ports = each.value.vmbr0.bridge_ports
-}
-
-
-resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
-  for_each = local.nodes
-
-  node_name = each.value.host
-  name      = "vmbr1"
-  comment   = "Private network for VMs."
-
-  address = each.value.vmbr1.address
-  gateway = each.value.vmbr1.gateway
-
-  address6 = each.value.vmbr1.address6
-  gateway6 = each.value.vmbr1.gateway6
 }
 
 resource "proxmox_virtual_environment_file" "iso" {
@@ -105,12 +69,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
   }
 
   network_device {
-    bridge      = proxmox_virtual_environment_network_linux_bridge.vmbr0[each.key].name
+    bridge      = "vmbr0"
     mac_address = each.value.wan_mac_address
   }
 
   network_device {
-    bridge      = proxmox_virtual_environment_network_linux_bridge.vmbr1[each.key].name
+    bridge      = "vmbr1"
     mac_address = each.value.private_mac_address
   }
 

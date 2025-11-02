@@ -1,24 +1,4 @@
 nodes:
-  batuu:
-    primary: false
-    lan:
-      ipv4:
-        address: "10.0.0.2/10"
-      ipv6:
-        address: "fd74:6a6f::2/128"
-    wan:
-      ipv6:
-        proto: "dhcpv6"
-  jakku:
-    primary: false
-    lan:
-      ipv4:
-        address: "10.0.0.3/10"
-      ipv6:
-        address: "fd74:6a6f::3/128"
-    wan:
-      ipv6:
-        proto: "dhcpv6"
   nevaroo:
     primary: true
     lan:
@@ -32,23 +12,3 @@ nodes:
         address: "2a01:4f8:120:7700::3/128"
         gateway: "fe80::1"
         prefix: "2a01:4f8:120:7700::/56"
-  mustafar:
-    primary: false
-    lan:
-      ipv4:
-        address: "10.0.0.5/10"
-      ipv6:
-        address: "fd74:6a6f::5/128"
-    wan:
-      ipv6:
-        proto: "dhcpv6"
-  endor:
-    primary: false
-    lan:
-      ipv4:
-        address: "10.0.0.6/10"
-      ipv6:
-        address: "fd74:6a6f::6/128"
-    wan:
-      ipv6:
-        proto: "dhcpv6"

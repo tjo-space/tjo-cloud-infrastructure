@@ -1,6 +1,22 @@
 "all":
   "hosts":
+    "batuu":
+      "ansible_host": "fd7a:115c:a1e0::1901:5864"
+      "ansible_port": 22
+      "ansible_user": "root"
+    "endor":
+      "ansible_host": "fd7a:115c:a1e0::3b01:8154"
+      "ansible_port": 22
+      "ansible_user": "root"
+    "jakku":
+      "ansible_host": "fd7a:115c:a1e0::301:c81b"
+      "ansible_port": 22
+      "ansible_user": "root"
     "mustafar":
       "ansible_host": "fd7a:115c:a1e0::2601:d3d"
+      "ansible_port": 22
+      "ansible_user": "root"
+    "nevaroo":
+      "ansible_host": "fd7a:115c:a1e0::b301:3077"
       "ansible_port": 22
       "ansible_user": "root"

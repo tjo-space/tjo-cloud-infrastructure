@@ -12,16 +12,6 @@ tailscale up \
   --ssh \
   --reset
 
-echo "- Installing zerotier (SD-WAN)"
-opkg install zerotier
-uci set zerotier.global.enabled='1'
-uci set zerotier.global.local_conf_path='/etc/zerotier.conf'
-uci delete zerotier.earth || true
-uci delete zerotier.mynet || true
-uci set zerotier.tjo_cloud='network'
-uci set zerotier.tjo_cloud.id=b6079f73c6379990
-uci commit zerotier
-
 echo "- Installing Bird (BGP, Router Advertisement NDP)"
 opkg install bird2 bird2c
 

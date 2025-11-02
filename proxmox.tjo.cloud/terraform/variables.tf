@@ -30,8 +30,23 @@ variable "domain" {
 
 variable "nodes" {
   type = map(object({
-    ipv4        = string
-    ipv6        = string
+    tailscale = object({
+      ipv4 = string
+      ipv6 = string
+    })
+    bridges = object({
+      vmbr0 = object({
+        ipv4 = object({
+          address = string
+          gateway = string
+        })
+        ipv6 = optional(object({
+          address = optional(string, null)
+          gateway = optional(string, null)
+        }), { address = null, gateway = null })
+        interfaces = list(string)
+      })
+    })
     iso_storage = optional(string, "local")
   }))
   description = "List of proxmox nodes"

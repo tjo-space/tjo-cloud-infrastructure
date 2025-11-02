@@ -9,21 +9,13 @@ locals {
     "ubuntu_2404_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
     "debian_13_server_cloudimg_amd64.img"   = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
   }
-
-  nodes_images = {
-    "nevaroo" : "local",
-    "jakku" : "local",
-    "batuu" : "local",
-    "mustafar" : "local",
-    "endor" : "local"
-  }
 }
 
 resource "proxmox_virtual_environment_download_file" "images" {
-  for_each = { for pair in setproduct(toset(keys(local.nodes_images)), toset(keys(local.images))) :
+  for_each = { for pair in setproduct(toset(keys(local.nodes)), toset(keys(local.images))) :
     "${pair[0]}-${pair[1]}" => {
       node         = pair[0]
-      datastore_id = local.nodes_images[pair[0]]
+      datastore_id = "local"
       image        = pair[1]
       url          = local.images[pair[1]]
     }
@@ -37,17 +29,69 @@ resource "proxmox_virtual_environment_download_file" "images" {
   overwrite    = false
 }
 
-resource "local_file" "ansible_inventory" {
+import {
+  to = proxmox_virtual_environment_network_linux_bridge.vmbr0["nevaroo"]
+  id = "nevaroo:vmbr0"
+}
+import {
+  to = proxmox_virtual_environment_network_linux_bridge.vmbr1["nevaroo"]
+  id = "nevaroo:vmbr1"
+}
+
+resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
+  for_each = local.nodes
+
+  node_name = each.value.name
+  name      = "vmbr0"
+  comment   = "Proxmox Host network interface."
+
+  address = each.value.bridges.vmbr0.ipv4.address
+  gateway = each.value.bridges.vmbr0.ipv4.gateway
+
+  address6 = each.value.bridges.vmbr0.ipv6.address
+  gateway6 = each.value.bridges.vmbr0.ipv6.gateway
+
+  ports = each.value.bridges.vmbr0.interfaces
+}
+
+resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
+  for_each = local.nodes
+
+  node_name = each.value.name
+  name      = "vmbr1"
+  comment   = "Private network for VMs."
+}
+
+resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
+  comment = "Managed by Terraform"
+  user_id = "prometheus-pve-exporter@pve"
+  enabled = true
+  acl {
+    path      = "/"
+    propagate = true
+    role_id   = "Sys.Audit"
+  }
+}
+resource "proxmox_virtual_environment_user_token" "prometheus-pve-exporter" {
+  comment    = "Managed by Terraform"
+  token_name = "prometheus-pve-exporter"
+  user_id    = proxmox_virtual_environment_user.prometheus-pve-exporter.user_id
+}
+
+resource "proxmox_virtual_environment_acl" "prometheus-pve-exporter" {
+  token_id  = proxmox_virtual_environment_user_token.prometheus-pve-exporter.id
+  role_id   = "Sys.Audit"
+  path      = "/"
+  propagate = true
+}
+
+resource "local_file" "ansible_prometheus_pve_exporter_variables" {
   content = yamlencode({
-    all = {
-      hosts = {
-        for k, v in local.nodes : k => {
-          ansible_host = v.ipv6
-          ansible_port = 22
-          ansible_user = "root"
-        }
-      }
+    prometheus_pve_exporter = {
+      user        = proxmox_virtual_environment_user.prometheus-pve-exporter.user_id
+      token_name  = trimprefix(proxmox_virtual_environment_user_token.prometheus-pve-exporter.id, "${proxmox_virtual_environment_user_token.prometheus-pve-exporter.user_id}!")
+      token_value = trimprefix(proxmox_virtual_environment_user_token.prometheus-pve-exporter.value, "${proxmox_virtual_environment_user_token.prometheus-pve-exporter.id}=")
     }
   })
-  filename = "${path.module}/../ansible/inventory.yaml"
+  filename = "${path.module}/../ansible/vars.prometheus_pve_exporter.secrets.yaml"
 }
