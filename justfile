@@ -30,3 +30,6 @@ lint:
 format:
   @tofu fmt -recursive .
   @tflint --recursive
+
+dependencies:
+  ansible-galaxy role install rywillia.ssh-copy-id

@@ -15,3 +15,19 @@ Each subfolder represent a project.
 Projects to be added:
 * monitor.tjo.cloud
   * Prometheus + Loki + Grafana
+
+## Starting Guide
+
+Make sure you have [Devbox](https://www.jetify.com/docs/devbox) installed.
+
+```
+git clone
+just dependencies
+just post-pull
+
+# Do your changes
+
+just pre-commit
+git commit -m "feat: new awesome stuff"
+git push
+```

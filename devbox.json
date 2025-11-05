@@ -24,7 +24,7 @@
     "ansible": "latest"
   },
   "env": {
-    "TFENV_AUTO_INSTALL": "true",
+    "TFENV_AUTO_INSTALL":        "true",
     "ANSIBLE_HOST_KEY_CHECKING": "false"
   },
   "shell": {

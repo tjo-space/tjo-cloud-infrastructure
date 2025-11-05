@@ -58,24 +58,6 @@
         group: "alloy"
       notify: Restart alloy
 
-    - name: Install Notify Webhook
-      ansible.builtin.include_role:
-        name: notify-webhook
-
-    - name: Copy SSH ID to backup server using password
-      ansible.builtin.shell:
-        cmd: |
-          ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N ""
-          ssh-keyscan {{ restic_ssh_host }} >> /root/.ssh/known_hosts
-          apt update && apt install -y sshpass
-          sshpass -p '{{ restic_ssh_password }}' ssh-copy-id -i /root/.ssh/id_ed25519 {{ restic_ssh_user }}@{{ restic_ssh_host }}
-          apt remove -y sshpass
-        #creates: /root/.ssh/id_ed25519
-
-    - name: Install Restic
-      ansible.builtin.include_role:
-        name: restic
-
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
 

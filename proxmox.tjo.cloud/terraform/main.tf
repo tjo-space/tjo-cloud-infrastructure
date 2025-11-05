@@ -45,13 +45,13 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
   name      = "vmbr0"
   comment   = "Proxmox Host network interface."
 
-  address = each.value.bridges.vmbr0.ipv4.address
-  gateway = each.value.bridges.vmbr0.ipv4.gateway
+  address = each.value.vmbr0.ipv4.address
+  gateway = each.value.vmbr0.ipv4.gateway
 
-  address6 = each.value.bridges.vmbr0.ipv6.address
-  gateway6 = each.value.bridges.vmbr0.ipv6.gateway
+  address6 = each.value.vmbr0.ipv6.address
+  gateway6 = each.value.vmbr0.ipv6.gateway
 
-  ports = each.value.bridges.vmbr0.interfaces
+  ports = each.value.vmbr0.interfaces
 }
 
 resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
@@ -60,6 +60,19 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
   node_name = each.value.name
   name      = "vmbr1"
   comment   = "Private network for VMs."
+}
+
+resource "local_file" "ansible_network_variables" {
+  content = yamlencode({
+    network = {
+      nodes = {
+        for k, node in local.nodes : k => {
+          vmbr1 = node.vmbr1
+        }
+      }
+    }
+  })
+  filename = "${path.module}/../ansible/vars.network.yaml"
 }
 
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {

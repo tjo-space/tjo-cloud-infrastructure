@@ -11,7 +11,7 @@ locals {
 
 output "address" {
   value = {
-    ipv4 = lookup(local.ipv4_addresses, "ens18", lookup(local.ipv4_addresses, "eth0", [""]))[0]
-    ipv6 = lookup(local.ipv6_addresses, "ens18", lookup(local.ipv6_addresses, "eth0", [""]))[0]
+    ipv4 = try(local.ipv4_addresses["ens18"][0], try(local.ipv4_addresses["eth0"][0], ""))
+    ipv6 = try(local.ipv6_addresses["ens18"][0], try(local.ipv6_addresses["eth0"][0], ""))
   }
 }

@@ -4,6 +4,7 @@
 
   vars_files:
     - vars.yaml
+    - vars.network.yaml
     - vars.secrets.yaml
     - vars.zerotier.secrets.yaml
     - vars.tjo_cloud.secrets.yaml

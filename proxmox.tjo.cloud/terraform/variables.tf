@@ -34,17 +34,25 @@ variable "nodes" {
       ipv4 = string
       ipv6 = string
     })
-    bridges = object({
-      vmbr0 = object({
-        ipv4 = object({
-          address = string
-          gateway = string
-        })
-        ipv6 = optional(object({
-          address = optional(string, null)
-          gateway = optional(string, null)
-        }), { address = null, gateway = null })
-        interfaces = list(string)
+    vmbr0 = object({
+      ipv4 = object({
+        address = string
+        gateway = string
+      })
+      ipv6 = optional(object({
+        address = optional(string, null)
+        gateway = optional(string, null)
+      }), { address = null, gateway = null })
+      interfaces = list(string)
+    })
+    vmbr1 = object({
+      ipv4 = object({
+        address = string
+        subnet  = optional(string, "10.0.0.0/10")
+      })
+      ipv6 = object({
+        address = string
+        subnet  = optional(string, "fd74:6a6f::/48")
       })
     })
     iso_storage = optional(string, "local")
