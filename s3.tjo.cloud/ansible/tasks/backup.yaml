@@ -23,6 +23,18 @@
     hetzner_storagebox: true
     ssh_port: 22
 
+- name: Scan for backup ssh host key, port 23
+  ansible.builtin.command:
+    cmd: ssh-keyscan -p 23 {{ backup_tjo_cloud_ssh_host }} >/dev/null
+  changed_when: False
+  register: backup_ssh_scan
+
+- name: Add backup ssh host key to known_hosts, port 23
+  ansible.builtin.known_hosts:
+    name: "[{{ backup_tjo_cloud_ssh_host }}]:23"
+    key: "{{ item }}"
+  with_items: "{{ backup_ssh_scan.stdout_lines }}"
+
 - name: Install Restic
   ansible.builtin.include_role:
     name: restic

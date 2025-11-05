@@ -4,6 +4,14 @@
     state: present
     update_cache: yes
 
+- name: Create /etc/restic
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/restic"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
 - name: Template restic env file
   ansible.builtin.template:
     src: "../root/etc/restic/restic.env.j2"
@@ -52,9 +60,18 @@
     - /usr/libexec/restic-backup
     - /usr/local/bin/restic-helper
 
+- name: Check if restic was initialized
+  ansible.builtin.command: |
+    restic-helper cat config 2>/dev/null
+  register: restic_init_check
+  ignore_errors: true
+
 - name: Restic Init
   ansible.builtin.command: |
-    restic-helper cat config >/dev/null || restic-helper init
+    restic-helper init
+  when: restic_init_check is failed
+  run_once: true
+  delegate_to: "{{ ansible_play_hosts[0] }}"
 
 - name: Enable restic timers
   ansible.builtin.systemd:

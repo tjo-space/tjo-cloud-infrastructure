@@ -45,6 +45,10 @@
       ansible.builtin.import_tasks:
         file: tasks/firewall.yaml
 
+    - name: Install and Configure Backups
+      ansible.builtin.import_tasks:
+        file: tasks/backup.yaml
+
     - name: Install Alloy
       ansible.builtin.include_role:
         name: alloy
