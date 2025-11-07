@@ -1,7 +1,7 @@
 nodes = {
   endor = {
     cloud_provider = "onprem"
-    cloud_region = "tine"
+    cloud_region   = "tine"
     tailscale = {
       ipv4 = "100.103.129.84"
       ipv6 = "fd7a:115c:a1e0::3b01:8154"
@@ -20,7 +20,7 @@ nodes = {
   }
   batuu = {
     cloud_provider = "onprem"
-    cloud_region = "tine"
+    cloud_region   = "tine"
     tailscale = {
       ipv4 = "100.110.88.100"
       ipv6 = "fd7a:115c:a1e0::1901:5864"
@@ -39,7 +39,7 @@ nodes = {
   }
   jakku = {
     cloud_provider = "onprem"
-    cloud_region = "tine"
+    cloud_region   = "tine"
     tailscale = {
       ipv4 = "100.67.200.27"
       ipv6 = "fd7a:115c:a1e0::301:c81b"
@@ -58,7 +58,7 @@ nodes = {
   }
   nevaroo = {
     cloud_provider = "hetzner"
-    cloud_region = "germany"
+    cloud_region   = "germany"
     tailscale = {
       ipv4 = "100.82.48.119"
       ipv6 = "fd7a:115c:a1e0::b301:3077"
@@ -81,7 +81,7 @@ nodes = {
   }
   mustafar = {
     cloud_provider = "onprem"
-    cloud_region = "jakob"
+    cloud_region   = "jakob"
     tailscale = {
       ipv4 = "100.99.13.61"
       ipv6 = "fd7a:115c:a1e0::2601:d3d"
