@@ -30,6 +30,8 @@ variable "domain" {
 
 variable "nodes" {
   type = map(object({
+    cloud_provider = string
+    cloud_region   = string
     tailscale = object({
       ipv4 = string
       ipv6 = string

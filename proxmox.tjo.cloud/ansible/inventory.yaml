@@ -4,19 +4,29 @@
       "ansible_host": "fd7a:115c:a1e0::1901:5864"
       "ansible_port": 22
       "ansible_user": "root"
+      "cloud_provider": "onprem"
+      "cloud_region": "tine"
     "endor":
       "ansible_host": "fd7a:115c:a1e0::3b01:8154"
       "ansible_port": 22
       "ansible_user": "root"
+      "cloud_provider": "onprem"
+      "cloud_region": "tine"
     "jakku":
       "ansible_host": "fd7a:115c:a1e0::301:c81b"
       "ansible_port": 22
       "ansible_user": "root"
+      "cloud_provider": "onprem"
+      "cloud_region": "tine"
     "mustafar":
       "ansible_host": "fd7a:115c:a1e0::2601:d3d"
       "ansible_port": 22
       "ansible_user": "root"
+      "cloud_provider": "onprem"
+      "cloud_region": "jakob"
     "nevaroo":
       "ansible_host": "fd7a:115c:a1e0::b301:3077"
       "ansible_port": 22
       "ansible_user": "root"
+      "cloud_provider": "hetzner"
+      "cloud_region": "germany"

@@ -1,3 +1,7 @@
+- name: Install Notify Webhook
+  ansible.builtin.import_role:
+    name: notify-webhook
+
 - name: Install Restic
   ansible.builtin.apt:
     name: restic
@@ -49,6 +53,14 @@
     - restic-check.service
     - restic-check.timer
 
+- name: Create /usr/libexec/restic
+  ansible.builtin.file:
+    state: directory
+    path: "/usr/libexec/restic"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
 - name: Copy restic helpers
   ansible.builtin.template:
     src: '../root/{{ item }}'
@@ -57,7 +69,7 @@
     owner: "root"
     group: "root"
   loop:
-    - /usr/libexec/restic-backup
+    - /usr/libexec/restic/restic-backup
     - /usr/local/bin/restic-helper
 
 - name: Check if restic was initialized

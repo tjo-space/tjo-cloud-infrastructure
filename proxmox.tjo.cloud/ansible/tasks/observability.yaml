@@ -26,8 +26,14 @@
     daemon_reload: true
 
 - name: Install Alloy
-  ansible.builtin.include_role:
+  ansible.builtin.import_role:
     name: alloy
+  vars:
+    otel_resource_attributes:
+      service.name: "proxmox.tjo.cloud"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ cloud_region }}"
+      cloud.provider: "{{ cloud_provider }}"
 
 - name: Configure Alloy
   ansible.builtin.template:
@@ -36,13 +42,4 @@
     mode: '0600'
     owner: "alloy"
     group: "alloy"
-  notify: Restart alloy
-
-- name: Configure Alloy
-  ansible.builtin.template:
-    src: root/etc/default/alloy
-    dest: /etc/default/alloy
-    mode: '0644'
-    owner: "root"
-    group: "root"
   notify: Restart alloy

@@ -1,3 +1,16 @@
+# Restic Role
+
+## Variables
+```yaml
+restic_tags:
+ - super
+ - duper
+restic_password: "password"
+restic_repository: "repository"
+```
+
+## Usage
+```yaml
 - name: Create SSH Key
   ansible.builtin.command:
     cmd: ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N ""
@@ -35,6 +48,5 @@
   ansible.builtin.import_role:
     name: restic
   vars:
-    restic_tags:
-      - "region={{ tjo_cloud_metadata.cloud_region }}"
-      - "provider={{ tjo_cloud_metadata.cloud_provider }}"
+    restic_tags: []
+```

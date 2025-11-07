@@ -12,3 +12,19 @@
     name: alloy
     state: present
     update_cache: yes
+
+- name: Configure Alloy
+  ansible.builtin.template:
+    src: root/etc/default/alloy
+    dest: /etc/default/alloy
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart alloy
+
+- name: Start and enable Alloy service
+  ansible.builtin.systemd:
+    name: alloy
+    state: started
+    enabled: true
+    daemon_reload: true

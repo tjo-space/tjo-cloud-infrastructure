@@ -17,10 +17,18 @@
     owner: "root"
     group: "root"
 
+- name: Create /etc/notify directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/notify"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
 - name: Write Webhook URL
   ansible.builtin.copy:
     content: "{{ notify_webhook_url }}"
-    dest: "/etc/notify-webhook-url"
+    dest: "/etc/notify/webhook-url"
     mode: '0600'
     owner: "root"
     group: "root"
