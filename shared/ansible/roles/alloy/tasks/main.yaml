@@ -13,10 +13,19 @@
     state: present
     update_cache: yes
 
-- name: Configure Alloy
+- name: Copy Alloy defaults
   ansible.builtin.template:
     src: root/etc/default/alloy
     dest: /etc/default/alloy
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart alloy
+
+- name: Copy Alloy config
+  ansible.builtin.template:
+    src: root/etc/alloy/config.alloy.j2
+    dest: /etc/alloy/config.alloy
     mode: '0644'
     owner: "root"
     group: "root"

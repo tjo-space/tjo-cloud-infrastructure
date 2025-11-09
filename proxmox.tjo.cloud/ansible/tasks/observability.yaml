@@ -29,17 +29,22 @@
   ansible.builtin.import_role:
     name: alloy
   vars:
+    alloy_username: "{{ tjo_cloud.credentials[inventory_hostname].username }}"
+    alloy_password: "{{ tjo_cloud.credentials[inventory_hostname].password }}"
     otel_resource_attributes:
       service.name: "proxmox.tjo.cloud"
       service.version: "{{ tjo_cloud_version }}"
       cloud.region: "{{ cloud_region }}"
       cloud.provider: "{{ cloud_provider }}"
+    alloy_custom_integrations: |
+      prometheus.scrape "pve" {
+        targets    = [
+          { "__address__" = "localhost:9221", "instance" = constants.hostname },
+        ]
+        params = { "cluster" = [1], "node" = [1] }
+        metrics_path = "/pve"
 
-- name: Configure Alloy
-  ansible.builtin.template:
-    src: root/etc/alloy/config.alloy.j2
-    dest: /etc/alloy/config.alloy
-    mode: '0600'
-    owner: "alloy"
-    group: "alloy"
-  notify: Restart alloy
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+      }

@@ -26,10 +26,12 @@ default:
 lint:
   @tofu fmt -check -recursive .
   @tflint --recursive
+  @find . -type f -name "config.alloy*" -exec alloy fmt -t {} \;
 
 format:
   @tofu fmt -recursive .
   @tflint --recursive
+  @find . -type f -name "config.alloy*" -exec alloy fmt -w {} \;
 
 dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id

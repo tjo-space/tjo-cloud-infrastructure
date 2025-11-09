@@ -392,6 +392,54 @@
         }
       }
     },
+    "grafana-alloy@latest": {
+      "last_modified": "2025-11-03T07:53:02Z",
+      "resolved": "github:NixOS/nixpkgs/7241bcbb4f099a66aafca120d37c65e8dda32717#grafana-alloy",
+      "source": "devbox-search",
+      "version": "1.11.3",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/z1qz3r9liqin00x8m6qvskcn9ar6kr4b-grafana-alloy-1.11.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/z1qz3r9liqin00x8m6qvskcn9ar6kr4b-grafana-alloy-1.11.3"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/nq4rjpn1n710kggprgvkf2a6p33ncb0q-grafana-alloy-1.11.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/nq4rjpn1n710kggprgvkf2a6p33ncb0q-grafana-alloy-1.11.3"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/g28pfkssa1ljk9ws4131dq0bbj0jal17-grafana-alloy-1.11.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/g28pfkssa1ljk9ws4131dq0bbj0jal17-grafana-alloy-1.11.3"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/n9gibjfcklm3rqrs2azggincfr14qhn7-grafana-alloy-1.11.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/n9gibjfcklm3rqrs2azggincfr14qhn7-grafana-alloy-1.11.3"
+        }
+      }
+    },
     "haproxy@latest": {
       "last_modified": "2025-07-28T17:09:23Z",
       "resolved": "github:NixOS/nixpkgs/648f70160c03151bc2121d179291337ad6bc564b#haproxy",

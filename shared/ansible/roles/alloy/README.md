@@ -2,6 +2,20 @@
 
 ## Variables
 ```yaml
+alloy_username: ""
+alloy_password: ""
+alloy_custom_integrations: |
+    prometheus.scrape "garage" {
+      targets    = concat(
+        [
+          {"__address__" = "127.0.0.1:3903", "instance" = constants.hostname, "job" = "integrations/garage"},
+        ],
+      )
+      forward_to = [
+        otelcol.receiver.prometheus.default.receiver,
+      ]
+      bearer_token = "{{ garage_metrics_token }}"
+    }
 otel_resource_attributes: # optional
   service.name: "banana"
   service.version: "0.0.0"
@@ -16,6 +30,9 @@ otel_resource_attributes: # optional
     name: alloy
   vars:
     otel_resource_attributes: {}
+    alloy_custom_integrations: ""
+    alloy_username: ""
+    alloy_password: ""
 
 - name: Configure Alloy
   ansible.builtin.template:
