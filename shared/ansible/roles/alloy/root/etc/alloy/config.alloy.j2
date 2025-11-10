@@ -8,7 +8,14 @@ logging {
 //===
 prometheus.exporter.self "default" { }
 
-prometheus.exporter.unix "default" { }
+prometheus.exporter.unix "default" {
+	disable_collectors = [
+		"fibrechannel",
+		"infiniband",
+		"tapestats",
+		"systemd",
+	]
+}
 
 discovery.relabel "unix" {
 	targets = prometheus.exporter.unix.default.targets
@@ -29,6 +36,9 @@ prometheus.scrape "exporters" {
 	targets         = concat(
 		prometheus.exporter.self.default.targets,
 		discovery.relabel.unix.output,
+		[
+			{"__address__" = "127.0.0.1:9558", "instance" = constants.hostname, "job" = "integrations/systemd_exporter"},
+		],
 	)
 	forward_to = [
 		otelcol.receiver.prometheus.default.receiver,

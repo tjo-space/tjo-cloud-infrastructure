@@ -41,6 +41,10 @@
         group: "root"
       notify: Restart systemd-resolved
 
+    - name: Install and Configure Observability
+      ansible.builtin.import_tasks:
+        file: tasks/observability.yaml
+
     - name: Install and Configure Firewall
       ansible.builtin.import_tasks:
         file: tasks/firewall.yaml
@@ -48,10 +52,6 @@
     - name: Install and Configure Backups
       ansible.builtin.import_tasks:
         file: tasks/backup.yaml
-
-    - name: Install and Configure Observability
-      ansible.builtin.import_tasks:
-        file: tasks/observability.yaml
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

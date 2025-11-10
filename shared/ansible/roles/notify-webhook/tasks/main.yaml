@@ -32,3 +32,8 @@
     mode: '0600'
     owner: "root"
     group: "root"
+
+- name: Install dependencies
+  ansible.builtin.apt:
+    name: jq
+    state: present

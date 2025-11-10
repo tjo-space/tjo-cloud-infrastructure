@@ -1,3 +1,8 @@
+- name: Restart systemd-exporter
+  ansible.builtin.systemd:
+    name: systemd-exporter
+    state: restarted
+
 - name: Restart alloy
   ansible.builtin.systemd:
     name: alloy

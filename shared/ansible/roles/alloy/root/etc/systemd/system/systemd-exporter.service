@@ -1,0 +1,11 @@
+[Unit]
+Description=Systemd Exporter
+After=network.target
+
+[Service]
+Type=simple
+Restart=always
+ExecStart=/usr/local/bin/systemd_exporter --systemd.collector.enable-restart-count --systemd.collector.enable-ip-accounting
+
+[Install]
+WantedBy=multi-user.target

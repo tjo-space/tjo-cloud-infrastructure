@@ -13,6 +13,52 @@
     state: present
     update_cache: yes
 
+- name: Set facts for architecture if this is an amd64 system
+  when: ansible_architecture == "x86_64"
+  set_fact:
+    systemd_exporter_architecture: "amd64"
+
+- name: Set facts for architecture if this is an arm64 system
+  when: ansible_architecture == "aarch64"
+  set_fact:
+    systemd_exporter_architecture: "arm64"
+
+- name: Install Tar
+  ansible.builtin.apt:
+    name: tar
+    state: present
+
+- name: Download systemd-exporter
+  ansible.builtin.unarchive:
+    src: https://github.com/prometheus-community/systemd_exporter/releases/download/v{{ alloy_systemd_exporter_version }}/systemd_exporter-{{ alloy_systemd_exporter_version }}.linux-{{ systemd_exporter_architecture }}.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Install systemd-exporter
+  ansible.builtin.copy:
+    src: /tmp/systemd_exporter-{{ alloy_systemd_exporter_version }}.linux-{{ systemd_exporter_architecture }}/systemd_exporter
+    dest: /usr/local/bin/systemd_exporter
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+
+- name: Copy systemd-exporter service
+  ansible.builtin.template:
+    src: root/etc/systemd/system/systemd-exporter.service
+    dest: /etc/systemd/system/systemd-exporter.service
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart systemd-exporter
+
+- name: Start and enable systemd-exporter service
+  ansible.builtin.systemd:
+    name: systemd-exporter
+    state: started
+    enabled: true
+    daemon_reload: true
+
 - name: Copy Alloy defaults
   ansible.builtin.template:
     src: root/etc/default/alloy

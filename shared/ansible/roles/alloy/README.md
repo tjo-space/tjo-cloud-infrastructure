@@ -2,6 +2,7 @@
 
 ## Variables
 ```yaml
+alloy_systemd_exporter_version: "0.7.0"
 alloy_username: ""
 alloy_password: ""
 alloy_custom_integrations: |
@@ -33,6 +34,7 @@ otel_resource_attributes: # optional
     alloy_custom_integrations: ""
     alloy_username: ""
     alloy_password: ""
+    alloy_systemd_exporter_version: "0.7.0"
 
 - name: Configure Alloy
   ansible.builtin.template:
