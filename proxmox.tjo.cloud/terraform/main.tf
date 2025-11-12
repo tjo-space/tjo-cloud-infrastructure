@@ -62,19 +62,6 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
   comment   = "Private network for VMs."
 }
 
-resource "local_file" "ansible_network_variables" {
-  content = yamlencode({
-    network = {
-      nodes = {
-        for k, node in local.nodes : k => {
-          vmbr1 = node.vmbr1
-        }
-      }
-    }
-  })
-  filename = "${path.module}/../ansible/vars.network.yaml"
-}
-
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
   comment = "Managed by Terraform"
   user_id = "prometheus-pve-exporter@pve"
@@ -96,15 +83,4 @@ resource "proxmox_virtual_environment_acl" "prometheus-pve-exporter" {
   role_id   = "PVEAuditor"
   path      = "/"
   propagate = true
-}
-
-resource "local_file" "ansible_prometheus_pve_exporter_variables" {
-  content = yamlencode({
-    prometheus_pve_exporter = {
-      user        = proxmox_virtual_environment_user.prometheus-pve-exporter.user_id
-      token_name  = trimprefix(proxmox_virtual_environment_user_token.prometheus-pve-exporter.id, "${proxmox_virtual_environment_user_token.prometheus-pve-exporter.user_id}!")
-      token_value = trimprefix(proxmox_virtual_environment_user_token.prometheus-pve-exporter.value, "${proxmox_virtual_environment_user_token.prometheus-pve-exporter.id}=")
-    }
-  })
-  filename = "${path.module}/../ansible/vars.prometheus_pve_exporter.secrets.yaml"
 }

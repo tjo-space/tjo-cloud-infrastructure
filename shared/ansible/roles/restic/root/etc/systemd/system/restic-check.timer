@@ -4,6 +4,9 @@ Description=Restic Check
 [Timer]
 OnCalendar=daily
 Unit=restic-check.service
+AccuracySec=1h
+Persistent=true
+RandomizedDelaySec=8h
 
 [Install]
 WantedBy=timers.target

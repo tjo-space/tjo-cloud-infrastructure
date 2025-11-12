@@ -3,6 +3,11 @@ variable "proxmox_token" {
   sensitive = true
 }
 
+variable "tailscale_token" {
+  sensitive = true
+  type      = string
+}
+
 variable "zerotier_token" {
   sensitive = true
   type      = string

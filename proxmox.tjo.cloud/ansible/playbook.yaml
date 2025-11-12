@@ -4,11 +4,9 @@
 
   vars_files:
     - vars.yaml
-    - vars.network.yaml
     - vars.secrets.yaml
-    - vars.zerotier.secrets.yaml
-    - vars.tjo_cloud.secrets.yaml
-    - vars.prometheus_pve_exporter.secrets.yaml
+    - vars.terraform.yaml
+    - vars.terraform.secrets.yaml
 
   handlers:
     - name: Restart prometheus-pve-exporter
@@ -24,6 +22,18 @@
     - name: Install Tailscale
       ansible.builtin.include_role:
         name: tailscale
+
+    - name: Connect to Tailscale
+      ansible.builtin.shell: |
+        tailscale up \
+          --reset \
+          --accept-dns=false \
+          --ssh=true \
+          --authkey {{ tailscale_auth_key }} \
+          --hostname "{{ inventory_hostname }}.system.tjo.cloud" \
+          --advertise-tags "tag:system-tjo-cloud"
+
+        tailscale serve --service=svc:proxmox https+insecure://localhost:8006
 
     - name: Configure Observability
       ansible.builtin.include_tasks:

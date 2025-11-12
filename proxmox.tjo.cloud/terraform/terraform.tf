@@ -20,6 +20,10 @@ terraform {
       source  = "hashicorp/local"
       version = "2.5.3"
     }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.24.0"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -36,6 +40,10 @@ provider "authentik" {
 
 provider "zerotier" {
   zerotier_central_token = var.zerotier_token
+}
+
+provider "tailscale" {
+  api_key = var.tailscale_token
 }
 
 provider "proxmox" {

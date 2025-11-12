@@ -27,17 +27,3 @@ resource "authentik_token" "service_account" {
   intent       = "app_password"
   retrieve_key = true
 }
-
-resource "local_file" "ansible_tjo_cloud_variables" {
-  content = yamlencode({
-    tjo_cloud = {
-      credentials = {
-        for k, v in local.nodes : k => {
-          username = authentik_user.service_account[k].username
-          password = authentik_token.service_account[k].key
-        }
-      }
-    }
-  })
-  filename = "${path.module}/../ansible/vars.tjo_cloud.secrets.yaml"
-}
