@@ -26,18 +26,7 @@ resource "desec_rrset" "web" {
     AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway"]
   }
   domain  = "tjo.cloud"
-  subname = "web.s3.tjo.cloud"
-  type    = each.key
-  records = each.value
-  ttl     = 3600
-}
-resource "desec_rrset" "anyweb" {
-  for_each = {
-    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
-    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway"]
-  }
-  domain  = "tjo.cloud"
-  subname = "*.web.s3.tjo.cloud"
+  subname = "*.web.s3"
   type    = each.key
   records = each.value
   ttl     = 3600
