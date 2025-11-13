@@ -68,6 +68,10 @@ ${yamlencode(merge(var.userdata, {
 EOF
 file_name = "${var.fqdn}.userconfig.yaml"
 }
+
+lifecycle {
+  ignore_changes = [source_raw]
+}
 }
 
 resource "proxmox_virtual_environment_vm" "node" {

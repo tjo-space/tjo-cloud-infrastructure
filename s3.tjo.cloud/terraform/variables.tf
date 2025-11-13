@@ -5,8 +5,8 @@ variable "nodes_hetzner_cloud" {
     datacenter   = string
     image        = optional(string, "ubuntu-24.04")
     server_type  = optional(string, "cax11")
-    private_ipv4 = string
-    private_ipv6 = string
+    private_ipv4 = optional(string, "")
+    private_ipv6 = optional(string, "")
   }))
 }
 
@@ -27,10 +27,6 @@ variable "nodes_proxmox" {
 variable "domain" {
   type    = string
   default = "s3.tjo.cloud"
-}
-
-variable "ssh_keys" {
-  type = map(string)
 }
 
 variable "zerotier_token" {

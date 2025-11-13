@@ -58,9 +58,6 @@ variable "domain" {
   type = string
 }
 
-variable "ssh_key_ids" {
-  type = list(string)
-}
 variable "ssh_keys" {
   type = map(string)
 }

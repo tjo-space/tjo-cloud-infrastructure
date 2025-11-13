@@ -50,13 +50,8 @@ locals {
       public_ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv6 : ""
     })
   }
-}
 
-resource "hcloud_ssh_key" "main" {
-  for_each = var.ssh_keys
-
-  name       = each.key
-  public_key = each.value
+  ssh_keys = yamldecode(file("../../${path.module}/global.yaml")).ssh_keys
 }
 
 module "hetzner-cloud" {
@@ -71,9 +66,8 @@ module "hetzner-cloud" {
   datacenter = each.value.datacenter
   metadata   = each.value.meta
 
-  ssh_key_ids = [for key in hcloud_ssh_key.main : key.id]
-  ssh_keys    = var.ssh_keys
-  domain      = var.domain
+  ssh_keys = local.ssh_keys
+  domain   = var.domain
 }
 
 module "proxmox_node" {
@@ -116,7 +110,7 @@ module "proxmox_node" {
   }
   metadata = each.value.meta
 
-  ssh_keys = var.ssh_keys
+  ssh_keys = local.ssh_keys
   tags     = ["s3.tjo.cloud"]
 }
 
@@ -138,4 +132,11 @@ resource "local_file" "ansible_inventory" {
     }
   })
   filename = "${path.module}/../ansible/inventory.yaml"
+}
+
+resource "local_file" "ansible_vars" {
+  content = yamlencode({
+    ssh_keys = local.ssh_keys
+  })
+  filename = "${path.module}/../ansible/vars.terraform.yaml"
 }

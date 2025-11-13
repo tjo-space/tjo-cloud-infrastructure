@@ -8,8 +8,7 @@ resource "hcloud_server" "main" {
     ipv4_enabled = true
     ipv6_enabled = true
   }
-  backups  = false
-  ssh_keys = var.ssh_key_ids
+  backups = false
 
   user_data = <<EOF
 #cloud-config
@@ -65,6 +64,10 @@ ${yamlencode(merge(var.userdata, {
 }))
 }
 EOF
+
+lifecycle {
+  ignore_changes = [user_data]
+}
 }
 
 resource "hcloud_rdns" "ipv4" {

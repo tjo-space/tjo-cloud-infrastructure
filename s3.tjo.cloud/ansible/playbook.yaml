@@ -4,6 +4,7 @@
 
   vars_files:
     - vars.yaml
+    - vars.terraform.yaml
     - vars.secrets.yaml
 
   handlers:
@@ -17,6 +18,13 @@
         state: restarted
 
   tasks:
+    - name: Configure authorized keys
+      ansible.posix.authorized_key:
+        user: bine
+        state: present
+        exclusive: true
+        key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
+
     - name: Fetch metadata
       ansible.builtin.shell: |
         cat /etc/tjo.cloud/meta.json

@@ -19,6 +19,23 @@
         state: restarted
 
   tasks:
+    - name: Save garage node id
+      ansible.builtin.set_fact:
+        root_ssh_key_pub: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"
+
+    - name: Configure authorized keys for users
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
+
+    - name: Configure authorized keys for nodes
+      ansible.posix.authorized_key:
+        user: root
+        state: present
+        key: "{{ hostvars[item]['root_ssh_key_pub'] }}"
+      loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
+
     - name: Install Tailscale
       ansible.builtin.include_role:
         name: tailscale
