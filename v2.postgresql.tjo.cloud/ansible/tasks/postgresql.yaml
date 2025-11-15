@@ -1,0 +1,66 @@
+- name: Install Postgresql
+  ansible.builtin.apt:
+    name: postgresql-16
+
+- name: Template postgresql.conf
+  ansible.builtin.template:
+    src: '../root/etc/postgresql/16/main/conf.d/postgresql.conf'
+    dest: '/etc/postgresql/16/main/conf.d/postgresql.conf'
+    mode: '0644'
+    owner: "postgres"
+    group: "postgres"
+  notify: Restart postgresql
+
+- name: Template pg_hba.conf
+  ansible.builtin.template:
+    src: '../root/etc/postgresql/16/main/pg_hba.conf'
+    dest: '/etc/postgresql/16/main/pg_hba.conf'
+    mode: '0644'
+    owner: "postgres"
+    group: "postgres"
+  notify: Restart postgresql
+
+- name: Create /srv/data/postgresql
+  ansible.builtin.file:
+    state: directory
+    path: "/srv/data/postgresql"
+    mode: "0600"
+    owner: "postgres"
+    group: "postgres"
+
+- name: "Check if postgres data directory exists"
+  ansible.builtin.stat:
+    path: "/srv/data/postgresql/postgresql.conf"
+  register: postgres_data
+
+- name: "Initialize PostgreSQL"
+  ansible.builtin.command:
+    cmd: "/usr/lib/postgresql/16/bin/initdb -D /srv/data/postgresql"
+  become: true
+  become_user: postgres
+  when: not postgres_data.stat.exists
+
+- name: Start postgresql
+  ansible.builtin.systemd:
+    name: postgresql@16-main
+    state: started
+    enabled: true
+    daemon_reload: true
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers
+
+- name: Wait for postgresql to be ready
+  ansible.builtin.command:
+    cmd: pg_isready
+
+- name: Configure postgresql user
+  community.postgresql.postgresql_user:
+    name: postgres
+    password: "{{ postgresql_password }}"
+
+- name: Configure barman user
+  community.postgresql.postgresql_user:
+    name: barman
+    password: "{{ barman_password }}"
+    role_attr_flags: SUPERUSER,REPLICATION

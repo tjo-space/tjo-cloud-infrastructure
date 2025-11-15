@@ -54,7 +54,6 @@ resource "local_file" "ansible_variables" {
         }
       }
     }
-    ssh_keys = local.ssh_keys
   })
   filename = "${path.module}/../ansible/vars.terraform.yaml"
 }

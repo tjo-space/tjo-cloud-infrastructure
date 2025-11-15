@@ -19,10 +19,18 @@ configure node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
-  ansible-playbook --extra-vars "tjo_cloud_version=${VERSION}" -i inventory.yaml playbook.yaml --limit {{node}}
+  ansible-playbook \
+    --extra-vars "@{{source_directory()}}/../global.yaml" \
+    --extra-vars "tjo_cloud_version=${VERSION}" \
+    --inventory inventory.yaml \
+    playbook.yaml --limit {{node}}
 
 configure-all:
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
-  ansible-playbook --extra-vars "tjo_cloud_version=${VERSION}" -i inventory.yaml playbook.yaml
+  ansible-playbook \
+    --extra-vars "@{{source_directory()}}/../global.yaml" \
+    --extra-vars "tjo_cloud_version=${VERSION}" \
+    --inventory inventory.yaml \
+    playbook.yaml

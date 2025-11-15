@@ -19,7 +19,7 @@
         state: restarted
 
   tasks:
-    - name: Save garage node id
+    - name: Fetch Public SSH Key
       ansible.builtin.set_fact:
         root_ssh_key_pub: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"
 
@@ -27,7 +27,7 @@
       ansible.posix.authorized_key:
         user: root
         state: present
-        key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
+        key: "{{ lookup('ansible.builtin.dict', tjo_cloud_admin_ssh_keys) | map(attribute='value') | join('\n')}}"
 
     - name: Configure authorized keys for nodes
       ansible.posix.authorized_key:

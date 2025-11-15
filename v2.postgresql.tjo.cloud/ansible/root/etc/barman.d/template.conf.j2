@@ -1,0 +1,18 @@
+[{{ barman_server_name }}]
+description = "Postgresql server {{ barman_server_name }}"
+streaming_archiver = on
+conninfo = host={{barman_server_host}} user=barman dbname=postgres
+slot_name = barman
+create_slot = auto
+
+backup_compression = gzip
+compression = gzip
+
+backup_directory = /srv/data/{{ barman_server_name }}
+backup_method = postgres
+
+# This configuration should in theory make it possible to recover to any time in the last 3 days.
+# Restic maintains more snapshots, so we can in theory restore more than this.
+# Ref: https://docs.pgbarman.org/release/3.12.0/user_guide/retention_policies.html
+retention_policy = RECOVERY WINDOW OF 3 DAYS
+minimum_redundancy = 2 # Keep at least this many backups

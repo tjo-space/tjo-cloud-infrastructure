@@ -23,7 +23,7 @@
         user: bine
         state: present
         exclusive: true
-        key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
+        key: "{{ lookup('ansible.builtin.dict', tjo_cloud_admin_ssh_keys) | map(attribute='value') | join('\n')}}"
 
     - name: Fetch metadata
       ansible.builtin.shell: |

@@ -4,13 +4,28 @@ default:
 apply:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
-  tofu init -upgrade
+  tofu init
   tofu apply
+
+apply-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
 
 destroy:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu  destroy
+
+destroy-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+get-users:
+  cd {{source_directory()}}/terraform && tofu output -json | jq '.users.value '
 
 configure node:
   #!/usr/bin/env sh

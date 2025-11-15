@@ -135,8 +135,6 @@ resource "local_file" "ansible_inventory" {
 }
 
 resource "local_file" "ansible_vars" {
-  content = yamlencode({
-    ssh_keys = local.ssh_keys
-  })
+  content  = yamlencode({})
   filename = "${path.module}/../ansible/vars.terraform.yaml"
 }

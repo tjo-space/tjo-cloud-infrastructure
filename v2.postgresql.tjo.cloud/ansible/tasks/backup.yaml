@@ -1,0 +1,99 @@
+- name: Create SSH Key
+  ansible.builtin.command:
+    cmd: ssh-keygen -t ed25519 -f /root/.ssh/id_ed25519 -N ""
+    creates: /root/.ssh/id_ed25519
+
+- name: Install ssh-copy-id dependency
+  ansible.builtin.apt:
+    name: python3-paramiko
+    state: present
+
+- name: Copy SSH Key to backup.tjo.cloud
+  ansible.builtin.import_role:
+    name: rywillia.ssh-copy-id
+  vars:
+    hostname: "{{ backup_tjo_cloud_ssh_host }}"
+    username: "{{ backup_tjo_cloud_ssh_user }}"
+    password: "{{ backup_tjo_cloud_ssh_password }}"
+    ssh_public_key: /root/.ssh/id_ed25519.pub
+    hetzner_storagebox: true
+    ssh_port: 22
+
+- name: Scan for backup ssh host key, port 23
+  ansible.builtin.command:
+    cmd: ssh-keyscan -p 23 {{ backup_tjo_cloud_ssh_host }} >/dev/null
+  changed_when: False
+  register: backup_ssh_scan
+
+- name: Add backup ssh host key to known_hosts, port 23
+  ansible.builtin.known_hosts:
+    name: "[{{ backup_tjo_cloud_ssh_host }}]:23"
+    key: "{{ item }}"
+  with_items: "{{ backup_ssh_scan.stdout_lines }}"
+
+- name: Install Restic
+  ansible.builtin.import_role:
+    name: restic
+  vars:
+    restic_tags:
+      - "region={{ tjo_cloud_metadata.cloud_region }}"
+      - "provider={{ tjo_cloud_metadata.cloud_provider }}"
+
+- name: Install Barman and Postgresql
+  ansible.builtin.apt:
+    name: "{{ item }}"
+  loop:
+    - barman
+    - barman-cli
+    - postgresql-16
+
+- name: Create /etc/barman.d
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/barman.d"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: Template barman local.conf
+  ansible.builtin.template:
+    src: "../root/etc/barman.d/template.conf.j2"
+    dest: "/etc/barman.d/{{ item }}.conf"
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  loop: "{{ groups['server'] }}"
+  vars:
+    barman_server_name: "{{ hostvars[item].ansible_hostname }}"
+    barman_server_host: "{{ hostvars[item].ansible_fqdn }}"
+
+- name: Copy barman systemd files
+  ansible.builtin.template:
+    src: '../root/etc/systemd/system/{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  loop:
+    - barman-backup.service
+    - barman-backup.timer
+    - barman-cron.service
+    - barman-cron.timer
+
+- name: Create /srv/data
+  ansible.builtin.file:
+    state: directory
+    path: "/srv/data"
+    mode: "0600"
+    owner: "barman"
+    group: "barman"
+
+- name: Enable barman timers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  loop:
+    - barman-backup.timer
+    - barman-cron.timer

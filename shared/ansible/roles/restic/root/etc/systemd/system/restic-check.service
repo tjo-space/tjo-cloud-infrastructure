@@ -12,4 +12,3 @@ CPUSchedulingPolicy=idle
 Environment=GOMAXPROCS=1
 RuntimeDirectory=restic
 ExecStart=/usr/local/bin/restic-helper $RESTIC_COMMON_ARGS check $RESTIC_CHECK_ARGS
-ExecStopPost=/usr/local/bin/notify-webhook %n "$SERVICE_RESULT"

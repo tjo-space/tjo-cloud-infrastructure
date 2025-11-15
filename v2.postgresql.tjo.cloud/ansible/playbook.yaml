@@ -1,0 +1,61 @@
+---
+- name: Configure s3.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars.yaml
+    - vars.terraform.yaml
+    - vars.secrets.yaml
+
+  handlers:
+    - name: Restart postgresql
+      ansible.builtin.systemd:
+        name: postgresql
+        state: restarted
+
+  tasks:
+    - name: Configure authorized keys
+      ansible.posix.authorized_key:
+        user: bine
+        state: present
+        exclusive: true
+        key: "{{ lookup('ansible.builtin.dict', tjo_cloud_admin_ssh_keys) | map(attribute='value') | join('\n')}}"
+
+    - name: Fetch metadata
+      ansible.builtin.shell: |
+        cat /etc/tjo.cloud/meta.json
+      register: tjo_cloud_metadata_raw
+
+    - name: Save metadata as fact
+      set_fact:
+        tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.stdout | from_json }}"
+
+    - name: Write version.txt
+      ansible.builtin.copy:
+        content: "{{ tjo_cloud_version }}"
+        dest: /etc/tjo.cloud/version.txt
+        mode: '0444'
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
+
+    - name: Install and Configure Observability
+      ansible.builtin.import_tasks:
+        file: tasks/observability.yaml
+
+    - name: Install and Configure Firewall
+      ansible.builtin.import_tasks:
+        file: tasks/firewall.yaml
+
+    - name: Install and Configure postgresql server
+      ansible.builtin.import_tasks:
+        file: tasks/postgresql.yaml
+      when: inventory_hostname in groups["server"]
+
+    - name: Install and Configure backup server
+      ansible.builtin.import_tasks:
+        file: tasks/backup.yaml
+      when: inventory_hostname in groups["backup"]
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
