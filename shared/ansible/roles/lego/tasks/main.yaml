@@ -1,0 +1,57 @@
+- name: Remove Lego
+  ansible.builtin.apt:
+    name: lego
+    state: absent
+
+- name: Set facts for architecture if this is an amd64 system
+  when: ansible_architecture == "x86_64"
+  set_fact:
+    lego_architecture: "amd64"
+
+- name: Set facts for architecture if this is an arm64 system
+  when: ansible_architecture == "aarch64"
+  set_fact:
+    lego_architecture: "arm64"
+
+- name: Install Lego
+  ansible.builtin.unarchive:
+    src: https://github.com/go-acme/lego/releases/download/v{{ lego_version }}/lego_v{{ lego_version }}_linux_{{ lego_architecture }}.tar.gz
+    dest: /usr/local/bin
+    remote_src: yes
+    mode: 0755
+    owner: root
+    group: root
+
+- name: Copy systemd services and timers
+  ansible.builtin.template:
+    src: root/etc/systemd/system/{{ item }}
+    dest: /etc/systemd/system/{{ item }}
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  loop:
+    - lego-renew.timer
+    - lego-renew.service
+    - lego-run.service
+
+- name: Create /etc/lego directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/lego"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Template Lego env
+  ansible.builtin.template:
+    src: root/etc/lego/lego.env.j2
+    dest: /etc/lego/lego.env
+    mode: '0644'
+    owner: "root"
+    group: "root"
+
+- name: Enable lego-renew timer
+  ansible.builtin.systemd:
+    name: lego-renew.timer
+    enabled: true
+    daemon_reload: true

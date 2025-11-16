@@ -1,8 +1,6 @@
 [Unit]
 Description=Backup PostgreSQL databases using Barman
-Requires=postgresql.service
-After=postgresql.service
-RequiresMountsFor=/srv/backup/postgresql
+RequiresMountsFor=/srv/data/barman
 OnFailure=notify-webhook-failure@%n.service
 
 [Service]

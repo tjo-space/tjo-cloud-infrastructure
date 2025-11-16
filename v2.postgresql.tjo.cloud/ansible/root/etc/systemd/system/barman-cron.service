@@ -1,7 +1,6 @@
 [Unit]
 Description=Run Barman cron
-Requires=postgresql.service
-After=postgresql.service
+RequiresMountsFor=/srv/data/barman
 OnFailure=notify-webhook-failure@%n.service
 
 [Service]

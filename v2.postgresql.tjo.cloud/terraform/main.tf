@@ -7,9 +7,26 @@ locals {
       ]
     ]) : "${database.name}@${database.node}" => database
   }
+
+  global = yamldecode(file("../../${path.module}/global.yaml"))
 }
 
-resource "random_password" "this" {
+resource "random_password" "postgres" {
+  length  = 16
+  special = false
+}
+
+resource "random_password" "barman" {
+  length  = 16
+  special = false
+}
+
+moved {
+  from = random_password.this
+  to   = random_password.user
+}
+
+resource "random_password" "user" {
   for_each = local.users
   length   = 22
   special  = false
@@ -23,7 +40,7 @@ resource "postgresql_role" "this" {
   provider = postgresql.for_node[each.value.node]
 
   name             = each.value.name
-  password         = random_password.this[each.key].result
+  password         = random_password.user[each.key].result
   connection_limit = each.value.connection_limit
   login            = true
 }

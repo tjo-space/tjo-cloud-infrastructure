@@ -1,4 +1,17 @@
-- name: Install Alloy
+- name: Install Alloy for Barman
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+  when: inventory_hostname in groups["barman"]
+
+- name: Install Alloy for Postgresql
   ansible.builtin.import_role:
     name: alloy
   vars:
@@ -11,13 +24,37 @@
       cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
     alloy_custom_integrations: |
       database_observability.postgres "all" {
-        data_source_name  = "postgres://postgres:{{postgresql_password}}@localhost:5432/postgres?sslmode=disable"
+        data_source_name  = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
         enable_collectors = ["query_details", "query_samples", "schema_details"]
         forward_to        = [loki.process.drop_old.receiver]
       }
 
+      prometheus.exporter.postgres "all" {
+        data_source_names  = ["postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"]
+        enabled_collectors = ["stat_statements"]
+
+        autodiscovery {
+          enabled = true
+        }
+      }
+
+      discovery.relabel "postgres_set_job_and_instance" {
+        targets      = concat(
+          database_observability.postgres.all.targets,
+          prometheus.exporter.postgres.all.targets,
+        )
+        rule {
+          target_label  = "job"
+          replacement   = "integrations/db-o11y"
+        }
+        rule {
+          target_label = "instance"
+          replacement = constants.hostname
+        }
+      }
+
       prometheus.scrape "postgres" {
-        targets      = database_observability.postgres.all.targets
-        honor_labels = true // required to keep job and instance labels
+        targets      = discovery.relabel.postgres_set_job_and_instance.output
         forward_to   = [otelcol.receiver.prometheus.default.receiver]
       }
+  when: inventory_hostname in groups["postgresql"]

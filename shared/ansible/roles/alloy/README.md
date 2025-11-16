@@ -35,13 +35,16 @@ otel_resource_attributes: # optional
     alloy_username: ""
     alloy_password: ""
     alloy_systemd_exporter_version: "0.7.0"
-
-- name: Configure Alloy
-  ansible.builtin.template:
-    src: root/etc/alloy/config.alloy.j2
-    dest: /etc/alloy/config.alloy
-    mode: '0600'
-    owner: "alloy"
-    group: "alloy"
-  notify: Restart alloy
+    alloy_custom_integrations: |
+      prometheus.scrape "garage" {
+        targets    = concat(
+          [
+            {"__address__" = "127.0.0.1:3903", "instance" = constants.hostname, "job" = "integrations/garage"},
+          ],
+        )
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+        bearer_token = "{{ garage_metrics_token }}"
+      }
 ```

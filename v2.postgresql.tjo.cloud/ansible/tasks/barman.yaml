@@ -1,0 +1,62 @@
+- name: Configure backups
+  ansible.builtin.import_tasks:
+    file: tasks/barman_backups.yaml
+
+- name: Install Barman
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+  loop:
+    - barman
+    - barman-cli
+
+- name: Template barman local.conf
+  ansible.builtin.template:
+    src: "../root/etc/barman.d/template.conf.j2"
+    dest: "/etc/barman.d/{{ item }}.conf"
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  loop: "{{ groups['postgresql'] }}"
+  vars:
+    barman_server_name: "{{ hostvars[item].ansible_hostname }}"
+    barman_server_host: "{{ hostvars[item].ansible_fqdn }}"
+
+- name: Copy barman systemd files
+  ansible.builtin.template:
+    src: '../root/etc/systemd/system/{{ item }}'
+    dest: '/etc/systemd/system/{{ item }}'
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  loop:
+    - barman-backup.service
+    - barman-backup.timer
+    - barman-cron.service
+    - barman-cron.timer
+
+- name: Create /srv/data
+  ansible.builtin.file:
+    state: directory
+    path: "/srv/data"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Create /srv/data/barman
+  ansible.builtin.file:
+    state: directory
+    path: "/srv/data/barman"
+    mode: "0700"
+    owner: "barman"
+    group: "barman"
+
+- name: Enable barman timers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    enabled: yes
+    state: started
+    daemon_reload: yes
+  loop:
+    - barman-backup.timer
+    - barman-cron.timer

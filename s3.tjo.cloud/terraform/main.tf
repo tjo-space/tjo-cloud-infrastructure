@@ -51,7 +51,7 @@ locals {
     })
   }
 
-  ssh_keys = yamldecode(file("../../${path.module}/global.yaml")).ssh_keys
+  global = yamldecode(file("../../${path.module}/global.yaml"))
 }
 
 module "hetzner-cloud" {
@@ -66,7 +66,7 @@ module "hetzner-cloud" {
   datacenter = each.value.datacenter
   metadata   = each.value.meta
 
-  ssh_keys = local.ssh_keys
+  ssh_keys = local.global.tjo_cloud_admin_ssh_keys
   domain   = var.domain
 }
 
@@ -110,7 +110,7 @@ module "proxmox_node" {
   }
   metadata = each.value.meta
 
-  ssh_keys = local.ssh_keys
+  ssh_keys = local.global.tjo_cloud_admin_ssh_keys
   tags     = ["s3.tjo.cloud"]
 }
 

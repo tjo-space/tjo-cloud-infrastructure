@@ -1,47 +1,19 @@
-"all":
+"barman":
   "hosts":
-    "batuu-yellow-proxmox.s3.tjo.cloud":
+    "barman.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.177"
+      "ansible_host": "10.0.4.10"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "garage_kind": "store"
-      "garage_size": "400G"
-      "garage_zone": "batuu"
-      "provider": "proxmox"
-    "endor-yellow-proxmox.s3.tjo.cloud":
+"postgresql":
+  "hosts":
+    "pink-one.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.175"
+      "ansible_host": "10.0.4.8"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "garage_kind": "store"
-      "garage_size": "400G"
-      "garage_zone": "endor"
-      "provider": "proxmox"
-    "jakku-yellow-proxmox.s3.tjo.cloud":
+    "purple-one.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.178"
+      "ansible_host": "10.0.4.9"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "garage_kind": "store"
-      "garage_size": "400G"
-      "garage_zone": "jakku"
-      "provider": "proxmox"
-    "mustafar-purple-proxmox.s3.tjo.cloud":
-      "ansible_become": true
-      "ansible_host": "10.0.4.5"
-      "ansible_port": 2222
-      "ansible_user": "bine"
-      "garage_kind": "store"
-      "garage_size": "400G"
-      "garage_zone": "mustafar"
-      "provider": "proxmox"
-    "pink-hetzner-cloud.s3.tjo.cloud":
-      "ansible_become": true
-      "ansible_host": "10.1.230.194"
-      "ansible_port": 2222
-      "ansible_user": "bine"
-      "garage_kind": "gateway"
-      "garage_size": "0G"
-      "garage_zone": "germany"
-      "provider": "hetzner-cloud"

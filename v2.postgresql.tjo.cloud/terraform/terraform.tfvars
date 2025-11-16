@@ -1,54 +1,41 @@
 nodes = {
-  pink = {
-    host           = "nevaroo"
-    boot_storage   = "local-nvme-lvm"
-    data_storage   = "local-nvme-lvm"
-    kind = "server"
+  pink-one = {
+    kind         = "postgresql"
+    host         = "nevaroo"
+    boot_storage = "local-nvme-lvm"
 
-    ipv4 = "10.1.10.1/10"
-    ipv6 = "fd74:6a6f:1:1001::/64"
+    data_storage = "local-nvme-lvm"
+    data_size    = 64
+
+    cores  = 2
+    memory = 8192
   }
 
-  purple = {
-    host           = "endor"
-    boot_storage   = "local-nvme"
-    data_storage   = "local-nvme"
-    kind = "server"
+  purple-one = {
+    kind         = "postgresql"
+    host         = "endor"
+    boot_storage = "local-nvme"
 
-    ipv4 = "10.1.10.2/10"
-    ipv6 = "fd74:6a6f:1:1002::/64"
+    data_storage = "local-nvme"
+    data_size    = 64
+
+    cores  = 2
+    memory = 8192
   }
 
-  yellow = {
-    host           = "mustafar"
-    boot_storage   = "local"
-    data_storage   = "local"
-    kind = "backup"
+  barman = {
+    host         = "mustafar"
+    boot_storage = "local"
+    kind         = "barman"
 
-    ipv4 = "10.1.10.3/10"
-    ipv6 = "fd74:6a6f:1:1003::/64"
+    data_storage = "local"
+    data_size    = 128
+
+    cores  = 2
+    memory = 2048
   }
 }
 
 users = [
-  {
-    node      = "purple"
-    name      = "code.tjo.space"
-    databases = [{ name = "code.tjo.space" }]
-  },
-  {
-    node      = "purple"
-    name      = "cloud.tjo.space"
-    databases = [{ name = "cloud.tjo.space" }]
-  },
-  {
-    node      = "purple"
-    name      = "paperless.tjo.space"
-    databases = [{ name = "paperless.tjo.space" }]
-  },
-  {
-    node      = "purple"
-    name      = "penpot.tjo.space"
-    databases = [{ name = "penpot.tjo.space" }]
-  },
+
 ]

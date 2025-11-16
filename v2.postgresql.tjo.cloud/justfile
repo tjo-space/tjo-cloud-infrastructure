@@ -11,7 +11,7 @@ apply-only node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu init
-  tofu apply --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+  tofu apply --target 'module.proxmox_node["{{node}}"]'
 
 destroy:
   #!/usr/bin/env sh
@@ -22,7 +22,7 @@ destroy-only node:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu init
-  tofu destroy --target 'proxmox_virtual_environment_vm.nodes["{{node}}"]'
+  tofu destroy --target 'module.proxmox_node["{{node}}"]'
 
 get-users:
   cd {{source_directory()}}/terraform && tofu output -json | jq '.users.value '
@@ -46,3 +46,6 @@ configure-all:
     --extra-vars "tjo_cloud_version=${VERSION}" \
     --inventory inventory.yaml \
     playbook.yaml
+
+ssh node:
+  ssh bine@{{node}}.postgresql.tjo.cloud -4 -p 2222

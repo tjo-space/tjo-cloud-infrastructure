@@ -1,17 +1,17 @@
 ---
-- name: Configure s3.tjo.cloud
+- name: Configure postgresql.tjo.cloud
   hosts: all
 
   vars_files:
     - vars.yaml
     - vars.terraform.yaml
+    - vars.terraform.secrets.yaml
     - vars.secrets.yaml
 
   handlers:
-    - name: Restart postgresql
+    - name: Systemd daemon-reload
       ansible.builtin.systemd:
-        name: postgresql
-        state: restarted
+        daemon_reload: true
 
   tasks:
     - name: Configure authorized keys
@@ -47,15 +47,19 @@
       ansible.builtin.import_tasks:
         file: tasks/firewall.yaml
 
+    - name: Install Postgresql
+      ansible.builtin.import_role:
+        name: postgresql
+
     - name: Install and Configure postgresql server
       ansible.builtin.import_tasks:
         file: tasks/postgresql.yaml
-      when: inventory_hostname in groups["server"]
+      when: inventory_hostname in groups["postgresql"]
 
-    - name: Install and Configure backup server
+    - name: Install and Configure barman server
       ansible.builtin.import_tasks:
-        file: tasks/backup.yaml
-      when: inventory_hostname in groups["backup"]
+        file: tasks/barman.yaml
+      when: inventory_hostname in groups["barman"]
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

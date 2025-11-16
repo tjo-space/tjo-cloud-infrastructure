@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.78.1"
+      version = "0.84.0"
     }
     authentik = {
       source  = "goauthentik/authentik"
@@ -20,13 +20,13 @@ terraform {
       source  = "cyrilgdn/postgresql"
       version = "1.25.0"
     }
-    dotenv = {
-      source  = "germanbrew/dotenv"
-      version = "1.2.6"
-    }
     desec = {
       source  = "Valodim/desec"
       version = "0.6.1"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "2.5.3"
     }
   }
 
@@ -92,11 +92,11 @@ provider "postgresql" {
   alias    = "for_node"
   for_each = var.nodes
 
-  host            = split("/", each.value.ipv4)[0]
+  host            = "${each.key}.${var.domain}"
   port            = 5432
   database        = "postgres"
   username        = "postgres"
-  password        = provider::dotenv::get_by_key("POSTGRESQL_PASSWORD", "${path.module}/../secrets.env")
+  password        = random_password.postgres.result
   sslmode         = "disable"
   connect_timeout = 15
 }
