@@ -1,7 +1,5 @@
 [Unit]
 Description=Backup PostgreSQL databases daily
-Requires=postgresql.service
-After=postgresql.service
 
 [Timer]
 OnCalendar=daily
