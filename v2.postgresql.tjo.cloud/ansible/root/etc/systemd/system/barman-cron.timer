@@ -1,7 +1,5 @@
 [Unit]
 Description=Run Barman cron every minute
-Requires=postgresql.service
-After=postgresql.service
 
 [Timer]
 OnCalendar=*-*-* *:*:00
