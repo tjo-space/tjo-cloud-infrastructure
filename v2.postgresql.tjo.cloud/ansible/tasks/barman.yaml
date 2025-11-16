@@ -35,14 +35,6 @@
     - barman-cron.service
     - barman-cron.timer
 
-- name: Create /srv/data
-  ansible.builtin.file:
-    state: directory
-    path: "/srv/data"
-    mode: "0755"
-    owner: "root"
-    group: "root"
-
 - name: Create /srv/data/barman
   ansible.builtin.file:
     state: directory
