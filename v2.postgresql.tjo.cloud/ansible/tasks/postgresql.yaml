@@ -1,6 +1,10 @@
 - name: Install Lego
   ansible.builtin.import_role:
     name: lego
+  vars:
+    domains:
+      - "{{ postgresql_cluster_fqdn }}"
+      - "{{ ansible_fqdn }}"
 
 - name: Create Lego override folders
   ansible.builtin.file:
@@ -62,6 +66,8 @@
   when: not postgres_data.stat.exists
 
 - name: Fetch certificate
+  # we run it after postgresql installed. As we need the /var/lib/postgresql
+  # directory to be created. To store the certificates there.
   ansible.builtin.systemd:
     name: lego-run
     state: started

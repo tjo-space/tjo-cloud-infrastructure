@@ -10,17 +10,30 @@
     - barman
     - barman-cli
 
+- name: Remove /etc/barman.d
+  ansible.builtin.file:
+    path: /etc/barman.d
+    state: absent
+
+- name: Create /etc/barman.d
+  ansible.builtin.file:
+    path: /etc/barman.d
+    state: directory
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
 - name: Template barman local.conf
   ansible.builtin.template:
     src: "../root/etc/barman.d/template.conf.j2"
-    dest: "/etc/barman.d/{{ item }}.conf"
+    dest: "/etc/barman.d/{{ ite }}.conf"
     mode: '0644'
     owner: "root"
     group: "root"
-  loop: "{{ groups['postgresql'] }}"
+  loop: "{{ postgresql_clusters }}"
   vars:
-    barman_server_name: "{{ hostvars[item].ansible_hostname }}"
-    barman_server_host: "{{ hostvars[item].ansible_fqdn }}"
+    barman_server_name: "{{ item.name }}"
+    barman_server_host: "{{ item.fqdn }}"
 
 - name: Copy barman systemd files
   ansible.builtin.template:

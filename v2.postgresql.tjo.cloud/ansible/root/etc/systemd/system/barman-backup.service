@@ -6,4 +6,6 @@ OnFailure=notify-webhook-failure@%n.service
 [Service]
 Type=simple
 User=barman
-ExecStart=/usr/bin/barman backup local --wait
+{% for cluster in postgresql_clusters %}
+ExecStart=/usr/bin/barman backup {{ cluster.name }} --wait
+{% endfor %}

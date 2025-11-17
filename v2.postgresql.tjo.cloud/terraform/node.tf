@@ -81,20 +81,25 @@ resource "local_file" "ansible_inventory" {
     postgresql = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host   = v.private_ipv4
-          ansible_port   = 2222
-          ansible_user   = "bine"
-          ansible_become = true
+          ansible_host            = v.private_ipv4
+          ansible_port            = 2222
+          ansible_user            = "bine"
+          ansible_become          = true
+          postgresql_role         = v.postgresql.role
+          postgresql_version      = v.postgresql.version
+          postgresql_cluster_name = v.postgresql.cluster_name
+          postgresql_cluster_fqdn = "${v.postgresql.cluster_name}.${var.domain}"
         } if v.kind == "postgresql"
       }
     }
     barman = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host   = v.private_ipv4
-          ansible_port   = 2222
-          ansible_user   = "bine"
-          ansible_become = true
+          ansible_host        = v.private_ipv4
+          ansible_port        = 2222
+          ansible_user        = "bine"
+          ansible_become      = true
+          postgresql_clusters = local.clusters
         } if v.kind == "barman"
       }
     }

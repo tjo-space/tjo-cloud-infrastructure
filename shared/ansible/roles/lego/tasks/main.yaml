@@ -1,8 +1,3 @@
-- name: Remove Lego
-  ansible.builtin.apt:
-    name: lego
-    state: absent
-
 - name: Set facts for architecture if this is an amd64 system
   when: ansible_architecture == "x86_64"
   set_fact:

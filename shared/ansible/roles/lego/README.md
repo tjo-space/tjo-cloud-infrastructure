@@ -3,6 +3,8 @@
 ## Variables
 ```yaml
 desec_token: ""
+domains:
+ - example.com
 ```
 
 ## Usage
@@ -12,5 +14,7 @@ desec_token: ""
     name: lego
   vars:
     desec_token: ""
+    domains:
+      - example.com
 
 ```

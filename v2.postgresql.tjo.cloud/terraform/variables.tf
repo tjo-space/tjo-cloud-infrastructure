@@ -11,7 +11,12 @@ variable "nodes" {
     data_storage = string
     data_size    = number
 
-    kind = string
+    kind = string // postgresql, barman
+    postgresql = optional(object({
+      version      = string
+      role         = string // primary, replica
+      cluster_name = string
+    }), { version = "", role = "", cluster_name = "" })
   }))
 }
 

@@ -1,5 +1,6 @@
 locals {
   users = { for user in var.users : "${user.name}@${user.node}" => user }
+
   databases = {
     for database in flatten([
       for user in local.users : [
@@ -7,6 +8,11 @@ locals {
       ]
     ]) : "${database.name}@${database.node}" => database
   }
+
+  clusters = [for cluster in toset([for k, v in var.nodes : v.postgresql.cluster_name if v.kind == "postgresql"]) : {
+    name = cluster
+    fqdn = "${cluster}.${var.domain}"
+  }]
 
   global = yamldecode(file("../../${path.module}/global.yaml"))
 }
