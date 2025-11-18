@@ -1,10 +1,6 @@
 - name: Install Lego
   ansible.builtin.import_role:
     name: lego
-  vars:
-    domains:
-      - "{{ postgresql_cluster_fqdn }}"
-      - "{{ ansible_fqdn }}"
 
 - name: Create Lego override folders
   ansible.builtin.file:
@@ -45,7 +41,7 @@
     mode: '0644'
     owner: "postgres"
     group: "postgres"
-  notify: Reload postgresql
+  notify: Restart postgresql
 
 - name: Create /srv/data/postgresql
   ansible.builtin.file:

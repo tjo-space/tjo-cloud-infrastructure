@@ -1,11 +1,6 @@
 nodes = {
   nevaroo-one = {
     kind = "postgresql"
-    postgresql = {
-      cluster_name = "nevaroo"
-      role    = "primary"
-      version = "18"
-    }
 
     host         = "nevaroo"
     boot_storage = "local-nvme-lvm"
@@ -19,11 +14,6 @@ nodes = {
 
   endor-one = {
     kind = "postgresql"
-    postgresql = {
-      cluster_name = "endor"
-      role    = "primary"
-      version = "18"
-    }
 
     host         = "endor"
     boot_storage = "local-nvme"

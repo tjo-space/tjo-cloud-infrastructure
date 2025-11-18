@@ -12,11 +12,8 @@ variable "nodes" {
     data_size    = number
 
     kind = string // postgresql, barman
-    postgresql = optional(object({
-      version      = string
-      role         = string // primary, replica
-      cluster_name = string
-    }), { version = "", role = "", cluster_name = "" })
+
+    postgresql_version = optional(string, "18")
   }))
 }
 

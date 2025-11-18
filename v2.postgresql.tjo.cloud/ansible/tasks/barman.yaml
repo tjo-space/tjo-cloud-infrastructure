@@ -26,14 +26,14 @@
 - name: Template barman local.conf
   ansible.builtin.template:
     src: "../root/etc/barman.d/template.conf.j2"
-    dest: "/etc/barman.d/{{ ite }}.conf"
+    dest: "/etc/barman.d/{{ item }}.conf"
     mode: '0644'
     owner: "root"
     group: "root"
-  loop: "{{ postgresql_clusters }}"
+  loop: "{{ groups['postgresql'] }}"
   vars:
-    barman_server_name: "{{ item.name }}"
-    barman_server_host: "{{ item.fqdn }}"
+    barman_server_name: "{{ hostvars[item].ansible_hostname }}"
+    barman_server_host: "{{ hostvars[item].ansible_fqdn }}"
 
 - name: Copy barman systemd files
   ansible.builtin.template:
@@ -44,6 +44,7 @@
     group: "root"
   loop:
     - barman-backup.service
+    - barman-backup@.service
     - barman-backup.timer
     - barman-cron.service
     - barman-cron.timer

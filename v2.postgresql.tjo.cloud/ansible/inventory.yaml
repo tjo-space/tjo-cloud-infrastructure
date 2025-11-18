@@ -5,11 +5,7 @@
       "ansible_host": "10.0.4.10"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "postgresql_clusters":
-      - "fqdn": "endor.postgresql.tjo.cloud"
-        "name": "endor"
-      - "fqdn": "nevaroo.postgresql.tjo.cloud"
-        "name": "nevaroo"
+      "postgresql_version": "18"
 "postgresql":
   "hosts":
     "endor-one.postgresql.tjo.cloud":
@@ -17,16 +13,10 @@
       "ansible_host": "10.0.4.12"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "postgresql_cluster_fqdn": "endor.postgresql.tjo.cloud"
-      "postgresql_cluster_name": "endor"
-      "postgresql_role": "primary"
       "postgresql_version": "18"
     "nevaroo-one.postgresql.tjo.cloud":
       "ansible_become": true
       "ansible_host": "10.0.4.11"
       "ansible_port": 2222
       "ansible_user": "bine"
-      "postgresql_cluster_fqdn": "nevaroo.postgresql.tjo.cloud"
-      "postgresql_cluster_name": "nevaroo"
-      "postgresql_role": "primary"
       "postgresql_version": "18"

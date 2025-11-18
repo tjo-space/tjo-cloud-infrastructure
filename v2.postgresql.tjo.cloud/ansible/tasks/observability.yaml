@@ -22,8 +22,6 @@
       service.version: "{{ tjo_cloud_version }}"
       cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
       cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
-      postgresql.version: "{{ postgresql_version }}"
-      postgresql.cluster.name: "{{ postgresql_cluster_name }}"
     alloy_custom_integrations: |
       database_observability.postgres "all" {
         data_source_name  = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"

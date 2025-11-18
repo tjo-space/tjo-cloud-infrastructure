@@ -1,11 +1,11 @@
 [Unit]
 Description=Backup PostgreSQL databases using Barman
-RequiresMountsFor=/srv/data/barman
 OnFailure=notify-webhook-failure@%n.service
 
+BindsTo={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}.service {% endfor %}
+
+After={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}.service {% endfor %}
+
 [Service]
-Type=simple
-User=barman
-{% for cluster in postgresql_clusters %}
-ExecStart=/usr/bin/barman backup {{ cluster.name }} --wait
-{% endfor %}
+Type=oneshot
+ExecStart=/bin/true

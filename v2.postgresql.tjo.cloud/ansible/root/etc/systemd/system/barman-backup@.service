@@ -1,0 +1,10 @@
+[Unit]
+Description=Backup PostgreSQL databases using Barman
+RequiresMountsFor=/srv/data/barman
+OnFailure=notify-webhook-failure@%n.service
+PartOf=barman-backup.service
+
+[Service]
+Type=simple
+User=barman
+ExecStart=/usr/bin/barman backup %i --wait
