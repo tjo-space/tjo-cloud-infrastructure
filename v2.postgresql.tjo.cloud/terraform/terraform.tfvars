@@ -10,6 +10,8 @@ nodes = {
 
     cores  = 2
     memory = 8192
+
+    postgresql_version = "16"
   }
 
   endor-one = {
@@ -23,6 +25,8 @@ nodes = {
 
     cores  = 2
     memory = 8192
+
+    postgresql_version = "16"
   }
 
   barman = {
@@ -36,6 +40,8 @@ nodes = {
 
     cores  = 2
     memory = 2048
+
+    postgresql_version = "18"
   }
 }
 

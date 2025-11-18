@@ -13,7 +13,7 @@ variable "nodes" {
 
     kind = string // postgresql, barman
 
-    postgresql_version = optional(string, "18")
+    postgresql_version = string
   }))
 }
 

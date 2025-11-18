@@ -9,9 +9,6 @@
 
 - name: Install Postgresql
   ansible.builtin.apt:
-    name: '{{ item }}'
+    name: 'postgresql-{{ postgresql_version }}'
     state: present
     update_cache: true
-  loop:
-    - postgresql-{{ postgresql_version }}
-    - postgresql-client-{{ postgresql_version }}

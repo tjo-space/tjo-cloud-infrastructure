@@ -10,6 +10,25 @@
     - barman
     - barman-cli
 
+- name: Create SSH Key for barman user
+  ansible.builtin.command:
+    cmd: sudo -u barman -- ssh-keygen -t ed25519 -f /var/lib/barman/.ssh/id_ed25519 -N ""
+    creates: /var/lib/barman/.ssh/id_ed25519
+
+- name: Get barman public ssh key
+  ansible.builtin.command:
+    cmd: cat /var/lib/barman/.ssh/id_ed25519.pub
+  register: barman_public_key
+
+- name: Configure authorized keys on postgresql hosts
+  ansible.posix.authorized_key:
+    user: postgres
+    state: present
+    exclusive: true
+    key: "{{ barman_public_key.stdout }}"
+  delegate_to: "{{ item }}"
+  loop: "{{ groups['postgresql'] }}"
+
 - name: Remove /etc/barman.d
   ansible.builtin.file:
     path: /etc/barman.d
