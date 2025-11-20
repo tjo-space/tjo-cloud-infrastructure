@@ -69,13 +69,13 @@ email = "mail"
 
 [directory.internal]
 type = "internal"
-store = "pink_postgresql_tjo_cloud"
+store = "nevaroo_one_postgresql_tjo_cloud"
 
-[store.pink_postgresql_tjo_cloud]
+[store.nevaroo_one_postgresql_tjo_cloud]
 type = "postgresql"
 compression = "lz4"
 database = "mail.tjo.cloud_stalwart"
-host = "pink.postgresql.tjo.cloud"
+host = "nevaroo-one.postgresql.tjo.cloud"
 user = "mail.tjo.cloud"
 password = "%{env:POSTGRESQL_PASSWORD}%"
 pool.max-connections = 10
