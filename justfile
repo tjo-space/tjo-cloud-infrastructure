@@ -13,7 +13,6 @@ mod network 'network.tjo.cloud'
 mod ingress 'ingress.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'
 mod postgresql 'postgresql.tjo.cloud'
-mod postgresqlv2 'v2.postgresql.tjo.cloud'
 mod mail 'mail.tjo.cloud'
 
 import 'secrets.justfile'

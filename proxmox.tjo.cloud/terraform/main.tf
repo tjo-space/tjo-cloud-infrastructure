@@ -9,8 +9,6 @@ locals {
     "ubuntu_2404_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
     "debian_13_server_cloudimg_amd64.img"   = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
   }
-
-  ssh_keys = yamldecode(file("../../${path.module}/global.yaml")).ssh_keys
 }
 
 resource "proxmox_virtual_environment_download_file" "images" {

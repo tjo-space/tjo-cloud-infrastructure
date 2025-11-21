@@ -1,9 +1,0 @@
-[Unit]
-Description=Restic Check
-
-[Timer]
-OnCalendar=daily
-Unit=restic-check.service
-
-[Install]
-WantedBy=timers.target

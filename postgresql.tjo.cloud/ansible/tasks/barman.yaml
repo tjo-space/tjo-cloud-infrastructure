@@ -1,3 +1,13 @@
+- name: Disable postgresql
+  ansible.builtin.systemd:
+    name: postgresql
+    state: stopped
+    enabled: false
+
+- name: Destroy all clusters
+  ansible.builtin.shell:
+    cmd: pg_dropcluster {{ postgresql_version }} main || true
+
 - name: Configure backups
   ansible.builtin.import_tasks:
     file: tasks/barman_backups.yaml

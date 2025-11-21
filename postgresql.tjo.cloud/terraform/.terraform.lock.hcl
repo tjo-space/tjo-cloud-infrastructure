@@ -2,26 +2,25 @@
 # Manual edits may be lost in future updates.
 
 provider "registry.opentofu.org/bpg/proxmox" {
-  version     = "0.78.1"
-  constraints = "0.78.1"
+  version     = "0.84.0"
+  constraints = "0.84.0"
   hashes = [
-    "h1:8PBn3PpZ6DPFoZw00AsKyhF0gs1gaXeIP524tCR5JkY=",
-    "h1:pWFqDb2syqPw/TXBz0czi7zXjGuQ4JkSKmg5uZ+ASE4=",
-    "zh:09187c2edd451e4a38a0710d059705ffc9370292bc23ebd70947754bf852d985",
-    "zh:146c22064b0d7b23fb4b45166f5d3b199996ccb88ecc8d31b4981d331c541622",
-    "zh:1f54f78f68ac7d0309ed8050caa6119614ffd415687f1afe846a34145ba34477",
-    "zh:2666c9ae10495d0feaed2ace3b589c1d660e91d4a8516fb83d975e097b8f483b",
-    "zh:27d68a270c88fbbd61fbc324caeb28cbe1a2d449cec31d256ac09d327ce88728",
-    "zh:28288a468e678203d64bcdfa368a8235218775a0358bc326cb97260296a429bb",
-    "zh:74c472e07c243b5262b388e0a854f35f9910ee26ee42552bbeb17084848fd727",
-    "zh:7c36d8271a65275a28a03054bcef32e80621f2adca5115e5b005ff17b2b3e739",
-    "zh:a7eece0a670368b02f40bbf30c7ee89c423fab6d2500ddca8d5dcbb8d24db42e",
-    "zh:aaa7d3e29d42650d5b2227b9bd54d450f5cdde165a3ac191f8165243507b3b6c",
-    "zh:b06ac70c456d713bce90d5b9a5834f0bc6ce81996afd1a06a967c5a6a371a19b",
-    "zh:cc7dd98725073bda6ef8cfdcd05eabaefbf8218c032899e75613dc67e5549bca",
-    "zh:d5e3473807d338d1a0104a3cb595db131a5a1f7b81b09aac33ff2f92d6d94d9f",
-    "zh:ee1b2d521eccf80b1169b89823dec72e228dadf6a8c8aaff7d5afc084b8aefde",
+    "h1:6SUEO79X1q1ERWkifvQW4Y62XTPb6PSWzXRGSCmg0mU=",
+    "zh:1b8fa4a228fdc42fabe8ed694a2b7a486cb910813d3a4f598c0b0b20691fad80",
+    "zh:3161bc138cf47ea469b35a9dc1f5a04c149ffe1575b443f0221cca88dce6bc2f",
+    "zh:45e499950cc8b1c132fd26ae73b241cbf4f80df2751076ead096fa76b6237721",
+    "zh:467470141410200f53252d04109dfe44f3e731eaf54c086fc5e7306246d899d3",
+    "zh:4e65c5dad69c054ec794fd68dd272472488f13381762b981a2f3548888ef7477",
+    "zh:69b1adb99069ed660e7443a94fe6afdc335c1eadc592ccb646433a73e45ef7f4",
+    "zh:6a21b05a66b3359fdb6b0874177b0699017141c502d24e78b19a2fa09111f021",
+    "zh:8032868d980db57a034e310c133dcb9fc85e00060fdbee8eb147609ee12613df",
+    "zh:9a66c81ccdca79575cc73f3a6682bb6b119c3f8b0ff448078220dc23b197fe87",
+    "zh:e17123a19ff0157260914a7881549c292a65c2d4d9e10aa82282e76bd8111cee",
+    "zh:e1f75d59f1c64a9fa4ce3932b032e18f3e1bdf5c8c5234f84743005b3c1006c0",
+    "zh:e90e91c7190ce57c22232a6c48f1faab32fa4887275fa010ecdd6e9013c0bec7",
     "zh:f26e0763dbe6a6b2195c94b44696f2110f7f55433dc142839be16b9697fa5597",
+    "zh:f44914aa7cc137150ab9d7031bdb7b9bed70559482c1e9463bfae81726a4f8c0",
+    "zh:f94c95ff0daa0602971fcad335b12ab33a13006131575dd10df477ac6e937d7b",
   ]
 }
 
@@ -30,7 +29,6 @@ provider "registry.opentofu.org/cyrilgdn/postgresql" {
   constraints = "1.25.0"
   hashes = [
     "h1:4Hlupc8gYrPnFKisesXs9lypK6LXslU4L4tjBZOhmiE=",
-    "h1:S0Nv3pAGngEqGAniq2y1aINUL9IqftERPNNXJiHCTC8=",
     "zh:0f9db6e1274603d642e96b58eaf6cc4223f7118f2d7ce909dc4812d332cc002a",
     "zh:1819470f0304c6a60b2b51817cb43f6ff59a49e08cc9e50644b86b3a76c91601",
     "zh:27bfb544983cac101a7c7c2e4cb9939a712dffcdd7ddcab83c2f8afc334e33c5",
@@ -48,36 +46,11 @@ provider "registry.opentofu.org/cyrilgdn/postgresql" {
   ]
 }
 
-provider "registry.opentofu.org/germanbrew/dotenv" {
-  version     = "1.2.6"
-  constraints = "1.2.6"
-  hashes = [
-    "h1:niuXdh8DISz5Jxdo/+EtjDeoVtQd9NewlBclJIfVdh4=",
-    "h1:qlPRotX4uz/INtiwDzWdHWLGyM8uC3qdIV/tVH6pqDo=",
-    "zh:030c62a975bc821178ff22e55f62fc5994de27bfdbb01df17c87e1e4a4c4cdfb",
-    "zh:2a1179f12b4930943b0fb7e61e745cb9b936915864f2de5fe1503588f84ff4e1",
-    "zh:4161a396f877fd83017a41253dd4de637cfb093b3f9f6accadaef3d9fb1e549c",
-    "zh:44fe9924baccdf21d4e23fc5fe75a41fb0087314c3f2581de127ad20e6b3d006",
-    "zh:610ad3093e8f0be0312e596db4cccc23d96e19792debe4d8334c8dd8e0782695",
-    "zh:749441f7b5c49e6676201d67f3126cff7a889c52fda32b8c6cf57af878394dad",
-    "zh:890df766e9b839623b1f0437355032a3c006226a6c200cd911e15ee1a9014e9f",
-    "zh:9537c5c8c28401cb2cc00137de35e0cfd888bd883c5ce7624e26c87cbe1f89d7",
-    "zh:abc0d7740d689e4daf6a8967a8ac4768a47ea588739378b4c19b13f9641f99ee",
-    "zh:b85076cc77a4c6e51a8a9c3aed864ccfccd6e90ae461f68ede82d915414715a9",
-    "zh:b8d4b56b159e958e10e7c7017a43dd2c716aaf569bcb7219d1f18f867944c038",
-    "zh:cd066c9e978fe7d276876d3e85730ac4b958db03e8df13295f657746fa233488",
-    "zh:d9ffbdf3588c4ff5872d29a54c822b4c3bbbdd54a7ab07f09cc1c9bf0ce2a4f0",
-    "zh:ea4eb7e0483b84e56b03bd10cc321d1aeebc75d12d4d193c690a12a33c1d5548",
-    "zh:fad2b0efdea4c91540f8ae54868c0b71ad6cb1d728d852833b7d61b9b3b17910",
-  ]
-}
-
 provider "registry.opentofu.org/goauthentik/authentik" {
   version     = "2025.4.0"
   constraints = "2025.4.0"
   hashes = [
     "h1:2zDfT1wb2SNbIoanYeQ0nV32eOcqTmxLN1fv7fIbnKQ=",
-    "h1:4BxCi06ZJqqRSpNiWl5McGaA+yNczztd+3CUxD3hbMU=",
     "zh:0236341fc44717e1dc3398971e82bf0f9d23a861afd4e023daa0a4d7ea7b8059",
     "zh:07bc3fcd89e778f3894c543f84269e6188baaf3ccc8cdb37a82afd12882ae7bc",
     "zh:2a09b37449c1101750de128cb9bba373cab802916a58d87083b9acb544907ba8",
@@ -99,7 +72,6 @@ provider "registry.opentofu.org/hashicorp/kubernetes" {
   version     = "2.37.1"
   constraints = "2.37.1"
   hashes = [
-    "h1:UWJPvQZxW9Q6mxtUvIdnapPE8s8o4a2HUo53OInq9p4=",
     "h1:uQ6QiHEMu5dm39sbMNE3ANFUeqTjrqb2P/lxHtfkctE=",
     "zh:22031e9995b3dc7ae497305dc6c5b7bf1a585c378d46446e724601f992cd9e11",
     "zh:3614bc188ae5040d892671009c66f56cfcb3859e11f42ed7ffc1cee384b1275b",
@@ -113,11 +85,28 @@ provider "registry.opentofu.org/hashicorp/kubernetes" {
   ]
 }
 
+provider "registry.opentofu.org/hashicorp/local" {
+  version     = "2.5.3"
+  constraints = "2.5.3"
+  hashes = [
+    "h1:mC9+u1eaUILTjxey6Ivyf/3djm//RNNze9kBVX/trng=",
+    "zh:32e1d4b0595cea6cda4ca256195c162772ddff25594ab4008731a2ec7be230bf",
+    "zh:48c390af0c87df994ec9796f04ec2582bcac581fb81ed6bb58e0671da1c17991",
+    "zh:4be7289c969218a57b40902e2f359914f8d35a7f97b439140cb711aa21e494bd",
+    "zh:4cf958e631e99ed6c8b522c9b22e1f1b568c0bdadb01dd002ca7dffb1c927764",
+    "zh:7a0132c0faca4c4c96aa70808effd6817e28712bf5a39881666ac377b4250acf",
+    "zh:7d60de08fac427fb045e4590d1b921b6778498eee9eb16f78c64d4c577bde096",
+    "zh:91003bee5981e99ec3925ce2f452a5f743827f9d0e131a86613549c1464796f0",
+    "zh:9fe2fe75977c8149e2515fb30c6cc6cfd57b225d4ce592c570d81a3831d7ffa3",
+    "zh:e210e6be54933ce93e03d0994e520ba289aa01b2c1f70e77afb8f2ee796b0fe3",
+    "zh:e8793e5f9422f2b31a804e51806595f335b827c9a38db18766960464566f21d5",
+  ]
+}
+
 provider "registry.opentofu.org/hashicorp/random" {
   version     = "3.7.1"
   constraints = "3.7.1"
   hashes = [
-    "h1:mV0IpNNTXywcEHuCRfvvjsaaVPPDFRrH7YQmd7/FD24=",
     "h1:v8+6umuoWwD1nKm+3tPcPO8rKHthran7ZSbm7J2xQEc=",
     "zh:1011387a5127d46e2bf0bd5124a8469506272b2110613d9eb80d178f94bd67a9",
     "zh:28785c36d6dc331d49e8bf6a30d4ba21ae4378f5d98c43c0aeb42f51efb2e42f",

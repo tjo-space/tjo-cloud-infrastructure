@@ -2,20 +2,18 @@ variable "nodes" {
   type = map(object({
     host = string
 
-    cores  = optional(number, 4)
-    memory = optional(number, 8192)
-
-    ipv4 = string
-    ipv6 = string
+    cores  = number
+    memory = number
 
     boot_storage = string
     boot_size    = optional(number, 8)
 
     data_storage = string
-    data_size    = optional(number, 64)
+    data_size    = number
 
-    backup_storage = string
-    backup_size    = optional(number, 72)
+    kind = string // postgresql, barman
+
+    postgresql_version = string
   }))
 }
 
@@ -49,10 +47,6 @@ variable "pgadmin_client_secret" {
 variable "domain" {
   type    = string
   default = "postgresql.tjo.cloud"
-}
-
-variable "ssh_keys" {
-  type = list(string)
 }
 
 variable "proxmox_token" {
