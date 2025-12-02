@@ -1,3 +1,11 @@
+resource "desec_rrset" "admin" {
+  domain  = "tjo.cloud"
+  subname = trimsuffix(var.domain, ".tjo.cloud")
+  type    = "CNAME"
+  records = ["any.ingress.tjo.cloud."]
+  ttl     = 3600
+}
+
 resource "desec_rrset" "node_a" {
   for_each = local.nodes_deployed
   domain   = "tjo.cloud"
