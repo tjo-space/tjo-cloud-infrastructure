@@ -22,6 +22,46 @@ resource "random_password" "barman" {
   special = false
 }
 
+##
+# ADMINISTRATORS
+##
+resource "random_password" "administrator" {
+  for_each = var.administrators
+  length   = 22
+  special  = false
+  lower    = true
+  upper    = false
+  numeric  = false
+
+  lifecycle {
+    ignore_changes = [
+      special,
+      lower,
+      upper,
+      numeric,
+    ]
+  }
+}
+resource "postgresql_role" "administrator" {
+  for_each = {
+    for item in setproduct(var.administrators, toset([for name, node in var.nodes : name if node.kind == "postgresql"])) :
+    "${item[0]}@${item[1]}" => {
+      name : item[0], node : item[1]
+    }
+  }
+
+  provider = postgresql.for_node[each.value.node]
+
+  name             = each.value.name
+  password         = random_password.administrator[each.value.name].result
+  connection_limit = 10
+  login            = true
+  superuser        = true
+}
+
+##
+# USERS
+##
 resource "random_password" "user" {
   for_each = local.users
   length   = 22

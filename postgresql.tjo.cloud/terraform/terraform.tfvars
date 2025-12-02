@@ -67,3 +67,8 @@ users = [
     databases = [{ name = "penpot.tjo.space" }]
   },
 ]
+
+administrators = [
+  "tine.jozelj",
+  "jakob.jozelj",
+]

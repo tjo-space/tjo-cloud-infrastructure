@@ -25,30 +25,6 @@ provider "registry.opentofu.org/bpg/proxmox" {
   ]
 }
 
-provider "registry.opentofu.org/dnsimple/dnsimple" {
-  version     = "1.9.0"
-  constraints = "1.9.0"
-  hashes = [
-    "h1:6yedPhefyPBvTnefpM6Dzjjxcx1vlgu67bdBNNFyX/4=",
-    "h1:We0jiT7B4W2uERRFaRVrNpsigWF9IrPFHS9EoEfG08w=",
-    "zh:04a901a8f4388fac2d20683ef962b4506c3a36399be4b22519f6f55e9d76713d",
-    "zh:1248e266aaff4c0ac7786d111460899e9e40909f9239cd0aa6aa5eef1a4eb374",
-    "zh:1c99396d8242f0cea9d8f259a337007dd906c833e8d8162fa0fe94f3f9ad8d22",
-    "zh:429322f768254f71d8a8b9593201e84d10ee566aa98a8e1f26e7d42b81ff182e",
-    "zh:5c4c28457c930529439156f4dd6d6b9f4871e03c0712aa06e480e027d85ad4e4",
-    "zh:64f92aedf59d56a1df1ae533f0722d5a14c53d666fa32b7df5a4335c5cf7d856",
-    "zh:8c3ee884af82835976a8ab67489abd2b025d2fd9ef7ed053decc486c15f9d256",
-    "zh:965e06f040a4fba4f8740025713a9f34803e333ca128ebbb5072c7e5dfa7b494",
-    "zh:9e066a6664a87384256590617766a5df39d2080f8aa2f904ba3723340855abfa",
-    "zh:a054196e46d361ea78b382f400f78372efe82ff82a87bb217c14e6d1159856a4",
-    "zh:b1dad1f77f5054eb7623e52e6b684f091205d762da4b499e114dc65936bcf3f3",
-    "zh:d2712ee6f21c8926286c16731ee92c2846ee56219417a288f333785f30cb55bc",
-    "zh:e7e144f7b00b844f704a2caf1028069b286be0cc181ae79c106d46731d19cb46",
-    "zh:e97ac72edfdcea611726524f1e9ea028c94280ae2bfe7075af4b0cc89d4ea46f",
-    "zh:f809ab383cca0a5f83072981c64208cbd7fa67e986a86ee02dd2c82333221e32",
-  ]
-}
-
 provider "registry.opentofu.org/gavinbunney/kubectl" {
   version     = "1.19.0"
   constraints = "1.19.0"

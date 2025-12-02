@@ -1,5 +1,5 @@
 locals {
-  pgadmin_version = "9.4.0"
+  pgadmin_version = "9.10.0"
 }
 
 resource "random_password" "pgadmin" {
@@ -209,6 +209,67 @@ resource "kubernetes_service" "pgadmin" {
   }
 }
 
+resource "kubernetes_manifest" "gateway" {
+  manifest = {
+    apiVersion = "gateway.networking.k8s.io/v1"
+    kind       = "Gateway"
+    metadata = {
+      name      = "postgresql-tjo-cloud"
+      namespace = kubernetes_namespace.this.metadata[0].name
+      annotations = {
+        "cert-manager.io/cluster-issuer" = "acme"
+      }
+    }
+    spec = {
+      gatewayClassName = "envoy"
+      listeners = [
+        {
+          name     = var.domain
+          hostname = var.domain
+          protocol = "HTTPS"
+          port     = 443
+          tls = {
+            mode = "Terminate"
+            certificateRefs = [{
+              name = "${var.domain}-tls"
+            }]
+          }
+          allowedRoutes = {
+            kinds : [{ kind : "HTTPRoute" }]
+            namespaces = { from = "Same" }
+          }
+        }
+      ]
+    }
+  }
+
+  wait {
+    fields = {
+      "status.addresses[0].type"  = "IPAddress"
+      "status.addresses[0].value" = "^(\\d+(\\.|$)){4}"
+    }
+  }
+}
+
+resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
+  manifest = {
+    apiVersion = "gateway.envoyproxy.io/v1alpha1"
+    kind       = "ClientTrafficPolicy"
+    metadata = {
+      name      = "enable-proxy-protocol-policy"
+      namespace = kubernetes_namespace.this.metadata[0].name
+    }
+    spec = {
+      targetRef = {
+        group = "gateway.networking.k8s.io"
+        kind  = "Gateway"
+        name  = kubernetes_manifest.gateway.object.metadata.name
+      }
+      enableProxyProtocol = true
+    }
+  }
+}
+
 resource "kubernetes_manifest" "pgadmin-http-route" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -218,9 +279,9 @@ resource "kubernetes_manifest" "pgadmin-http-route" {
       namespace = kubernetes_namespace.this.metadata[0].name
     }
     spec = {
-      parentRefs = [
-        { name = "primary", namespace = "tjo-cloud" }
-      ]
+      parentRefs = [{
+        name = kubernetes_manifest.gateway.object.metadata.name
+      }]
       hostnames = [var.domain]
       rules = [
         {

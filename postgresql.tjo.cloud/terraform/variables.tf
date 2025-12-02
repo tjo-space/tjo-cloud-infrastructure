@@ -34,6 +34,11 @@ variable "users" {
   }))
 }
 
+variable "administrators" {
+  type        = set(string)
+  description = "Administrator users to be created on all nodes."
+}
+
 variable "pgadmin_client_id" {
   type      = string
   sensitive = true

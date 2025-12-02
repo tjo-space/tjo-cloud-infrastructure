@@ -13,12 +13,7 @@ resource "kubernetes_manifest" "acme-gateway" {
         protocol = "HTTP"
         port     = 80
         allowedRoutes = {
-          kinds : [
-            { kind : "HTTPRoute" },
-          ]
-          # Only allow HTTPRoute from the same namespace
-          # as we only need this for cert-manager.
-          # All other namespaces should use HTTPS instead.
+          kinds : [{ kind : "HTTPRoute" }]
           namespaces = { from = "All" }
         }
       }],
@@ -45,7 +40,7 @@ resource "kubernetes_manifest" "acme-enable-proxy-protocol-policy" {
       targetRef = {
         group = "gateway.networking.k8s.io"
         kind  = "Gateway"
-        name  = kubernetes_manifest.gateway.object.metadata.name
+        name  = kubernetes_manifest.acme-gateway.object.metadata.name
       }
       enableProxyProtocol = true
     }
@@ -71,8 +66,9 @@ resource "kubernetes_manifest" "issuer" {
             http01 = {
               gatewayHTTPRoute = {
                 parentRefs = [{
-                  name = kubernetes_manifest.acme-gateway.object.metadata.name
-                  kind = "Gateway"
+                  name      = kubernetes_manifest.acme-gateway.object.metadata.name
+                  namespace = kubernetes_manifest.acme-gateway.object.metadata.namespace
+                  kind      = "Gateway"
                 }]
               }
             }

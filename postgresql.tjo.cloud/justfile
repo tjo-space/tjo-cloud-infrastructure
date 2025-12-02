@@ -25,7 +25,10 @@ destroy-only node:
   tofu destroy --target 'module.proxmox_node["{{node}}"]'
 
 get-users:
-  cd {{source_directory()}}/terraform && tofu output -json | jq '.users.value '
+  cd {{source_directory()}}/terraform && tofu output -json | jq '.users.value'
+
+get-administrators:
+  cd {{source_directory()}}/terraform && tofu output -json | jq '.administrators.value'
 
 configure node:
   #!/usr/bin/env sh

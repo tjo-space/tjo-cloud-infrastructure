@@ -21,3 +21,13 @@ output "users" {
 output "databases" {
   value = local.databases
 }
+
+output "administrators" {
+  sensitive = true
+  value = [
+    for name in var.administrators : {
+      username = name
+      password = random_password.administrator[name].result
+    }
+  ]
+}
