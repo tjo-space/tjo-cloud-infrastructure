@@ -62,14 +62,27 @@
     - 'dnsmasq'
     - 'frr-pythontools'
 
+- name: Disable dnsmasq
+  ansible.builtin.systemd:
+    name: 'dnsmasq.service'
+    state: stopped
+    enabled: false
+
 - name: Disable SDN Dependencies
   ansible.builtin.systemd:
     name: '{{ item }}'
-    state: stopped
-    enabled: false
+    state: started
+    enabled: true
   loop:
-    - 'dnsmasq.service'
     - 'frr.service'
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+
+- name: Configure resolv.conf
+  ansible.builtin.template:
+    src: root/etc/resolv.conf
+    dest: /etc/resolv.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"

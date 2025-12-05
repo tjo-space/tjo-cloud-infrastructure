@@ -1,0 +1,47 @@
+- name: Install software-properties-common
+  ansible.builtin.apt:
+    name: software-properties-common
+
+- name: Add non-free-firmware repository component
+  ansible.builtin.shell: |
+    apt-add-repository --component non-free-firmware --yes
+
+- name: Install intel-microcode
+  ansible.builtin.apt:
+    name: intel-microcode
+
+- name: Install Tailscale
+  ansible.builtin.include_role:
+    name: tailscale
+
+- name: Disable rpcbind
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: stopped
+    enabled: false
+    masked: true
+  loop:
+    - rpcbind.target
+    - rpcbind.socket
+    - rpcbind.service
+
+- name: Secure SSH
+  ansible.builtin.shell: |
+    echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
+
+- name: Ensure journald.conf.d folder exists
+  ansible.builtin.file:
+    path: /etc/systemd/journald.conf.d
+    state: directory
+    mode: '0755'
+    owner: root
+    group: root
+
+- name: Copy systemd-journald config overrides
+  ansible.builtin.template:
+    src: root/etc/systemd/journald.conf.d/overrides.conf
+    dest: /etc/systemd/journald.conf.d/overrides.conf
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Restart systemd-journald

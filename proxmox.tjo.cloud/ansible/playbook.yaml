@@ -17,6 +17,10 @@
       ansible.builtin.systemd:
         name: networking
         state: restarted
+    - name: Restart systemd-journald
+      ansible.builtin.systemd:
+        name: systemd-journald
+        state: restarted
 
   tasks:
     - name: Fetch Public SSH Key
@@ -36,9 +40,17 @@
         key: "{{ hostvars[item]['root_ssh_key_pub'] }}"
       loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
-    - name: Install Tailscale
-      ansible.builtin.include_role:
-        name: tailscale
+    - name: Include base task
+      ansible.builtin.include_tasks:
+        file: tasks/base.yaml
+
+    - name: Include firewall task
+      ansible.builtin.include_tasks:
+        file: tasks/firewall.yaml
+
+    - name: Include folder2ram task
+      ansible.builtin.include_tasks:
+        file: tasks/folder2ram.yaml
 
     - name: Connect to Tailscale
       ansible.builtin.shell: |

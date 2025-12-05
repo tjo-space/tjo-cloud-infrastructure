@@ -1,0 +1,45 @@
+- name: Install folder2ram
+  ansible.builtin.template:
+    src: root/sbin/folder2ram
+    dest: /sbin/folder2ram
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Create folder2ram systemd startup override
+  ansible.builtin.file:
+    path: /etc/systemd/system/folder2ram_startup.service.d
+    state: directory
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Setup folder2ram systemd configs
+  ansible.builtin.template:
+    src: "root/{{ item }}"
+    dest: "{{ item }}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  loop:
+    - "/etc/systemd/system/folder2ram_startup.service.d/chown-logs.conf"
+    - "/etc/systemd/system/folder2ram-sync.service"
+    - "/etc/systemd/system/folder2ram-sync.timer"
+
+- name: Setup folder2ram config
+  ansible.builtin.template:
+    src: "root/etc/folder2ram/folder2ram.conf"
+    dest: "/etc/folder2ram/folder2ram.conf"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+
+- name: Folder2ram enable systemd
+  ansible.builtin.shell: |
+    folder2ram -enablesystemd
+
+- name: Enable folder2ram timer
+  ansible.builtin.systemd:
+    name: folder2ram-sync.timer
+    enabled: true
+    state: started
