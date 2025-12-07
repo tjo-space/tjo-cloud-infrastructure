@@ -44,7 +44,7 @@ resource "desec_rrset" "any" {
   ttl     = 3600
 }
 resource "desec_rrset" "node_a" {
-  for_each = { for k, v in local.nodes_deployed : k => v if v.private_ipv4 != "" }
+  for_each = local.nodes_deployed
   domain   = "tjo.cloud"
   subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
   type     = "A"
@@ -52,7 +52,7 @@ resource "desec_rrset" "node_a" {
   ttl      = 3600
 }
 resource "desec_rrset" "node_aaaa" {
-  for_each = { for k, v in local.nodes_deployed : k => v if v.private_ipv6 != "" }
+  for_each = local.nodes_deployed
   domain   = "tjo.cloud"
   subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
   type     = "AAAA"
