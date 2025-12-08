@@ -39,3 +39,6 @@ otlp:
 storage:
   tsdb:
     out_of_order_time_window: "30m"
+    retention:
+      size: "70GB"
+      time: "1y"
