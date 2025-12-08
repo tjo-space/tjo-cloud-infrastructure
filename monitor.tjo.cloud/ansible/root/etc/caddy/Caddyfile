@@ -1,0 +1,61 @@
+{
+	log
+}
+
+##
+# GRAFANA
+##
+new.monitor.tjo.cloud {
+	reverse_proxy localhost:8080 {
+		health_uri /health
+		health_port 8080
+	}
+}
+
+##
+# PROMETHEUS
+##
+prometheus.new.monitor.tjo.cloud {
+	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
+		header_up Host {http.reverse_proxy.upstream.host}
+	}
+
+	forward_auth https://id.tjo.cloud {
+		uri /outpost.goauthentik.io/auth/caddy
+		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Entitlements X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
+	}
+
+	reverse_proxy localhost:9090 {
+		health_uri /-/ready
+		health_port 9090
+	}
+}
+
+##
+# LOKI
+##
+loki.new.monitor.tjo.cloud {
+	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
+		header_up Host {http.reverse_proxy.upstream.host}
+	}
+
+	forward_auth https://id.tjo.cloud {
+		uri /outpost.goauthentik.io/auth/caddy
+		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Entitlements X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
+	}
+
+	reverse_proxy localhost:3010 {
+		health_uri /ready
+		health_port 3010
+	}
+}
+
+##
+# OTEL
+##
+grpc.otel.new.monitor.tjo.cloud {
+	reverse_proxy h2c://localhost:4317
+}
+http.otel.new.monitor.tjo.cloud {
+	reverse_proxy localhost:4318
+}

@@ -1,0 +1,6 @@
+otelcol_version: "0.141.0"
+
+restic_backup_dir: "/srv/data"
+restic_repository: "sftp://u409586-sub7@backup.tjo.cloud:23//home/backup"
+#restic_password: ""
+#restic_ssh_password: ""

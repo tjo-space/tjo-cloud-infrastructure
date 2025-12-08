@@ -1,0 +1,45 @@
+extensions:
+  oidc:
+    issuer_url: https://id.tjo.cloud/application/o/otelmonitortjocloud/
+    audience: Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh
+
+receivers:
+  otlp:
+    protocols:
+      grpc:
+        endpoint: localhost:4317
+        max_recv_msg_size_mib: 32
+        auth:
+          authenticator: oidc
+      http:
+        endpoint: localhost:4318
+        max_request_body_size: 33554432
+        auth:
+          authenticator: oidc
+
+processors:
+  memory_limiter:
+    check_interval: 5s
+    limit_mib: 2000
+  batch:
+    send_batch_size: 16384
+    timeout: 10s
+
+exporters:
+  otlphttp/prometheus:
+    endpoint: "http://localhost:9090/api/v1/otlp/"
+  otlphttp/loki:
+    endpoint: "http://localhost:3100/otlp/"
+
+service:
+  extensions:
+    - oidc
+  pipelines:
+    metrics:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/prometheus]
+    logs:
+      receivers: [otlp]
+      processors: [memory_limiter, batch]
+      exporters: [otlphttp/loki]

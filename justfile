@@ -14,6 +14,7 @@ mod ingress 'ingress.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'
 mod postgresql 'postgresql.tjo.cloud'
 mod mail 'mail.tjo.cloud'
+mod monitor 'monitor.tjo.cloud'
 
 import 'secrets.justfile'
 
@@ -27,11 +28,14 @@ lint:
   @tofu fmt -check -recursive .
   @tflint --recursive
   @find . -type f -name "config.alloy*" -exec alloy fmt -t {} \;
+  @find . -type f -name "Caddyfile" -exec caddy fmt {} > /dev/null \;
+  @find . -type f -name "Caddyfile" -exec caddy validate --config {} \;
 
 format:
   @tofu fmt -recursive .
   @tflint --recursive
   @find . -type f -name "config.alloy*" -exec alloy fmt -w {} \;
+  @find . -type f -name "Caddyfile" -exec caddy fmt -w {} \;
 
 dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id

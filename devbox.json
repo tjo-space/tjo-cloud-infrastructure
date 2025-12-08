@@ -22,7 +22,8 @@
       "excluded_platforms": ["aarch64-darwin"]
     },
     "ansible":       "latest",
-    "grafana-alloy": "latest"
+    "grafana-alloy": "latest",
+    "caddy":         "latest"
   },
   "env": {
     "TFENV_AUTO_INSTALL":        "true",

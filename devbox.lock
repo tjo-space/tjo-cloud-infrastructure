@@ -161,6 +161,55 @@
         }
       }
     },
+    "caddy@latest": {
+      "last_modified": "2025-11-26T06:22:50Z",
+      "plugin_version": "0.0.3",
+      "resolved": "github:NixOS/nixpkgs/bb813de6d2241bcb1b5af2d3059f560c66329967#caddy",
+      "source": "devbox-search",
+      "version": "2.10.2",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/b97hl9fpykx0hfbpjjkyyx3r47vygkjx-caddy-2.10.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/b97hl9fpykx0hfbpjjkyyx3r47vygkjx-caddy-2.10.2"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/r501mynih1hjjh30nyiwsyghscylb82h-caddy-2.10.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/r501mynih1hjjh30nyiwsyghscylb82h-caddy-2.10.2"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/mc08ayixbammhmygnziqfs1dr5fivqlj-caddy-2.10.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/mc08ayixbammhmygnziqfs1dr5fivqlj-caddy-2.10.2"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/hq1123yp4m1rf0b1z9wp7c3wqm47569i-caddy-2.10.2",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/hq1123yp4m1rf0b1z9wp7c3wqm47569i-caddy-2.10.2"
+        }
+      }
+    },
     "cilium-cli@latest": {
       "last_modified": "2024-07-13T12:58:17Z",
       "resolved": "github:NixOS/nixpkgs/b729601a9e6c459fd8884dea513af143111bed54#cilium-cli",

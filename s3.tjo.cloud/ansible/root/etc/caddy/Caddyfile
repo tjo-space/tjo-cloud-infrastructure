@@ -1,5 +1,5 @@
 {
-  on_demand_tls {
+	on_demand_tls {
 		ask http://localhost:3903/check
 	}
 }
@@ -13,9 +13,9 @@ https://, *.web.s3.tjo.cloud {
 	}
 
 	reverse_proxy localhost:3902 {
-        health_uri       /health
-        health_port      3903
-  }
+		health_uri /health
+		health_port 3903
+	}
 }
 
 ##
@@ -23,9 +23,9 @@ https://, *.web.s3.tjo.cloud {
 ##
 api.s3.tjo.cloud {
 	reverse_proxy localhost:3900 {
-        health_uri       /health
-        health_port      3903
-    }
+		health_uri /health
+		health_port 3903
+	}
 }
 
 ##
@@ -33,7 +33,7 @@ api.s3.tjo.cloud {
 ##
 admin.s3.tjo.cloud {
 	reverse_proxy localhost:3903 {
-        health_uri       /health
-        health_port      3903
-    }
+		health_uri /health
+		health_port 3903
+	}
 }
