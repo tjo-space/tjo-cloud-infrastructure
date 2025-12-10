@@ -1,0 +1,13 @@
+apiVersion: 1
+
+datasources:
+  - name: Prometheus
+    type: prometheus
+    url: http://localhost:9090
+    editable: false
+    jsonData:
+      timeInterval: 2m
+  - name: Loki
+    type: loki
+    url: http://localhost:3100
+    editable: false

@@ -15,24 +15,24 @@ PID_FILE_DIR=/run/grafana
 # Data Location
 DATA_DIR=/srv/data/grafana
 
-GF_SERVER_DOMAIN: "monitor.tjo.cloud"
-GF_SERVER_ROOT_URL: "https://monitor.tjo.cloud"
+GF_SERVER_DOMAIN="new.monitor.tjo.cloud"
+GF_SERVER_ROOT_URL="https://new.monitor.tjo.cloud"
 
 # Alerting
-GF_UNIFIED_ALERTING_ENABLED: "true"
-GF_ALERTING_ENABLED: "false"
+GF_UNIFIED_ALERTING_ENABLED="true"
+GF_ALERTING_ENABLED="false"
 
 # SSO
-GF_AUTH_DISABLE_LOGIN_FORM: "true"
-GF_AUTH_OAUTH_AUTO_LOGIN: "true"
-GF_AUTH_GENERIC_OAUTH_ENABLED: "true"
-GF_AUTH_GENERIC_OAUTH_NAME: "Login with id.tjo.cloud"
-GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP: "true"
-GF_AUTH_GENERIC_OAUTH_CLIENT_ID: "{{ grafana_oauth_client_id }}"
-GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET: "{{ grafana_oauth_client_secret }}"
-GF_AUTH_GENERIC_OAUTH_SCOPES: openid profile email
-GF_AUTH_GENERIC_OAUTH_AUTH_URL: "https://id.tjo.cloud/application/o/authorize/"
-GF_AUTH_GENERIC_OAUTH_TOKEN_URL: "https://id.tjo.cloud/application/o/token/"
-GF_AUTH_GENERIC_OAUTH_API_URL: "https://id.tjo.cloud/application/o/userinfo/"
-GF_AUTH_SIGNOUT_REDIRECT_URL: "https://id.tjo.cloud/application/o/monitortjocloud/end-session/"
-GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH: "contains(groups[*], 'cloud.tjo.monitor/admin') && 'Admin' || contains(groups[*], 'cloud.tjo.monitor/editor') && 'Editor' || 'Viewer'"
+GF_AUTH_DISABLE_LOGIN_FORM="true"
+GF_AUTH_OAUTH_AUTO_LOGIN="true"
+GF_AUTH_GENERIC_OAUTH_ENABLED="true"
+GF_AUTH_GENERIC_OAUTH_NAME="Login with id.tjo.cloud"
+GF_AUTH_GENERIC_OAUTH_ALLOW_SIGN_UP="true"
+GF_AUTH_GENERIC_OAUTH_CLIENT_ID="{{ grafana_oauth_client_id }}"
+GF_AUTH_GENERIC_OAUTH_CLIENT_SECRET="{{ grafana_oauth_client_secret }}"
+GF_AUTH_GENERIC_OAUTH_SCOPES=openid profile email
+GF_AUTH_GENERIC_OAUTH_AUTH_URL="https://id.tjo.cloud/application/o/authorize/"
+GF_AUTH_GENERIC_OAUTH_TOKEN_URL="https://id.tjo.cloud/application/o/token/"
+GF_AUTH_GENERIC_OAUTH_API_URL="https://id.tjo.cloud/application/o/userinfo/"
+GF_AUTH_SIGNOUT_REDIRECT_URL="https://id.tjo.cloud/application/o/monitortjocloud/end-session/"
+GF_AUTH_GENERIC_OAUTH_ROLE_ATTRIBUTE_PATH="contains(groups[*], 'cloud.tjo.monitor/admin') && 'Admin' || contains(groups[*], 'cloud.tjo.monitor/editor') && 'Editor' || 'Viewer'"
