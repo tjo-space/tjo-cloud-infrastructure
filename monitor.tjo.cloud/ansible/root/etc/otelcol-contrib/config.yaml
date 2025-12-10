@@ -20,7 +20,7 @@ receivers:
 processors:
   memory_limiter:
     check_interval: 5s
-    limit_mib: 2000
+    limit_percentage: 60
   batch:
     send_batch_size: 16384
     timeout: 10s

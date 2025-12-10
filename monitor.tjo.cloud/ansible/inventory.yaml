@@ -2,6 +2,6 @@
   "hosts":
     "nevaroo-yellow.monitor.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.21"
+      "ansible_host": "10.0.4.22"
       "ansible_port": 2222
       "ansible_user": "bine"

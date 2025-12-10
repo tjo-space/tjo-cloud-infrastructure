@@ -15,18 +15,82 @@
   loop:
     - grafana
     - loki
-    - prometheus
 
 - name: Set facts for architecture if this is an amd64 system
   when: ansible_architecture == "x86_64"
   set_fact:
-    otelcol_architecture: "amd64"
+    common_architecture: "amd64"
 
 - name: Set facts for architecture if this is an arm64 system
   when: ansible_architecture == "aarch64"
   set_fact:
-    otecol_architecture: "arm64"
+    common_architecture: "arm64"
 
 - name: Install Opentelemtry Contrib Collector version {{ otelcol_version }}
   ansible.builtin.apt:
-    deb: https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_linux_{{ otelcol_architecture }}.deb
+    deb: https://github.com/open-telemetry/opentelemetry-collector-releases/releases/download/v{{ otelcol_version }}/otelcol-contrib_{{ otelcol_version }}_linux_{{ common_architecture }}.deb
+
+- name: Install Prometheus {{ prometheus_version }}
+  ansible.builtin.shell:
+    cmd: |
+      TMP=$(mktemp -d)
+      pushd $TMP
+      curl -sLo prometheus.tar.gz https://github.com/prometheus/prometheus/releases/download/v{{ prometheus_version }}/prometheus-{{ prometheus_version }}.linux-{{ common_architecture }}.tar.gz
+      tar -xvzf prometheus.tar.gz
+      install --preserve-timestamps prometheus-{{ prometheus_version }}.linux-{{ common_architecture }}/prometheus /usr/local/bin
+      popd
+      rm -rf $TMP
+
+- name: Create prometheus user
+  ansible.builtin.user:
+    name: prometheus
+    system: true
+
+- name: Copy configuration
+  ansible.builtin.template:
+    src: 'root{{ item }}'
+    dest: '{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - "/etc/default/grafana-server"
+    - "/etc/grafana/provisioning/datasources/datasources.yml"
+    - "/etc/loki/config.yml"
+    - "/etc/otelcol-contrib/config.yaml"
+    - "/etc/prometheus/prometheus.yaml"
+    - "/etc/systemd/system/prometheus.service"
+
+- name: Prepare /srv/data/grafana directory
+  ansible.builtin.file:
+    path: /srv/data/grafana
+    owner: grafana
+    group: grafana
+    mode: "0755"
+    state: directory
+
+- name: Prepare /srv/data/loki directory
+  ansible.builtin.file:
+    path: /srv/data/loki
+    owner: loki
+    mode: "0755"
+    state: directory
+
+- name: Prepare /srv/data/prometheus directory
+  ansible.builtin.file:
+    path: /srv/data/prometheus
+    owner: prometheus
+    mode: "0755"
+    state: directory
+
+- name: Restart services
+  ansible.builtin.systemd:
+    name: '{{ item }}'
+    state: restarted
+    enabled: true
+    daemon_reload: true
+  loop:
+    - "grafana-server"
+    - "prometheus"
+    - "loki"
+    - "otelcol-contrib"

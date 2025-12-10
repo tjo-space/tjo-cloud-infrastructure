@@ -2,7 +2,6 @@ GRAFANA_USER=grafana
 GRAFANA_GROUP=grafana
 GRAFANA_HOME=/usr/share/grafana
 LOG_DIR=/var/log/grafana
-DATA_DIR=/srv/data/grafana
 MAX_OPEN_FILES=10000
 CONF_DIR=/etc/grafana
 CONF_FILE=/etc/grafana/grafana.ini
@@ -12,6 +11,9 @@ PROVISIONING_CFG_DIR=/etc/grafana/provisioning
 
 # Only used on systemd systems
 PID_FILE_DIR=/run/grafana
+
+# Data Location
+DATA_DIR=/srv/data/grafana
 
 GF_SERVER_DOMAIN: "monitor.tjo.cloud"
 GF_SERVER_ROOT_URL: "https://monitor.tjo.cloud"
