@@ -5,7 +5,7 @@
 ##
 # GRAFANA
 ##
-new.monitor.tjo.cloud {
+monitor.tjo.cloud {
 	reverse_proxy localhost:3000 {
 		health_uri /api/health
 		health_port 3000
@@ -15,7 +15,7 @@ new.monitor.tjo.cloud {
 ##
 # PROMETHEUS
 ##
-prometheus.new.monitor.tjo.cloud {
+prometheus.monitor.tjo.cloud {
 	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
 		header_up Host {http.reverse_proxy.upstream.host}
 	}
@@ -34,7 +34,7 @@ prometheus.new.monitor.tjo.cloud {
 ##
 # LOKI
 ##
-loki.new.monitor.tjo.cloud {
+loki.monitor.tjo.cloud {
 	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
 		header_up Host {http.reverse_proxy.upstream.host}
 	}
@@ -53,9 +53,9 @@ loki.new.monitor.tjo.cloud {
 ##
 # OTEL
 ##
-grpc.otel.new.monitor.tjo.cloud {
+grpc.otel.monitor.tjo.cloud {
 	reverse_proxy h2c://localhost:4317
 }
-http.otel.new.monitor.tjo.cloud {
+http.otel.monitor.tjo.cloud {
 	reverse_proxy localhost:4318
 }

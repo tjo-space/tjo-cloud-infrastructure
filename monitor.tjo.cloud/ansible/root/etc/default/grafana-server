@@ -15,8 +15,8 @@ PID_FILE_DIR=/run/grafana
 # Data Location
 DATA_DIR=/srv/data/grafana
 
-GF_SERVER_DOMAIN="new.monitor.tjo.cloud"
-GF_SERVER_ROOT_URL="https://new.monitor.tjo.cloud"
+GF_SERVER_DOMAIN="monitor.tjo.cloud"
+GF_SERVER_ROOT_URL="https://monitor.tjo.cloud"
 
 # Alerting
 GF_UNIFIED_ALERTING_ENABLED="true"

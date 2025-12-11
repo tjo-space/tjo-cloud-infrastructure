@@ -8,7 +8,7 @@ resource "desec_rrset" "web" {
   ])
 
   domain  = "tjo.cloud"
-  subname = "${each.key}new.${trimsuffix(var.domain, ".tjo.cloud")}"
+  subname = "${each.key}${trimsuffix(var.domain, ".tjo.cloud")}"
   type    = "CNAME"
   records = ["any.ingress.tjo.cloud."]
   ttl     = 3600

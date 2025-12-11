@@ -8,11 +8,6 @@ data "dns_aaaa_record_set" "ingress" {
 # List of subdomains that are routed via ingress.
 resource "desec_rrset" "ingress" {
   for_each = { for pair in setproduct(["A", "AAAA"], [
-    "grpc.otel.monitor",
-    "http.otel.monitor",
-    "loki.monitor",
-    "prometheus.monitor",
-    "monitor",
     "proxmox",
     "dashboard.k8s",
     "argocd.k8s",
