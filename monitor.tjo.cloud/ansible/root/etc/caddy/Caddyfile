@@ -1,5 +1,8 @@
 {
 	log
+	metrics {
+		per_host
+	}
 }
 
 ##

@@ -1,7 +1,10 @@
 extensions:
   oidc:
-    issuer_url: https://id.tjo.cloud/application/o/otelmonitortjocloud/
-    audience: Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh
+    providers:
+      - issuer_url: https://id.tjo.space/application/o/otelmonitortjocloud/
+        audience: Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh
+      - issuer_url: https://id.tjo.cloud/application/o/otelmonitortjocloud/
+        audience: Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh
 
 receivers:
   otlp:
