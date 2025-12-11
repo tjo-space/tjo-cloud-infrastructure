@@ -19,38 +19,16 @@ monitor.tjo.cloud {
 # PROMETHEUS
 ##
 prometheus.monitor.tjo.cloud {
-	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
-		header_up Host {http.reverse_proxy.upstream.host}
-	}
-
-	forward_auth https://id.tjo.cloud {
-		uri /outpost.goauthentik.io/auth/caddy
-		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Entitlements X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
-	}
-
-	reverse_proxy localhost:9090 {
-		health_uri /-/ready
-		health_port 9090
-	}
+	respond "Not quite working" 500
+  # TODO: Implement authenticaiton then proxy
 }
 
 ##
 # LOKI
 ##
 loki.monitor.tjo.cloud {
-	reverse_proxy /outpost.goauthentik.io/* https://id.tjo.cloud {
-		header_up Host {http.reverse_proxy.upstream.host}
-	}
-
-	forward_auth https://id.tjo.cloud {
-		uri /outpost.goauthentik.io/auth/caddy
-		copy_headers X-Authentik-Username X-Authentik-Groups X-Authentik-Entitlements X-Authentik-Email X-Authentik-Name X-Authentik-Uid X-Authentik-Jwt X-Authentik-Meta-Jwks X-Authentik-Meta-Outpost X-Authentik-Meta-Provider X-Authentik-Meta-App X-Authentik-Meta-Version
-	}
-
-	reverse_proxy localhost:3100 {
-		health_uri /ready
-		health_port 3100
-	}
+	respond "Not quite working" 500
+  # TODO: Implement authentication then proxy
 }
 
 ##
