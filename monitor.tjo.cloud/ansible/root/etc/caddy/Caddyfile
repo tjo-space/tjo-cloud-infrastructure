@@ -20,7 +20,7 @@ monitor.tjo.cloud {
 ##
 prometheus.monitor.tjo.cloud {
 	respond "Not quite working" 500
-  # TODO: Implement authenticaiton then proxy
+	# TODO: Implement authenticaiton then proxy
 }
 
 ##
@@ -28,7 +28,7 @@ prometheus.monitor.tjo.cloud {
 ##
 loki.monitor.tjo.cloud {
 	respond "Not quite working" 500
-  # TODO: Implement authentication then proxy
+	# TODO: Implement authentication then proxy
 }
 
 ##
