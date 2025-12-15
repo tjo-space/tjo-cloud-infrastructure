@@ -5,7 +5,7 @@ _encrypt path:
   file="{{path}}"
 
   echo "Encrypting ${file}"
-  if cat ${file}.sha256sum | $SHA256SUM --check --status
+  if cat ${file}.sha256sum | $SHA256SUM --check --status && ! [ -n "$FORCE_ENCRYPTION" ]
   then
     echo " - matches existing hash, skipping"
   else

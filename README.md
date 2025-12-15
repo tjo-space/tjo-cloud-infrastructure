@@ -31,3 +31,18 @@ just pre-commit
 git commit -m "feat: new awesome stuff"
 git push
 ```
+
+## Secrets
+
+Secrets are encrypted with the public keys specified in the `age.keys` file.
+
+Every file that is encrypted has suffix `.encrypted`. Alongside it there is also
+an `.sha256sum` file which is used to compare non-encrypted content, to not re-encrypt
+if the file has not changed.
+
+In case new keys are added in `age.keys`. All files must be re-encrypted. That can be done by
+running the following:
+
+```
+FORCE_ENCRYPTION=1 just encrypt-all
+```

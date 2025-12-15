@@ -21,16 +21,12 @@ tailscale up \
 
 ### 2. Add Tailscale IPs to the config file.
 
-The Tailscale IPv4 and IPv6 must be written to the config/nodes.yaml file.
+The Tailscale IPv4 and IPv6 must be written to the `terraform/terraform.tfvars` file.
 
 ### 3. Configure the servers.
 
 ```
-# When new server is added, all must be re-configured.
-# To include hosts records for the new server.
-just proxmox configure-all
-
-# Or to configure single server
+just proxmox apply
 just proxmox configure my-server
 ```
 

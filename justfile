@@ -18,8 +18,11 @@ mod monitor 'monitor.tjo.cloud'
 
 import 'secrets.justfile'
 
-post-pull: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt ansible-secrets-decrypt
-pre-commit: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt ansible-secrets-encrypt lint format
+encrypt-all: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt ansible-secrets-encrypt
+decrypt-all: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt ansible-secrets-decrypt
+
+post-pull: decrypt-all
+pre-commit: encrypt-all lint format
 
 default:
   @just --list
