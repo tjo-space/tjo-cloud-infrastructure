@@ -61,7 +61,10 @@ configure node:
 
   echo "== {{node}} at ${IP}"
   echo "=== Running configure.sh"
-  cat configure.sh | ssh -o StrictHostKeyChecking=no -p 2222 root@${IP} 'bash -s'
+  cat configure.sh | ssh -o StrictHostKeyChecking=no -p 2222 bine@${IP} 'sudo bash -s'
+
+ssh node:
+  ssh -A bine@{{node}}.ingress.tjo.cloud -4 -p 2222
 
 update-geoip:
   #!/usr/bin/env bash

@@ -1,5 +1,5 @@
 data "authentik_group" "monitoring_publisher" {
-  name          = "monitor.tjo.cloud publisher"
+  name          = "cloud.tjo.monitor/publisher"
   include_users = false
 }
 

@@ -31,19 +31,26 @@ locals {
 
   nodes_with_address = {
     for k, v in local.nodes_with_meta : k => merge(v, {
-      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv4 : ""
-      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud.nodes[k].ipv6 : ""
+      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv4 : ""
+      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv6 : ""
     })
   }
+
+  global = yamldecode(file("../../${path.module}/global.yaml"))
 }
 
 module "hetzner-cloud" {
   source = "../../shared/terraform/modules/hetzner-cloud"
-
-  nodes = {
+  for_each = {
     for k, v in local.nodes_with_meta : k => v if v.provider == "hetzner-cloud"
   }
-  ssh_keys = var.ssh_keys
+
+  name       = each.value.name
+  fqdn       = each.value.fqdn
+  datacenter = each.value.datacenter
+  metadata   = each.value.meta
+
+  ssh_keys = local.global.tjo_cloud_admin_ssh_keys
   domain   = var.domain
 
   provision_sh = file("${path.module}/../provision.sh")

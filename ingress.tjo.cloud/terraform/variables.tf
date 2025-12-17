@@ -11,10 +11,6 @@ variable "domain" {
   default = "ingress.tjo.cloud"
 }
 
-variable "ssh_keys" {
-  type = map(string)
-}
-
 variable "zerotier_token" {
   sensitive = true
   type      = string
