@@ -23,15 +23,16 @@
         state: restarted
 
   tasks:
+    - name: Run defaults
+      ansible.builtin.import_role:
+        name: default
+      vars:
+        version: "{{ tjo_cloud_version }}"
+        ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
+
     - name: Fetch Public SSH Key
       ansible.builtin.set_fact:
         root_ssh_key_pub: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"
-
-    - name: Configure authorized keys for users
-      ansible.posix.authorized_key:
-        user: root
-        state: present
-        key: "{{ lookup('ansible.builtin.dict', tjo_cloud_admin_ssh_keys) | map(attribute='value') | join('\n')}}"
 
     - name: Configure authorized keys for nodes
       ansible.posix.authorized_key:

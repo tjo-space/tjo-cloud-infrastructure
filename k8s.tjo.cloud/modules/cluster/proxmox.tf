@@ -32,7 +32,9 @@ locals {
     for k, v in local.nodes :
     k => merge(v, {
       ipv4 = lookup(local.ipv4_addresses[k], "ens18", lookup(local.ipv4_addresses[k], "eth0", [""]))[0]
-      ipv6 = lookup(local.ipv6_addresses[k], "ens18", lookup(local.ipv6_addresses[k], "eth0", [""]))[0]
+      ipv6 = try([
+        for ipv6 in try(local.ipv6_addresses[k]["ens18"], try(local.ipv6_addresses[k]["eth0"], [])) : ipv6 if startswith(ipv6, "fd74:6a6f:")
+      ][0], "")
     })
   }
 }

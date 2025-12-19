@@ -23,12 +23,6 @@
       cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
       cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
     alloy_custom_integrations: |
-      database_observability.postgres "all" {
-        data_source_name  = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
-        enable_collectors = ["query_details", "query_samples", "schema_details"]
-        forward_to        = [loki.process.drop_old.receiver]
-      }
-
       prometheus.exporter.postgres "all" {
         data_source_names  = ["postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"]
         enabled_collectors = [
@@ -49,23 +43,24 @@
         }
       }
 
+      database_observability.postgres "all" {
+        data_source_name  = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
+        enable_collectors = ["query_details", "query_samples", "schema_details"]
+        forward_to        = [loki.process.drop_old.receiver]
+        targets           = prometheus.exporter.postgres.all.targets
+      }
+
       discovery.relabel "postgres_set_job_and_instance" {
-        targets      = concat(
-          database_observability.postgres.all.targets,
-          prometheus.exporter.postgres.all.targets,
-        )
-        rule {
-          target_label  = "job"
-          replacement   = "integrations/db-o11y"
-        }
+        targets = database_observability.postgres.all.targets
         rule {
           target_label = "instance"
-          replacement = constants.hostname
+          replacement  = constants.hostname
         }
       }
 
       prometheus.scrape "postgres" {
-        targets      = discovery.relabel.postgres_set_job_and_instance.output
-        forward_to   = [otelcol.receiver.prometheus.default.receiver]
+        targets    = discovery.relabel.postgres_set_job_and_instance.output
+        forward_to = [otelcol.receiver.prometheus.default.receiver]
+        job_name   = "integrations/db-o11y"
       }
   when: inventory_hostname in groups["postgresql"]

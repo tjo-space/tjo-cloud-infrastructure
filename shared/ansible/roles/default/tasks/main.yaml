@@ -1,0 +1,26 @@
+- name: Upgrade APT Packages
+  ansible.builtin.apt:
+    upgrade: "full"
+    update_cache: yes
+
+- name: Fetch metadata
+  ansible.builtin.shell: |
+    cat /etc/tjo.cloud/meta.json
+  register: tjo_cloud_metadata_raw
+
+- name: Save metadata as fact
+  set_fact:
+    tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.stdout | from_json }}"
+
+- name: Write version.txt
+  ansible.builtin.copy:
+    content: "{{ version }}"
+    dest: /etc/tjo.cloud/version.txt
+    mode: '0444'
+
+- name: Configure authorized keys
+  ansible.posix.authorized_key:
+    user: bine
+    state: present
+    exclusive: true
+    key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"

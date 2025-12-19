@@ -6,7 +6,7 @@ variable "nodes" {
     memory = number
 
     boot_storage = string
-    boot_size    = optional(number, 8)
+    boot_size    = optional(number, 16)
 
     data_storage = string
     data_size    = number
