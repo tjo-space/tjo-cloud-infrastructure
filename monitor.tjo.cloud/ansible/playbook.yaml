@@ -1,5 +1,5 @@
 ---
-- name: Configure postgresql.tjo.cloud
+- name: Configure monitor.tjo.cloud
   hosts: all
 
   vars_files:
@@ -8,10 +8,7 @@
     - vars.terraform.secrets.yaml
     - vars.secrets.yaml
 
-  handlers:
-    - name: Systemd daemon-reload
-      ansible.builtin.systemd:
-        daemon_reload: true
+  handlers: []
 
   tasks:
     - name: Run defaults
@@ -20,9 +17,6 @@
       vars:
         version: "{{ tjo_cloud_version }}"
         ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
-
-    - name: Flush handlers
-      ansible.builtin.meta: flush_handlers
 
     - name: Install and Configure Observability
       ansible.builtin.import_tasks:

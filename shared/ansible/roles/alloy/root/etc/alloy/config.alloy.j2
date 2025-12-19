@@ -41,7 +41,7 @@ prometheus.scrape "exporters" {
 		],
 	)
 	forward_to = [
-		otelcol.receiver.prometheus.default.receiver,
+	// {{ '\n' + alloy_pre_process_metrics + ',' }}
 	]
 }
 
@@ -112,7 +112,7 @@ loki.process "drop_old" {
 		drop_counter_reason = "too old"
 	}
 	forward_to = [
-		otelcol.receiver.loki.default.receiver,
+	// {{ '\n' + alloy_pre_process_logs + ',' }}
 	]
 }
 

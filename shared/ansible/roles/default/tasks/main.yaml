@@ -4,13 +4,13 @@
     update_cache: yes
 
 - name: Fetch metadata
-  ansible.builtin.shell: |
-    cat /etc/tjo.cloud/meta.json
+  ansible.builtin.slurp:
+    src: /etc/tjo.cloud/meta.json
   register: tjo_cloud_metadata_raw
 
 - name: Save metadata as fact
   set_fact:
-    tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.stdout | from_json }}"
+    tjo_cloud_metadata: "{{ tjo_cloud_metadata_raw.content | b64decode | from_json }}"
 
 - name: Write version.txt
   ansible.builtin.copy:
@@ -24,3 +24,16 @@
     state: present
     exclusive: true
     key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
+
+- name: Configure Systemd Resolved
+  ansible.builtin.template:
+    src: root/etc/systemd/resolved.conf
+    dest: /etc/systemd/resolved.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart systemd-resolved
+  when: configure_resolved
+
+- name: Flush handlers
+  ansible.builtin.meta: flush_handlers

@@ -1,3 +1,6 @@
 alloy_systemd_exporter_version: "0.7.0"
 alloy_custom_integrations: ""
 otel_resource_attributes: {}
+
+alloy_pre_process_logs: "otelcol.receiver.loki.default.receiver"
+alloy_pre_process_metrics: "otelcol.receiver.prometheus.default.receiver"

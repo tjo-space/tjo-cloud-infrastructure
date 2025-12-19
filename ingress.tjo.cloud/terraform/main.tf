@@ -29,10 +29,10 @@ locals {
     })
   }
 
-  nodes_with_address = {
+  nodes_deployed = {
     for k, v in local.nodes_with_meta : k => merge(v, {
-      ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv4 : ""
-      ipv6 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv6 : ""
+      ipv4 = module.hetzner-cloud[k].address.ipv4
+      ipv6 = module.hetzner-cloud[k].address.ipv6
     })
   }
 
@@ -52,6 +52,25 @@ module "hetzner-cloud" {
 
   ssh_keys = local.global.tjo_cloud_admin_ssh_keys
   domain   = var.domain
+}
 
-  provision_sh = file("${path.module}/../provision.sh")
+resource "local_file" "ansible_inventory" {
+  content = yamlencode({
+    all = {
+      hosts = {
+        for k, v in local.nodes_deployed : v.name => {
+          ansible_host   = v.ipv4
+          ansible_port   = 2222
+          ansible_user   = "bine"
+          ansible_become = true
+        }
+      }
+    }
+  })
+  filename = "${path.module}/../ansible/inventory.yaml"
+}
+
+resource "local_file" "ansible_vars" {
+  content  = yamlencode({})
+  filename = "${path.module}/../ansible/vars.terraform.yaml"
 }

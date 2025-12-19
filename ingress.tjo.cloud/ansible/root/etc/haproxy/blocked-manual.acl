@@ -1,0 +1,18 @@
+##
+# Manual Block List
+##
+
+# Reason: Too many requests.
+# Date:   2024-11-26
+# Ref:    https://www.abuseipdb.com/check/65.108.110.26
+# Ref:    https://www.abuseipdb.com/check/178.150.14.250
+65.108.110.26/32
+178.150.14.250/32
+
+# Reason: Too many requests (scanning).
+# Date:   2025-11-24
+# Ref:    https://www.abuseipdb.com/check/45.148.10.34
+# ASN:    AS48090
+45.148.10.0/24
+93.123.109.0/24
+195.178.110.0/24

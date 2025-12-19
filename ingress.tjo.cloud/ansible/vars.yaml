@@ -1,0 +1,10 @@
+otelcol_version: "0.141.0"
+prometheus_version: "3.8.0"
+
+grafana_oauth_client_id: ""
+grafana_oauth_client_secret: ""
+
+restic_backup_dir: "/srv/data"
+restic_repository: "sftp://u409586-sub7@backup.tjo.cloud:23//home/backup"
+#restic_password: ""
+#restic_ssh_password: ""

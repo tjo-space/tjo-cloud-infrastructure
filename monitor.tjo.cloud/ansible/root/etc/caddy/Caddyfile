@@ -3,6 +3,19 @@
 	metrics {
 		per_host
 	}
+	servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 2s
+				allow {
+					tjo_cloud_networks | join(' ')
+				}
+			}
+			fallback_policy reject
+		}
+		tls
+	}
+}
 }
 
 ##

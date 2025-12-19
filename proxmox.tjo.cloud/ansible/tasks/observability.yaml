@@ -39,7 +39,7 @@
     alloy_custom_integrations: |
       prometheus.scrape "pve" {
         targets    = [
-          { "__address__" = "localhost:9221", "instance" = constants.hostname },
+          { "__address__" = "localhost:9221", "instance" = constants.hostname, "job" = "integrations/proxmox" },
         ]
         params = { "cluster" = [1], "node" = [1] }
         metrics_path = "/pve"
@@ -47,4 +47,18 @@
         forward_to = [
           otelcol.receiver.prometheus.default.receiver,
         ]
+      }
+
+      local.file_match "pveproxy_access_log" {
+        path_targets = [{
+          __address__ = "localhost",
+          __path__    = "/var/log/pveproxy/access.log",
+          instance    = constants.hostname,
+          job         = "integrations/proxmox",
+        }]
+      }
+
+      loki.source.file "pveproxy_access_log" {
+        targets    = local.file_match.pveproxy_access_log.targets
+        forward_to = [loki.process.drop_old.receiver]
       }

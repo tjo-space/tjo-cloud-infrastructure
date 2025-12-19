@@ -12,10 +12,6 @@
       ansible.builtin.systemd:
         name: garage
         state: restarted
-    - name: Restart systemd-resolved
-      ansible.builtin.systemd:
-        name: systemd-resolved
-        state: restarted
 
   tasks:
     - name: Run defaults
@@ -24,15 +20,7 @@
       vars:
         version: "{{ tjo_cloud_version }}"
         ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
-
-    - name: Configure Systemd Resolved
-      ansible.builtin.template:
-        src: root/etc/systemd/resolved.conf
-        dest: /etc/systemd/resolved.conf
-        mode: '0644'
-        owner: "root"
-        group: "root"
-      notify: Restart systemd-resolved
+        configure_resolved: true
 
     - name: Install and Configure Observability
       ansible.builtin.import_tasks:

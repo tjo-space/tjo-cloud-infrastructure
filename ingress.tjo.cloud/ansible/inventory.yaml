@@ -1,0 +1,7 @@
+"all":
+  "hosts":
+    "purple-hetzner-cloud":
+      "ansible_become": true
+      "ansible_host": "116.203.153.67"
+      "ansible_port": 2222
+      "ansible_user": "bine"

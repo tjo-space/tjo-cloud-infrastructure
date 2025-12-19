@@ -1,0 +1,62 @@
+- name: Install Alloy
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+    alloy_pre_process_logs: "loki.process.geoip.receiver"
+    alloy_custom_integrations: |
+      prometheus.scrape "caddy" {
+        targets    = concat(
+          [
+            {"__address__" = "127.0.0.1:2019", "instance" = constants.hostname, "job" = "integrations/caddy"},
+          ],
+        )
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+      }
+
+      loki.process "geoip" {
+        stage.logfmt {
+          mapping = {client_ip = ""}
+        }
+
+        stage.geoip {
+          source  = "client_ip"
+          db      = "/usr/share/geoip/GeoLite2-City.mmdb"
+          db_type = "city"
+        }
+
+        stage.geoip {
+          source  = "client_ip"
+          db      = "/usr/share/geoip/GeoLite2-ASN.mmdb"
+          db_type = "asn"
+        }
+
+        stage.labels {
+          values = {
+            // CITY
+            geoip_city_name          = "",
+            geoip_country_name       = "",
+            geoip_country_code       = "",
+            geoip_continent_name     = "",
+            geoip_continent_code     = "",
+            geoip_location_latitude  = "",
+            geoip_location_longitude = "",
+            geoip_subdivision_name   = "",
+            geoip_subdivision_code   = "",
+            // ASN
+            geoip_autonomous_system_number       = "",
+            geoip_autonomous_system_organization = "",
+          }
+        }
+        forward_to = [
+          otelcol.receiver.loki.default.receiver,
+        ]
+      }

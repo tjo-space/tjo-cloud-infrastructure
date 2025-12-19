@@ -1,0 +1,74 @@
+- name: Install Zerotier
+  ansible.builtin.include_role:
+    name: zerotier
+
+- name: Configure Zerotier
+  ansible.builtin.shell: |
+    systemctl stop zerotier-one
+    echo "{{ tjo_cloud_metadata.zerotier.public_key }}" >/var/lib/zerotier-one/identity.public
+    echo "{{ tjo_cloud_metadata.zerotier.private_key }}" >/var/lib/zerotier-one/identity.secret
+    systemctl start zerotier-one
+    sleep 5
+    zerotier-cli join b6079f73c6379990
+  args:
+    creates: /var/lib/zerotier-one/networks.d/b6079f73c6379990.conf
+
+- name: Refresh facts
+  ansible.builtin.setup:
+    gather_subset:
+      - network
+
+- name: Configure Routes
+  ansible.builtin.shell: |
+    # k8s.tjo.cloud
+    ip -4 route add 10.100.0.0/16 via 10.0.0.1 || true
+    ip -6 route add fd9b:7c3d:7f6a::/48 via fd74:6a6f::1 || true
+
+- name: Add haproxy PPA
+  ansible.builtin.apt_repository:
+    repo: ppa:vbernat/haproxy-3.3
+
+- name: Install haproxy
+  ansible.builtin.apt:
+    name: haproxy
+    state: present
+
+- name: Copy Haproxy configs
+  ansible.builtin.template:
+    src: 'root{{ item }}'
+    dest: '{{item}}'
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart haproxy
+  loop:
+    - "/etc/haproxy/blocked-bad-crawlers.acl"
+    - "/etc/haproxy/blocked-manual.acl"
+    - "/etc/haproxy/domains.map"
+    - "/etc/haproxy/haproxy.cfg"
+
+- name: Prepare GeoIP directory
+  ansible.builtin.file:
+    state: directory
+    path: "/usr/share/geoip"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Copy GeoIP data
+  ansible.builtin.copy:
+    src: 'root{{ item }}'
+    dest: '{{item}}'
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart alloy
+  loop:
+    - "/usr/share/geoip/GeoLite2-ASN.mmdb"
+    - "/usr/share/geoip/GeoLite2-City.mmdb"
+
+- name: Enable and start haproxy
+  ansible.builtin.systemd:
+    name: haproxy
+    state: started
+    enabled: true

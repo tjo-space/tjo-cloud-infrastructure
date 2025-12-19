@@ -1,0 +1,39 @@
+---
+- name: Configure ingress.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars.yaml
+    - vars.terraform.yaml
+    - vars.terraform.secrets.yaml
+    - vars.secrets.yaml
+
+  handlers:
+    - name: Restart haproxy
+      ansible.builtin.systemd:
+        name: haproxy
+        state: restarted
+
+  tasks:
+    - name: Run defaults
+      ansible.builtin.import_role:
+        name: default
+      vars:
+        version: "{{ tjo_cloud_version }}"
+        ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
+        configure_resolved: true
+
+    - name: Install and Configure Observability
+      ansible.builtin.import_tasks:
+        file: tasks/observability.yaml
+
+    - name: Install and Configure Firewall
+      ansible.builtin.import_tasks:
+        file: tasks/firewall.yaml
+
+    - name: Deploy ingress
+      ansible.builtin.import_tasks:
+        file: tasks/ingress.yaml
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
