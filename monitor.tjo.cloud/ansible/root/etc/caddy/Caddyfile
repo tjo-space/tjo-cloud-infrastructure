@@ -7,15 +7,18 @@
 		listener_wrappers {
 			proxy_protocol {
 				timeout 2s
-				allow {
-					tjo_cloud_networks | join(' ')
+				# Using comment hack here. Otherwise caddy fmt takes the template
+				#  curly brackets and tries to "format them", which breaks things.
+				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
+				fallback_policy reject
+			}
+			tls {
+				issuer acme {
+					disable_http_challenge
 				}
 			}
-			fallback_policy reject
 		}
-		tls
 	}
-}
 }
 
 ##

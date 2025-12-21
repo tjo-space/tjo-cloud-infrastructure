@@ -8,7 +8,18 @@
     - vars.terraform.secrets.yaml
     - vars.secrets.yaml
 
-  handlers: []
+  handlers:
+    - name: Restart stack
+      ansible.builtin.systemd:
+        name: '{{ item }}'
+        state: restarted
+        enabled: true
+        daemon_reload: true
+      loop:
+        - "grafana-server"
+        - "prometheus"
+        - "loki"
+        - "otelcol-contrib"
 
   tasks:
     - name: Run defaults
@@ -31,7 +42,7 @@
         file: tasks/backup.yaml
 
     - name: Install Caddy
-      ansible.builtin.include_role:
+      ansible.builtin.import_role:
         name: caddy
 
     - name: Configure Caddy
@@ -42,6 +53,7 @@
         owner: "caddy"
         group: "caddy"
       notify: Restart caddy
+      tags: config-reload
 
     - name: Deploy stack
       ansible.builtin.import_tasks:

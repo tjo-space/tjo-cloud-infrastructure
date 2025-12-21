@@ -60,6 +60,8 @@
     - "/etc/otelcol-contrib/config.yaml"
     - "/etc/prometheus/prometheus.yaml"
     - "/etc/systemd/system/prometheus.service"
+  tags: config-reload
+  notify: Restart stack
 
 - name: Prepare /srv/data/grafana directory
   ansible.builtin.file:
@@ -82,15 +84,3 @@
     owner: prometheus
     mode: "0755"
     state: directory
-
-- name: Restart services
-  ansible.builtin.systemd:
-    name: '{{ item }}'
-    state: restarted
-    enabled: true
-    daemon_reload: true
-  loop:
-    - "grafana-server"
-    - "prometheus"
-    - "loki"
-    - "otelcol-contrib"
