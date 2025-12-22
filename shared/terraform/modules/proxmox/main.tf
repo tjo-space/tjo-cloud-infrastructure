@@ -56,7 +56,8 @@ ${yamlencode(merge(var.userdata, {
     packages = [
       "qemu-guest-agent",
       "ansible-core",
-      "firewalld",
+      "firewall-cmd --permanent --zone=public --add-port=2222/tcp",
+      "firewall-cmd --reload",
     ]
     package_update  = true
     package_upgrade = true
@@ -74,7 +75,8 @@ ${yamlencode(merge(var.userdata, {
       "systemctl reload firewalld",
       ] : [
       "rm /tmp/provision.sh",
-      "systemctl reload firewalld",
+      "firewall-cmd --permanent --zone=public --add-port=2222/tcp",
+      "firewall-cmd --reload",
     ]
 })
 )}
