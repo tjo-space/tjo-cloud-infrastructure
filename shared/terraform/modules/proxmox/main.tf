@@ -40,12 +40,23 @@ ${yamlencode(merge(var.userdata, {
       {
         path    = "/etc/ssh/sshd_config.d/00-cloud-init-port-change.conf"
         content = "Port 2222"
+      },
+      {
+        path    = "/etc/firewalld/services/ssh.xml"
+        content = <<EOF
+          <?xml version="1.0" encoding="utf-8"?>
+          <service>
+            <short>SSH</short>
+            <port protocol="tcp" port="2222"/>
+          </service>
+        EOF
       }
     ]
 
     packages = [
       "qemu-guest-agent",
       "ansible-core",
+      "firewalld",
     ]
     package_update  = true
     package_upgrade = true
