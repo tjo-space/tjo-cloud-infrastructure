@@ -71,8 +71,10 @@ ${yamlencode(merge(var.userdata, {
       "chmod +x /tmp/provision.sh",
       "/tmp/provision.sh",
       "rm /tmp/provision.sh",
+      "systemctl reload firewalld",
       ] : [
       "rm /tmp/provision.sh",
+      "systemctl reload firewalld",
     ]
 })
 )}

@@ -28,6 +28,15 @@ outputs:
   cd {{source_directory()}}/terraform
   tofu output
 
+ssh node:
+  #!/usr/bin/env sh
+  set -eou pipefail
+
+  pushd {{source_directory()}}/terraform > /dev/null
+  IPV4=$(tofu output -json | jq -r '.ipv4.value["{{node}}"]')
+  popd > /dev/null
+  ssh -o StrictHostKeyChecking=no root@${IPV4}
+
 provision node:
   #!/usr/bin/env sh
   set -eou pipefail
