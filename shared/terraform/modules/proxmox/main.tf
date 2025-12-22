@@ -44,12 +44,12 @@ ${yamlencode(merge(var.userdata, {
       {
         path    = "/etc/firewalld/services/ssh.xml"
         content = <<EOF
-          <?xml version="1.0" encoding="utf-8"?>
-          <service>
-            <short>SSH</short>
-            <port protocol="tcp" port="2222"/>
-          </service>
-        EOF
+<?xml version="1.0" encoding="utf-8"?>
+<service>
+  <short>SSH</short>
+  <port protocol="tcp" port="2222"/>
+</service>
+EOF
       }
     ]
 
@@ -71,12 +71,8 @@ ${yamlencode(merge(var.userdata, {
       "chmod +x /tmp/provision.sh",
       "/tmp/provision.sh",
       "rm /tmp/provision.sh",
-      "firewall-cmd --permanent --zone=public --add-port=2222/tcp",
-      "firewall-cmd --reload",
       ] : [
       "rm /tmp/provision.sh",
-      "firewall-cmd --permanent --zone=public --add-port=2222/tcp",
-      "firewall-cmd --reload",
     ]
 })
 )}
