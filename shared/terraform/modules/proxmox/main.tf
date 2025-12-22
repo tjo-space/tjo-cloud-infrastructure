@@ -56,6 +56,7 @@ ${yamlencode(merge(var.userdata, {
     packages = [
       "qemu-guest-agent",
       "ansible-core",
+      "firewalld",
     ]
     package_update  = true
     package_upgrade = true
