@@ -42,14 +42,15 @@ ${yamlencode(merge(var.userdata, {
         content = "Port 2222"
       },
       {
-        path    = "/etc/firewalld/services/ssh.xml"
-        content = <<EOF
+        path = "/etc/firewalld/services/ssh.xml"
+        content = trimspace(<<EOF
 <?xml version="1.0" encoding="utf-8"?>
 <service>
   <short>SSH</short>
   <port protocol="tcp" port="2222"/>
 </service>
 EOF
+        )
       }
     ]
 
