@@ -66,15 +66,18 @@ EOF
       mode = "reboot"
     }
 
-    # If provision script provided, run it.
-    # Else we remove the empty file.
-    runcmd = var.provision_sh != "" ? [
-      "chmod +x /tmp/provision.sh",
-      "/tmp/provision.sh",
-      "rm /tmp/provision.sh",
-      ] : [
-      "rm /tmp/provision.sh",
-    ]
+    runcmd = concat(
+      # If provision script provided, run it.
+      # Else we remove the empty file.
+      var.provision_sh != "" ? [
+        "chmod +x /tmp/provision.sh",
+        "/tmp/provision.sh",
+        "rm /tmp/provision.sh",
+        ] : [
+        "rm /tmp/provision.sh",
+        ], [
+        "shutdown -r +1", # Reboot in one minute
+    ], )
 })
 )}
 EOF
@@ -123,6 +126,13 @@ resource "proxmox_virtual_environment_vm" "node" {
   agent {
     enabled = true
     timeout = "1m"
+  }
+
+  serial_device {}
+
+  tpm_state {
+    version      = "v2.0"
+    datastore_id = var.boot.storage
   }
 
   network_device {
