@@ -145,7 +145,7 @@ resource "proxmox_virtual_environment_vm" "node" {
   dynamic "disk" {
     for_each = var.disks
     content {
-      interface    = "virtio${disk.index != null ? disk.index : index(var.disks, disk.value) + 1}"
+      interface    = "virtio${disk.value.index != null ? disk.value.index : index(var.disks, disk.value) + 1}"
       datastore_id = disk.value.storage
       size         = disk.value.size
       backup       = true
