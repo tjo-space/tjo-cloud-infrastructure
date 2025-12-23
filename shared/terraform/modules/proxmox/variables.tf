@@ -51,8 +51,10 @@ variable "disks" {
   type = list(object({
     storage = string
     size    = number
+    index   = optional(number, null)
   }))
-  default = []
+  default     = []
+  description = "Disks to be attached to vm"
 }
 
 variable "userdata" {

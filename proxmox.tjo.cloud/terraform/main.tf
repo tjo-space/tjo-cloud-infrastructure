@@ -7,7 +7,9 @@ locals {
 
   images = {
     "ubuntu_2404_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
+    "ubuntu_2510_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/questing/current/questing-server-cloudimg-amd64.img"
     "debian_13_server_cloudimg_amd64.img"   = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
+    "rocky_10_1_server_cloudimg_amd64.img"  = "https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-GenericCloud-Base-10.1-20251116.0.x86_64.qcow2"
   }
 }
 
