@@ -39,7 +39,7 @@ locals {
           "localhost:7445",
         ]
         extraArgs = {
-          "oidc-issuer-url"      = "https://id.tjo.space/application/o/k8stjocloud/",
+          "oidc-issuer-url"      = "https://id.tjo.cloud/application/o/k8stjocloud/",
           "oidc-client-id"       = "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
           "oidc-username-claim"  = "sub",
           "oidc-username-prefix" = "oidc:",

@@ -34,7 +34,7 @@ provider "desec" {
 }
 
 provider "authentik" {
-  url   = "https://id.tjo.space"
+  url   = "https://id.tjo.cloud"
   token = var.authentik_token
 }
 

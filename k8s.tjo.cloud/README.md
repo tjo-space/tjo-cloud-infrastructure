@@ -21,7 +21,7 @@ We use BGP to advertise these routes (iBGP to network.tjo.cloud).
 For Services we use last possible subnets.
 
 ## Kubernetes JWT
-For federation to work, the OIDC JWKS needs to be manually added in to id.tjo.space.
+For federation to work, the OIDC JWKS needs to be manually added in to id.tjo.cloud.
 
 ```
 kubectl get --raw /openid/v1/jwks

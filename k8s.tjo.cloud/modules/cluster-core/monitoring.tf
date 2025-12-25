@@ -80,7 +80,7 @@ resource "helm_release" "monitoring" {
         auth:
           type: oauth2
           oauth2:
-            tokenURL: "https://id.tjo.space/application/o/token/"
+            tokenURL: "https://id.tjo.cloud/application/o/token/"
             clientId: "Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh"
             clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
             endpointParams:
