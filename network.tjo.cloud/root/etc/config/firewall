@@ -111,6 +111,14 @@ config rule
 	option proto 'udp'
 	option target 'ACCEPT'
 
+config rule
+	option name 'Allow-IPv6-Forward'
+	option src 'wan'
+	option dest 'lan'
+	option proto 'all'
+	option family 'ipv6'
+	option target 'ACCEPT'
+
 ##
 # LAN
 ##
@@ -121,6 +129,7 @@ config zone
 	option forward 'ACCEPT'
 	list network 'lan'
 	list network 'lan_vip'
+	option mtu_fix '1'
 
 config forwarding
 	option src 'lan'
@@ -155,6 +164,7 @@ config zone
 	option output 'ACCEPT'
 	option forward 'REJECT'
 	list network 'jool'
+	option mtu_fix '1'
 
 config forwarding
 	option src 'jool'

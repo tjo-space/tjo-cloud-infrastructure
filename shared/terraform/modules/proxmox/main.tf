@@ -186,4 +186,8 @@ resource "proxmox_virtual_environment_vm" "node" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [tpm_state, serial_device]
+  }
 }

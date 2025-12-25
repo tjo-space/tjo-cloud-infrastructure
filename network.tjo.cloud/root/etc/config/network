@@ -7,7 +7,7 @@ config interface 'loopback'
 	option ipaddr '127.0.0.1'
 	option netmask '255.0.0.0'
 
-config device
+config device 'br-lan'
 	option name 'br-lan'
 	option type 'bridge'
 	list ports 'eth1'

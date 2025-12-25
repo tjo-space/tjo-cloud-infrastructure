@@ -11,10 +11,10 @@
       cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
     alloy_pre_process_logs: "loki.process.geoip.receiver"
     alloy_custom_integrations: |
-      prometheus.scrape "caddy" {
+      prometheus.scrape "haproxy" {
         targets    = concat(
           [
-            {"__address__" = "127.0.0.1:2019", "instance" = constants.hostname, "job" = "integrations/caddy"},
+            {"__address__" = "127.0.0.1:8404", "instance" = constants.hostname, "job" = "integrations/haproxy"},
           ],
         )
         forward_to = [

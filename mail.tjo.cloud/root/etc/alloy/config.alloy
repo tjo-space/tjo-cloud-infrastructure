@@ -141,7 +141,7 @@ otelcol.processor.batch "default" {
 }
 
 otelcol.auth.oauth2 "default" {
-	token_url       = "https://id.tjo.space/application/o/token/"
+	token_url       = "https://id.tjo.cloud/application/o/token/"
 	client_id       = "Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh"
 	client_secret   = "none"
 	endpoint_params = {
