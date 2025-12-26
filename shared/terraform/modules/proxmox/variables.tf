@@ -92,8 +92,8 @@ variable "ssh_keys" {
 }
 
 variable "hostpci" {
-  default = {}
-  type = map(object({
+  default = []
+  type = list(object({
     device  = string
     mapping = string
     pcie    = bool
