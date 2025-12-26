@@ -187,6 +187,17 @@ resource "proxmox_virtual_environment_vm" "node" {
     }
   }
 
+  dynamic "hostpci" {
+    for_each = var.hostpci
+    content {
+      device  = hostpci.device
+      mapping = hostpci.mapping
+      pcie    = hostpci.pcie
+      rombar  = hostpci.rombar
+      xvga    = hostpci.xvga
+    }
+  }
+
   lifecycle {
     ignore_changes = [tpm_state, serial_device]
   }

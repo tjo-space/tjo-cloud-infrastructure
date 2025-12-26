@@ -90,3 +90,17 @@ variable "provision_sh" {
 variable "ssh_keys" {
   type = map(string)
 }
+
+variable "hostpci" {
+  default = {}
+  type = map(object({
+    device  = string
+    mapping = string
+    pcie    = bool
+    rombar  = bool
+    xvga    = bool
+  }))
+  description = <<EOF
+  See: https://registry.terraform.io/providers/bpg/proxmox/latest/docs/resources/virtual_environment_vm#hostpci-1
+  EOF
+}

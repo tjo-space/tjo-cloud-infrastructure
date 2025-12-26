@@ -6,7 +6,7 @@ monitor.tjo.cloud   bk_monitor_tjo_cloud
 api.k8s.tjo.cloud   bk_api_internal_k8s_tjo_cloud
 
 ## TJO.SPACE
-ng.media.tjo.space  bk_media_tjo_space
+media.tjo.space     bk_media_tjo_space
 ### Legacy
 chat.tjo.space      bk_nevaroo_system_tjo_space
 yt.tjo.space        bk_nevaroo_system_tjo_space
@@ -19,8 +19,6 @@ vault.tjo.space     bk_batuu_system_tjo_space
 rss.tjo.space       bk_batuu_system_tjo_space
 paperless.tjo.space bk_batuu_system_tjo_space
 penpot.tjo.space    bk_batuu_system_tjo_space
-books.tjo.space     bk_jakku_system_tjo_space
-media.tjo.space     bk_jakku_system_tjo_space
 
 ## MNTS.DEV
 mnts.dev            bk_batuu_system_tjo_space
