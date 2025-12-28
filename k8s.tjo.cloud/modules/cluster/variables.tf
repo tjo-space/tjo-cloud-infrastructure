@@ -1,7 +1,7 @@
 variable "nodes" {
   type = map(object({
     id   = number
-    type = string
+    type = string # controlplane, worker
     host = string
 
     cores  = optional(number, 4)

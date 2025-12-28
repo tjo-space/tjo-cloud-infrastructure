@@ -40,9 +40,11 @@ locals {
 }
 
 resource "proxmox_virtual_environment_download_file" "talos" {
+  for_each = toset([for node in local.nodes : node.host])
+
   content_type = "iso"
-  datastore_id = var.proxmox.common_storage
-  node_name    = "endor"
+  datastore_id = "local"
+  node_name    = each.key
   file_name    = "${var.cluster.name}-talos-${talos_image_factory_schematic.this.id}-${var.talos.version}-amd64.iso"
   url          = "https://factory.talos.dev/image/${talos_image_factory_schematic.this.id}/${var.talos.version}/nocloud-amd64.iso"
 }
@@ -108,7 +110,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
   agent {
     enabled = true
-    timeout = "1m"
+    timeout = "5m"
   }
 
   network_device {
@@ -117,7 +119,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
 
   cdrom {
-    file_id = proxmox_virtual_environment_download_file.talos.id
+    file_id = proxmox_virtual_environment_download_file.talos[each.value.host].id
   }
 
   scsi_hardware = "virtio-scsi-single"
@@ -136,6 +138,11 @@ resource "proxmox_virtual_environment_vm" "nodes" {
     interface         = "scsi0"
     datastore_id      = each.value.storage
     meta_data_file_id = proxmox_virtual_environment_file.metadata[each.key].id
+  }
+
+  lifecycle {
+    // We preform upgrades via talosctl
+    ignore_changes = [cdrom]
   }
 }
 

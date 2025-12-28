@@ -18,6 +18,14 @@ output "nodes" {
   value = local.nodes_with_address
 }
 
+output "talos" {
+  value = {
+    version      = var.talos.version
+    kubernetes   = var.talos.kubernetes
+    schematic_id = talos_image_factory_schematic.this.id
+  }
+}
+
 output "proxmox" {
   value = merge(var.proxmox, {
     token = {

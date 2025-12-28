@@ -3,6 +3,7 @@ PROMETHEUS_CRDS_VERSION := "main"
 ENVOY_CRDS_VERSION := "1.2.8"
 ARGOCD_CRDS_VERSION := "2.14.10"
 GRAFANA_ALLOY_CRDS_VERSION := "0.3.4"
+SEALED_SECRETS_VERSION := "0.34.0"
 
 default:
   @just --list
@@ -36,6 +37,10 @@ module-cluster-core-crds:
   @curl -L -o modules/cluster-core/crds/grafana-alloy.yaml \
     "https://github.com/grafana/alloy-operator/releases/download/alloy-operator-{{GRAFANA_ALLOY_CRDS_VERSION}}/collectors.grafana.com_alloy.yaml"
 
+  # Sealed Secrets
+  @curl -L -o modules/cluster-core/crds/sealed-secrets.yaml \
+    "https://github.com/bitnami-labs/sealed-secrets/raw/refs/tags/v{{SEALED_SECRETS_VERSION}}/helm/sealed-secrets/crds/bitnami.com_sealedsecrets.yaml"
+
 destroy:
   tofu state rm module.cluster-core || true
   tofu state rm module.cluster-components || true
@@ -51,22 +56,66 @@ apply:
   tofu apply -target module.cluster-core
   tofu apply
 
-remove node:
+apply-full:
+  tofu init
+  tofu apply
+
+remove node: etcd-snapshot
   #!/usr/bin/env bash
-  # TODO: Do at some point :)
-  NODE="{{node}}"
-  IP=TODO_FETCH_FROM_K8S_OUTPUT
+  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv4')
 
   talosctl -n ${IP} reset
-  kubectl delete node ${NODE}
-  echo "Node removed from kubernetes. Now remove it from terraform configuration!"
+  kubectl delete node "{{node}}
+  echo "Node {{node}} removed from kubernetes. Now remove it from terraform configuration!"
 
-etcd-snapshot:
+etcd-snapshot prefix="manual":
   #!/usr/bin/env bash
-  # TODO: https://www.talos.dev/v1.10/advanced/disaster-recovery/
-  talosctl -n <IP> etcd snapshot db.snapshot
-  talosctl -n <IP> cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-$(date +%F_%H-%M-%S)
+  set -eou pipefail
 
-apply-full:
-  #tofu init
-  tofu apply
+  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv4')
+
+  echo "= Taking etcd snapshot on node ${NODE}"
+  talosctl -n ${NODE} etcd snapshot db.snapshot
+  talosctl -n ${NODE} cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-{{prefix}}-$(date +%F_%H-%M-%S)
+  echo "= Snapshoting done!"
+
+upgrade-talos version:
+  #!/usr/bin/env bash
+  set -eou pipefail
+
+  echo "= Talos version: {{ version }}"
+
+  just etcd-snapshot "pre-upgrade-talos-{{version}}"
+
+  SCHEMATIC_ID=$(tofu output -json | jq -r '.talos.value.schematic_id')
+
+  NODES=$(tofu output -json | jq -r '.nodes.value | sort_by(.type, .name)[] | .ipv4')
+  for node in ${NODES}; do
+    echo "== Upgrading ${node}"
+    talosctl --nodes ${node} upgrade --wait \
+      --image factory.talos.dev/nocloud-installer/${SCHEMATIC_ID}:{{ version }}
+    sleep 10
+    talosctl --nodes ${node} health
+    sleep 2
+  done
+
+  just etcd-snapshot "post-upgrade-talos-{{version}}"
+
+upgrade-kubernetes version:
+  #!/usr/bin/env bash
+  set -eou pipefail
+
+  echo "= Kubernetes version: {{ version }}"
+
+  just etcd-snapshot "pre-upgrade-kubernetes-{{version}}"
+
+  NODES=$(tofu output -json | jq -r '.nodes.value | sort_by(.type, .name)[] | .ipv4')
+  for node in ${NODES}; do
+    echo "== Upgrading ${node}"
+    talosctl --nodes ${node} upgrade-k8s --to {{ version }}
+    sleep 10
+    talosctl --nodes ${node} health
+    sleep 2
+  done
+
+  just etcd-snapshot "post-upgrade-kubernetes-{{version}}"

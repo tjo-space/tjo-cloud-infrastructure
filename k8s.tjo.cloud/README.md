@@ -26,3 +26,10 @@ For federation to work, the OIDC JWKS needs to be manually added in to id.tjo.cl
 ```
 kubectl get --raw /openid/v1/jwks
 ````
+
+## Upgrade Process
+
+- [ ] Run `just upgrade-talos v1.12.0`
+- [ ] Run `just upgrade-kubernetes v1.35.0`
+- [ ] Change Talos and/or Kubernetes versions in `main.tf`.
+- [ ] Run `just apply-full`.
