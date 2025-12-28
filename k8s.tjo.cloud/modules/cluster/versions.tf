@@ -4,23 +4,23 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.75.0"
+      version = ">=0.90.0"
     }
     talos = {
       source  = "siderolabs/talos"
-      version = "0.10.0"
+      version = ">=0.10.0"
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.5.2"
+      version = ">=2.5.2"
     }
     desec = {
       source  = "Valodim/desec"
-      version = "0.6.1"
+      version = ">=0.6.1"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.7.1"
+      version = ">=3.7.1"
     }
   }
 }

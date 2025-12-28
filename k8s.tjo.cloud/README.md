@@ -29,7 +29,12 @@ kubectl get --raw /openid/v1/jwks
 
 ## Upgrade Process
 
+References:
+ - https://docs.siderolabs.com/kubernetes-guides/advanced-guides/upgrading-kubernetes#upgrading-kubernetes
+ - https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/lifecycle-management/upgrading-talos
+
+### Steps
 - [ ] Run `just upgrade-talos v1.12.0`
 - [ ] Run `just upgrade-kubernetes v1.35.0`
 - [ ] Change Talos and/or Kubernetes versions in `main.tf`.
-- [ ] Run `just apply-full`.
+- [ ] Run `just apply`.

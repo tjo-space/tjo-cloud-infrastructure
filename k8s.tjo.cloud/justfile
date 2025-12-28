@@ -1,8 +1,8 @@
-GATEWAY_CRDS_VERSION := "v1.1.0"
+GATEWAY_CRDS_VERSION := "v1.4.1"
 PROMETHEUS_CRDS_VERSION := "main"
-ENVOY_CRDS_VERSION := "1.2.8"
-ARGOCD_CRDS_VERSION := "2.14.10"
-GRAFANA_ALLOY_CRDS_VERSION := "0.3.4"
+ENVOY_CRDS_VERSION := "1.6.1"
+ARGOCD_CRDS_VERSION := "3.2.3"
+GRAFANA_ALLOY_CRDS_VERSION := "0.3.15"
 SEALED_SECRETS_VERSION := "0.34.0"
 
 default:
@@ -41,12 +41,7 @@ module-cluster-core-crds:
   @curl -L -o modules/cluster-core/crds/sealed-secrets.yaml \
     "https://github.com/bitnami-labs/sealed-secrets/raw/refs/tags/v{{SEALED_SECRETS_VERSION}}/helm/sealed-secrets/crds/bitnami.com_sealedsecrets.yaml"
 
-destroy:
-  tofu state rm module.cluster-core || true
-  tofu state rm module.cluster-components || true
-  tofu destroy -target module.cluster
-
-apply:
+create: # Like apply, but separated in multiple steps for fresh cluster to work.
   tofu init
   tofu apply -target module.cluster
   tofu apply -target module.cluster-core.helm_release.talos-ccm
@@ -55,10 +50,20 @@ apply:
   tofu apply -target module.cluster-core.helm_release.cilium
   tofu apply -target module.cluster-core
   tofu apply
+  @echo '{{CYAN}}{{BOLD}}Cluster provisioned!{{NORMAL}}'
+  @echo '{{YELLOW}}{{BOLD}}Add the following output to id.tjo.cloud federation for k8s.tjo.cloud!{{NORMAL}}'
+  kubectl get --raw /openid/v1/jwks
 
-apply-full:
+apply:
   tofu init
   tofu apply
+
+destroy:
+  tofu init
+  tofu state rm module.cluster-core || true
+  tofu state rm module.cluster-components || true
+  tofu destroy -target module.cluster
+  tofu destroy
 
 remove node: etcd-snapshot
   #!/usr/bin/env bash
@@ -74,29 +79,38 @@ etcd-snapshot prefix="manual":
 
   NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv4')
 
-  echo "= Taking etcd snapshot on node ${NODE}"
+  echo "{{CYAN}}{{BOLD}}== Taking etcd snapshot on node ${NODE}{{NORMAL}}"
   talosctl -n ${NODE} etcd snapshot db.snapshot
   talosctl -n ${NODE} cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-{{prefix}}-$(date +%F_%H-%M-%S)
-  echo "= Snapshoting done!"
+  echo "{{CYAN}}{{BOLD}}== Snapshoting done!{{NORMAL}}"
 
 upgrade-talos version:
   #!/usr/bin/env bash
   set -eou pipefail
 
-  echo "= Talos version: {{ version }}"
+  echo "{{CYAN}}{{BOLD}}= Talos version: {{ version }}{{NORMAL}}"
 
   just etcd-snapshot "pre-upgrade-talos-{{version}}"
 
   SCHEMATIC_ID=$(tofu output -json | jq -r '.talos.value.schematic_id')
+  WORKER_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "worker")) | sort_by(.name)[] | .ipv4')
+  CONTROLPLANE_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | sort_by(.name)[] | .ipv4')
 
-  NODES=$(tofu output -json | jq -r '.nodes.value | sort_by(.type, .name)[] | .ipv4')
-  for node in ${NODES}; do
-    echo "== Upgrading ${node}"
-    talosctl --nodes ${node} upgrade --wait \
+  upgrade_node () {
+    echo "{{CYAN}}{{BOLD}}=== Upgrading $1{{NORMAL}}"
+    talosctl --nodes $1 upgrade --wait \
       --image factory.talos.dev/nocloud-installer/${SCHEMATIC_ID}:{{ version }}
-    sleep 10
-    talosctl --nodes ${node} health
-    sleep 2
+    echo "{{CYAN}}{{BOLD}}==== Upgrade completed.{{NORMAL}}"
+  }
+
+  echo "{{CYAN}}{{BOLD}}== Upgrading WORKER nodes{{NORMAL}}"
+  for node in ${WORKER_NODES}; do
+    upgrade_node $node
+  done
+
+  echo "{{RED}}{{BOLD}}== Upgrading CONTROL PLANE nodes{{NORMAL}}"
+  for node in ${CONTROLPLANE_NODES}; do
+    upgrade_node $node
   done
 
   just etcd-snapshot "post-upgrade-talos-{{version}}"
@@ -105,17 +119,14 @@ upgrade-kubernetes version:
   #!/usr/bin/env bash
   set -eou pipefail
 
-  echo "= Kubernetes version: {{ version }}"
+  echo "{{CYAN}}{{BOLD}}= Kubernetes version: {{ version }}{{NORMAL}}"
 
   just etcd-snapshot "pre-upgrade-kubernetes-{{version}}"
 
-  NODES=$(tofu output -json | jq -r '.nodes.value | sort_by(.type, .name)[] | .ipv4')
-  for node in ${NODES}; do
-    echo "== Upgrading ${node}"
-    talosctl --nodes ${node} upgrade-k8s --to {{ version }}
-    sleep 10
-    talosctl --nodes ${node} health
-    sleep 2
-  done
+  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv4')
+
+  echo "{{CYAN}}{{BOLD}}== Upgrading...{{NORMAL}}"
+  talosctl --nodes ${NODE} upgrade-k8s --to {{ version }}
+  echo "{{CYAN}}{{BOLD}}== Upgrade completed.{{NORMAL}}"
 
   just etcd-snapshot "post-upgrade-kubernetes-{{version}}"

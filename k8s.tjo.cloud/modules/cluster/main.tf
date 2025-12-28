@@ -12,6 +12,8 @@ locals {
         }
       }
       features = {
+        rbac                 = true
+        apidCheckExtKeyUsage = true
         kubernetesTalosAPIAccess = {
           enabled = true
           allowedRoles = [
@@ -92,6 +94,9 @@ locals {
     for k, node in local.nodes_with_address : k => [
       yamlencode({
         machine = {
+          network = {
+            hostname = node.name
+          }
           nodeLabels = {
             "k8s.tjo.cloud/bgp"     = "true"
             "k8s.tjo.cloud/host"    = node.host

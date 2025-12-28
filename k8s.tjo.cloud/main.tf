@@ -17,8 +17,8 @@ module "cluster" {
   source = "./modules/cluster"
 
   talos = {
-    version    = "v1.10.5"
-    kubernetes = "v1.33.2"
+    version    = "v1.12.0"
+    kubernetes = "v1.35.0"
   }
 
   cluster = {

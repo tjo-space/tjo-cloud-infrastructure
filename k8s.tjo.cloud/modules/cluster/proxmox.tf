@@ -150,8 +150,18 @@ resource "proxmox_virtual_environment_role" "csi" {
   role_id = "kubernetes-csi"
 
   privileges = [
+    "Sys.Audit",
     "VM.Audit",
+    "VM.Allocate",
+    "VM.Clone",
     "VM.Config.Disk",
+    "VM.Config.CPU",
+    "VM.Config.Disk",
+    "VM.Config.HWType",
+    "VM.Config.Memory",
+    "VM.Config.Options",
+    "VM.Migrate",
+    "VM.PowerMgmt",
     "Datastore.Allocate",
     "Datastore.AllocateSpace",
     "Datastore.Audit",
