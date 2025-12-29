@@ -79,14 +79,6 @@ module "cluster" {
       cores   = 4
       memory  = 12288
     }
-    mustafar-orange = {
-      id      = 6041
-      type    = "worker"
-      host    = "endor"
-      storage = "local"
-      cores   = 4
-      memory  = 4096
-    }
   }
 }
 

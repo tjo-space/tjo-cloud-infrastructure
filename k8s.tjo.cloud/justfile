@@ -5,6 +5,9 @@ ARGOCD_CRDS_VERSION := "3.2.3"
 GRAFANA_ALLOY_CRDS_VERSION := "0.3.15"
 SEALED_SECRETS_VERSION := "0.34.0"
 
+export TALOSCONFIG := "admin.talosconfig"
+export KUBECONFIG := "admin.kubeconfig"
+
 default:
   @just --list
 
@@ -70,8 +73,13 @@ remove node: etcd-snapshot
   IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv4')
 
   talosctl -n ${IP} reset
-  kubectl delete node "{{node}}
+  kubectl delete node "{{node}}"
   echo "Node {{node}} removed from kubernetes. Now remove it from terraform configuration!"
+
+reboot node:
+  #!/usr/bin/env bash
+  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv4')
+  talosctl -n ${IP} reboot
 
 etcd-snapshot prefix="manual":
   #!/usr/bin/env bash

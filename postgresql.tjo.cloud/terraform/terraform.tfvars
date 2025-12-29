@@ -60,7 +60,8 @@ users = [
   {
     node      = "endor-one"
     name      = "paperless.tjo.space"
-    databases = [{ name = "paperless.tjo.space" }]
+    connection_limit = 40
+    databases = [{ name = "paperless.tjo.space", connection_limit = 40 }]
   },
 ]
 
