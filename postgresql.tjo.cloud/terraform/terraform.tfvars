@@ -62,11 +62,6 @@ users = [
     name      = "paperless.tjo.space"
     databases = [{ name = "paperless.tjo.space" }]
   },
-  {
-    node      = "endor-one"
-    name      = "penpot.tjo.space"
-    databases = [{ name = "penpot.tjo.space" }]
-  },
 ]
 
 administrators = [

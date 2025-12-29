@@ -265,7 +265,7 @@ resource "kubernetes_manifest" "enable-proxy-protocol-policy" {
         kind  = "Gateway"
         name  = kubernetes_manifest.gateway.object.metadata.name
       }
-      proxyProtocol = true
+      enableProxyProtocol = true
     }
   }
 }
