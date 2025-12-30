@@ -58,10 +58,10 @@ users = [
     databases        = [{ name = "cloud.tjo.space", connection_limit = 40 }]
   },
   {
-    node      = "endor-one"
-    name      = "paperless.tjo.space"
+    node             = "endor-one"
+    name             = "paperless.tjo.space"
     connection_limit = 40
-    databases = [{ name = "paperless.tjo.space", connection_limit = 40 }]
+    databases        = [{ name = "paperless.tjo.space", connection_limit = 40 }]
   },
 ]
 

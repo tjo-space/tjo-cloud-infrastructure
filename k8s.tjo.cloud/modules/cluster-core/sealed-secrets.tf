@@ -21,6 +21,8 @@ resource "helm_release" "sealed-secrets" {
       minAvailable = 1
     }
 
+    priorityClassName = "system-cluster-critical"
+
     affinity = {
       nodeAffinity = {
         requiredDuringSchedulingIgnoredDuringExecution = {

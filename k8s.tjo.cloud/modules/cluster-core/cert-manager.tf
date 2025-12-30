@@ -8,8 +8,8 @@ resource "helm_release" "cert-manager" {
   cleanup_on_fail = true
 
   values = [yamlencode({
-    crds = {
-      enabled = true
+    global = {
+      priorityClassName = "system-cluster-critical"
     }
 
     extraArgs = ["--enable-gateway-api"]

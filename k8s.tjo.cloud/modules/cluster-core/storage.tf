@@ -7,30 +7,38 @@ resource "helm_release" "proxmox-csi" {
   atomic          = true
   cleanup_on_fail = true
 
-  values = [<<-EOF
-    config:
-      clusters:
-        - url: ${var.proxmox.url}
-          insecure: ${var.proxmox.insecure}
-          token_id: "${var.proxmox.token.id}"
-          token_secret: "${var.proxmox.token.secret}"
-          region: "${var.proxmox.name}"
+  values = [yamlencode({
+    config = {
+      clusters = [
+        {
+          url          = var.proxmox.url
+          insecure     = var.proxmox.insecure
+          token_id     = var.proxmox.token.id
+          token_secret = var.proxmox.token.secret
+          region       = var.proxmox.name
+        }
+      ]
+    }
 
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: ""
-      node.cloudprovider.kubernetes.io/platform: nocloud
-    tolerations:
-      - key: node-role.kubernetes.io/control-plane
-        effect: NoSchedule
+    nodeSelector = {
+      "node-role.kubernetes.io/control-plane"     = ""
+      "node.cloudprovider.kubernetes.io/platform" = "nocloud"
+    }
+    tolerations = [{
+      key    = "node-role.kubernetes.io/control-plane"
+      effect = "NoSchedule"
+    }]
 
-    node:
-      nodeSelector:
-        node.cloudprovider.kubernetes.io/platform: nocloud
-      tolerations:
-        - key: node-role.kubernetes.io/control-plane
-          effect: NoSchedule
-  EOF
-  ]
+    node = {
+      nodeSelector = {
+        "node.cloudprovider.kubernetes.io/platform" = "nocloud"
+      }
+      tolerations = [{
+        key    = "node-role.kubernetes.io/control-plane"
+        effect = "NoSchedule"
+      }]
+    }
+  })]
 }
 
 resource "helm_release" "hybrid-csi" {

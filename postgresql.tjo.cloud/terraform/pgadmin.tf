@@ -50,8 +50,7 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
     name      = "pgadmin"
     namespace = kubernetes_namespace.this.metadata[0].name
     labels = {
-      "app.kubernetes.io/name"    = "pgadmin"
-      "app.kubernetes.io/version" = local.pgadmin_version
+      "app.kubernetes.io/name" = "pgadmin"
     }
   }
 
@@ -62,8 +61,7 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
     revision_history_limit = 5
     selector {
       match_labels = {
-        "app.kubernetes.io/name"    = "pgadmin"
-        "app.kubernetes.io/version" = local.pgadmin_version
+        "app.kubernetes.io/name" = "pgadmin"
       }
     }
     template {
@@ -140,14 +138,14 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
               path = "/misc/ping"
               port = "http"
             }
-            initial_delay_seconds = 30
+            initial_delay_seconds = 90
           }
           startup_probe {
             http_get {
               path = "/misc/ping"
               port = "http"
             }
-            initial_delay_seconds = 30
+            initial_delay_seconds = 90
           }
           readiness_probe {
             http_get {

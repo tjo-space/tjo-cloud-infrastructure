@@ -18,22 +18,30 @@ resource "helm_release" "kube-state-metrics" {
   atomic          = true
   cleanup_on_fail = true
 
-  values = [<<-EOF
-    nodeSelector:
-      node-role.kubernetes.io/control-plane: ""
-    tolerations:
-      - key: "node-role.kubernetes.io/control-plane"
-        effect: NoSchedule
+  values = [yamlencode({
+    nodeSelector = {
+      "node-role.kubernetes.io/control-plane" = ""
+    }
+    tolerations = [
+      {
+        key    = "node-role.kubernetes.io/control-plane"
+        effect = "NoSchedule"
+      }
+    ]
 
-    updateStrategy: Recreate
-    prometheusScrape: false
-    prometheus:
-      monitor:
-        enabled: true
-        http:
-          honorLabels: true
-    EOF
-  ]
+    priorityClassName = "system-cluster-critical"
+
+    updateStrategy   = "Recreate"
+    prometheusScrape = false
+    prometheus = {
+      monitor = {
+        enabled = true
+        http = {
+          honorLabels = true
+        }
+      }
+    }
+  })]
 }
 
 resource "helm_release" "monitoring" {
@@ -47,53 +55,106 @@ resource "helm_release" "monitoring" {
   atomic          = true
   cleanup_on_fail = true
 
-  values = [<<-EOF
-    cluster:
-      name: "${var.cluster.name}"
+  values = [yamlencode({
+    cluster = {
+      name = var.cluster.name
+    }
 
-    clusterMetrics:
-      enabled: true
+    # Features
+    clusterMetrics = {
+      enabled = true
+      controlPlane = {
+        enabled = true
+      }
+      node-exporter = {
+        priorityClassName = "system-node-critical"
+      }
+      kube-state-metrics = {
+        priorityClassName = "system-cluster-critical"
+      }
+    }
+    clusterEvents = {
+      enabled = true
+    }
+    podLogs = {
+      enabled = true
+    }
 
-    clusterEvents:
-      enabled: true
+    prometheusOperatorObjects = {
+      enabled = true
+    }
+    annotationAutodiscovery = {
+      enabled = true
+    }
 
-    podLogs:
-      enabled: true
+    alloy-logs = {
+      enabled = true
+      controller = {
+        priorityClassName = "system-node-critical"
+      }
+    }
+    alloy-metrics = {
+      enabled = true
+    }
+    alloy-singleton = {
+      enabled = true
+    }
 
-    prometheusOperatorObjects:
-      enabled: true
+    collectorCommon = {
+      alloy = {
+        controller = {
+          priorityClassName = "system-cluster-critical"
+        }
+      }
+    }
 
-    annotationAutodiscovery:
-      enabled: true
+    destinations = [
+      {
+        name = "monitor-tjo-cloud"
+        type = "otlp"
+        url  = "grpc.otel.monitor.tjo.cloud:443"
+        auth = {
+          type = "oauth2"
+          oauth2 = {
+            tokenURL         = "https://id.tjo.cloud/application/o/token/"
+            clientId         = "Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh"
+            clientSecretFile = "/var/run/secrets/kubernetes.io/serviceaccount/token"
+            endpointParams = {
+              grant_type            = ["client_credentials"]
+              client_assertion_type = ["urn:ietf:params:oauth:client-assertion-type:jwt-bearer"]
+            }
+          }
+        }
+        logs = {
+          enabled = true
+        }
+        metrics = {
+          enabled = true
+        }
+        traces = {
+          enabled = false
+        }
+      }
+    ]
 
-    alloy-logs:
-      enabled: true
-    alloy-metrics:
-      enabled: true
-    alloy-singleton:
-      enabled: true
-
-    destinations:
-      - name: monitor-tjo-cloud
-        type: otlp
-        url: "grpc.otel.monitor.tjo.cloud:443"
-        auth:
-          type: oauth2
-          oauth2:
-            tokenURL: "https://id.tjo.cloud/application/o/token/"
-            clientId: "Vlw69HXoTJn1xMQaDX71ymGuLVoD9d2WxscGhksh"
-            clientSecretFile: "/var/run/secrets/kubernetes.io/serviceaccount/token"
-            endpointParams:
-              grant_type:
-                - "client_credentials"
-              client_assertion_type:
-                - "urn:ietf:params:oauth:client-assertion-type:jwt-bearer"
-        logs:
-          enabled: true
-        metrics:
-          enabled: true
-        traces:
-          enabled: false
-    EOF
-  ]
+    alloy-operator = {
+      priorityClassName = "system-cluster-critical"
+      affinity = {
+        nodeAffinity = {
+          requiredDuringSchedulingIgnoredDuringExecution = {
+            nodeSelectorTerms = [{
+              matchExpressions = [{
+                key      = "node-role.kubernetes.io/control-plane"
+                operator = "Exists"
+              }]
+            }]
+          }
+        }
+      }
+      tolerations = [{
+        key    = "node-role.kubernetes.io/control-plane"
+        effect = "NoSchedule"
+      }]
+    }
+  })]
 }

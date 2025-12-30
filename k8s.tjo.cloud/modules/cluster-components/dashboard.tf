@@ -2,15 +2,41 @@ resource "helm_release" "dashboard" {
   name            = "kubernetes-dashboard"
   repository      = "https://kubernetes.github.io/dashboard"
   chart           = "kubernetes-dashboard"
-  version         = "7.5.0"
+  version         = "7.14.0"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
-  set {
-    name  = "kong.enabled"
-    value = false
-  }
+  values = [yamlencode({
+    kong = { enabled = false }
+
+    app = {
+      priorityClassName = "critical"
+
+      affinity = {
+        nodeAffinity = {
+          requiredDuringSchedulingIgnoredDuringExecution = {
+            nodeSelectorTerms = [
+              {
+                matchExpressions = [{
+                  key      = "node-role.kubernetes.io/control-plane"
+                  operator = "Exists"
+                }]
+              }
+            ]
+          }
+        }
+      }
+
+      tolerations = [
+        {
+          key      = "node-role.kubernetes.io/control-plane"
+          effect   = "NoSchedule"
+          operator = "Exists"
+        }
+      ]
+    }
+  })]
 }
 
 resource "kubernetes_manifest" "dashoard-http-route" {

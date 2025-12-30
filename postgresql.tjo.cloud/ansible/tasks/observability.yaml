@@ -44,10 +44,11 @@
       }
 
       database_observability.postgres "all" {
-        data_source_name  = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
-        enable_collectors = ["query_details", "query_samples", "schema_details"]
-        forward_to        = [loki.process.drop_old.receiver]
-        targets           = prometheus.exporter.postgres.all.targets
+        data_source_name   = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
+        enable_collectors  = ["query_details", "query_samples"]
+        disable_collectors = ["schema_details"] // "schema_details" doesn't work.
+        forward_to         = [loki.process.drop_old.receiver]
+        targets            = prometheus.exporter.postgres.all.targets
       }
 
       discovery.relabel "postgres_set_job_and_instance" {

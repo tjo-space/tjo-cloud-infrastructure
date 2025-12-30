@@ -84,10 +84,12 @@ resource "helm_release" "cilium" {
 
     hubble = {
       ui = {
-        enabled = true
+        enabled           = true
+        priorityClassName = "system-cluster-critical"
       }
       relay = {
-        enabled = true
+        enabled           = true
+        priorityClassName = "system-cluster-critical"
       }
       tls = {
         auto = {

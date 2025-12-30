@@ -45,7 +45,7 @@ resource "helm_release" "argocd" {
   name            = "argo-cd"
   chart           = "argo-cd"
   repository      = "https://argoproj.github.io/argo-helm"
-  version         = "8.2.4"
+  version         = "9.2.3"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -60,6 +60,23 @@ resource "helm_release" "argocd" {
         ipFamilyPolicy = "RequireDualStack"
         ipFamilies     = ["IPv4", "IPv6"]
       }
+      priorityClassName = "critical"
+      affinity = {
+        nodeAffinity = {
+          requiredDuringSchedulingIgnoredDuringExecution = {
+            nodeSelectorTerms = [{
+              matchExpressions = [{
+                key      = "node-role.kubernetes.io/control-plane"
+                operator = "Exists"
+              }]
+            }]
+          }
+        }
+      }
+      tolerations = [{
+        key    = "node-role.kubernetes.io/control-plane"
+        effect = "NoSchedule"
+      }]
     }
     configs = {
       params = {

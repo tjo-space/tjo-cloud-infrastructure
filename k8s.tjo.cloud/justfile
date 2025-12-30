@@ -3,7 +3,8 @@ PROMETHEUS_CRDS_VERSION := "main"
 ENVOY_CRDS_VERSION := "1.6.1"
 ARGOCD_CRDS_VERSION := "3.2.3"
 GRAFANA_ALLOY_CRDS_VERSION := "0.3.15"
-SEALED_SECRETS_VERSION := "0.34.0"
+SEALED_SECRETS_CRDS_VERSION := "0.34.0"
+K8UP_CRDS_VERSION := "2.13.1"
 
 export TALOSCONFIG := "admin.talosconfig"
 export KUBECONFIG := "admin.kubeconfig"
@@ -42,7 +43,12 @@ module-cluster-core-crds:
 
   # Sealed Secrets
   @curl -L -o modules/cluster-core/crds/sealed-secrets.yaml \
-    "https://github.com/bitnami-labs/sealed-secrets/raw/refs/tags/v{{SEALED_SECRETS_VERSION}}/helm/sealed-secrets/crds/bitnami.com_sealedsecrets.yaml"
+    "https://github.com/bitnami-labs/sealed-secrets/raw/refs/tags/v{{SEALED_SECRETS_CRDS_VERSION}}/helm/sealed-secrets/crds/bitnami.com_sealedsecrets.yaml"
+
+  # K8UP
+  @curl -L -o - \
+    "https://github.com/k8up-io/k8up/archive/refs/tags/v{{K8UP_CRDS_VERSION}}.tar.gz" \
+    | tar -xz -C modules/cluster-core/crds --strip-components=4 --wildcards "k8up-{{K8UP_CRDS_VERSION}}/charts/k8up/crds/*.yaml"
 
 create: # Like apply, but separated in multiple steps for fresh cluster to work.
   tofu init
@@ -60,6 +66,10 @@ create: # Like apply, but separated in multiple steps for fresh cluster to work.
 apply:
   tofu init
   tofu apply
+
+apply-only-crds:
+  tofu init
+  tofu apply -target module.cluster-core.kubectl_manifest.crds
 
 destroy:
   tofu init

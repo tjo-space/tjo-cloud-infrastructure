@@ -2,6 +2,22 @@ data "kubectl_path_documents" "crds" {
   pattern = "${path.module}/crds/*.yaml"
 }
 
+resource "kubernetes_priority_class" "common" {
+  for_each = {
+    critical = 100000 # k8s-tjo-cloud deployments only
+    high     = 10000
+    default  = 1000
+    low      = 100
+  }
+
+  metadata {
+    name = each.key
+  }
+  value             = each.value
+  preemption_policy = "PreemptLowerPriority"
+  global_default    = each.key == "default" ? true : false
+}
+
 resource "kubectl_manifest" "crds" {
   for_each          = data.kubectl_path_documents.crds.manifests
   yaml_body         = each.value

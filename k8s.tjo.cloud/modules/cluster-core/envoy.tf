@@ -6,6 +6,32 @@ resource "helm_release" "envoy" {
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
+
+  values = [yamlencode({
+    deployment = {
+      priorityClassName = "system-cluster-critical"
+
+      pod = {
+        affinity = {
+          nodeAffinity = {
+            requiredDuringSchedulingIgnoredDuringExecution = {
+              nodeSelectorTerms = [{
+                matchExpressions = [{
+                  key      = "node-role.kubernetes.io/control-plane"
+                  operator = "Exists"
+                }]
+              }]
+            }
+          }
+        }
+
+        tolerations = [{
+          key    = "node-role.kubernetes.io/control-plane"
+          effect = "NoSchedule"
+        }]
+      }
+    }
+  })]
 }
 
 resource "kubernetes_manifest" "gateway_class_config" {
