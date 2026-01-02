@@ -35,3 +35,6 @@ configure-all tag="":
     --inventory inventory.yaml \
     $TAGS \
     playbook.yaml
+
+ssh node:
+  ssh -A bine@{{node}}.s3.tjo.cloud -4 -p 2222

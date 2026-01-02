@@ -19,6 +19,15 @@ ${yamlencode(merge(var.userdata, {
 
   users = [
     {
+      name = "root"
+      # As we provision instance without Hetzner ssh keys.
+      # Hetzner thinks we want to use password authentication for ssh.
+      # We do not. Additionally, hetzner will enforce that root needs
+      # a password change. We do not care about that.
+      # Set something random, we won't use it anyway.
+      type = "RANDOM"
+    },
+    {
       name                = var.username
       sudo                = "ALL=(ALL) NOPASSWD:ALL"
       ssh_authorized_keys = values(var.ssh_keys)
@@ -39,6 +48,10 @@ ${yamlencode(merge(var.userdata, {
     {
       path    = "/etc/ssh/sshd_config.d/00-cloud-init-port-change.conf"
       content = "Port 2222"
+    },
+    {
+      path    = "/etc/ssh/sshd_config.d/00-cloud-init-disable-password-auth.conf"
+      content = "PasswordAuthentication no"
     },
     {
       path = "/etc/firewalld/services/ssh.xml"

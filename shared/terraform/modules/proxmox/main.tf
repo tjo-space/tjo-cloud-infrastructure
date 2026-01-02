@@ -42,6 +42,10 @@ ${yamlencode(merge(var.userdata, {
         content = "Port 2222"
       },
       {
+        path    = "/etc/ssh/sshd_config.d/00-cloud-init-disable-password-auth.conf"
+        content = "PasswordAuthentication no"
+      },
+      {
         path = "/etc/firewalld/services/ssh.xml"
         content = trimspace(<<EOF
 <?xml version="1.0" encoding="utf-8"?>
