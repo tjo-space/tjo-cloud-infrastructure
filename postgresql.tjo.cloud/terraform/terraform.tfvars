@@ -68,4 +68,5 @@ users = [
 administrators = [
   "tine.jozelj",
   "jakob.jozelj",
+  "svc-console-tjo-cloud",
 ]

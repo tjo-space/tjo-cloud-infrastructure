@@ -2,7 +2,7 @@
   "hosts":
     "barman.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.15"
+      "ansible_host": ""
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "18"
