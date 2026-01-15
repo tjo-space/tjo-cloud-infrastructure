@@ -2,7 +2,7 @@
 local-keys = [ "store.*", "directory.*", "tracer.*", "!server.blocked-ip.*", "!server.allowed-ip.*", "server.*",
                "authentication.fallback-admin.*", "cluster.*",   "config.local-keys.*",
                "storage.data", "storage.blob", "storage.lookup", "storage.fts", "storage.directory", "certificate.*",
-               "metrics.*"]
+               "metrics.*", "asn.*"]
 
 [authentication.fallback-admin]
 # openssl passwd -6
@@ -73,15 +73,12 @@ store = "nevaroo_one_postgresql_tjo_cloud"
 
 [store.nevaroo_one_postgresql_tjo_cloud]
 type = "postgresql"
-compression = "lz4"
 database = "mail.tjo.cloud_stalwart"
 host = "nevaroo-one.postgresql.tjo.cloud"
 user = "mail.tjo.cloud"
 password = "%{env:POSTGRESQL_PASSWORD}%"
-pool.max-connections = 20
+pool.max-connections = 10
 port = 5432
-purge.frequency = "0 3 *"
-read-from-replicas = true
 timeout = "15s"
 tls.allow-invalid-certs = false
 tls.enable = true
