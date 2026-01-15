@@ -81,7 +81,7 @@ pool.max-connections = 10
 port = 5432
 timeout = "15s"
 tls.allow-invalid-certs = false
-tls.enable = true
+tls.enable = false # TODO: Why does this not work?
 
 [store.localhost_valkey]
 type = "redis"
