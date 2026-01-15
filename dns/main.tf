@@ -49,7 +49,7 @@ locals {
     { type = "CNAME", subdomain = "autoconfig", records = ["mail.tjo.cloud."] },
     { type = "CNAME", subdomain = "autodiscover", records = ["mail.tjo.cloud."] },
     { type = "CNAME", subdomain = "mta-sts", records = ["mail.tjo.cloud."] },
-    { type = "TXT", subdomain = "_mta-sts", records = ["v=STSv1; id=6866269529996095712"] },
+    { type = "TXT", subdomain = "_mta-sts", records = ["v=STSv1; id=12389896138107905122"] },
     { type = "TXT", subdomain = "_dmarc", records = ["v=DMARC1; p=reject; rua=mailto:postmaster@tjo.cloud; ruf=mailto:postmaster@tjo.cloud"] },
     { type = "TXT", subdomain = "_smtp._tls", records = ["v=TLSRPTv1; rua=mailto:postmaster@tjo.cloud"] },
     { type = "TLSA", subdomain = "_25._tcp.mail", records = [
