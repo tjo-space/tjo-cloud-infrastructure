@@ -19,6 +19,19 @@ resource "desec_rrset" "ingress" {
   records = each.value.type == "A" ? data.dns_a_record_set.ingress.addrs : data.dns_aaaa_record_set.ingress.addrs
   ttl     = 3600
 }
+resource "desec_rrset" "https" {
+  for_each = toset([
+    "proxmox",
+    "dashboard.k8s",
+    "argocd.k8s",
+  ])
+
+  domain  = "tjo.cloud"
+  subname = each.value
+  type    = "HTTPS"
+  records = ["0 any.ingress.tjo.cloud."]
+  ttl     = 3600
+}
 
 locals {
   records = [
@@ -40,10 +53,10 @@ locals {
     { type = "TXT", subdomain = "_dmarc", records = ["v=DMARC1; p=reject; rua=mailto:postmaster@tjo.cloud; ruf=mailto:postmaster@tjo.cloud"] },
     { type = "TXT", subdomain = "_smtp._tls", records = ["v=TLSRPTv1; rua=mailto:postmaster@tjo.cloud"] },
     { type = "TLSA", subdomain = "_25._tcp.mail", records = [
-      "3 0 1 fb61bb8559bde5ad74491ac4ea8f82474d33dd754f4a74ebdc0800a30cafee56",
-      "3 0 2 29cea17b0bad9905c8803bca5cd2be06283e8fa5516dc85708ba6feb6837b12be56be155df5802b79d0d242cf4d81f579a43fe19b639b60f77caa96b37fee30f",
-      "3 1 1 99059e7d8b381961e03a44fd36390181f057cecb4428350c28e72d6af0455cff",
-      "3 1 2 2bc79a59c76d882d366d61e5b7606c5ca0a3ae07af98c57b7c82dfd31713cecc6cc19eb60898ea4080742f144003d94b853a41fdf8a4dd3c2774804c87afd7b1",
+      "3 0 1 d40473bb22eeeec619ffa7972ae7ee1d4e05b2670344c69014377b0b279201c3",
+      "3 0 2 423a7893922342406d706fd8a8f6a378f2ca716b0e45c924a2918b557d7e03a015ce507efa9cf588a6a236bbd93cf522cfa26e78867964ca7b36c7241f5528cc",
+      "3 1 1 c04cfe7604955bb2c6c57f900c5ca4655af6d1eec5d0a8c4fae4f7256cdfd020",
+      "3 1 2 095b866ed351e019a74da79bcd11087a8427f1c91f6548e4ce64bee658997d49ed1a8ae5d4b52115da892546e63a82f4e2a034aeae3d4af6c2b207a1a2048a0e",
       "2 0 1 83624fd338c8d9b023c18a67cb7a9c0519da43d11775b4c6cbdad45c3d997c52",
       "2 0 2 3565cd99fb0bccf03019e4d2276ca5d7c913a3af1ad58a95a8cad181699364f22fb6dc6cc01e071847db3336ae9a122b968d31c5be9a4443e145daba2a1782c6",
       "2 1 1 885bf0572252c6741dc9a52f5044487fef2a93b811cdedfad7624cc283b7cdd5",
@@ -54,15 +67,7 @@ locals {
     ## BACKUP
     { type = "CNAME", subdomain = "backup", records = ["u409586.your-storagebox.de."] },
     ## NETWORK
-    { type = "A", subdomain = "batuu.network", records = ["100.100.39.38"] },
-    { type = "A", subdomain = "endor.network", records = ["100.98.205.27"] },
-    { type = "A", subdomain = "jakku.network", records = ["100.78.209.62"] },
-    { type = "A", subdomain = "mustafar.network", records = ["100.78.32.102"] },
     { type = "A", subdomain = "nevaroo.network", records = ["100.126.111.13"] },
-    { type = "AAAA", subdomain = "batuu.network", records = ["fd7a:115c:a1e0::1101:2728"] },
-    { type = "AAAA", subdomain = "endor.network", records = ["fd7a:115c:a1e0::7201:cd22"] },
-    { type = "AAAA", subdomain = "jakku.network", records = ["fd7a:115c:a1e0::d601:d13e"] },
-    { type = "AAAA", subdomain = "mustafar.network", records = ["fd7a:115c:a1e0::8801:2066"] },
     { type = "AAAA", subdomain = "nevaroo.network", records = ["fd7a:115c:a1e0::1101:6f0d"] },
     ## SYSTEM
     { type = "A", subdomain = "batuu.system", records = ["100.110.88.100"] },

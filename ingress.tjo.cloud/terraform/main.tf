@@ -45,10 +45,11 @@ module "hetzner-cloud" {
     for k, v in local.nodes_with_meta : k => v if v.provider == "hetzner-cloud"
   }
 
-  name       = each.value.name
-  fqdn       = each.value.fqdn
-  datacenter = each.value.datacenter
-  metadata   = each.value.meta
+  name        = each.value.name
+  fqdn        = each.value.fqdn
+  datacenter  = each.value.datacenter
+  metadata    = each.value.meta
+  server_type = each.value.server_type
 
   ssh_keys = local.global.tjo_cloud_admin_ssh_keys
   domain   = var.domain

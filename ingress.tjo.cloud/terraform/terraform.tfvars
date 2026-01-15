@@ -1,15 +1,12 @@
 nodes_hetzner_cloud = {
-  # Datacenter out of capacity :(
-  #"pink" = {
-  #  datacenter = "fsn1-dc14"
-  #  use = true
-  #}
   "purple" = {
-    datacenter = "nbg1-dc3"
+    datacenter = "nbg1-dc3" // nuremberg
     use        = true
+    server_type = "cax11" // arm, 2core 4gb, 4.62/m
   }
-  "yellow" = {
-    datacenter = "nbg1-dc3"
-    use        = true
-  }
+  //"pink" = {
+  // datacenter = "fsn1-dc14" // falkenstein
+  //  use        = true
+  //  server_type = "cx23" // intel, 2core 4gb, 4.26/m
+  //}
 }

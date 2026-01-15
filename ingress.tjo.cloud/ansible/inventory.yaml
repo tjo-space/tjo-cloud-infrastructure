@@ -5,8 +5,3 @@
       "ansible_host": "116.203.153.67"
       "ansible_port": 2222
       "ansible_user": "bine"
-    "yellow-hetzner-cloud":
-      "ansible_become": true
-      "ansible_host": "91.98.72.2"
-      "ansible_port": 2222
-      "ansible_user": "bine"

@@ -9,6 +9,14 @@ resource "desec_rrset" "api" {
   records = each.value
   ttl     = 3600
 }
+resource "desec_rrset" "api_https" {
+  domain  = "tjo.cloud"
+  subname = "api.s3"
+  type    = "HTTPS"
+  records = ["1 . alpn=\"h2\""]
+  ttl     = 3600
+}
+
 resource "desec_rrset" "admin" {
   for_each = {
     A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
@@ -20,6 +28,14 @@ resource "desec_rrset" "admin" {
   records = each.value
   ttl     = 3600
 }
+resource "desec_rrset" "admin_https" {
+  domain  = "tjo.cloud"
+  subname = "admin.s3"
+  type    = "HTTPS"
+  records = ["1 . alpn=\"h2\""]
+  ttl     = 3600
+}
+
 resource "desec_rrset" "web" {
   for_each = {
     A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
@@ -29,6 +45,13 @@ resource "desec_rrset" "web" {
   subname = "*.web.s3"
   type    = each.key
   records = each.value
+  ttl     = 3600
+}
+resource "desec_rrset" "web_https" {
+  domain  = "tjo.cloud"
+  subname = "*.web.s3"
+  type    = "HTTPS"
+  records = ["1 . alpn=\"h2\""]
   ttl     = 3600
 }
 
