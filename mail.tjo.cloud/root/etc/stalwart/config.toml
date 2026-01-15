@@ -78,13 +78,13 @@ database = "mail.tjo.cloud_stalwart"
 host = "nevaroo-one.postgresql.tjo.cloud"
 user = "mail.tjo.cloud"
 password = "%{env:POSTGRESQL_PASSWORD}%"
-pool.max-connections = 10
+pool.max-connections = 20
 port = 5432
 purge.frequency = "0 3 *"
 read-from-replicas = true
 timeout = "15s"
 tls.allow-invalid-certs = false
-tls.enable = false
+tls.enable = true
 
 [store.localhost_valkey]
 type = "redis"
@@ -93,14 +93,14 @@ urls = "redis://127.0.0.1:6379"
 
 [storage]
 directory = "internal"
-blob = "pink_postgresql_tjo_cloud"
-data = "pink_postgresql_tjo_cloud"
-fts = "pink_postgresql_tjo_cloud"
+blob = "nevaroo_one_postgresql_tjo_cloud"
+data = "nevaroo_one_postgresql_tjo_cloud"
+fts = "nevaroo_one_postgresql_tjo_cloud"
 lookup = "localhost_valkey"
 
 [tracing.history]
 enable = true
-store = "pink_postgresql_tjo_cloud"
+store = "nevaroo_one_postgresql_tjo_cloud"
 retention = "30d"
 
 [metrics.prometheus]
@@ -110,7 +110,7 @@ auth.secret = "%{env:PROMETHEUS_PASSWORD}%"
 
 [metrics.history]
 enable = true
-store = "pink_postgresql_tjo_cloud"
+store = "nevaroo_one_postgresql_tjo_cloud"
 retention = "90d"
 interval = "0 * *"
 
@@ -118,3 +118,15 @@ interval = "0 * *"
 type = "journal"
 level = "info"
 enable = true
+
+[asn]
+type = "resource"
+expires = "1d"
+timeout = "5m"
+max-size = 104857600
+
+[asn.urls]
+asn = [ "https://cdn.jsdelivr.net/npm/@ip-location-db/asn/asn-ipv4.csv",
+        "https://cdn.jsdelivr.net/npm/@ip-location-db/asn/asn-ipv6.csv" ]
+geo = [ "https://cdn.jsdelivr.net/npm/@ip-location-db/geolite2-geo-whois-asn-country/geolite2-geo-whois-asn-country-ipv4.csv",
+        "https://cdn.jsdelivr.net/npm/@ip-location-db/geolite2-geo-whois-asn-country/geolite2-geo-whois-asn-country-ipv6.csv" ]
