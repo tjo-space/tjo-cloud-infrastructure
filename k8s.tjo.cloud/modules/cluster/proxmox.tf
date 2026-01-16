@@ -54,7 +54,7 @@ resource "proxmox_virtual_environment_file" "metadata" {
 
   node_name    = each.value.host
   content_type = "snippets"
-  datastore_id = var.proxmox.common_storage
+  datastore_id = "local"
 
   source_raw {
     data      = <<-EOF
@@ -142,7 +142,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
   lifecycle {
     // We preform upgrades via talosctl
-    ignore_changes = [cdrom]
+    ignore_changes = [cdrom, initialization[0].meta_data_file_id]
   }
 }
 

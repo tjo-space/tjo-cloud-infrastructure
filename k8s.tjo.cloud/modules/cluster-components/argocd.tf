@@ -205,9 +205,8 @@ resource "kubernetes_manifest" "argocd-projects" {
       }
       syncPolicy = {
         automated = {
-          prune      = true
-          selfHeal   = true
-          allowEmpty = false
+          prune    = true
+          selfHeal = true
         }
         retry = {
           limit = 5

@@ -53,10 +53,9 @@ variable "cluster" {
 
 variable "proxmox" {
   type = object({
-    name           = string
-    url            = string
-    insecure       = optional(bool, false)
-    common_storage = string
+    name     = string
+    url      = string
+    insecure = optional(bool, false)
   })
   sensitive = true
 }

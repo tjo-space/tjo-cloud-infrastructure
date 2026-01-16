@@ -32,9 +32,8 @@ module "cluster" {
   }
 
   proxmox = {
-    name           = "tjo-cloud"
-    url            = "https://proxmox.tjo.cloud/api2/json"
-    common_storage = "synology.storage.tjo.cloud"
+    name = "tjo-cloud"
+    url  = "https://proxmox.tjo.cloud/api2/json"
   }
 
   nodes = {
