@@ -13,7 +13,7 @@ resource "desec_rrset" "api_https" {
   domain  = "tjo.cloud"
   subname = "api.s3"
   type    = "HTTPS"
-  records = ["1 . alpn=\"h2\""]
+  records = ["1 . alpn=h2"]
   ttl     = 3600
 }
 
@@ -32,7 +32,7 @@ resource "desec_rrset" "admin_https" {
   domain  = "tjo.cloud"
   subname = "admin.s3"
   type    = "HTTPS"
-  records = ["1 . alpn=\"h2\""]
+  records = ["1 . alpn=h2"]
   ttl     = 3600
 }
 
@@ -51,7 +51,7 @@ resource "desec_rrset" "web_https" {
   domain  = "tjo.cloud"
   subname = "*.web.s3"
   type    = "HTTPS"
-  records = ["1 . alpn=\"h2\""]
+  records = ["1 . alpn=h2"]
   ttl     = 3600
 }
 

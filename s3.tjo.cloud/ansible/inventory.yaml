@@ -2,7 +2,7 @@
   "hosts":
     "batuu-yellow-proxmox.s3.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.16"
+      "ansible_host": "fd74:6a6f::be24:11ff:fe0f:5dcf"
       "ansible_port": 2222
       "ansible_user": "bine"
       "garage_kind": "store"
@@ -11,7 +11,7 @@
       "provider": "proxmox"
     "endor-yellow-proxmox.s3.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.18"
+      "ansible_host": "fd74:6a6f::be24:11ff:feda:8194"
       "ansible_port": 2222
       "ansible_user": "bine"
       "garage_kind": "store"
@@ -20,7 +20,7 @@
       "provider": "proxmox"
     "jakku-yellow-proxmox.s3.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.17"
+      "ansible_host": "fd74:6a6f::be24:11ff:fe8b:50ff"
       "ansible_port": 2222
       "ansible_user": "bine"
       "garage_kind": "store"
@@ -29,7 +29,7 @@
       "provider": "proxmox"
     "mustafar-purple-proxmox.s3.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.19"
+      "ansible_host": "fd74:6a6f::be24:11ff:fe44:1c5b"
       "ansible_port": 2222
       "ansible_user": "bine"
       "garage_kind": "store"
@@ -38,7 +38,7 @@
       "provider": "proxmox"
     "pink-hetzner-cloud.s3.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.1.227.36"
+      "ansible_host": "fd74:6a6f::90ef:71ff:fe49:2599"
       "ansible_port": 2222
       "ansible_user": "bine"
       "garage_kind": "gateway"

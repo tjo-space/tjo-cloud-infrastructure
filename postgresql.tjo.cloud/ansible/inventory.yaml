@@ -2,7 +2,7 @@
   "hosts":
     "barman.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.15"
+      "ansible_host": "fd74:6a6f::be24:11ff:fe3c:b1f9"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "18"
@@ -10,13 +10,13 @@
   "hosts":
     "endor-one.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.14"
+      "ansible_host": "fd74:6a6f::be24:11ff:fe02:3738"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "16"
     "nevaroo-one.postgresql.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "10.0.4.13"
+      "ansible_host": "fd74:6a6f::be24:11ff:fef0:a9d1"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "16"

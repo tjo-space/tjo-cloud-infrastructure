@@ -14,7 +14,7 @@ resource "desec_rrset" "https" {
   domain  = "tjo.cloud"
   subname = "any.ingress"
   type    = "HTTPS"
-  records = ["1 . alpn=\"h2\""]
+  records = ["1 . alpn=h2"]
   ttl     = 3600
 }
 
