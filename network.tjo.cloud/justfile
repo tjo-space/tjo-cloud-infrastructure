@@ -1,3 +1,5 @@
+OPENWRT_VERSION := "24.10.5"
+
 default:
   @just --list
 
@@ -6,8 +8,8 @@ download:
   set -euo pipefail
   mkdir -p {{source_directory()}}/iso
 
-  curl -L -o - https://downloads.openwrt.org/releases/23.05.5/targets/x86/64/openwrt-23.05.5-x86-64-generic-ext4-combined-efi.img.gz \
-    | gunzip > {{source_directory()}}/iso/openwrt-23.05.5-x86-64-generic-ext4-combined-efi.img
+  curl -L -o - https://downloads.openwrt.org/releases/{{ OPENWRT_VERSION }}/targets/x86/64/openwrt-{{ OPENWRT_VERSION }}-x86-64-generic-ext4-combined-efi.img.gz \
+    | gunzip > {{source_directory()}}/iso/openwrt.img
 
 apply:
   #!/usr/bin/env sh
@@ -28,7 +30,7 @@ destroy-only node:
 reboot node:
   #!/usr/bin/env sh
   echo "- Rebooting {{node}}"
-  tailscale ssh root@{{node}}-network-tjo-cloud 'reboot'
+  ssh root@{{node}}.network.tjo.cloud 'reboot'
 
 reboot-all:
   #!/usr/bin/env sh
@@ -58,6 +60,8 @@ configure node:
 
   echo "Configuring ${NODE}.network.tjo.cloud"
 
+  ssh-copy-id root@${NODE}.network.tjo.cloud
+
   echo "- Generating configuration ${TMPDIR}..."
   for file in $(find * -type f)
   do
@@ -72,8 +76,8 @@ configure node:
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | tailscale ssh root@${NODE}-network-tjo-cloud "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | ssh root@${NODE}.network.tjo.cloud "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  cat {{source_directory()}}/configure.sh | tailscale ssh root@${NODE}-network-tjo-cloud 'sh' | ts ${NODE}
+  cat {{source_directory()}}/configure.sh | ssh root@${NODE}.network.tjo.cloud 'sh' | ts ${NODE}

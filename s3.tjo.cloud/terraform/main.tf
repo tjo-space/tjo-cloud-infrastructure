@@ -119,7 +119,7 @@ resource "local_file" "ansible_inventory" {
     all = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host   = v.private_ipv4 != "" ? v.private_ipv4 : v.public_ipv4
+          ansible_host   = v.private_ipv6 != "" ? v.private_ipv6 : v.public_ipv6
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true

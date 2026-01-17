@@ -20,7 +20,7 @@ resource "proxmox_virtual_environment_file" "iso" {
   node_name    = each.value.host
 
   source_file {
-    path = "${path.module}/../iso/openwrt-23.05.5-x86-64-generic-ext4-combined-efi.img"
+    path = "${path.module}/../iso/openwrt.img"
   }
 }
 
@@ -87,5 +87,9 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
     backup       = true
     iothread     = true
     file_format  = "raw"
+  }
+
+  lifecycle {
+    ignore_changes = [disk[0].file_id]
   }
 }

@@ -55,4 +55,4 @@ configure-all tag="":
     playbook.yaml
 
 ssh node:
-  ssh bine@{{node}}.postgresql.tjo.cloud -4 -p 2222
+  ssh bine@{{node}}.postgresql.tjo.cloud -p 2222

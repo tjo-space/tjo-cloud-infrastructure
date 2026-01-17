@@ -48,6 +48,7 @@
     - name: Include firewall task
       ansible.builtin.include_tasks:
         file: tasks/firewall.yaml
+      tags: firewall
 
     - name: Include folder2ram task
       ansible.builtin.include_tasks:
@@ -59,11 +60,21 @@
           --reset \
           --accept-dns=false \
           --ssh=true \
-          --authkey {{ tailscale_auth_key }} \
-          --hostname "{{ inventory_hostname }}.system.tjo.cloud" \
-          --advertise-tags "tag:system-tjo-cloud"
+          --authkey="{{ tailscale_auth_key }}" \
+          --hostname="{{ inventory_hostname }}.system.tjo.cloud" \
+          --advertise-tags="tag:system-tjo-cloud" \
+          --advertise-routes="10.0.0.0/10,fd74:6a6f::/32,10.100.0.0/16,fd9b:7c3d:7f6a::/48" \
+          --snat-subnet-routes=true
 
         tailscale serve --service=svc:proxmox https+insecure://localhost:8006
+
+        cat > /etc/sysctl.d/99-tailscale.conf << EOF
+        net.ipv4.ip_forward = 1
+        net.ipv6.conf.all.forwarding = 1
+        EOF
+        sysctl -p /etc/sysctl.d/99-tailscale.conf
+
+      tags: tailscale
 
     - name: Configure Observability
       ansible.builtin.include_tasks:

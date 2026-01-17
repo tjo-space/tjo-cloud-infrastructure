@@ -81,7 +81,7 @@ resource "local_file" "ansible_inventory" {
     postgresql = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host       = v.private_ipv4
+          ansible_host       = v.private_ipv6
           ansible_port       = 2222
           ansible_user       = "bine"
           ansible_become     = true
@@ -92,7 +92,7 @@ resource "local_file" "ansible_inventory" {
     barman = {
       hosts = {
         for k, v in local.nodes_deployed : v.fqdn => {
-          ansible_host       = v.private_ipv4
+          ansible_host       = v.private_ipv6
           ansible_port       = 2222
           ansible_user       = "bine"
           ansible_become     = true

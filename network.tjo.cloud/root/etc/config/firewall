@@ -136,26 +136,6 @@ config forwarding
 	option dest 'wan'
 
 ##
-# TAILSCALE
-##
-config zone
-	option name 'tailscale'
-	option input 'ACCEPT'
-	option output 'ACCEPT'
-	option forward 'ACCEPT'
-	option masq '1'
-	option mtu_fix '1'
-	list network 'tailscale'
-
-config forwarding
-	option src 'tailscale'
-	option dest 'lan'
-
-config forwarding
-	option src 'lan'
-	option dest 'tailscale'
-
-##
 # JOOL
 ##
 config zone

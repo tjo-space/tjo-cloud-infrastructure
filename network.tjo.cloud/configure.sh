@@ -4,13 +4,8 @@ set -eou pipefail
 echo "- OPKG Update"
 opkg update
 
-echo "- Configuring tailscale (Management Network)"
-tailscale up \
-  --advertise-routes=10.0.0.0/10,fd74:6a6f::/32,10.100.0.0/16,fd9b:7c3d:7f6a::/48 \
-  --snat-subnet-routes=true \
-  --accept-dns=false \
-  --ssh \
-  --reset
+echo "- Qemu agent"
+opkg install qemu-ga
 
 echo "- Installing Bird (BGP, Router Advertisement NDP)"
 opkg install bird2 bird2c

@@ -5,6 +5,7 @@ locals {
   cluster_public_endpoint   = "https://${local.public_domain}:${var.cluster.api.public.port}"
 
   talos_controlplane_config = {
+    version = "v1alpha1"
     machine = {
       kubelet = {
         extraArgs = {
@@ -49,6 +50,7 @@ locals {
   }
 
   talos_worker_config = {
+    version = "v1alpha1"
     cluster = {
       network = {
         cni = {
@@ -101,6 +103,57 @@ locals {
       }),
     ]
   }
+
+  talos_network_controlplane_configs = [
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "NetworkDefaultActionConfig"
+      ingress    = "block"
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "NetworkRuleConfig"
+      name       = "internal-ingress"
+      portSelector = {
+        ports = [
+          10250,       # kubelet
+          50000,       # apid
+          50001,       # trustd
+          6443,        # kubernetes api
+          "2379-2380", # etcd
+        ]
+        protocol = "tcp"
+      }
+      ingress = [
+        { subnet = "10.0.0.0/10" },
+        { subnet = "fd74:6a6f::/32" },
+      ]
+    })
+  ]
+
+  talos_network_worker_configs = [
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "NetworkDefaultActionConfig"
+      ingress    = "block"
+    }),
+    yamlencode({
+      apiVersion = "v1alpha1"
+      kind       = "NetworkRuleConfig"
+      name       = "internal-ingress"
+      portSelector = {
+        ports = [
+          10250, # kubelet
+          50000, # apid
+        ]
+        protocol = "tcp"
+      }
+      ingress = [
+        { subnet = "10.0.0.0/10" },
+        { subnet = "fd74:6a6f::/32" },
+      ]
+    }),
+  ]
 }
 
 resource "talos_machine_secrets" "this" {
@@ -141,7 +194,8 @@ resource "talos_machine_configuration_apply" "controlplane" {
       yamlencode(local.talos_worker_config),
       yamlencode(local.talos_controlplane_config)
     ],
-    local.talos_node_config[each.key]
+    local.talos_node_config[each.key],
+    local.talos_network_controlplane_configs,
   ))
 
   timeouts = {
@@ -163,7 +217,8 @@ resource "talos_machine_configuration_apply" "worker" {
     [
       yamlencode(local.talos_worker_config)
     ],
-    local.talos_node_config[each.key]
+    local.talos_node_config[each.key],
+    local.talos_network_worker_configs,
   ))
 
   timeouts = {

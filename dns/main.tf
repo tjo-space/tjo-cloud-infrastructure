@@ -67,8 +67,8 @@ locals {
     ## BACKUP
     { type = "CNAME", subdomain = "backup", records = ["u409586.your-storagebox.de."] },
     ## NETWORK
-    { type = "A", subdomain = "nevaroo.network", records = ["100.126.111.13"] },
-    { type = "AAAA", subdomain = "nevaroo.network", records = ["fd7a:115c:a1e0::1101:6f0d"] },
+    { type = "A", subdomain = "nevaroo.network", records = ["10.0.0.4"] },
+    { type = "AAAA", subdomain = "nevaroo.network", records = ["fd74:6a6f::4"] },
     ## SYSTEM
     { type = "A", subdomain = "batuu.system", records = ["100.110.88.100"] },
     { type = "A", subdomain = "endor.system", records = ["100.103.129.84"] },

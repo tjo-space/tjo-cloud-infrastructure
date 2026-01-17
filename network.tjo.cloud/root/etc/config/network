@@ -69,13 +69,6 @@ config interface 'wan6'
   {{ end }}
 
 ##
-# TAILSCALE
-##
-config interface 'tailscale'
-	option proto 'none'
-	option device 'tailscale0'
-
-##
 # JOOL
 ##
 config interface 'jool'

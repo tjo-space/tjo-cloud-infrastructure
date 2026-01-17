@@ -66,28 +66,9 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 ### 1. Add new device to terraform.tfvars.
 
-### 3. Deploy terraform.
+### 2. Deploy terraform.
 
-### 4. Set Password (see bitwarden)
-
-### 5. Setup initial network.
-
-```
-# Fix: we want to use eth1.
-# Remove all mentions of lan.
-vim /etc/config/network
-service network restart
-```
-
-### 5. Setup Tailscale.
-Ref: https://github.com/adyanth/openwrt-tailscale-enabler
-
-```
-wget -O - https://code.tjo.space/tjo-cloud/infrastructure/raw/branch/main/network.tjo.cloud/scripts/openwrt-initial-setup.sh > initial.sh
-sh initial.sh
-```
-
-### 6. Configure.
+### 3. Configure.
 
 Once tailscale is up and manually configured (see the config files for guide).
 We can use automated way of maintaining config.

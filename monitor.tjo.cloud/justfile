@@ -49,4 +49,4 @@ configure-all tag="":
     playbook.yaml
 
 ssh node:
-  ssh -A bine@{{node}}.monitor.tjo.cloud -4 -p 2222
+  ssh -A bine@{{node}}.monitor.tjo.cloud -p 2222
