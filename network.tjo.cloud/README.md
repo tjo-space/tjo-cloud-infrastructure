@@ -22,7 +22,6 @@ We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6 f
 |----------------------|---------------|-------------------|
 | DHCP/SLAAC Assignments     | 10.0.0.0/16   | fd74:6a6f:0::/48  |
 | ZeroTier Assignments | 10.1.0.0/16   | Use SLAAC/DHCP  |
-| tealfleet.com        | 10.4.0.0/16   | fd74:6a6f:4::/48  |
 
 Unspecified are unused.
 

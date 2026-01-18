@@ -62,6 +62,8 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
   node_name = each.value.name
   name      = "vmbr1"
   comment   = "Private network for VMs."
+  // Must be left as empty list!
+  ports = []
 }
 
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
