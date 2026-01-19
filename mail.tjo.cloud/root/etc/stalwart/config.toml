@@ -46,6 +46,11 @@ bind = "[::]:465"
 protocol = "smtp"
 tls.implicit = true
 
+[server.listener.submissions-insecre]
+bind = "[::]:587"
+protocol = "smtp"
+tls.implicit = false
+
 [directory.ldap_id_tjo_cloud]
 type = "ldap"
 url = "ldap://127.0.0.1:389"
