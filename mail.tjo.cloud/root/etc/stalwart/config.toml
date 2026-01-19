@@ -46,7 +46,7 @@ bind = "[::]:465"
 protocol = "smtp"
 tls.implicit = true
 
-[server.listener.submissions-insecre]
+[server.listener.submissions-insecure]
 bind = "[::]:587"
 protocol = "smtp"
 tls.implicit = false
