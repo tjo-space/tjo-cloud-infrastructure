@@ -2,7 +2,7 @@ resource "helm_release" "cilium" {
   name            = "cilium"
   chart           = "cilium"
   repository      = "https://helm.cilium.io/"
-  version         = "1.18.5"
+  version         = "1.18.6"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -29,7 +29,13 @@ resource "helm_release" "cilium" {
 
     bpf = {
       datapathMode = "netkit"
+      masquerade   = true
+      distributedLRU = {
+        enabled = true
+      }
+      mapDynamicSizeRatio = "0.08"
     }
+    bpfClockProbe = true
 
     ipv4                  = { enabled = true }
     enableIPv4Masquerade  = true
@@ -60,6 +66,7 @@ resource "helm_release" "cilium" {
           "FOWNER",
           "SETGID",
           "SETUID",
+          "CAP_NET_BIND_SERVICE",
         ]
         cleanCiliumState = [
           "NET_ADMIN",
@@ -113,7 +120,7 @@ resource "kubernetes_manifest" "cilium-bgp-cluster-config" {
   depends_on = [helm_release.cilium]
 
   manifest = {
-    apiVersion = "cilium.io/v2alpha1"
+    apiVersion = "cilium.io/v2"
     kind       = "CiliumBGPClusterConfig"
     metadata = {
       name = "default"
@@ -143,7 +150,7 @@ resource "kubernetes_manifest" "cilium-bgp-advertisement" {
   depends_on = [helm_release.cilium]
 
   manifest = {
-    apiVersion = "cilium.io/v2alpha1"
+    apiVersion = "cilium.io/v2"
     kind       = "CiliumBGPAdvertisement"
     metadata = {
       name = "pods-and-services"
@@ -180,7 +187,7 @@ resource "kubernetes_manifest" "cilium-bgp-peer-config" {
   depends_on = [helm_release.cilium]
 
   manifest = {
-    apiVersion = "cilium.io/v2alpha1"
+    apiVersion = "cilium.io/v2"
     kind       = "CiliumBGPPeerConfig"
     metadata = {
       name = "default"
@@ -223,7 +230,7 @@ resource "kubernetes_manifest" "cilium-load-balancer-ip-pool" {
   depends_on = [helm_release.cilium]
 
   manifest = {
-    apiVersion = "cilium.io/v2alpha1"
+    apiVersion = "cilium.io/v2"
     kind       = "CiliumLoadBalancerIPPool"
     metadata = {
       name = "default"

@@ -81,15 +81,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
   scsi_hardware = "virtio-scsi-single"
   disk {
     file_id      = proxmox_virtual_environment_file.iso[each.key].id
-    interface    = "scsi0"
+    interface    = "virtio0"
     datastore_id = each.value.boot_storage
-    size         = 8
+    size         = 1
     backup       = true
     iothread     = true
     file_format  = "raw"
   }
 
-  lifecycle {
-    ignore_changes = [disk[0].file_id]
-  }
 }

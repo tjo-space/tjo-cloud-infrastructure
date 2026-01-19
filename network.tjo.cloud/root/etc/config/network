@@ -7,17 +7,12 @@ config interface 'loopback'
 	option ipaddr '127.0.0.1'
 	option netmask '255.0.0.0'
 
-config device 'br-lan'
-	option name 'br-lan'
-	option type 'bridge'
-	list ports 'eth1'
-
 # LAN
 config globals 'globals'
 	option ula_prefix 'fd74:6a6f:0::/48'
 
 config interface 'lan'
-	option device 'br-lan'
+	option device 'eth1'
 	option proto  'static'
 	list ipaddr   '{{ $node.lan.ipv4.address }}'
 	list ip6addr  '{{ $node.lan.ipv6.address }}'
@@ -29,7 +24,7 @@ config interface 'lan'
 config interface 'lan_vip'
   option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
 	option proto 'static'
-	option device 'br-lan'
+	option device 'eth1'
 	list ipaddr '10.0.0.1/32'
 	list ip6addr 'fd74:6a6f::1/128'
 

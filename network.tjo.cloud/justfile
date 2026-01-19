@@ -76,8 +76,8 @@ configure node:
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | ssh root@${NODE}.network.tjo.cloud "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | ssh -J root@nevaroo.system.tjo.cloud root@10.0.0.1 "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  cat {{source_directory()}}/configure.sh | ssh root@${NODE}.network.tjo.cloud 'sh' | ts ${NODE}
+  cat {{source_directory()}}/configure.sh | ssh -J root@nevaroo.system.tjo.cloud root@10.0.0.1 'sh' | ts ${NODE}

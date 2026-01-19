@@ -11,5 +11,5 @@ ff02::3   ip6-allhosts
 # {{ $key }}
 {{ $value.ipv4 }} {{ $key }}.system.tjo.cloud {{ $key }}
 # We have issues with IPv6
-#{{ $value.ipv6 }} {{ $key }}.system.tjo.cloud {{ $key }}
+{{ $value.ipv6 }} {{ $key }}.system.tjo.cloud {{ $key }}
 {{ end }}

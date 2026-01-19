@@ -102,6 +102,12 @@ etcd-snapshot prefix="manual":
   talosctl -n ${NODE} cp /var/lib/etcd/member/snap/db backup/etcd/snapshot-{{prefix}}-$(date +%F_%H-%M-%S)
   echo "{{CYAN}}{{BOLD}}== Snapshoting done!{{NORMAL}}"
 
+etcd-emergancy-restore snapshot:
+  #!/usr/bin/env bash
+  # TODO: Implement
+  talos -n ${ALL_CONTROLPLANE_NODES} reset --graceful=false --reboot --system-labels-to-wipe=EPHEMERAL
+  talosctl -n ${SINGLE_CONTROLPLANE_NODE} bootstrap --recover-from={{snapshot}} --recover-skip-hash-check
+
 upgrade-talos version:
   #!/usr/bin/env bash
   set -eou pipefail

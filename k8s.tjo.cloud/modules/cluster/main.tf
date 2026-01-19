@@ -11,6 +11,12 @@ locals {
         extraArgs = {
           rotate-server-certificates = true
         }
+        nodeIP = {
+          validSubnets = [
+            "10.0.0.0/10",
+            "fd74:6a6f::/32",
+          ]
+        }
       }
       features = {
         kubernetesTalosAPIAccess = {
@@ -75,6 +81,12 @@ locals {
           rotate-server-certificates = true
           cloud-provider             = "external"
         }
+        nodeIP = {
+          validSubnets = [
+            "10.0.0.0/10",
+            "fd74:6a6f::/32",
+          ]
+        }
       }
       install = {
         image = "factory.talos.dev/nocloud-installer/${talos_image_factory_schematic.this.id}:${var.talos.version}"
@@ -103,57 +115,6 @@ locals {
       }),
     ]
   }
-
-  talos_network_controlplane_configs = [
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "NetworkDefaultActionConfig"
-      ingress    = "block"
-    }),
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "NetworkRuleConfig"
-      name       = "internal-ingress"
-      portSelector = {
-        ports = [
-          10250,       # kubelet
-          50000,       # apid
-          50001,       # trustd
-          6443,        # kubernetes api
-          "2379-2380", # etcd
-        ]
-        protocol = "tcp"
-      }
-      ingress = [
-        { subnet = "10.0.0.0/10" },
-        { subnet = "fd74:6a6f::/32" },
-      ]
-    })
-  ]
-
-  talos_network_worker_configs = [
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "NetworkDefaultActionConfig"
-      ingress    = "block"
-    }),
-    yamlencode({
-      apiVersion = "v1alpha1"
-      kind       = "NetworkRuleConfig"
-      name       = "internal-ingress"
-      portSelector = {
-        ports = [
-          10250, # kubelet
-          50000, # apid
-        ]
-        protocol = "tcp"
-      }
-      ingress = [
-        { subnet = "10.0.0.0/10" },
-        { subnet = "fd74:6a6f::/32" },
-      ]
-    }),
-  ]
 }
 
 resource "talos_machine_secrets" "this" {
@@ -187,7 +148,7 @@ resource "talos_machine_configuration_apply" "controlplane" {
   machine_configuration_input = data.talos_machine_configuration.controlplane.machine_configuration
 
   node     = each.value.name
-  endpoint = each.value.ipv4
+  endpoint = each.value.ipv6
 
   config_patches = sensitive(concat(
     [
@@ -195,7 +156,6 @@ resource "talos_machine_configuration_apply" "controlplane" {
       yamlencode(local.talos_controlplane_config)
     ],
     local.talos_node_config[each.key],
-    local.talos_network_controlplane_configs,
   ))
 
   timeouts = {
@@ -211,14 +171,13 @@ resource "talos_machine_configuration_apply" "worker" {
   machine_configuration_input = data.talos_machine_configuration.worker.machine_configuration
 
   node     = each.value.name
-  endpoint = each.value.ipv4
+  endpoint = each.value.ipv6
 
   config_patches = sensitive(concat(
     [
       yamlencode(local.talos_worker_config)
     ],
     local.talos_node_config[each.key],
-    local.talos_network_worker_configs,
   ))
 
   timeouts = {
@@ -228,13 +187,15 @@ resource "talos_machine_configuration_apply" "worker" {
 }
 
 resource "talos_machine_bootstrap" "this" {
+  count = local.bootstrap_node != null ? 1 : 0
+
   depends_on = [
     talos_machine_configuration_apply.controlplane,
     talos_machine_configuration_apply.worker
   ]
 
   node                 = local.bootstrap_node.name
-  endpoint             = local.bootstrap_node.ipv4
+  endpoint             = local.bootstrap_node.ipv6
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
@@ -244,7 +205,7 @@ resource "talos_cluster_kubeconfig" "this" {
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = local.bootstrap_node.ipv4
+  node                 = try(local.bootstrap_node.ipv6, [for k, v in local.nodes_with_address : v.ipv6][0])
 }
 
 resource "local_file" "kubeconfig" {
@@ -261,7 +222,7 @@ data "talos_client_configuration" "this" {
 
   cluster_name         = var.cluster.name
   client_configuration = talos_machine_secrets.this.client_configuration
-  endpoints            = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[*].ipv4
+  endpoints            = values({ for k, v in local.nodes_with_address : k => v if v.type == "controlplane" })[*].ipv6
 }
 
 resource "local_file" "talosconfig" {

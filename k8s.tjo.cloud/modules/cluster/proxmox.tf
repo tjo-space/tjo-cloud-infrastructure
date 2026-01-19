@@ -13,7 +13,7 @@ locals {
     })
   }
 
-  bootstrap_node = values({ for k, v in local.nodes_with_address : k => v if v.bootstrap })[0]
+  bootstrap_node = try(values({ for k, v in local.nodes_with_address : k => v if v.bootstrap })[0], null)
 
   ipv4_addresses = {
     for key, node in local.nodes : key => {
@@ -142,7 +142,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
   lifecycle {
     // We preform upgrades via talosctl
-    ignore_changes = [cdrom, initialization[0].meta_data_file_id]
+    ignore_changes = [cdrom, boot_order, initialization[0].meta_data_file_id]
   }
 }
 

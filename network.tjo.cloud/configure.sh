@@ -4,6 +4,16 @@ set -eou pipefail
 echo "- OPKG Update"
 opkg update
 
+echo "- Tailscale"
+opkg install tailscale
+tailscale up \
+  --reset \
+  --accept-dns=false \
+  --ssh=true \
+  --advertise-routes="10.0.0.0/10,fd74:6a6f::/32,10.100.0.0/16,fd9b:7c3d:7f6a::/48" \
+  --accept-routes=false \
+  --snat-subnet-routes=true
+
 echo "- Qemu agent"
 opkg install qemu-ga
 
