@@ -42,6 +42,13 @@ systemctl start zerotier-one.service
 sleep 5
 zerotier-cli join b6079f73c6379990
 
+# When using Podman+IPv6 we have to use accept_ra=2.
+#  As podman configures ipv6 forwarding.
+#
+# Ref: https://askubuntu.com/questions/997888/sysctl-p-return-net-ipv6-conf-all-accept-ra-2
+#  > net.ipv6.conf.all.accept_ra = 2 is used when you what to use ipv6 forwarding and also use ipv6 SLAAC.
+sysctl -w net.ipv6.conf.ztyxa2r2sw.accept_ra=2
+
 echo "=== Copy Configuration Files"
 rsync -a mail.tjo.cloud/root/ /
 systemctl daemon-reload
