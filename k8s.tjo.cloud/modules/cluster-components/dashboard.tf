@@ -1,44 +1,67 @@
-resource "helm_release" "dashboard" {
-  name            = "kubernetes-dashboard"
-  repository      = "https://kubernetes.github.io/dashboard"
-  chart           = "kubernetes-dashboard"
-  version         = "7.14.0"
+resource "helm_release" "headlamp" {
+  name            = "headlamp"
+  repository      = "https://kubernetes-sigs.github.io/headlamp/"
+  chart           = "headlamp"
+  version         = "0.39.0"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
 
   values = [yamlencode({
-    kong = { enabled = false }
+    priorityClassName = "critical"
 
-    app = {
-      priorityClassName = "critical"
-
-      affinity = {
-        nodeAffinity = {
-          requiredDuringSchedulingIgnoredDuringExecution = {
-            nodeSelectorTerms = [
-              {
-                matchExpressions = [{
-                  key      = "node-role.kubernetes.io/control-plane"
-                  operator = "Exists"
-                }]
-              }
-            ]
-          }
+    affinity = {
+      nodeAffinity = {
+        requiredDuringSchedulingIgnoredDuringExecution = {
+          nodeSelectorTerms = [
+            {
+              matchExpressions = [{
+                key      = "node-role.kubernetes.io/control-plane"
+                operator = "Exists"
+              }]
+            }
+          ]
         }
       }
+    }
 
-      tolerations = [
-        {
-          key      = "node-role.kubernetes.io/control-plane"
-          effect   = "NoSchedule"
-          operator = "Exists"
+    tolerations = [
+      {
+        key      = "node-role.kubernetes.io/control-plane"
+        effect   = "NoSchedule"
+        operator = "Exists"
+      }
+    ]
+
+    podDisruptionBudget = {
+      enabled      = true
+      minAvailable = 1
+    }
+
+    httpRoute = {
+      enabled    = true
+      parentRefs = [{ name = kubernetes_manifest.gateway.object.metadata.name }]
+      hostnames  = ["dashboard.k8s.tjo.cloud"]
+    }
+
+    config = {
+      inCluster = true
+      oidc = {
+        secret = {
+          create = true
+          name   = "headlamp-oidc"
         }
-      ]
+        issuerURL    = var.oidc_issuer_url
+        clientID     = var.oidc_client_id
+        clientSecret = "null"
+        scopes       = "openid email profile"
+        callbackURL  = "https://dashboard.k8s.tjo.cloud/oidc-callback"
+      }
     }
   })]
 }
 
+// TODO: Can be removed in 0.40.0+ version.
 resource "kubernetes_manifest" "dashoard-http-route" {
   manifest = {
     apiVersion = "gateway.networking.k8s.io/v1"
@@ -64,97 +87,12 @@ resource "kubernetes_manifest" "dashoard-http-route" {
           ]
           backendRefs = [
             {
-              name = "kubernetes-dashboard-web"
-              port = 8000
-            }
-          ]
-        },
-        {
-          matches = [
-            {
-              path = {
-                value = "/api/v1/login"
-                type  = "PathPrefix"
-              }
-            },
-            {
-              path = {
-                value = "/api/v1/csrftoken/login"
-                type  = "PathPrefix"
-              }
-            },
-            {
-              path = {
-                value = "/api/v1/me"
-                type  = "PathPrefix"
-              }
-            },
-          ]
-          backendRefs = [
-            {
-              name = "kubernetes-dashboard-auth"
-              port = 8000
-            }
-          ]
-        },
-        {
-          matches = [
-            {
-              path = {
-                value = "/api"
-                type  = "PathPrefix"
-              }
-            }
-          ]
-          backendRefs = [
-            {
-              name = "kubernetes-dashboard-api"
-              port = 8000
+              name = "headlamp"
+              port = 80
             }
           ]
         },
       ]
-    }
-  }
-}
-
-resource "kubernetes_secret" "dashboard-oidc" {
-  metadata {
-    name      = "dashboard-oidc"
-    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
-  }
-  data = {
-    client-secret = "null"
-  }
-}
-
-resource "kubernetes_manifest" "dashboard-oidc" {
-  manifest = {
-    apiVersion = "gateway.envoyproxy.io/v1alpha1"
-    kind       = "SecurityPolicy"
-    metadata = {
-      name      = "dashboard-oidc"
-      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
-    }
-    spec = {
-      targetRef = {
-        group = "gateway.networking.k8s.io"
-        kind  = "HTTPRoute"
-        name  = kubernetes_manifest.dashoard-http-route.object.metadata.name
-      }
-      oidc = {
-        provider = {
-          issuer = var.oidc_issuer_url
-        }
-        clientID = var.oidc_client_id
-        clientSecret = {
-          name = kubernetes_secret.dashboard-oidc.metadata[0].name
-        }
-        scopes             = ["openid", "email", "profile"]
-        forwardAccessToken = true
-
-        redirectURL = "https://dashboard.k8s.tjo.cloud/login"
-      }
     }
   }
 }
