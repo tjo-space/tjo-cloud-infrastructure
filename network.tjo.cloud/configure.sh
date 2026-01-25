@@ -4,6 +4,24 @@ set -eou pipefail
 echo "- OPKG Update"
 opkg update
 
+echo "- Resize FS"
+if [ ! -f /etc/resized-fs.01.ok ]; then
+  opkg install parted tune2fs resize2fs
+
+  parted /dev/vda resizepart 2 100%
+  mount -o remount,ro /
+
+  tune2fs -O^resize_inode /dev/vda2
+  fsck.ext4 -y -f /dev/vda2
+
+  touch /etc/resized-fs.01.ok
+  reboot
+fi
+if [ ! -f /etc/resized-fs.02.ok ]; then
+  resize2fs /dev/vda2
+  touch /etc/resized-fs.02.ok
+fi
+
 echo "- Tailscale"
 opkg install tailscale
 tailscale up \
@@ -12,7 +30,9 @@ tailscale up \
   --ssh=true \
   --advertise-routes="10.0.0.0/10,fd74:6a6f::/32,10.100.0.0/16,fd9b:7c3d:7f6a::/48" \
   --accept-routes=false \
-  --snat-subnet-routes=true
+  --snat-subnet-routes=true \
+  --advertise-exit-node \
+  --advertise-tags="tag:network-tjo-cloud"
 
 echo "- Qemu agent"
 opkg install qemu-ga
@@ -32,6 +52,9 @@ echo "- Installing jool (NAT64)"
 opkg install kmod-veth ip-full kmod-jool-netfilter jool-tools-netfilter
 chmod +x /etc/jool/setup.sh
 /etc/jool/setup.sh
+
+echo "- Installing Yggdrasil"
+opkg install yggdrasil luci-proto-yggdrasil yggdrasil-jumper
 
 echo "- Reloading Services"
 service bird reload

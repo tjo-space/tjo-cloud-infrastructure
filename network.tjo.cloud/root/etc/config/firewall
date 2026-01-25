@@ -11,6 +11,7 @@ config zone
 	option name 'wan'
 	list network 'wan'
 	list network 'wan6'
+	list network 'ygg'
 	option input 'REJECT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
@@ -134,6 +135,30 @@ config zone
 config forwarding
 	option src 'lan'
 	option dest 'wan'
+
+##
+# TAILSCALE
+##
+config zone
+	option name 'tailscale'
+	option input 'ACCEPT'
+	option output 'ACCEPT'
+	option forward 'ACCEPT'
+	option masq '1'
+	option mtu_fix '1'
+	list network 'tailscale'
+
+config forwarding
+	option src 'tailscale'
+	option dest 'lan'
+
+config forwarding
+	option src 'tailscale'
+	option dest 'wan'
+
+config forwarding
+	option src 'lan'
+	option dest 'tailscale'
 
 ##
 # JOOL

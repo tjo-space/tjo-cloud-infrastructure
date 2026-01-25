@@ -43,7 +43,7 @@ reboot-all:
 configure-all:
   #!/usr/bin/env sh
   set -euo pipefail
-  for node in $(cat config.yaml | yq -r '.nodes | keys | .[]')
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
     just configure ${node} | ts ${node}
   done
@@ -54,7 +54,7 @@ configure node:
 
   export NODE="{{node}}"
   export TMPDIR="$(mktemp -d)"
-  export CONFIG="{{source_directory()}}/config.yaml"
+  export CONFIG="{{source_directory()}}/vars.secrets.yaml"
 
   cd {{source_directory()}}/root
 
