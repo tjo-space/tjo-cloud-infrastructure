@@ -91,7 +91,7 @@ resource "kubernetes_manifest" "dashoard-http-route" {
               port = 80
             }
           ]
-        },
+        }
       ]
     }
   }
