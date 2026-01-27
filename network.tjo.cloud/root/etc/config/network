@@ -78,8 +78,17 @@ config interface 'ygg'
   option allocate_listen_addresses '1'
   option private_key '{{  $node.ygg.private_key }}'
 	option public_key '{{ $node.ygg.public_key }}'
-	list listen_address 'quic://[::]:0'
-	list listen_address 'tls://[::]:0'
+  # Multicas
+	list listen_address 'tcp://[::]:0'
+  # External
+	list listen_address 'tcp://[::]:4541'
+	list listen_address 'tls://[::]:4542'
+	list listen_address 'quic://[::]:4543'
+
+config yggdrasil_ygg_jumper
+  option enabled '1'
+  option loglevel 'info'
+  option autofill_listen_addresses '1'
 
 config yggdrasil_ygg_peer
 	option address 'tls://n.ygg.yt:443'
