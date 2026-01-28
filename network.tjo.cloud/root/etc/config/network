@@ -41,12 +41,17 @@ config route6 'lan6'
 # WAN
 config interface 'wan'
 	option device 'eth0'
-	option proto 'dhcp'
+	option proto '{{ $node.wan.ipv4.proto }}'
 	option peerdns '0'
 	list dns '9.9.9.9'         # quad9
 	list dns '149.112.112.112' # quad9
 	list dns '1.1.1.1'         # cloudflare
 	list dns '1.0.0.1'         # cloudflare
+
+  {{ if eq $node.wan.ipv4.proto "static" }}
+  list ipaddr '{{ $node.wan.ipv4.address }}'
+  option gateway '{{ $node.wan.ipv4.gateway }}'
+  {{ end }}
 
 config interface 'wan6'
 	option device 'eth0'
