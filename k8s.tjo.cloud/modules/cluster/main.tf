@@ -235,7 +235,6 @@ resource "local_file" "talosconfig" {
 
 resource "desec_rrset" "api-internal" {
   for_each = {
-    A    = [for k, v in local.nodes_with_address : v.ipv4 if v.type == "controlplane"]
     AAAA = [for k, v in local.nodes_with_address : v.ipv6 if v.type == "controlplane"]
   }
 

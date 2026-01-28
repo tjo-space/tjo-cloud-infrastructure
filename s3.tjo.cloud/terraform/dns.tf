@@ -66,14 +66,6 @@ resource "desec_rrset" "any" {
   records = each.value
   ttl     = 3600
 }
-resource "desec_rrset" "node_a" {
-  for_each = local.nodes_deployed
-  domain   = "tjo.cloud"
-  subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
-  type     = "A"
-  records  = [each.value.private_ipv4]
-  ttl      = 3600
-}
 resource "desec_rrset" "node_aaaa" {
   for_each = local.nodes_deployed
   domain   = "tjo.cloud"
