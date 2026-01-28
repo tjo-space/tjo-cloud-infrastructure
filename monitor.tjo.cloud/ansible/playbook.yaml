@@ -55,9 +55,9 @@
       notify: Restart caddy
       tags: config-reload
 
-    - name: Deploy stack
+    - name: Deploy monitor
       ansible.builtin.import_tasks:
-        file: tasks/stack.yaml
+        file: tasks/monitor.yaml
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

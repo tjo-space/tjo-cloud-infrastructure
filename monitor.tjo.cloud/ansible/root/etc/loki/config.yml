@@ -91,6 +91,15 @@ common:
       chunks_directory: /srv/data/loki/chunks
       rules_directory: /srv/data/loki/rules
   replication_factor: 1
+
+  # Force to bind to 127.0.0.1
+  instance_interface_names: []
+  instance_addr: "127.0.0.1"
+
   ring:
     kvstore:
       store: inmemory
+
+    # Force to bind to 127.0.0.1
+    instance_interface_names: []
+    instance_addr: "127.0.0.1"
