@@ -1,0 +1,55 @@
+- name: Copy configuration
+  ansible.builtin.template:
+    src: 'root{{ item }}'
+    dest: '{{ item }}'
+    owner: root
+    group: root
+    mode: '0644'
+  loop:
+    - "/etc/containers/systemd/main.network"
+  tags: config-reload
+  notify: Restart dns-server
+
+- name: Prepare /etc/technitium-dns directory
+  ansible.builtin.file:
+    path: /etc/technitium-dns
+    mode: "0755"
+    state: directory
+
+- name: Copy network configuration
+  ansible.builtin.template:
+    src: 'root/etc/containers/systemd/{{ item }}'
+    dest: '/etc/containers/systemd/{{ item }}'
+    mode: '0600'
+    owner: root
+    group: root
+  loop:
+    - main.network
+  tags: config-reload
+
+- name: Copy container configuration
+  ansible.builtin.template:
+    src: 'root/etc/containers/systemd/{{ item }}.container'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    mode: '0600'
+    owner: root
+    group: root
+  loop:
+    - technitium-dns
+  tags: config-reload
+  register: container_configs
+
+- name: systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags: config-reload
+
+- name: Start containers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    # In case container config changed, restart it. Otherwise we only make sure it's running.
+    state: "{{ container_configs.results | selectattr('item', 'equalto', item) | map(attribute='changed') | list | first | ternary('restarted', 'started') }}"
+    enabled: true
+  loop:
+    - technitium-dns
+  tags: config-reload

@@ -19,8 +19,8 @@ mod s3 's3.tjo.cloud'
 
 import 'secrets.justfile'
 
-encrypt-all: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt ansible-secrets-encrypt
-decrypt-all: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt ansible-secrets-decrypt
+encrypt-all: dot-env-encrypt secrets-md-encrypt tofu-state-encrypt tofu-secrets-encrypt ansible-secrets-encrypt
+decrypt-all: dot-env-decrypt secrets-md-decrypt tofu-state-decrypt tofu-secrets-decrypt ansible-secrets-decrypt
 
 post-pull: decrypt-all
 pre-commit: encrypt-all lint format

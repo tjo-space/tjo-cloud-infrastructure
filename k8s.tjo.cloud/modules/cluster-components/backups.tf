@@ -1,3 +1,17 @@
+resource "kubernetes_secret_v1" "k8sup" {
+  metadata {
+    name      = "k8up"
+    namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
+  }
+  data = {
+    repo-password        = var.backup.password
+    s3-access-key-id     = var.backup.s3_access_key_id
+    s3-secret-access-key = var.backup.s3_secret_access_key
+    s3-bucket            = var.backup.s3_bucket
+    s3-endpoint          = var.backup.s3_endpoint
+  }
+}
+
 resource "helm_release" "k8sup" {
   name            = "k8up"
   chart           = "k8up"
@@ -10,6 +24,28 @@ resource "helm_release" "k8sup" {
   values = [yamlencode({
     k8up = {
       skipWithoutAnnotation = true
+      envVars = [
+        {
+          name      = "BACKUP_GLOBALREPOPASSWORD"
+          valueFrom = { secretKeyRef = { name = "k8up", key = "repo-password" } }
+        },
+        {
+          name      = "BACKUP_GLOBALACCESSKEYID"
+          valueFrom = { secretKeyRef = { name = "k8up", key = "s3-access-key-id" } }
+        },
+        {
+          name      = "BACKUP_GLOBALSECRETACCESSKEY"
+          valueFrom = { secretKeyRef = { name = "k8up", key = "s3-secret-access-key" } }
+        },
+        {
+          name      = "BACKUP_GLOBALS3BUCKET"
+          valueFrom = { secretKeyRef = { name = "k8up", key = "s3-bucket" } }
+        },
+        {
+          name      = "BACKUP_GLOBALS3ENDPOINT"
+          valueFrom = { secretKeyRef = { name = "k8up", key = "s3-endpoint" } }
+        },
+      ]
     }
     metrics = {
       serviceMonitor = {
@@ -42,4 +78,35 @@ resource "helm_release" "k8sup" {
       }
     ]
   })]
+}
+
+resource "kubernetes_manifest" "k8up-schedule" {
+  manifest = {
+    apiVersion = "k8up.io/v1"
+    kind       = "Schedule"
+    metadata = {
+      name      = "default"
+      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
+    }
+    spec = {
+      backup = {
+        # Every 30 minutes
+        schedule                   = "*/30 * * * *"
+        failedJobsHistoryLimit     = 2
+        successfulJobsHistoryLimit = 2
+      }
+      check = {
+        # At 05:15 on Monday.
+        schedule = "15 5 * * 1"
+      }
+      prune = {
+        # At 05:15 on Sunday.
+        schedule = "15 5 * * 0"
+        retention = {
+          keepLast  = 5
+          keepDaily = 14
+        }
+      }
+    }
+  }
 }

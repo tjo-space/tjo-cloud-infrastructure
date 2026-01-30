@@ -52,31 +52,31 @@ module-cluster-core-crds:
 
 create: # Like apply, but separated in multiple steps for fresh cluster to work.
   tofu init
-  tofu apply -target module.cluster
-  tofu apply -target module.cluster-core.helm_release.talos-ccm
-  tofu apply -target module.cluster-core.helm_release.proxmox-ccm
-  tofu apply -target module.cluster-core.kubectl_manifest.crds
-  tofu apply -target module.cluster-core.helm_release.cilium
-  tofu apply -target module.cluster-core
-  tofu apply
+  tofu apply -target module.cluster -var-file terraform.secrets.tfvars
+  tofu apply -target module.cluster-core.helm_release.talos-ccm -var-file terraform.secrets.tfvars
+  tofu apply -target module.cluster-core.helm_release.proxmox-ccm -var-file terraform.secrets.tfvars
+  tofu apply -target module.cluster-core.kubectl_manifest.crds -var-file terraform.secrets.tfvars
+  tofu apply -target module.cluster-core.helm_release.cilium -var-file terraform.secrets.tfvars
+  tofu apply -target module.cluster-core -var-file terraform.secrets.tfvars
+  tofu apply -var-file terraform.secrets.tfvars
   @echo '{{CYAN}}{{BOLD}}Cluster provisioned!{{NORMAL}}'
   @echo '{{YELLOW}}{{BOLD}}Add the following output to id.tjo.cloud federation for k8s.tjo.cloud!{{NORMAL}}'
   kubectl get --raw /openid/v1/jwks
 
 apply:
   tofu init
-  tofu apply
+  tofu apply -var-file terraform.secrets.tfvars
 
 apply-only-crds:
   tofu init
-  tofu apply -target module.cluster-core.kubectl_manifest.crds
+  tofu apply -target module.cluster-core.kubectl_manifest.crds -var-file terraform.secrets.tfvars
 
 destroy:
   tofu init
   tofu state rm module.cluster-core || true
   tofu state rm module.cluster-components || true
-  tofu destroy -target module.cluster
-  tofu destroy
+  tofu destroy -target module.cluster -var-file terraform.secrets.tfvars
+  tofu destroy -var-file terraform.secrets.tfvars
 
 remove node: etcd-snapshot
   #!/usr/bin/env bash

@@ -45,6 +45,20 @@ tofu-state-decrypt:
     just _decrypt ${file%.encrypted}
   done
 
+tofu-secrets-encrypt:
+  #!/usr/bin/env bash
+  for file in $(find . -name tofu.secrets.tfvars -o -name terraform.secrets.tfvars)
+  do
+    just _encrypt $file
+  done
+
+tofu-secrets-decrypt:
+  #!/usr/bin/env bash
+  for file in $(find . -name tofu.secrets.tfvars.encrypted -o -name terraform.secrets.tfvars.encrypted)
+  do
+    just _decrypt ${file%.encrypted}
+  done
+
 ansible-secrets-encrypt:
   #!/usr/bin/env bash
   for file in $(find . -name vars.secrets.yaml -o -name "vars.*.secrets.yaml")

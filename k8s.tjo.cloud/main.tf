@@ -43,7 +43,7 @@ module "cluster" {
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
-      memory  = 4096
+      memory  = 6144
     }
     nevaroo-pink = {
       id      = 6013
@@ -51,7 +51,7 @@ module "cluster" {
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
-      memory  = 4096
+      memory  = 6144
     }
     endor-purple = {
       id      = 6022
@@ -59,7 +59,7 @@ module "cluster" {
       host    = "endor"
       storage = "local-nvme"
       cores   = 4
-      memory  = 4096
+      memory  = 6144
     }
     endor-green = {
       id      = 6023
@@ -146,4 +146,12 @@ module "cluster-components" {
 
   oidc_issuer_url = var.oidc_issuer_url
   oidc_client_id  = var.oidc_client_id
+
+  backup = {
+    password             = var.backup.password
+    s3_bucket            = "k8s-tjo-cloud-backups"
+    s3_endpoint          = "https://api.s3.tjo.cloud"
+    s3_access_key_id     = var.backup.s3_access_key_id
+    s3_secret_access_key = var.backup.s3_secret_access_key
+  }
 }
