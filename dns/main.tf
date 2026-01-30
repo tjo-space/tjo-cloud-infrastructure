@@ -8,9 +8,11 @@ data "dns_aaaa_record_set" "ingress" {
 # List of subdomains that are routed via ingress.
 resource "desec_rrset" "ingress" {
   for_each = { for pair in setproduct(["A", "AAAA"], [
-    "proxmox",
-    "dashboard.k8s",
     "argocd.k8s",
+    "ca",
+    "dashboard.k8s",
+    "dns",
+    "proxmox",
   ]) : "${pair[0]}-${pair[1]}" => { type = pair[0], subname = pair[1] } }
 
   domain  = "tjo.cloud"
@@ -21,9 +23,11 @@ resource "desec_rrset" "ingress" {
 }
 resource "desec_rrset" "https" {
   for_each = toset([
-    "proxmox",
-    "dashboard.k8s",
     "argocd.k8s",
+    "ca",
+    "dashboard.k8s",
+    "dns",
+    "proxmox",
   ])
 
   domain  = "tjo.cloud"

@@ -12,6 +12,16 @@ config unbound
   option unbound_control '1'
 
 config zone
+	option zone_type 'forward_zone'
+	option enabled '0'
+	option fallback '0'
+	list zone_name 'internal.'
+
+	# internal dns.tjo.cloud vip
+	list server 'fd74:6a6f::53'
+	list server '10.0.0.53'
+
+config zone
   option zone_type 'forward_zone'
   option enabled '1'
   option fallback '1'

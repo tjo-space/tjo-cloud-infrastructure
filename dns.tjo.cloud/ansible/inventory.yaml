@@ -1,0 +1,8 @@
+"all":
+  "hosts":
+    "batuu-purple-proxmox.dns.tjo.cloud":
+      "ansible_become": true
+      "ansible_host": "fd74:6a6f::be24:11ff:fe26:e9c1"
+      "ansible_port": 2222
+      "ansible_user": "bine"
+      "provider": "proxmox"
