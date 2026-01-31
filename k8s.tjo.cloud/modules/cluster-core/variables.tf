@@ -2,11 +2,9 @@ variable "cluster" {
   type = object({
     name = string
     load_balancer_cidr = object({
-      ipv4 = string
       ipv6 = string
     })
     pod_cidr = object({
-      ipv4 = string
       ipv6 = string
     })
   })

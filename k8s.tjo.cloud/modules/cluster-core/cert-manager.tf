@@ -2,7 +2,7 @@ resource "helm_release" "cert-manager" {
   name            = "cert-manager"
   chart           = "cert-manager"
   repository      = "https://charts.jetstack.io"
-  version         = "v1.18.2"
+  version         = "v1.19.2"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

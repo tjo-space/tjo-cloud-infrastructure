@@ -1,14 +1,11 @@
 locals {
   pod_cidr = {
-    ipv4 = "10.100.0.0/20"
     ipv6 = "fd9b:7c3d:7f6a::/52"
   }
   load_balancer_cidr = {
-    ipv4 = "10.100.16.0/20"
     ipv6 = "fd9b:7c3d:7f6a:1000::/52"
   }
   service_cidr = {
-    ipv4 = "10.100.252.0/22"
     ipv6 = "fd9b:7c3d:7f6a:3e80::/108"
   }
 }
@@ -17,7 +14,7 @@ module "cluster" {
   source = "./modules/cluster"
 
   talos = {
-    version    = "v1.12.0"
+    version    = "v1.12.2"
     kubernetes = "v1.35.0"
   }
 
@@ -37,15 +34,16 @@ module "cluster" {
   }
 
   nodes = {
-    nevaroo-lilac = {
-      id      = 6010
-      type    = "controlplane"
-      host    = "nevaroo"
-      storage = "local-nvme-lvm"
-      cores   = 4
-      memory  = 6144
+    nevaroo-yellow = {
+      id        = 6010
+      type      = "controlplane"
+      host      = "nevaroo"
+      storage   = "local-nvme-lvm"
+      cores     = 4
+      memory    = 6144
+      bootstrap = true
     }
-    nevaroo-pink = {
+    nevaroo-orange = {
       id      = 6013
       type    = "controlplane"
       host    = "nevaroo"
@@ -53,7 +51,7 @@ module "cluster" {
       cores   = 4
       memory  = 6144
     }
-    endor-purple = {
+    endor-yellow = {
       id      = 6022
       type    = "controlplane"
       host    = "endor"
@@ -61,7 +59,7 @@ module "cluster" {
       cores   = 4
       memory  = 6144
     }
-    endor-green = {
+    endor-orange = {
       id      = 6023
       type    = "worker"
       host    = "endor"
@@ -69,7 +67,7 @@ module "cluster" {
       cores   = 4
       memory  = 12288
     }
-    batuu-green = {
+    batuu-yellow = {
       id      = 6032
       type    = "worker"
       host    = "batuu"

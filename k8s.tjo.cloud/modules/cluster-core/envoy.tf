@@ -2,7 +2,7 @@ resource "helm_release" "envoy" {
   name            = "envoy"
   chart           = "gateway-helm"
   repository      = "oci://docker.io/envoyproxy"
-  version         = "v1.6.1"
+  version         = "v1.6.3"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -43,13 +43,24 @@ resource "kubernetes_manifest" "gateway_class_config" {
       namespace = "kube-system"
     }
     spec = {
-      ipFamily      = "DualStack"
+      ipFamily      = "IPv6"
       mergeGateways = true
       provider = {
         type = "Kubernetes"
         kubernetes = {
+          envoyDeployment = {
+            replicas = 2
+          }
           envoyService = {
             annotations = {}
+            patch = {
+              value = {
+                spec = {
+                  ipFamilies     = ["IPv6"]
+                  ipFamilyPolicy = "SingleStack"
+                }
+              }
+            }
           }
         }
       }

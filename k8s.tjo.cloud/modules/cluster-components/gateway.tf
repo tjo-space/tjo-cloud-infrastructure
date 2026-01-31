@@ -41,8 +41,7 @@ resource "kubernetes_manifest" "gateway" {
 
   wait {
     fields = {
-      "status.addresses[0].type"  = "IPAddress"
-      "status.addresses[0].value" = "^(\\d+(\\.|$)){4}"
+      "status.addresses[0].type" = "IPAddress"
     }
   }
 }

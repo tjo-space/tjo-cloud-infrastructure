@@ -13,7 +13,6 @@ locals {
         }
         nodeIP = {
           validSubnets = [
-            "10.0.0.0/10",
             "fd74:6a6f::/32",
           ]
         }
@@ -28,10 +27,21 @@ locals {
             "kube-system"
           ]
         }
+        hostDNS = {
+          enabled              = false
+          forwardKubeDNSToHost = false
+          resolveMemberNames   = false
+        }
+      }
+      network = {
+        nameservers = ["fd74:6a6f::1"]
       }
     }
     cluster = {
       etcd = {
+        advertisedSubnets = [
+          "fd74:6a6f::/32",
+        ]
         extraArgs = {
           heartbeat-interval = "1000" # Defaults to 100ms. Which is too fast for our network.
           election-timeout   = "5000" # Defaults to 1000ms. Which is too fast for our network.
@@ -63,11 +73,9 @@ locals {
           name = "none"
         }
         podSubnets = [
-          var.cluster.pod_cidr.ipv4,
           var.cluster.pod_cidr.ipv6
         ]
         serviceSubnets = [
-          var.cluster.service_cidr.ipv4,
           var.cluster.service_cidr.ipv6
         ]
       }
@@ -83,7 +91,6 @@ locals {
         }
         nodeIP = {
           validSubnets = [
-            "10.0.0.0/10",
             "fd74:6a6f::/32",
           ]
         }
@@ -95,9 +102,12 @@ locals {
       features = {
         hostDNS = {
           enabled              = false
-          resolveMemberNames   = false
           forwardKubeDNSToHost = false
+          resolveMemberNames   = false
         }
+      }
+      network = {
+        nameservers = ["fd74:6a6f::1"]
       }
     }
   }
@@ -187,15 +197,15 @@ resource "talos_machine_configuration_apply" "worker" {
 }
 
 resource "talos_machine_bootstrap" "this" {
-  count = local.bootstrap_node != null ? 1 : 0
+  count = local.bootstrap_node_key != null ? 1 : 0
 
   depends_on = [
     talos_machine_configuration_apply.controlplane,
     talos_machine_configuration_apply.worker
   ]
 
-  node                 = local.bootstrap_node.name
-  endpoint             = local.bootstrap_node.ipv6
+  node                 = local.nodes_with_address[local.bootstrap_node_key].name
+  endpoint             = local.nodes_with_address[local.bootstrap_node_key].ipv6
   client_configuration = talos_machine_secrets.this.client_configuration
 }
 
@@ -205,7 +215,7 @@ resource "talos_cluster_kubeconfig" "this" {
   ]
 
   client_configuration = talos_machine_secrets.this.client_configuration
-  node                 = try(local.bootstrap_node.ipv6, [for k, v in local.nodes_with_address : v.ipv6][0])
+  node                 = try(local.nodes_with_address[local.bootstrap_node_key].ipv6, [for k, v in local.nodes_with_address : v.ipv6][0])
 }
 
 resource "local_file" "kubeconfig" {

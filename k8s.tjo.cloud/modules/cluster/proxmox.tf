@@ -1,26 +1,12 @@
 locals {
-  nodes_with_names = {
+  nodes = {
     for k, v in var.nodes : k => merge(v, {
       name = replace("${k}.${var.cluster.name}", ".", "-")
     })
   }
-  hashes = {
-    for k, v in local.nodes_with_names : k => sha1(v.name)
-  }
-  nodes = {
-    for k, v in local.nodes_with_names : k => merge(v, {
-      mac_address = "AA:BB:CC:DD:${format("%v:%v", substr(local.hashes[k], 0, 2), substr(local.hashes[k], 2, 2))}"
-    })
-  }
 
-  bootstrap_node = try(values({ for k, v in local.nodes_with_address : k => v if v.bootstrap })[0], null)
+  bootstrap_node_key = try([for k, v in local.nodes : k if v.bootstrap][0], null)
 
-  ipv4_addresses = {
-    for key, node in local.nodes : key => {
-      for k, v in proxmox_virtual_environment_vm.nodes[key].ipv4_addresses :
-      proxmox_virtual_environment_vm.nodes[key].network_interface_names[k] => v
-    }
-  }
   ipv6_addresses = {
     for key, node in local.nodes : key => {
       for k, v in proxmox_virtual_environment_vm.nodes[key].ipv6_addresses :
@@ -31,7 +17,6 @@ locals {
   nodes_with_address = {
     for k, v in local.nodes :
     k => merge(v, {
-      ipv4 = lookup(local.ipv4_addresses[k], "ens18", lookup(local.ipv4_addresses[k], "eth0", [""]))[0]
       ipv6 = try([
         for ipv6 in try(local.ipv6_addresses[k]["ens18"], try(local.ipv6_addresses[k]["eth0"], [])) : ipv6 if startswith(ipv6, "fd74:6a6f:")
       ][0], "")
@@ -111,11 +96,13 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   agent {
     enabled = true
     timeout = "5m"
+    wait_for_ip {
+      ipv6 = true
+    }
   }
 
   network_device {
-    bridge      = "vmbr1"
-    mac_address = each.value.mac_address
+    bridge = "vmbr1"
   }
 
   cdrom {

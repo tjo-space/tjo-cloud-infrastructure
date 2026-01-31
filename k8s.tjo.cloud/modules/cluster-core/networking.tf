@@ -37,20 +37,17 @@ resource "helm_release" "cilium" {
     }
     bpfClockProbe = true
 
-    ipv4                  = { enabled = true }
-    enableIPv4Masquerade  = true
-    ipv4NativeRoutingCIDR = var.cluster.pod_cidr.ipv4
+    ipv4 = { enabled = false }
 
     ipv6                  = { enabled = true }
     enableIPv6Masquerade  = true
     ipv6NativeRoutingCIDR = var.cluster.pod_cidr.ipv6
 
-    kubeProxyReplacement = true
-
     k8s = {
-      requireIPv4PodCIDR = true
       requireIPv6PodCIDR = true
     }
+
+    kubeProxyReplacement = true
 
     securityContext = {
       capabilities = {
@@ -87,6 +84,9 @@ resource "helm_release" "cilium" {
 
     prometheus = {
       enabled = true
+      serviceMonitor = {
+        enabled = true
+      }
     }
 
     hubble = {
@@ -98,6 +98,12 @@ resource "helm_release" "cilium" {
         enabled           = true
         priorityClassName = "system-cluster-critical"
       }
+      #metrics = {
+      #  enabled = true
+      #  serviceMonitor = {
+      #    enabled = true
+      #  }
+      #}
       tls = {
         auto = {
           enabled              = true
@@ -204,15 +210,6 @@ resource "kubernetes_manifest" "cilium-bgp-peer-config" {
       }
       families = [
         {
-          afi  = "ipv4"
-          safi = "unicast"
-          advertisements = {
-            matchLabels = {
-              "k8s.tjo.cloud/default" = "true"
-            }
-          }
-        },
-        {
           afi  = "ipv6"
           safi = "unicast"
           advertisements = {
@@ -237,7 +234,6 @@ resource "kubernetes_manifest" "cilium-load-balancer-ip-pool" {
     }
     spec = {
       blocks = [
-        { cidr = var.cluster.load_balancer_cidr.ipv4 },
         { cidr = var.cluster.load_balancer_cidr.ipv6 },
       ]
     }

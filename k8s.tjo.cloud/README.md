@@ -8,15 +8,15 @@
 
 ## Networking
 
-We use `10.100.0.0/16` and `fd9b:7c3d:7f6a::/48` subnets for Kubernetes.
+We use `fd9b:7c3d:7f6a::/48` subnets for Kubernetes.
 We use BGP to advertise these routes (iBGP to network.tjo.cloud).
 
-| Use              | IPv4             | IPv6                     |
-|------------------|------------------|--------------------------|
-| Pods             | 10.100.0.0/20     | fd9b:7c3d:7f6a:0000::/52        |
-| Load Balanancers | 10.100.16.0/20    | fd9b:7c3d:7f6a:1000::/52   |
-| _unused_         | xxx              | xxx                      |
-| Services         | 10.100.252.0/22   | fd9b:7c3d:7f6a:3e80::/108 |
+| Use                | IPv6                     |
+|--------------------------------------------|
+| Pods              | fd9b:7c3d:7f6a:0000::/52        |
+| Load Balanancers    | fd9b:7c3d:7f6a:1000::/52   |
+| _unused_           | xxx                      |
+| Services          | fd9b:7c3d:7f6a:3e80::/108 |
 
 For Services we use last possible subnets.
 

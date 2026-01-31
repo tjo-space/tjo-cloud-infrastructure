@@ -2,27 +2,27 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.90.0"
+      version = "0.93.0"
     }
     talos = {
       source  = "siderolabs/talos"
-      version = "0.10.0"
+      version = "0.10.1"
     }
     local = {
       source  = "hashicorp/local"
-      version = "2.5.2"
+      version = "2.6.2"
     }
     random = {
       source  = "hashicorp/random"
-      version = "3.7.1"
+      version = "3.8.1"
     }
     helm = {
       source  = "hashicorp/helm"
-      version = "2.17.0"
+      version = "3.1.1"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.36.0"
+      version = "3.0.1"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
@@ -85,7 +85,7 @@ provider "kubectl" {
 }
 
 provider "helm" {
-  kubernetes {
+  kubernetes = {
     config_path = module.cluster.kubeconfig_path
   }
 }

@@ -55,11 +55,7 @@ resource "helm_release" "argocd" {
       install = false
     }
     global = {
-      domain = "argocd.k8s.tjo.cloud"
-      dualStack = {
-        ipFamilyPolicy = "RequireDualStack"
-        ipFamilies     = ["IPv4", "IPv6"]
-      }
+      domain            = "argocd.k8s.tjo.cloud"
       priorityClassName = "critical"
       affinity = {
         nodeAffinity = {

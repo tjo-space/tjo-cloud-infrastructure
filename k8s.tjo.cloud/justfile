@@ -5,6 +5,7 @@ ARGOCD_CRDS_VERSION := "3.2.3"
 GRAFANA_ALLOY_CRDS_VERSION := "0.3.15"
 SEALED_SECRETS_CRDS_VERSION := "0.34.0"
 K8UP_CRDS_VERSION := "2.13.1"
+CERT_MANAGER_CRDS_VERSION := "1.19.2"
 
 export TALOSCONFIG := "admin.talosconfig"
 export KUBECONFIG := "admin.kubeconfig"
@@ -50,6 +51,10 @@ module-cluster-core-crds:
     "https://github.com/k8up-io/k8up/archive/refs/tags/v{{K8UP_CRDS_VERSION}}.tar.gz" \
     | tar -xz -C modules/cluster-core/crds --strip-components=4 --wildcards "k8up-{{K8UP_CRDS_VERSION}}/charts/k8up/crds/*.yaml"
 
+  # Cert Manager
+  @curl -L -o modules/cluster-core/crds/cert-manager.yaml \
+    "https://github.com/cert-manager/cert-manager/releases/download/v{{CERT_MANAGER_CRDS_VERSION}}/cert-manager.crds.yaml" \
+
 create: # Like apply, but separated in multiple steps for fresh cluster to work.
   tofu init
   tofu apply -target module.cluster -var-file terraform.secrets.tfvars
@@ -80,7 +85,7 @@ destroy:
 
 remove node: etcd-snapshot
   #!/usr/bin/env bash
-  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv4')
+  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv6')
 
   talosctl -n ${IP} reset
   kubectl delete node "{{node}}"
@@ -88,14 +93,14 @@ remove node: etcd-snapshot
 
 reboot node:
   #!/usr/bin/env bash
-  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv4')
+  IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv6')
   talosctl -n ${IP} reboot
 
 etcd-snapshot prefix="manual":
   #!/usr/bin/env bash
   set -eou pipefail
 
-  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv4')
+  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv6')
 
   echo "{{CYAN}}{{BOLD}}== Taking etcd snapshot on node ${NODE}{{NORMAL}}"
   talosctl -n ${NODE} etcd snapshot db.snapshot
@@ -117,8 +122,8 @@ upgrade-talos version:
   just etcd-snapshot "pre-upgrade-talos-{{version}}"
 
   SCHEMATIC_ID=$(tofu output -json | jq -r '.talos.value.schematic_id')
-  WORKER_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "worker")) | sort_by(.name)[] | .ipv4')
-  CONTROLPLANE_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | sort_by(.name)[] | .ipv4')
+  WORKER_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "worker")) | sort_by(.name)[] | .ipv6')
+  CONTROLPLANE_NODES=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | sort_by(.name)[] | .ipv6')
 
   upgrade_node () {
     echo "{{CYAN}}{{BOLD}}=== Upgrading $1{{NORMAL}}"
@@ -147,7 +152,7 @@ upgrade-kubernetes version:
 
   just etcd-snapshot "pre-upgrade-kubernetes-{{version}}"
 
-  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv4')
+  NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv6')
 
   echo "{{CYAN}}{{BOLD}}== Upgrading...{{NORMAL}}"
   talosctl --nodes ${NODE} upgrade-k8s --to {{ version }}

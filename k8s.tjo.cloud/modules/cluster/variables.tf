@@ -41,11 +41,9 @@ variable "cluster" {
       issuer_url = string
     })
     pod_cidr = object({
-      ipv4 = string
       ipv6 = string
     })
     service_cidr = object({
-      ipv4 = string
       ipv6 = string
     })
   })
