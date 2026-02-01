@@ -1,7 +1,7 @@
 nodes_hetzner_cloud = {
   "purple" = {
-    datacenter = "nbg1-dc3" // nuremberg
-    use        = true
+    datacenter  = "nbg1-dc3" // nuremberg
+    use         = true
     server_type = "cax11" // arm, 2core 4gb, 4.62/m
   }
   //"pink" = {

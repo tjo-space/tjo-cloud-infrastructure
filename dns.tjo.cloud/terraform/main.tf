@@ -54,7 +54,25 @@ module "proxmox_node" {
   boot = {
     storage = each.value.boot_storage
     size    = each.value.boot_size
-    image   = "ubuntu_2404_server_cloudimg_amd64.img"
+    image   = "debian_13_server_cloudimg_amd64.img"
+  }
+
+  disks = [{
+    storage = each.value.data_storage
+    size    = each.value.data_size
+  }]
+
+  userdata = {
+    disk_setup = { "/dev/vdb" = {
+      table_type = "gpt"
+      layout     = [100]
+    } }
+    fs_setup = [{
+      label      = "data"
+      filesystem = "ext4"
+      device     = "/dev/vdb"
+    }]
+    mounts = [["/dev/vdb1", "/srv/data"]]
   }
 
   metadata = each.value.meta

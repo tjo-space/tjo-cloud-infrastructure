@@ -1,21 +1,18 @@
 variable "nodes_proxmox" {
   type = map(object({
     host         = string
-    cores        = optional(number, 1)
-    memory       = optional(number, 1042)
+    cores        = number
+    memory       = number
     boot_storage = string
-    boot_size    = optional(number, 8)
+    boot_size    = number
+    data_storage = string
+    data_size    = number
   }))
 }
 
 variable "domain" {
   type    = string
   default = "ca.tjo.cloud"
-}
-
-variable "zerotier_token" {
-  sensitive = true
-  type      = string
 }
 
 variable "authentik_token" {

@@ -11,17 +11,17 @@ config unbound
 
   option unbound_control '1'
 
-config zone
+config zone 'fwd_internal'
 	option zone_type 'forward_zone'
-	option enabled '0'
+	option enabled '1'
 	option fallback '0'
 	list zone_name 'internal.'
+	list zone_name 'arpa.'
+	option port '53'
+	# internal dns.tjo.cloud
+	list server 'fd74:6a6f::be24:11ff:fe8a:b5e6'
 
-	# internal dns.tjo.cloud vip
-	list server 'fd74:6a6f::53'
-	list server '10.0.0.53'
-
-config zone
+config zone 'fwd_public'
   option zone_type 'forward_zone'
   option enabled '1'
   option fallback '1'

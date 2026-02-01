@@ -1,14 +1,17 @@
 [Unit]
-Description=An Authentik Ldap Outpost
+Description=Technitium DNS Server
 
 [Container]
-Image=ghcr.io/goauthentik/ldap:2025.10
-EnvironmentFile=/etc/authentik/secrets.env
-Environment=AUTHENTIK_HOST=https://id.tjo.cloud
-Environment=AUTHENTIK_INSECURE=false
+Image=docker.io/technitium/dns-server:14.3.0@sha256:322b236403ca25028032f28736e2270a860527b030b162c9f82451c6494c4698
+Environment=DNS_SERVER_DOMAIN=dns.tjo.cloud
+Environment=DNS_SERVER_PREFER_IPV6=true
 Network=main.network
-AutoUpdate=registry
-PublishPort=127.0.0.1:389:389
+# WebUI
+PublishPort=127.0.0.1:5380:5380/tcp
+# DNS
+PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f.*') | first }}]:53:53/tcp
+PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f.*') | first }}]:53:53/udp
+Volume=/srv/data/technitium-dns:/etc/dns:rw
 
 [Service]
 Restart=always

@@ -1,17 +1,11 @@
-# s3.tjo.cloud
+# ca.tjo.cloud
 
-S3 compatible storage service and static website hosting.
+Certificate Authority for `.internal` (and other?) TLD.
 
-### Components
+**Root fingerprint:** `8ca319801d29de1e24bf8ccc311a14b96b532e5238c0b442211a9802b25dcedb`
 
-- Ubuntu
-- UFW Firewall
-- Zerotier (SD-WAN)
-- Caddy
-  - Handling TLS termination, dynamic certificate provisioning.
-- Grafana Alloy
-  - Metrics and Logs being shipped to https://monitor.tjo.cloud.
-- Garage
-  - S3 compatible storage service.
-- Restic
-  - Shipping backups to backup.tjo.cloud.
+## How CA was created
+
+```
+STEPPATH="$PWD/rootca" step ca init --pki --name "ca.tjo.cloud" --deployment-type standalone
+```

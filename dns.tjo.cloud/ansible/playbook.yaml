@@ -7,7 +7,15 @@
     - vars.terraform.yaml
     - vars.secrets.yaml
 
-  handlers: []
+  handlers:
+    - name: Restart stack
+      ansible.builtin.systemd:
+        name: '{{ item }}'
+        state: restarted
+        enabled: true
+        daemon_reload: true
+      loop:
+        - "technitium-dns"
 
   tasks:
     - name: Run defaults
@@ -33,6 +41,23 @@
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
 
+    - name: Install Caddy
+      ansible.builtin.import_role:
+        name: caddy
+
+    - name: Configure Caddy
+      ansible.builtin.template:
+        src: root/etc/caddy/Caddyfile
+        dest: /etc/caddy/Caddyfile
+        mode: '0600'
+        owner: "caddy"
+        group: "caddy"
+      notify: Restart caddy
+      tags: config-reload
+
     - name: Configure dns
       ansible.builtin.include_tasks:
         file: tasks/dns.yaml
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers

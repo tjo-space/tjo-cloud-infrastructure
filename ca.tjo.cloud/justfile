@@ -38,3 +38,40 @@ configure-all tag="":
 
 ssh node:
   ssh -A bine@{{node}}.ca.tjo.cloud -p 2222
+
+
+SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/keys.txt"`} else { `echo "$HOME/Library/Application Support/sops/age/keys.txt"` }
+CA_PATH := "/tmp/ca.tjo.cloud/root-ca"
+
+create-root-ca:
+  #!/usr/bin/env sh
+  rm -rf {{CA_PATH}}
+  STEPPATH={{CA_PATH}} step ca init --pki --name "ca.tjo.cloud" --deployment-type standalone
+  cp {{CA_PATH}}/certs/root_ca.crt {{source_directory()}}/root_ca.crt
+  rm {{CA_PATH}}/certs/intermediate_ca.crt
+  rm {{CA_PATH}}/secrets/intermediate_ca_key
+  just encrypt-root-ca
+
+sign-intermediate-ca csr:
+  #!/usr/bin/env sh
+  just decrypt-root-ca
+  export STEPPATH={{CA_PATH}}
+  # Will be valid for 400 days.
+  step certificate sign --not-after 9600h --profile intermediate-ca {{csr}} {{CA_PATH}}/certs/root.crt {{CA_PATH}}/secrets/root_ca_key
+  just remove-root-ca
+
+remove-root-ca:
+  #!/usr/bin/env sh
+  rm -rf {{CA_PATH}}
+
+encrypt-root-ca:
+  #!/usr/bin/env sh
+  tar -vzcf - {{CA_PATH}} | age --encrypt -R {{source_directory()}}/../age.keys > {{source_directory()}}/root-ca.encrypted
+  just remove-root-ca
+
+decrypt-root-ca:
+  #!/usr/bin/env sh
+  just remove-root-ca
+  mkdir -p {{CA_PATH}}
+  chmod 700 {{CA_PATH}}
+  cat {{source_directory()}}/root-ca.encrypted | age --decrypt -i "{{SOPS_AGE_KEY_FILE}}" | tar --strip-components=3 -vzxf - -C {{CA_PATH}}

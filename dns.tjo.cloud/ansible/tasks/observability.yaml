@@ -10,17 +10,6 @@
       cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
       cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
     alloy_custom_integrations: |
-      prometheus.scrape "garage" {
-        targets    = concat(
-          [
-            {"__address__" = "127.0.0.1:3903", "instance" = constants.hostname, "job" = "integrations/garage"},
-          ],
-        )
-        forward_to = [
-          otelcol.receiver.prometheus.default.receiver,
-        ]
-        bearer_token = "{{ garage_metrics_token }}"
-      }
       prometheus.scrape "caddy" {
         targets    = concat(
           [

@@ -54,8 +54,6 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 | # | # |  # |
 | nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
 | # | # |  # |
-| dns.tjo.cloud LAN VIP | 10.0.0.53/10     | fd74:6a6f::53/128  |
-| # | # |  # |
 | endor.proxmox.tjo.cloud | 10.0.0.61/10     | fd74:6a6f::61/128  |
 | batuu.proxmox.tjo.cloud | 10.0.0.62/10     | fd74:6a6f::62/128  |
 | jakku.proxmox.tjo.cloud | 10.0.0.63/10     | fd74:6a6f::63/128  |

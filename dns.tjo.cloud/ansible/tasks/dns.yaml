@@ -1,3 +1,17 @@
+- name: Instal podman
+  ansible.builtin.apt:
+    name: podman
+    state: present
+
+- name: Set podman interface as trusted
+  ansible.posix.firewalld:
+    interface: podman1
+    zone: trusted
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall
+
 - name: Copy configuration
   ansible.builtin.template:
     src: 'root{{ item }}'
@@ -8,11 +22,11 @@
   loop:
     - "/etc/containers/systemd/main.network"
   tags: config-reload
-  notify: Restart dns-server
+  notify: Restart stack
 
-- name: Prepare /etc/technitium-dns directory
+- name: Prepare /srv/data/technitium-dns directory
   ansible.builtin.file:
-    path: /etc/technitium-dns
+    path: /srv/data/technitium-dns
     mode: "0755"
     state: directory
 
