@@ -24,6 +24,10 @@ terraform {
       source  = "tailscale/tailscale"
       version = "0.24.0"
     }
+    technitium = {
+      source  = "kevynb/technitium"
+      version = "0.4.0"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -85,4 +89,9 @@ provider "proxmox" {
       port    = 22
     }
   }
+}
+
+provider "technitium" {
+  url   = "https://dns.cloud.internal"
+  token = var.dns_tjo_cloud_token
 }

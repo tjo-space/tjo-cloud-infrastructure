@@ -88,3 +88,10 @@ resource "proxmox_virtual_environment_acl" "prometheus-pve-exporter" {
   path      = "/"
   propagate = true
 }
+
+resource "technitium_record" "for_node" {
+  domain     = "${each.name}.proxmox.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = ""
+}
