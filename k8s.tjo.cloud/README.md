@@ -38,3 +38,8 @@ References:
 - [ ] Run `just upgrade-kubernetes v1.35.0`
 - [ ] Change Talos and/or Kubernetes versions in `main.tf`.
 - [ ] Run `just apply`.
+
+## Node removal steps
+- [ ] Run `just remove nevaroo-orange-k8s-tjo-cloud`
+- [ ] Remove node configuration from `main.tf`.
+- [ ] Run `just apply`

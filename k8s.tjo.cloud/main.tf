@@ -43,20 +43,20 @@ module "cluster" {
       memory    = 6144
       bootstrap = true
     }
-    nevaroo-orange = {
-      id      = 6013
-      type    = "controlplane"
-      host    = "nevaroo"
-      storage = "local-nvme-lvm"
-      cores   = 4
-      memory  = 6144
-    }
     endor-yellow = {
       id      = 6022
       type    = "controlplane"
       host    = "endor"
       storage = "local-nvme"
       cores   = 4
+      memory  = 6144
+    }
+    jakku-yellow = {
+      id      = 6040
+      type    = "controlplane"
+      host    = "jakku"
+      storage = "local-nvme"
+      cores   = 2
       memory  = 6144
     }
     endor-orange = {
