@@ -90,8 +90,10 @@ resource "proxmox_virtual_environment_acl" "prometheus-pve-exporter" {
 }
 
 resource "technitium_record" "for_node" {
-  domain     = "${each.name}.proxmox.cloud.internal"
+  for_each   = local.nodes
+  zone       = "cloud.internal"
+  domain     = "${each.value.name}.proxmox.cloud.internal"
   ttl        = 60
   type       = "AAAA"
-  ip_address = ""
+  ip_address = split("/", each.value.vmbr1.ipv6.address)[0]
 }

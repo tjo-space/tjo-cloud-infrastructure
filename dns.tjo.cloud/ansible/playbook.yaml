@@ -58,6 +58,7 @@
     - name: Configure dns
       ansible.builtin.include_tasks:
         file: tasks/dns.yaml
+      tags: config-reload
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

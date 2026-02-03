@@ -11,10 +11,14 @@ config unbound
 
   option unbound_control '1'
 
+	# FIXME: To make DNS queries via tailscale work. Maybe there is a better way.
+  # Prevent DNS amplification attacks. Only answer to subnets this machine has interfaces on.
+	option localservice '0'
+
 config zone 'fwd_internal'
 	option zone_type 'forward_zone'
 	option enabled '1'
-	option fallback '0'
+	option fallback '1'
 	list zone_name 'internal.'
 	list zone_name 'arpa.'
 	option port '53'

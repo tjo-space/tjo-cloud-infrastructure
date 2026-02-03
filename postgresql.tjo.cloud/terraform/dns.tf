@@ -22,3 +22,11 @@ resource "desec_rrset" "node_aaaa" {
   records  = [each.value.private_ipv6]
   ttl      = 3600
 }
+resource "technitium_record" "for_node" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "${each.value.name}.postgresql.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
+}

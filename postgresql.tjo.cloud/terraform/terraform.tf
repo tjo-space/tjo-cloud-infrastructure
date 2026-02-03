@@ -28,6 +28,10 @@ terraform {
       source  = "hashicorp/local"
       version = "2.5.3"
     }
+    technitium = {
+      source  = "kevynb/technitium"
+      version = "0.4.0"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -99,4 +103,9 @@ provider "postgresql" {
   password        = random_password.postgres.result
   sslmode         = "disable"
   connect_timeout = 15
+}
+
+provider "technitium" {
+  url   = "https://dns.tjo.cloud"
+  token = var.dns_tjo_cloud_token
 }

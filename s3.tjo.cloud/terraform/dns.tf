@@ -55,17 +55,6 @@ resource "desec_rrset" "web_https" {
   ttl     = 3600
 }
 
-resource "desec_rrset" "any" {
-  for_each = {
-    A    = [for k, v in local.nodes_deployed : v.private_ipv4 if v.garage_kind != "gateway"]
-    AAAA = [for k, v in local.nodes_deployed : v.private_ipv6 if v.garage_kind != "gateway"]
-  }
-  domain  = "tjo.cloud"
-  subname = "any.s3"
-  type    = each.key
-  records = each.value
-  ttl     = 3600
-}
 resource "desec_rrset" "node_aaaa" {
   for_each = local.nodes_deployed
   domain   = "tjo.cloud"
@@ -73,4 +62,20 @@ resource "desec_rrset" "node_aaaa" {
   type     = "AAAA"
   records  = [each.value.private_ipv6]
   ttl      = 3600
+}
+resource "technitium_record" "any" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "any.s3.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
+}
+resource "technitium_record" "for_node" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "${each.value.name}.s3.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
 }

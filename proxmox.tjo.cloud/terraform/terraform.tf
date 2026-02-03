@@ -92,6 +92,6 @@ provider "proxmox" {
 }
 
 provider "technitium" {
-  url   = "https://dns.cloud.internal"
+  url   = "https://dns.tjo.cloud"
   token = var.dns_tjo_cloud_token
 }
