@@ -9,7 +9,7 @@ nodes = {
     data_size    = 64
 
     cores  = 2
-    memory = 8192
+    memory = 4096
 
     postgresql_version = "16"
   }
@@ -24,7 +24,7 @@ nodes = {
     data_size    = 64
 
     cores  = 2
-    memory = 8192
+    memory = 4096
 
     postgresql_version = "16"
   }
