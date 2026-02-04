@@ -57,19 +57,6 @@ module "proxmox_node" {
     image   = "debian_13_server_cloudimg_amd64.img"
   }
 
-  userdata = {
-    disk_setup = { "/dev/vdb" = {
-      table_type = "gpt"
-      layout     = [100]
-    } }
-    fs_setup = [{
-      label      = "data"
-      filesystem = "ext4"
-      device     = "/dev/vdb"
-    }]
-    mounts = [["/dev/vdb1", "/srv/data"]]
-  }
-
   metadata = each.value.meta
 
   ssh_keys = local.global.tjo_cloud_admin_ssh_keys

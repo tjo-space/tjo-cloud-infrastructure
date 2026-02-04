@@ -8,10 +8,6 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.84.0"
     }
-    desec = {
-      source  = "Valodim/desec"
-      version = "0.6.1"
-    }
     local = {
       source  = "hashicorp/local"
       version = "2.5.3"
@@ -19,10 +15,6 @@ terraform {
   }
 
   required_version = "~> 1.9.0"
-}
-
-provider "desec" {
-  api_token = var.desec_token
 }
 
 provider "authentik" {

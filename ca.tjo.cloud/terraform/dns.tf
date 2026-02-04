@@ -1,8 +1,16 @@
-resource "desec_rrset" "node" {
-  for_each = local.nodes_deployed
-  domain   = "tjo.cloud"
-  subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
-  type     = "AAAA"
-  records  = [each.value.private_ipv6]
-  ttl      = 3600
+resource "technitium_record" "for_node" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "${each.value.name}.ca.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
+}
+resource "technitium_record" "all" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "ca.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
 }

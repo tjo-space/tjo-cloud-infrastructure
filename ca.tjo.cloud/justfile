@@ -12,7 +12,10 @@ destroy:
   cd {{source_directory()}}/terraform
   tofu  destroy
 
-configure node tag="":
+copy-root-ca:
+  cp {{source_directory()}}/root_ca.crt {{source_directory()}}/ansible/root/var/www/root.crt
+
+configure node tag="": copy-root-ca
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
@@ -24,7 +27,7 @@ configure node tag="":
     $TAGS \
     playbook.yaml --limit {{node}}
 
-configure-all tag="":
+configure-all tag="": copy-root-ca
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
@@ -37,8 +40,7 @@ configure-all tag="":
     playbook.yaml
 
 ssh node:
-  ssh -A bine@{{node}}.ca.tjo.cloud -p 2222
-
+  ssh bine@{{node}}.ca.cloud.internal -p 2222
 
 SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/keys.txt"`} else { `echo "$HOME/Library/Application Support/sops/age/keys.txt"` }
 CA_PATH := "/tmp/ca.tjo.cloud/root-ca"
@@ -46,32 +48,66 @@ CA_PATH := "/tmp/ca.tjo.cloud/root-ca"
 create-root-ca:
   #!/usr/bin/env sh
   rm -rf {{CA_PATH}}
-  STEPPATH={{CA_PATH}} step ca init --pki --name "ca.tjo.cloud" --deployment-type standalone
+  STEPPATH={{CA_PATH}} step ca init --pki --name "ca.tjo.cloud Root CA" --deployment-type standalone
   cp {{CA_PATH}}/certs/root_ca.crt {{source_directory()}}/root_ca.crt
   rm {{CA_PATH}}/certs/intermediate_ca.crt
   rm {{CA_PATH}}/secrets/intermediate_ca_key
-  just encrypt-root-ca
+  just encrypt-ca
 
-sign-intermediate-ca csr:
+create-root-intermediate-ca:
   #!/usr/bin/env sh
-  just decrypt-root-ca
-  export STEPPATH={{CA_PATH}}
-  # Will be valid for 400 days.
-  step certificate sign --not-after 9600h --profile intermediate-ca {{csr}} {{CA_PATH}}/certs/root.crt {{CA_PATH}}/secrets/root_ca_key
-  just remove-root-ca
+  just decrypt-ca
 
-remove-root-ca:
+  STEPPATH={{CA_PATH}}
+  YEAR=$(date -u +%Y)
+
+  # Will be valid for 1 year.
+  # Allows to have two more Intermediates under.
+  step certificate create \
+    --profile intermediate-ca \
+    --ca {{CA_PATH}}/certs/root_ca.crt \
+    --ca-key {{CA_PATH}}/secrets/root_ca_key \
+    --not-after 17600h \
+    --kty EC \
+    --path-len 2 \
+    "ca.tjo.cloud - ${YEAR} ECC Intermediate" \
+    {{CA_PATH}}/certs/intermediate_${YEAR}.crt \
+    {{CA_PATH}}/secrets/intermediate_${YEAR}_key
+
+  just encrypt-ca
+
+
+sign-caddy-root-ca node:
+  #!/usr/bin/env sh
+  just decrypt-ca
+  export STEPPATH={{CA_PATH}}
+
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat "
+
+  # Will be valid for 400 days.
+  # We allow it to sign another intermediary.
+  step certificate sign \
+    --not-after 9600h \
+    --profile intermediate-ca \
+    --path-len 1 \
+    csr/path \
+    {{CA_PATH}}/certs/root_ca.crt \
+    {{CA_PATH}}/secrets/root_ca_key
+
+  just remove-ca
+
+remove-ca:
   #!/usr/bin/env sh
   rm -rf {{CA_PATH}}
 
-encrypt-root-ca:
+encrypt-ca:
   #!/usr/bin/env sh
   tar -vzcf - {{CA_PATH}} | age --encrypt -R {{source_directory()}}/../age.keys > {{source_directory()}}/root-ca.encrypted
-  just remove-root-ca
+  just remove-ca
 
-decrypt-root-ca:
+decrypt-ca:
   #!/usr/bin/env sh
-  just remove-root-ca
+  just remove-ca
   mkdir -p {{CA_PATH}}
   chmod 700 {{CA_PATH}}
   cat {{source_directory()}}/root-ca.encrypted | age --decrypt -i "{{SOPS_AGE_KEY_FILE}}" | tar --strip-components=3 -vzxf - -C {{CA_PATH}}

@@ -1,42 +1,65 @@
 {
-	on_demand_tls {
-		ask http://localhost:3903/check
-	}
 	metrics {
 		per_host
 	}
+
+  servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 2s
+				# Using comment hack here. Otherwise caddy fmt takes the template
+				#  curly brackets and tries to "format them", which breaks things.
+				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
+				fallback_policy reject
+			}
+			tls {
+				issuer acme {
+					disable_http_challenge
+				}
+			}
+		}
+	}
+
+  pki {
+		ca ca-tjo-cloud {
+			root {
+				format pem_file
+				cert /var/lib/ca/.step/certs/intermediate_ca.crt
+				key /var/lib/ca/.step/secrets/intermediate_ca_key
+			}
+		}
+	}
 }
 
-##
-# Buckets as static websites
-##
-https://, *.web.s3.tjo.cloud {
+ca.cloud.internal {
 	tls {
-		on_demand
+		issuer internal {
+			ca ca-tjo-cloud
+		}
 	}
 
-	reverse_proxy localhost:3902 {
-		health_uri /health
-		health_port 3903
+  acme_server {
+		ca ca-tjo-cloud
+
+    allow {
+      domains "*.internal"
+    }
 	}
+
+  root * /var/www
+	file_server
 }
 
-##
-# API
-##
-api.s3.tjo.cloud {
-	reverse_proxy localhost:3900 {
-		health_uri /health
-		health_port 3903
-	}
-}
+ca.tjo.cloud {
 
-##
-# MANAGEMENT
-##
-admin.s3.tjo.cloud {
-	reverse_proxy localhost:3903 {
-		health_uri /health
-		health_port 3903
+  acme_server {
+		ca ca-tjo-cloud
+
+    allow {
+      domains "*.internal"
+    }
 	}
+
+  root * /var/www
+	file_server
 }

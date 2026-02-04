@@ -5,8 +5,6 @@ variable "nodes_proxmox" {
     memory       = number
     boot_storage = string
     boot_size    = number
-    data_storage = string
-    data_size    = number
   }))
 }
 
@@ -20,12 +18,12 @@ variable "authentik_token" {
   sensitive = true
 }
 
-variable "desec_token" {
+variable "proxmox_token" {
   type      = string
   sensitive = true
 }
 
-variable "proxmox_token" {
+variable "dns_tjo_cloud_token" {
   type      = string
   sensitive = true
 }

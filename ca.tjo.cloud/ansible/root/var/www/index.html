@@ -1,0 +1,62 @@
+<!doctype html>
+<html>
+  <head>
+    <title>ca.tjo.cloud</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0"
+      data-rh="true"
+    />
+    <link rel="stylesheet" href="style.css" type="text/css" />
+  </head>
+  <body>
+    <header class="hero">
+      <span class="icon">🔑</span>
+      <h1>ca.tjo.cloud</h1>
+      <p class="subhead">Hi! You can get information about tjo.cloud Certificate Authority (CA) here.</p>
+    </header>
+    <main>
+      <section class="text">
+        <h2>What domains are covered by the CA?</h2>
+        <p>
+        This CA for now only covers the `internal.` TLD. In the future, we might cover more.
+        </p>
+      </section>
+      <section class="text">
+        <h2>Details</h2>
+        <p>
+        <h3>Root Fingerprint:</h3>
+        <br>
+        <pre>
+        f25ac44dd1fb49927ec199c4da6936ab3618419e499ca865be59ac50b1f139d5
+        </pre>
+        </br>
+        <h3>Root Certificate:</h3>
+        <br>
+        <pre>
+        -----BEGIN CERTIFICATE-----
+        MIIBzzCCAXWgAwIBAgIQI5Z0+FJsimzhdwiMm9V+UzAKBggqhkjOPQQDAjBGMR0w
+        GwYDVQQKExRjYS50am8uY2xvdWQgUm9vdCBDQTElMCMGA1UEAxMcY2EudGpvLmNs
+        b3VkIFJvb3QgQ0EgUm9vdCBDQTAeFw0yNjAyMDQyMTI2MTVaFw0zNjAyMDIyMTI2
+        MTVaMEYxHTAbBgNVBAoTFGNhLnRqby5jbG91ZCBSb290IENBMSUwIwYDVQQDExxj
+        YS50am8uY2xvdWQgUm9vdCBDQSBSb290IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+        AQcDQgAE4syq5riMPx6sbNf9tUG/g4H+09TLXrQCHDpfmTj8thZYEsT1nGQ71+A2
+        XRB0VCE1+AL0+Ug2UvGJ4Y6suL5WkKNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1Ud
+        EwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYEFIdy2F9VCnJfqfoq6wINmQJa1dPdMAoG
+        CCqGSM49BAMCA0gAMEUCIQCXy97OsV+4ka5n068v1lskV+qn5YfVOpVaioNAeYFc
+        MwIgbaBzauvwo8qVoy5tkSMTJr2WvKkOXnXazegQnG8h6CI=
+        -----END CERTIFICATE-----
+        </pre>
+        <br>
+        <h3>Configuring Linux to accept CA</h3>
+        <pre>
+        sudo mkdir -p /usr/local/share/ca-certificates/ca-tjo-cloud
+        sudo curl -sLo /usr/local/share/ca-certificates/ca-tjo-cloud/root.crt https://ca.tjo.cloud/root.crt
+        sudo update-ca-certificates
+        </pre>
+        </p>
+      </section>
+    </main>
+    <div class="symbolOfTolerance" role="img"></div>
+  </body>
+</html>

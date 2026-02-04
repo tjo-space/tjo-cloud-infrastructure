@@ -5,7 +5,6 @@
   vars_files:
     - vars.yaml
     - vars.terraform.yaml
-    - vars.secrets.yaml
 
   handlers: []
 
@@ -26,13 +25,15 @@
       ansible.builtin.import_tasks:
         file: tasks/firewall.yaml
 
-    - name: Install and Configure Backups
-      ansible.builtin.import_tasks:
-        file: tasks/backup.yaml
-
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers
 
     - name: Configure ca
       ansible.builtin.include_tasks:
         file: tasks/ca.yaml
+      tags:
+        - step-ca-csr
+        - config-reload
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers

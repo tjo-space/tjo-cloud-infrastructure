@@ -1,0 +1,95 @@
+- name: Install Caddy
+  ansible.builtin.include_role:
+    name: caddy
+
+- name: Configure Caddy
+  ansible.builtin.template:
+    src: root/etc/caddy/Caddyfile
+    dest: /etc/caddy/Caddyfile
+    mode: '0600'
+    owner: "caddy"
+    group: "caddy"
+  notify: Restart caddy
+
+- name: Create www dir for caddy
+  ansible.builtin.file:
+    state: directory
+    path: "/var/www"
+    mode: "0700"
+    owner: "caddy"
+    group: "caddy"
+
+- name: Copy www files for caddy
+  ansible.builtin.template:
+    src: 'root/var/www/{{ item }}'
+    dest: '/var/www/{{ item }}'
+    mode: '0600'
+    owner: caddy
+    group: caddy
+  loop:
+    - index.html
+    - style.css
+    - root.crt
+  notify: Restart caddy
+  tags: config-reload
+
+- name: Add repository
+  ansible.builtin.deb822_repository:
+    name: smallstep
+    types: deb
+    uris: https://packages.smallstep.com/stable/debian
+    suites: debs
+    components: main
+    signed_by: https://packages.smallstep.com/keys/apt/repo-signing-key.gpg
+
+- name: Install smallstep
+  ansible.builtin.apt:
+    name: '{{ item }}'
+    state: present
+    update_cache: yes
+  loop:
+    - step-cli
+    - step-ca
+
+- name: Create ca group
+  ansible.builtin.group:
+    name: ca
+    gid: 1010
+    system: true
+    state: present
+
+- name: Create ca user
+  ansible.builtin.user:
+    name: ca
+    uid: 1010
+    group: ca
+    system: true
+    home: /var/lib/ca
+    state: present
+
+- name: Check if ca already initialized
+  ansible.builtin.stat:
+    name: "/var/lib/ca/.step"
+  register: step_ca
+
+- name: Init Intermediate Certificate Authority
+  ansible.builtin.shell: |
+    # Generate random password
+    sudo -u ca openssl rand -base64 32 | sudo -u ca tee /var/lib/ca/password
+
+    sudo -u ca step ca init --pki \
+      --name="$(hostname) Intermediate CA" \
+      --deployment-type=standalone \
+      --password-file=/var/lib/ca/password
+
+    # We do not need root
+    rm /var/lib/ca/.step/secrets/root_ca_key
+    rm /var/lib/ca/.step/certs/root_ca.crt
+
+    # Issue new intermediate CSR
+    sudo -u ca step certificate create --csr \
+      --no-password --insecure \
+      "ca.tjo.cloud Intermediate CA" \
+      intermediate.csr intermediate_ca_key
+  #when: "not step_ca.stat.exists"
+  tag: step-ca-csr

@@ -8,7 +8,7 @@
   loop: "{{ tjo_cloud_networks }}"
   tags: firewall
 
-- name: FIREWALL - HTTP, HTTPS and DNS
+- name: FIREWALL - HTTP, HTTPS
   ansible.posix.firewalld:
     port: '{{ item }}'
     zone: internal
@@ -18,8 +18,6 @@
   loop:
     - "80/tcp"
     - "443/tcp"
-    - "53/tcp"
-    - "53/udp"
   tags: firewall
 
 - name: FIREWALL - Allow SSH
