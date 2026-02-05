@@ -1,6 +1,7 @@
 - name: Install Caddy
   ansible.builtin.include_role:
     name: caddy
+  tags: config-reload
 
 - name: Configure Caddy
   ansible.builtin.template:
@@ -10,6 +11,7 @@
     owner: "caddy"
     group: "caddy"
   notify: Restart caddy
+  tags: config-reload
 
 - name: Create www dir for caddy
   ansible.builtin.file:
@@ -30,6 +32,7 @@
     - index.html
     - style.css
     - root.crt
+    - root.fingerprint
   notify: Restart caddy
   tags: config-reload
 
@@ -42,54 +45,30 @@
     components: main
     signed_by: https://packages.smallstep.com/keys/apt/repo-signing-key.gpg
 
-- name: Install smallstep
+- name: Install step-cli
   ansible.builtin.apt:
-    name: '{{ item }}'
+    name: step-cli
     state: present
     update_cache: yes
-  loop:
-    - step-cli
-    - step-ca
 
-- name: Create ca group
-  ansible.builtin.group:
-    name: ca
-    gid: 1010
-    system: true
-    state: present
-
-- name: Create ca user
-  ansible.builtin.user:
-    name: ca
-    uid: 1010
-    group: ca
-    system: true
-    home: /var/lib/ca
-    state: present
-
-- name: Check if ca already initialized
+- name: Check if key already exists
   ansible.builtin.stat:
-    name: "/var/lib/ca/.step"
-  register: step_ca
+    name: "/etc/caddy/root.key"
+  register: caddy_root_key
+  tags: step-ca-csr
 
 - name: Init Intermediate Certificate Authority
   ansible.builtin.shell: |
-    # Generate random password
-    sudo -u ca openssl rand -base64 32 | sudo -u ca tee /var/lib/ca/password
+    YEAR=$(date -u +%Y)
 
-    sudo -u ca step ca init --pki \
-      --name="$(hostname) Intermediate CA" \
-      --deployment-type=standalone \
-      --password-file=/var/lib/ca/password
-
-    # We do not need root
-    rm /var/lib/ca/.step/secrets/root_ca_key
-    rm /var/lib/ca/.step/certs/root_ca.crt
-
-    # Issue new intermediate CSR
-    sudo -u ca step certificate create --csr \
+    # Create new Caddy Root CA CSR
+    step certificate create --csr \
       --no-password --insecure \
-      "ca.tjo.cloud Intermediate CA" \
-      intermediate.csr intermediate_ca_key
-  #when: "not step_ca.stat.exists"
-  tag: step-ca-csr
+      --san "$(hostname)" \
+       "$(hostname) - ${YEAR} Intermediate" \
+      /etc/caddy/root.csr /etc/caddy/root.key
+
+    chown caddy:caddy /etc/caddy/root.csr /etc/caddy/root.key
+    chmod 0400 /etc/caddy/root.csr /etc/caddy/root.key
+  when: "not caddy_root_key.stat.exists"
+  tags: step-ca-csr

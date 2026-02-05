@@ -73,6 +73,9 @@ h2 {
 
 main {
   flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 2em;
 }
 
 section {
@@ -86,7 +89,8 @@ section.text {
 section.text pre {
   background-color: var(--color-primary-100);
   width: fit-content;
-  padding: 0.25em;
+  padding: 1em;
+  font-family: "Courier New", Courier, monospace;
 }
 
 .symbolOfTolerance {

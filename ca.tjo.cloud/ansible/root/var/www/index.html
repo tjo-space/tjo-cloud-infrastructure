@@ -18,42 +18,53 @@
     <main>
       <section class="text">
         <h2>What domains are covered by the CA?</h2>
-        <p>
-        This CA for now only covers the `internal.` TLD. In the future, we might cover more.
+        <p>This CA for now only covers the <strong>internal.</strong> TLD. In the future, we might cover more.</p>
+      </section>
+      <section class="text">
+        <h2>How to get ACME certificates?</h2>
+        <h3>Example with Caddy</h3>
+        <pre>
+{
+  # Either Public DNS (servied via LetsEncrypt Cert)
+  # acme_ca https://ca.tjo.cloud/acme/ca-tjo-cloud/directory
+  # Or Internal DNS (served via ca.tjo.cloud Cert)
+  # acme_ca https://ca.cloud.internal/acme/ca-tjo-cloud/directory
+
+  # Download from https://ca.tjo.cloud/root.crt
+  acme_ca_root /path/to/ca-tjo-cloud/root.crt
+}
+
+example.internal {
+  respond "Hello, world!"
+}
+</pre>
+      </section>
+      <section class="text">
+        <h2>Configuring Linux to accept CA</h2>
+        <pre>
+sudo mkdir -p /usr/local/share/ca-certificates/ca-tjo-cloud
+sudo curl -sLo /usr/local/share/ca-certificates/ca-tjo-cloud/root.crt https://ca.tjo.cloud/root.crt
+sudo update-ca-certificates
+</pre>
         </p>
       </section>
       <section class="text">
-        <h2>Details</h2>
-        <p>
         <h3>Root Fingerprint:</h3>
-        <br>
-        <pre>
-        f25ac44dd1fb49927ec199c4da6936ab3618419e499ca865be59ac50b1f139d5
-        </pre>
-        </br>
+        <pre>6435a62157d89f57f90f2a69ce51bcb44acad1978c827aa53a8f530803e79575</pre>
         <h3>Root Certificate:</h3>
-        <br>
+        <p>Also accessible at <a href="/root.crt">/root.crt</a></p>
         <pre>
-        -----BEGIN CERTIFICATE-----
-        MIIBzzCCAXWgAwIBAgIQI5Z0+FJsimzhdwiMm9V+UzAKBggqhkjOPQQDAjBGMR0w
-        GwYDVQQKExRjYS50am8uY2xvdWQgUm9vdCBDQTElMCMGA1UEAxMcY2EudGpvLmNs
-        b3VkIFJvb3QgQ0EgUm9vdCBDQTAeFw0yNjAyMDQyMTI2MTVaFw0zNjAyMDIyMTI2
-        MTVaMEYxHTAbBgNVBAoTFGNhLnRqby5jbG91ZCBSb290IENBMSUwIwYDVQQDExxj
-        YS50am8uY2xvdWQgUm9vdCBDQSBSb290IENBMFkwEwYHKoZIzj0CAQYIKoZIzj0D
-        AQcDQgAE4syq5riMPx6sbNf9tUG/g4H+09TLXrQCHDpfmTj8thZYEsT1nGQ71+A2
-        XRB0VCE1+AL0+Ug2UvGJ4Y6suL5WkKNFMEMwDgYDVR0PAQH/BAQDAgEGMBIGA1Ud
-        EwEB/wQIMAYBAf8CAQEwHQYDVR0OBBYEFIdy2F9VCnJfqfoq6wINmQJa1dPdMAoG
-        CCqGSM49BAMCA0gAMEUCIQCXy97OsV+4ka5n068v1lskV+qn5YfVOpVaioNAeYFc
-        MwIgbaBzauvwo8qVoy5tkSMTJr2WvKkOXnXazegQnG8h6CI=
-        -----END CERTIFICATE-----
-        </pre>
-        <br>
-        <h3>Configuring Linux to accept CA</h3>
-        <pre>
-        sudo mkdir -p /usr/local/share/ca-certificates/ca-tjo-cloud
-        sudo curl -sLo /usr/local/share/ca-certificates/ca-tjo-cloud/root.crt https://ca.tjo.cloud/root.crt
-        sudo update-ca-certificates
-        </pre>
+-----BEGIN CERTIFICATE-----
+MIIBcTCCARegAwIBAgIRAIal77ic7mivE4JKGslFuyAwCgYIKoZIzj0EAwIwFzEV
+MBMGA1UEAxMMY2EudGpvLmNsb3VkMCAXDTI2MDIwNTEzMzIyOVoYDzIwNTEwMzEz
+MDUzMjI5WjAXMRUwEwYDVQQDEwxjYS50am8uY2xvdWQwWTATBgcqhkjOPQIBBggq
+hkjOPQMBBwNCAATtHj0lv+Kfeg9EDjgsafUx26m3E5oBEn6Flfqm5BBncpXxZ9pb
+aDIojpKUOzaDt+DuGtc0CtIlFLXo0tA7Iq8Uo0IwQDAOBgNVHQ8BAf8EBAMCAQYw
+DwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0AiKeHGdfZnOUFxnCQwaM2b0gGYw
+CgYIKoZIzj0EAwIDSAAwRQIhALxPC0xE3ONHScAC9EgM9lIX8URprLq812lT46hX
+XOjmAiBslbps9b1NqwUhz+fnwQQguQepUBYZXLc3iTD7qDdSyg==
+-----END CERTIFICATE-----
+</pre>
         </p>
       </section>
     </main>

@@ -2,18 +2,22 @@
 
 Certificate Authority for `.internal` (and other?) TLD.
 
-**Root fingerprint:** `f25ac44dd1fb49927ec199c4da6936ab3618419e499ca865be59ac50b1f139d5`
+## TODO
+- [ ] Caddy does not support adding full chain to certificates?
+  - Switch to `step ca` with caddy as proxy?
+  - That would allow us to use more then just acme?
+  - Keep existing CSR approach.
 
 ## Authorities
 
 ```
 ca.tjo.cloud - Root (10 years)
   |
-ca.tjo.cloud - Intermediate [year] (1 years)
+ca.tjo.cloud - [year] Intermediate (1 year)
   |
-Caddy Root CA [year] (6 months)
+$HOST.ca.tjo.cloud - [year] Intermediate (6 months)
   |
-Caddy Intermediate CA (7 days)
+$HOST.ca.tjo.cloud - [year] Signing (7 days)
   |
 example.com. (12 hours)
 ```

@@ -3,7 +3,7 @@
 		per_host
 	}
 
-  servers {
+	servers {
 		listener_wrappers {
 			proxy_protocol {
 				timeout 2s
@@ -12,21 +12,19 @@
 				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
 				fallback_policy reject
 			}
-			tls {
-				issuer acme {
-					disable_http_challenge
-				}
-			}
+      tls
 		}
 	}
 
-  pki {
+	pki {
 		ca ca-tjo-cloud {
+      name = "{{ ansible_fqdn }}"
 			root {
 				format pem_file
-				cert /var/lib/ca/.step/certs/intermediate_ca.crt
-				key /var/lib/ca/.step/secrets/intermediate_ca_key
+				cert /etc/caddy/root.crt
+				key /etc/caddy/root.key
 			}
+      intermediate_cn "{pki.ca.name} - {time.now.year} Signing"
 		}
 	}
 }
@@ -38,28 +36,33 @@ ca.cloud.internal {
 		}
 	}
 
-  acme_server {
+	acme_server {
 		ca ca-tjo-cloud
 
-    allow {
-      domains "*.internal"
-    }
+		allow {
+			domains "*.internal"
+		}
 	}
 
-  root * /var/www
+	root * /var/www
 	file_server
 }
 
 ca.tjo.cloud {
-
-  acme_server {
-		ca ca-tjo-cloud
-
-    allow {
-      domains "*.internal"
-    }
+	tls {
+		issuer acme {
+			disable_http_challenge
+		}
 	}
 
-  root * /var/www
+	acme_server {
+		ca ca-tjo-cloud
+
+		allow {
+			domains "*.internal"
+		}
+	}
+
+	root * /var/www
 	file_server
 }

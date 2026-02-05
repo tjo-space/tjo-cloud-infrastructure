@@ -12,10 +12,7 @@ destroy:
   cd {{source_directory()}}/terraform
   tofu  destroy
 
-copy-root-ca:
-  cp {{source_directory()}}/root_ca.crt {{source_directory()}}/ansible/root/var/www/root.crt
-
-configure node tag="": copy-root-ca
+configure node tag="":
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
@@ -27,7 +24,7 @@ configure node tag="": copy-root-ca
     $TAGS \
     playbook.yaml --limit {{node}}
 
-configure-all tag="": copy-root-ca
+configure-all tag="":
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
   export VERSION=$(git describe --tags --always --dirty)
@@ -43,71 +40,99 @@ ssh node:
   ssh bine@{{node}}.ca.cloud.internal -p 2222
 
 SOPS_AGE_KEY_FILE := if os() == "linux" {`echo "$HOME/.config/sops/age/keys.txt"`} else { `echo "$HOME/Library/Application Support/sops/age/keys.txt"` }
-CA_PATH := "/tmp/ca.tjo.cloud/root-ca"
+CERTIFICATES_PATH := source_directory() + "/certificates"
+SECRETS_PATH := source_directory() + "/secrets"
+TEMPLATES_PATH := source_directory() + "/templates"
 
 create-root-ca:
   #!/usr/bin/env sh
-  rm -rf {{CA_PATH}}
-  STEPPATH={{CA_PATH}} step ca init --pki --name "ca.tjo.cloud Root CA" --deployment-type standalone
-  cp {{CA_PATH}}/certs/root_ca.crt {{source_directory()}}/root_ca.crt
-  rm {{CA_PATH}}/certs/intermediate_ca.crt
-  rm {{CA_PATH}}/secrets/intermediate_ca_key
-  just encrypt-ca
+  rm -rf {{CERTIFICATES_PATH}} {{SECRETS_PATH}}
+  mkdir -p {{CERTIFICATES_PATH}}/root {{SECRETS_PATH}}/root
+
+  # Will be valid for 25 years.
+  step certificate create --no-password --insecure \
+    --template {{TEMPLATES_PATH}}/root.tpl \
+    --not-after 220000h \
+    --kty EC \
+    "ca.tjo.cloud - Root" \
+    {{CERTIFICATES_PATH}}/root/ca.crt \
+    {{SECRETS_PATH}}/root/ca.key
+
+  just encrypt-secrets root
+
+  step certificate fingerprint {{CERTIFICATES_PATH}}/root/ca.crt > {{CERTIFICATES_PATH}}/root/ca.fingerprint
+
+  cp {{CERTIFICATES_PATH}}/root/ca.crt {{source_directory()}}/ansible/root/var/www/root.crt
+  cp {{CERTIFICATES_PATH}}/root/ca.fingerprint {{source_directory()}}/ansible/root/var/www/root.fingerprint
 
 create-root-intermediate-ca:
   #!/usr/bin/env sh
-  just decrypt-ca
+  just decrypt-secrets root
+  mkdir -p {{CERTIFICATES_PATH}}/intermediate {{SECRETS_PATH}}/intermediate
 
-  STEPPATH={{CA_PATH}}
   YEAR=$(date -u +%Y)
 
   # Will be valid for 1 year.
   # Allows to have two more Intermediates under.
-  step certificate create \
-    --profile intermediate-ca \
-    --ca {{CA_PATH}}/certs/root_ca.crt \
-    --ca-key {{CA_PATH}}/secrets/root_ca_key \
-    --not-after 17600h \
+  step certificate create --no-password --insecure \
+    --template {{TEMPLATES_PATH}}/intermediate.tpl \
+    --ca {{CERTIFICATES_PATH}}/root/ca.crt \
+    --ca-key {{SECRETS_PATH}}/root/ca.key \
+    --not-after 9000h \
     --kty EC \
-    --path-len 2 \
-    "ca.tjo.cloud - ${YEAR} ECC Intermediate" \
-    {{CA_PATH}}/certs/intermediate_${YEAR}.crt \
-    {{CA_PATH}}/secrets/intermediate_${YEAR}_key
+    --set "maxPathLen=3" \
+    "ca.tjo.cloud - ${YEAR} Intermediate" \
+    {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
+    {{SECRETS_PATH}}/intermediate/${YEAR}.key
 
-  just encrypt-ca
+  just encrypt-secrets intermediate
 
+  step certificate fingerprint {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt > {{CERTIFICATES_PATH}}/intermediate/${YEAR}.fingerprint
 
-sign-caddy-root-ca node:
+sign-issuing-intermediate-ca node:
   #!/usr/bin/env sh
-  just decrypt-ca
-  export STEPPATH={{CA_PATH}}
+  just decrypt-secrets intermediate
 
-  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat "
+  YEAR=$(date -u +%Y)
+  CSR=$(mktemp)
+  CRT=$(mktemp)
+
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat /etc/caddy/root.csr" > $CSR
 
   # Will be valid for 400 days.
   # We allow it to sign another intermediary.
+  # We upload it
   step certificate sign \
+    --template {{TEMPLATES_PATH}}/intermediate.tpl \
     --not-after 9600h \
-    --profile intermediate-ca \
-    --path-len 1 \
-    csr/path \
-    {{CA_PATH}}/certs/root_ca.crt \
-    {{CA_PATH}}/secrets/root_ca_key
+    --set "maxPathLen=2" \
+    $CSR \
+    {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
+    {{SECRETS_PATH}}/intermediate/${YEAR}.key > $CRT
 
-  just remove-ca
+  just remove-secrets
 
-remove-ca:
+  # Upload Certificate
+  cat $CRT | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
+
+  # Change ownership
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo chown caddy:caddy /etc/caddy/root.crt && sudo chmod 0400 /etc/caddy/root.crt"
+
+remove-secrets:
   #!/usr/bin/env sh
-  rm -rf {{CA_PATH}}
+  rm -rf {{SECRETS_PATH}}
 
-encrypt-ca:
+encrypt-secrets type:
   #!/usr/bin/env sh
-  tar -vzcf - {{CA_PATH}} | age --encrypt -R {{source_directory()}}/../age.keys > {{source_directory()}}/root-ca.encrypted
-  just remove-ca
+  tar -vzcf - -C {{source_directory()}} secrets/{{type}} \
+    | age --encrypt -R {{source_directory()}}/../age.keys > {{source_directory()}}/secrets.{{type}}.encrypted
+  just remove-secrets
 
-decrypt-ca:
+decrypt-secrets type:
   #!/usr/bin/env sh
-  just remove-ca
-  mkdir -p {{CA_PATH}}
-  chmod 700 {{CA_PATH}}
-  cat {{source_directory()}}/root-ca.encrypted | age --decrypt -i "{{SOPS_AGE_KEY_FILE}}" | tar --strip-components=3 -vzxf - -C {{CA_PATH}}
+  just remove-secrets {{type}}
+
+  mkdir -p {{SECRETS_PATH}}/{{type}}
+  chmod 700 {{SECRETS_PATH}}
+  cat {{source_directory()}}/secrets.{{type}}.encrypted \
+    | age --decrypt -i "{{SOPS_AGE_KEY_FILE}}" | tar -vzxf - -C {{source_directory()}}
