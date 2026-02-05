@@ -72,15 +72,15 @@ create-root-intermediate-ca:
 
   YEAR=$(date -u +%Y)
 
-  # Will be valid for 1 year.
-  # Allows to have two more Intermediates under.
+  # Will be valid for 400 days.
+  # Allow to have one intermediate under.
   step certificate create --no-password --insecure \
     --template {{TEMPLATES_PATH}}/intermediate.tpl \
     --ca {{CERTIFICATES_PATH}}/root/ca.crt \
     --ca-key {{SECRETS_PATH}}/root/ca.key \
     --not-after 9000h \
     --kty EC \
-    --set "maxPathLen=3" \
+    --set "maxPathLen=2" \
     "ca.tjo.cloud - ${YEAR} Intermediate" \
     {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
     {{SECRETS_PATH}}/intermediate/${YEAR}.key
@@ -88,6 +88,7 @@ create-root-intermediate-ca:
   just encrypt-secrets intermediate
 
   step certificate fingerprint {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt > {{CERTIFICATES_PATH}}/intermediate/${YEAR}.fingerprint
+  cat {{CERTIFICATES_PATH}}/root/ca.crt {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt > {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt
 
 sign-issuing-intermediate-ca node:
   #!/usr/bin/env sh
@@ -97,26 +98,30 @@ sign-issuing-intermediate-ca node:
   CSR=$(mktemp)
   CRT=$(mktemp)
 
-  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat /etc/caddy/root.csr" > $CSR
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat /etc/step-ca/intermediate.csr" > $CSR
 
-  # Will be valid for 400 days.
-  # We allow it to sign another intermediary.
-  # We upload it
+  # Will be valid for 200 days.
+  # Allow it to only sing leaf certificates.
   step certificate sign \
     --template {{TEMPLATES_PATH}}/intermediate.tpl \
-    --not-after 9600h \
-    --set "maxPathLen=2" \
+    --not-after 4800h \
+    --set "maxPathLen=1" \
     $CSR \
     {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
     {{SECRETS_PATH}}/intermediate/${YEAR}.key > $CRT
 
   just remove-secrets
 
-  # Upload Certificate
-  cat $CRT | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
+  # Upload New Certificate
+  cat $CRT | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/intermediate.crt"
 
   # Change ownership
-  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo chown caddy:caddy /etc/caddy/root.crt && sudo chmod 0400 /etc/caddy/root.crt"
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo chown step:step /etc/step-ca/intermediate.crt && sudo chmod 0400 /etc/step-ca/intermediate.crt"
+
+  # Upload Intermediate Certificate Bundle
+  # TODO: Should it include this certificate as well?
+  cat {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
+  cat {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/root.crt"
 
 remove-secrets:
   #!/usr/bin/env sh

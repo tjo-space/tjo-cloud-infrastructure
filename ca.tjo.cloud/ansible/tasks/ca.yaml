@@ -45,30 +45,52 @@
     components: main
     signed_by: https://packages.smallstep.com/keys/apt/repo-signing-key.gpg
 
-- name: Install step-cli
+- name: Install step-cli and step-ca
   ansible.builtin.apt:
-    name: step-cli
+    name: "{{ item }}"
     state: present
     update_cache: yes
+  loop:
+    - step-cli
+    - step-ca
+
+- name: Create step group
+  ansible.builtin.group:
+    name: step
+    gid: 1010
+    system: true
+    state: present
+
+- name: Create step user
+  ansible.builtin.user:
+    name: step
+    uid: 1010
+    group: step
+    system: true
+    home: /var/lib/step
+    state: present
+
+# TODO: Copy systemd unit for step-ca
+# TODO: Enable/start systemd unit for step-ca
 
 - name: Check if key already exists
   ansible.builtin.stat:
-    name: "/etc/caddy/root.key"
-  register: caddy_root_key
+    name: "/etc/step-ca/intermediate.key"
+  register: step_intermediate_key
   tags: step-ca-csr
 
 - name: Init Intermediate Certificate Authority
   ansible.builtin.shell: |
     YEAR=$(date -u +%Y)
 
-    # Create new Caddy Root CA CSR
+    # Create new Intermediate CA CSR
     step certificate create --csr \
       --no-password --insecure \
       --san "$(hostname)" \
        "$(hostname) - ${YEAR} Intermediate" \
-      /etc/caddy/root.csr /etc/caddy/root.key
+      /etc/step-ca/intermediate.csr /etc/step-ca/intermediate.key
 
-    chown caddy:caddy /etc/caddy/root.csr /etc/caddy/root.key
-    chmod 0400 /etc/caddy/root.csr /etc/caddy/root.key
-  when: "not caddy_root_key.stat.exists"
+    chown step:step /etc/step-ca/intermediate.csr /etc/step-ca/intermediate/root.key
+    chmod 0400 /etc/step-ca/intermediate.csr /etc/step-ca/intermediate.key
+  when: "not step_intermediate_key.stat.exists"
   tags: step-ca-csr

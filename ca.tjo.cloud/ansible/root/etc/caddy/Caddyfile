@@ -15,39 +15,31 @@
       tls
 		}
 	}
-
-	pki {
-		ca ca-tjo-cloud {
-      name = "{{ ansible_fqdn }}"
-			root {
-				format pem_file
-				cert /etc/caddy/root.crt
-				key /etc/caddy/root.key
-			}
-      intermediate_cn "{pki.ca.name} - {time.now.year} Signing"
-		}
-	}
 }
 
+# Internal DNS with Internal CA
 ca.cloud.internal {
 	tls {
 		issuer internal {
-			ca ca-tjo-cloud
-		}
-	}
-
-	acme_server {
-		ca ca-tjo-cloud
-
-		allow {
-			domains "*.internal"
+			dir https://127.0.0.1:9000/acme/v1/directory
+      trusted_roots /etc/caddy/root.crt
+      disable_tlsalpn_challenge
 		}
 	}
 
 	root * /var/www
 	file_server
+
+  reverse_proxy https://localhost:9000  {
+    transport http {
+      tls_trust_pool file {
+        pem_file /etc/caddy/root.crt
+      }
+    }
+  }
 }
 
+# Public DNS with Public CA
 ca.tjo.cloud {
 	tls {
 		issuer acme {
@@ -55,14 +47,14 @@ ca.tjo.cloud {
 		}
 	}
 
-	acme_server {
-		ca ca-tjo-cloud
-
-		allow {
-			domains "*.internal"
-		}
-	}
-
 	root * /var/www
 	file_server
+
+  reverse_proxy https://localhost:9000  {
+    transport http {
+      tls_trust_pool file {
+        pem_file /etc/caddy/root.crt
+      }
+    }
+  }
 }

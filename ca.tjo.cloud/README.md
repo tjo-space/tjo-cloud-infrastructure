@@ -17,7 +17,5 @@ ca.tjo.cloud - [year] Intermediate (1 year)
   |
 $HOST.ca.tjo.cloud - [year] Intermediate (6 months)
   |
-$HOST.ca.tjo.cloud - [year] Signing (7 days)
-  |
-example.com. (12 hours)
+example.com. (24 hours)
 ```
