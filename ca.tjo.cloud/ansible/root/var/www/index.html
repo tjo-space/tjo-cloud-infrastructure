@@ -11,7 +11,7 @@
   </head>
   <body>
     <header class="hero">
-      <span class="icon">🔑</span>
+      <span class="icon">🔐</span>
       <h1>ca.tjo.cloud</h1>
       <p class="subhead">Hi! You can get information about tjo.cloud Certificate Authority (CA) here.</p>
     </header>
@@ -30,8 +30,8 @@
   # Or Internal DNS (served via ca.tjo.cloud Cert)
   # acme_ca https://ca.cloud.internal/acme/v1/directory
 
-  # Download from https://ca.tjo.cloud/root.crt
-  acme_ca_root /path/to/ca-tjo-cloud/root.crt
+  # Download from https://ca.tjo.cloud/roots.pem
+  acme_ca_root /path/to/ca-tjo-cloud/roots.pem
 }
 
 example.internal {
@@ -43,26 +43,27 @@ example.internal {
         <h2>Configuring Linux to accept CA</h2>
         <pre>
 sudo mkdir -p /usr/local/share/ca-certificates/ca-tjo-cloud
-sudo curl -sLo /usr/local/share/ca-certificates/ca-tjo-cloud/root.crt https://ca.tjo.cloud/root.crt
+sudo curl -sLo /usr/local/share/ca-certificates/ca-tjo-cloud/roots.pem https://ca.tjo.cloud/roots.pem
 sudo update-ca-certificates
 </pre>
         </p>
       </section>
       <section class="text">
         <h3>Root Fingerprint:</h3>
-        <pre>6435a62157d89f57f90f2a69ce51bcb44acad1978c827aa53a8f530803e79575</pre>
+        <pre>b7fd933541ee1001e1b480353a03690881fd0c50518c8aa67608944675cac875</pre>
         <h3>Root Certificate:</h3>
-        <p>Also accessible at <a href="/root.crt">/root.crt</a></p>
+        <p>Also accessible at <a href="/roots.pem">/roots.pem</a></p>
         <pre>
 -----BEGIN CERTIFICATE-----
-MIIBcTCCARegAwIBAgIRAIal77ic7mivE4JKGslFuyAwCgYIKoZIzj0EAwIwFzEV
-MBMGA1UEAxMMY2EudGpvLmNsb3VkMCAXDTI2MDIwNTEzMzIyOVoYDzIwNTEwMzEz
-MDUzMjI5WjAXMRUwEwYDVQQDEwxjYS50am8uY2xvdWQwWTATBgcqhkjOPQIBBggq
-hkjOPQMBBwNCAATtHj0lv+Kfeg9EDjgsafUx26m3E5oBEn6Flfqm5BBncpXxZ9pb
-aDIojpKUOzaDt+DuGtc0CtIlFLXo0tA7Iq8Uo0IwQDAOBgNVHQ8BAf8EBAMCAQYw
-DwYDVR0TAQH/BAUwAwEB/zAdBgNVHQ4EFgQU0AiKeHGdfZnOUFxnCQwaM2b0gGYw
-CgYIKoZIzj0EAwIDSAAwRQIhALxPC0xE3ONHScAC9EgM9lIX8URprLq812lT46hX
-XOjmAiBslbps9b1NqwUhz+fnwQQguQepUBYZXLc3iTD7qDdSyg==
+MIIBfzCCASSgAwIBAgIQTwBj3msM0GPYkUSHuEsKEjAKBggqhkjOPQQDAjAeMRww
+GgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MCAXDTI2MDIwNjIwNTc0MFoYDzIw
+NTEwMzE0MTI1NzQwWjAeMRwwGgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MFkw
+EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENghQfaCunCDzn0BmU8vI5X79OAqZ7Uob
+8tM38BJmvUmafJMyxpvlIKNgotXJfnTw1GN5mR6u4eqvSRclhUcRtKNCMEAwDgYD
+VR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFD0gfxAPGvuX
+jmqfZ1CreFQT+WuQMAoGCCqGSM49BAMCA0kAMEYCIQCY0suGAsNGx7n2+F+Z786Q
+dubTJY1VA3fqwc0ZpO+AtQIhAOmeM2O7iFarM2KILzS5189DsdNIn5pp9v5uLOSX
+T8+p
 -----END CERTIFICATE-----
 </pre>
         </p>

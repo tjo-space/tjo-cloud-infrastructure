@@ -62,9 +62,6 @@ create-root-ca:
 
   step certificate fingerprint {{CERTIFICATES_PATH}}/root/ca.crt > {{CERTIFICATES_PATH}}/root/ca.fingerprint
 
-  cp {{CERTIFICATES_PATH}}/root/ca.crt {{source_directory()}}/ansible/root/var/www/root.crt
-  cp {{CERTIFICATES_PATH}}/root/ca.fingerprint {{source_directory()}}/ansible/root/var/www/root.fingerprint
-
 create-root-intermediate-ca:
   #!/usr/bin/env sh
   just decrypt-secrets root
@@ -80,7 +77,6 @@ create-root-intermediate-ca:
     --ca-key {{SECRETS_PATH}}/root/ca.key \
     --not-after 9000h \
     --kty EC \
-    --set "maxPathLen=2" \
     "ca.tjo.cloud - ${YEAR} Intermediate" \
     {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
     {{SECRETS_PATH}}/intermediate/${YEAR}.key
@@ -88,7 +84,7 @@ create-root-intermediate-ca:
   just encrypt-secrets intermediate
 
   step certificate fingerprint {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt > {{CERTIFICATES_PATH}}/intermediate/${YEAR}.fingerprint
-  cat {{CERTIFICATES_PATH}}/root/ca.crt {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt > {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt
+  step certificate bundle {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt {{CERTIFICATES_PATH}}/root/ca.crt {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt
 
 sign-issuing-intermediate-ca node:
   #!/usr/bin/env sh
@@ -97,31 +93,33 @@ sign-issuing-intermediate-ca node:
   YEAR=$(date -u +%Y)
   CSR=$(mktemp)
   CRT=$(mktemp)
+  CRT_BUNDLE=$(mktemp)
 
   ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo cat /etc/step-ca/intermediate.csr" > $CSR
 
   # Will be valid for 200 days.
   # Allow it to only sing leaf certificates.
   step certificate sign \
-    --template {{TEMPLATES_PATH}}/intermediate.tpl \
+    --template {{TEMPLATES_PATH}}/intermediate-issuing.tpl \
     --not-after 4800h \
-    --set "maxPathLen=1" \
     $CSR \
     {{CERTIFICATES_PATH}}/intermediate/${YEAR}.crt \
     {{SECRETS_PATH}}/intermediate/${YEAR}.key > $CRT
 
   just remove-secrets
 
+  # Bundle certificate
+  cat $CRT {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt > $CRT_BUNDLE
+
   # Upload New Certificate
-  cat $CRT | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/intermediate.crt"
+  cat $CRT_BUNDLE | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/intermediate.crt"
 
   # Change ownership
   ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo chown step:step /etc/step-ca/intermediate.crt && sudo chmod 0400 /etc/step-ca/intermediate.crt"
 
-  # Upload Intermediate Certificate Bundle
-  # TODO: Should it include this certificate as well?
-  cat {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
-  cat {{CERTIFICATES_PATH}}/intermediate/${YEAR}.bundle.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/root.crt"
+  # Upload root crt
+  cat {{CERTIFICATES_PATH}}/root/ca.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
+  cat {{CERTIFICATES_PATH}}/root/ca.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/root.crt"
 
 remove-secrets:
   #!/usr/bin/env sh

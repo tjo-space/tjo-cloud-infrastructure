@@ -2,12 +2,6 @@
 
 Certificate Authority for `.internal` (and other?) TLD.
 
-## TODO
-- [ ] Caddy does not support adding full chain to certificates?
-  - Switch to `step ca` with caddy as proxy?
-  - That would allow us to use more then just acme?
-  - Keep existing CSR approach.
-
 ## Authorities
 
 ```

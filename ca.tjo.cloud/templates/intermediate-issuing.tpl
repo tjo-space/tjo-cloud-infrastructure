@@ -3,7 +3,7 @@
     "keyUsage": ["certSign", "crlSign"],
     "basicConstraints": {
         "isCA": true,
-        "maxPathLen": 2
+        "maxPathLen": 1
     },
     "sans": {{ toJson .SANs }}
 }

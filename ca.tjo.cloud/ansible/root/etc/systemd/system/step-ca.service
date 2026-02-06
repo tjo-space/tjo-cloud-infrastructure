@@ -17,7 +17,7 @@ User=step
 Group=step
 Environment=STEPPATH=/etc/step-ca
 WorkingDirectory=/etc/step-ca
-ExecStart=/usr/bin/step-ca ca.json
+ExecStart=/usr/bin/step-ca config.json
 ExecReload=/bin/kill --signal HUP $MAINPID
 Restart=on-failure
 RestartSec=5

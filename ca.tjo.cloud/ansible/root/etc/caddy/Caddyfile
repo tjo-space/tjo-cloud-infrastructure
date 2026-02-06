@@ -12,7 +12,7 @@
 				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
 				fallback_policy reject
 			}
-      tls
+			tls
 		}
 	}
 }
@@ -20,23 +20,27 @@
 # Internal DNS with Internal CA
 ca.cloud.internal {
 	tls {
-		issuer internal {
-			dir https://127.0.0.1:9000/acme/v1/directory
-      trusted_roots /etc/caddy/root.crt
-      disable_tlsalpn_challenge
+		issuer acme {
+			dir https://localhost:9000/acme/v1/directory
+			trusted_roots /etc/caddy/root.crt
+			disable_tlsalpn_challenge
 		}
 	}
 
-	root * /var/www
-	file_server
+	route {
+		file_server {
+			root /var/www
+			pass_thru
+		}
 
-  reverse_proxy https://localhost:9000  {
-    transport http {
-      tls_trust_pool file {
-        pem_file /etc/caddy/root.crt
-      }
-    }
-  }
+		reverse_proxy https://localhost:9000 {
+			transport http {
+				tls_trust_pool file {
+					pem_file /etc/caddy/root.crt
+				}
+			}
+		}
+	}
 }
 
 # Public DNS with Public CA
@@ -47,14 +51,18 @@ ca.tjo.cloud {
 		}
 	}
 
-	root * /var/www
-	file_server
+	route {
+		file_server {
+			root /var/www
+			pass_thru
+		}
 
-  reverse_proxy https://localhost:9000  {
-    transport http {
-      tls_trust_pool file {
-        pem_file /etc/caddy/root.crt
-      }
-    }
-  }
+		reverse_proxy https://localhost:9000 {
+			transport http {
+				tls_trust_pool file {
+					pem_file /etc/caddy/root.crt
+				}
+			}
+		}
+	}
 }

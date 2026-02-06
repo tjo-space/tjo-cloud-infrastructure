@@ -31,8 +31,6 @@
   loop:
     - index.html
     - style.css
-    - root.crt
-    - root.fingerprint
   notify: Restart caddy
   tags: config-reload
 
@@ -70,9 +68,6 @@
     home: /var/lib/step
     state: present
 
-# TODO: Copy systemd unit for step-ca
-# TODO: Enable/start systemd unit for step-ca
-
 - name: Check if key already exists
   ansible.builtin.stat:
     name: "/etc/step-ca/intermediate.key"
@@ -81,16 +76,69 @@
 
 - name: Init Intermediate Certificate Authority
   ansible.builtin.shell: |
-    YEAR=$(date -u +%Y)
+    mkdir -p /etc/step-ca
 
     # Create new Intermediate CA CSR
+    YEAR=$(date -u +%Y)
     step certificate create --csr \
       --no-password --insecure \
       --san "$(hostname)" \
+      --san "localhost" \
+      --kty "EC" \
        "$(hostname) - ${YEAR} Intermediate" \
       /etc/step-ca/intermediate.csr /etc/step-ca/intermediate.key
 
-    chown step:step /etc/step-ca/intermediate.csr /etc/step-ca/intermediate/root.key
-    chmod 0400 /etc/step-ca/intermediate.csr /etc/step-ca/intermediate.key
+    chown step:step -R /etc/step-ca
+    chmod 0400 -R /etc/step-ca/*
   when: "not step_intermediate_key.stat.exists"
+  tags: step-ca-csr
+
+- name: Check if certificate already exists
+  ansible.builtin.stat:
+    name: "/etc/step-ca/intermediate.crt"
+  register: step_intermediate_certificate
+  tags: step-ca-csr
+
+- name: Create step-ca systemd service file
+  ansible.builtin.template:
+    src: root/etc/systemd/system/step-ca.service
+    dest: /etc/systemd/system/step-ca.service
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Restart step-ca
+  tags:
+    - step-ca-csr
+    - config-reload
+
+- name: Create step-ca config file
+  ansible.builtin.template:
+    src: root/etc/step-ca/config.json
+    dest: /etc/step-ca/config.json
+    mode: '0400'
+    owner: step
+    group: step
+  notify: Restart step-ca
+  tags:
+    - step-ca-csr
+    - config-reload
+
+- name: Create db dir for step-ca
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/step-ca/db"
+    mode: "0700"
+    owner: "step"
+    group: "step"
+  tags:
+    - step-ca-csr
+    - config-reload
+
+- name: Start and enable step-ca service
+  ansible.builtin.systemd:
+    name: step-ca
+    state: started
+    enabled: true
+    daemon_reload: true
+  when: "step_intermediate_certificate.stat.exists"
   tags: step-ca-csr
