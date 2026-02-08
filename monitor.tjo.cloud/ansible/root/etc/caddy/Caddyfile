@@ -77,7 +77,7 @@ grpc.otel.monitor.cloud.internal {
 		}
 	}
 
-  reverse_proxy h2c://localhost:4317
+	reverse_proxy h2c://localhost:4317
 }
 http.otel.monitor.cloud.internal {
 	tls {
