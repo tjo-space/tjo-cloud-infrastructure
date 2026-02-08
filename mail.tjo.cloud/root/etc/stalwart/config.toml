@@ -79,13 +79,13 @@ store = "nevaroo_one_postgresql_tjo_cloud"
 [store.nevaroo_one_postgresql_tjo_cloud]
 type = "postgresql"
 database = "mail.tjo.cloud_stalwart"
-host = "nevaroo-one.postgresql.tjo.cloud"
+host = "nevaroo-one.postgresql.cloud.internal"
 user = "mail.tjo.cloud"
 password = "%{env:POSTGRESQL_PASSWORD}%"
 pool.max-connections = 10
 port = 5432
 timeout = "15s"
-tls.allow-invalid-certs = false
+tls.allow-invalid-certs = true
 tls.enable = false # TODO: Why does this not work?
 
 [store.localhost_valkey]
