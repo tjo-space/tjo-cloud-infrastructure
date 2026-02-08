@@ -2,7 +2,7 @@ locals {
   nodes_with_name = {
     for k, v in var.nodes : k => merge(v, {
       name = k
-      fqdn = "${k}.${var.domain}"
+      fqdn = "${k}.postgresql.cloud.internal"
     })
   }
 
@@ -11,7 +11,7 @@ locals {
       meta = {
         cloud_region   = v.host
         cloud_provider = "proxmox"
-        service_name   = var.domain
+        service_name   = "postgresql.tjo.cloud"
         service_account = {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
@@ -50,7 +50,7 @@ EOF
   boot = {
     storage = each.value.boot_storage
     size    = each.value.boot_size
-    image   = "ubuntu_2404_server_cloudimg_amd64.img"
+    image   = "debian_13_server_cloudimg_amd64.img"
   }
 
   disks = [{
@@ -113,7 +113,6 @@ resource "local_file" "ansible_secrets" {
   content = yamlencode({
     postgres_password = random_password.postgres.result
     barman_password   = random_password.barman.result
-    desec_token       = var.desec_token
   })
   filename = "${path.module}/../ansible/vars.terraform.secrets.yaml"
 }

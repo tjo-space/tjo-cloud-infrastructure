@@ -8,5 +8,5 @@ StateDirectory=lego
 # Only run if the state/certificates directory is empty.
 # As in, we have not yet run "lego run".
 ExecCondition=/usr/bin/sh -c '[ -z "$(find ${STATE_DIRECTORY}/certificates -mindepth 1 -maxdepth 1)" ]'
-ExecStart=/usr/local/bin/lego --accept-tos --path=${STATE_DIRECTORY} --email=${EMAIL} --domains=${HOSTNAME} --dns=desec run
+ExecStart=/usr/local/bin/lego --accept-tos --server=${SERVER} --path=${STATE_DIRECTORY} --email=${EMAIL} --domains=${HOSTNAME} --http run
 Type=oneshot

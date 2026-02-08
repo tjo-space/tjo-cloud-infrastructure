@@ -222,14 +222,14 @@ resource "kubernetes_manifest" "gateway" {
       gatewayClassName = "envoy"
       listeners = [
         {
-          name     = var.domain
-          hostname = var.domain
+          name     = "postgresql.tjo.cloud"
+          hostname = "postgresql.tjo.cloud"
           protocol = "HTTPS"
           port     = 443
           tls = {
             mode = "Terminate"
             certificateRefs = [{
-              name = "${var.domain}-tls"
+              name = "postgresql.tjo.cloud-tls"
             }]
           }
           allowedRoutes = {
@@ -279,7 +279,7 @@ resource "kubernetes_manifest" "pgadmin-http-route" {
       parentRefs = [{
         name = kubernetes_manifest.gateway.object.metadata.name
       }]
-      hostnames = [var.domain]
+      hostnames = ["postgresql.tjo.cloud"]
       rules = [
         {
           matches = [

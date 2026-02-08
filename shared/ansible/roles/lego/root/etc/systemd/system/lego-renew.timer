@@ -2,10 +2,8 @@
 Description=Renew certificate using lego
 
 [Timer]
-OnCalendar=daily
-AccuracySec=1h
+OnCalendar=hourly
 Persistent=true
-RandomizedDelaySec=4h
 Unit=lego-renew.service
 
 [Install]

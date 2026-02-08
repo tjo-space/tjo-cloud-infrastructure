@@ -1,3 +1,5 @@
+export TF_CLI_ARGS := "-var-file=terraform.secrets.tfvars"
+
 default:
   @just --list
 
@@ -7,16 +9,18 @@ apply:
   tofu init
   tofu apply
 
-apply-only node:
+create:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
   tofu init
-  tofu apply --target 'module.proxmox_node["{{node}}"]'
+  tofu apply --target 'module.proxmox_node'
+  tofu apply --target 'technitium_record.for_node'
+  tofu apply --target 'local_file.ansible_inventory'
 
 destroy:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
-  tofu  destroy
+  tofu destroy
 
 destroy-only node:
   #!/usr/bin/env sh
@@ -55,4 +59,4 @@ configure-all tag="":
     playbook.yaml
 
 ssh node:
-  ssh bine@{{node}}.postgresql.tjo.cloud -p 2222
+  ssh bine@{{node}}.postgresql.cloud.internal -p 2222

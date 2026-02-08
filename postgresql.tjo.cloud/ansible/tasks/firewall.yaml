@@ -1,23 +1,31 @@
-- name: UFW - Install
-  ansible.builtin.apt:
-    name: ufw
-    state: present
-
-- name: UFW - Allow postgresql
-  community.general.ufw:
-    rule: allow
-    port: '5432'
-    proto: tcp
-    src: '{{ item }}'
-  loop: "{{ tjo_cloud_networks }}"
-
-- name: UFW - Allow SSH
-  community.general.ufw:
-    rule: allow
-    port: '2222'
-    proto: tcp
-
-- name: UFW - Enable and deny by default
-  community.general.ufw:
+- name: FIREWALL - Define internal zone
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
     state: enabled
-    default: deny
+  loop: "{{ tjo_cloud_networks }}"
+  tags: firewall
+
+- name: FIREWALL - HTTP, HTTPS, POSTGRESQL
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "80/tcp"
+    - "443/tcp"
+    - "5432/tcp"
+  tags: firewall
+
+- name: FIREWALL - Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall

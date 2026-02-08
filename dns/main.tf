@@ -16,6 +16,7 @@ resource "desec_rrset" "ingress" {
     "http.otel.monitor",
     "loki.monitor",
     "monitor",
+    "postgresql",
     "prometheus.monitor",
     "proxmox",
   ]) : "${pair[0]}-${pair[1]}" => { type = pair[0], subname = pair[1] } }
@@ -36,6 +37,7 @@ resource "desec_rrset" "https" {
     "http.otel.monitor",
     "loki.monitor",
     "monitor",
+    "postgresql",
     "prometheus.monitor",
     "proxmox",
   ])

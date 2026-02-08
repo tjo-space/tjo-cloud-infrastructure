@@ -12,3 +12,8 @@
     name: 'postgresql-{{ postgresql_version }}'
     state: present
     update_cache: true
+
+- name: Install locales
+  ansible.builtin.apt:
+    name: locales-all
+    state: present

@@ -49,22 +49,12 @@ variable "pgadmin_client_secret" {
   sensitive = true
 }
 
-variable "domain" {
-  type    = string
-  default = "postgresql.tjo.cloud"
-}
-
 variable "proxmox_token" {
   type      = string
   sensitive = true
 }
 
 variable "authentik_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "desec_token" {
   type      = string
   sensitive = true
 }

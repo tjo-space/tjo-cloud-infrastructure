@@ -5,5 +5,5 @@ Description=Lets Encrypt client and ACME library written in Go
 EnvironmentFile=/etc/lego/lego.env
 Environment=HOSTNAME=%H
 StateDirectory=lego
-ExecStart=/usr/local/bin/lego --accept-tos --path=${STATE_DIRECTORY} --email=${EMAIL} --domains=${HOSTNAME} --dns=desec renew
+ExecStart=/usr/local/bin/lego --accept-tos --server=${SERVER} --path=${STATE_DIRECTORY} --email=${EMAIL} --domains=${HOSTNAME} --http renew
 Type=oneshot

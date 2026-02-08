@@ -13,6 +13,11 @@
 *.tfvars
 *.tfvars.*
 !terraform.tfvars
+!tofu.tfvars
+!terraform.*.tfvars.encrypted
+!terraform.*.tfvars.sha256sum
+!tofu.*.tfvars.encrypted
+!tofu.*.tfvars.sha256sum
 
 # Crash log files
 crash.log

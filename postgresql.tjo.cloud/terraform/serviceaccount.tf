@@ -10,7 +10,7 @@ resource "authentik_user" "service_account" {
   name     = each.value.fqdn
 
   type = "service_account"
-  path = var.domain
+  path = "postgresql.tjo.cloud"
 
   groups = [
     data.authentik_group.monitoring_publisher.id,
