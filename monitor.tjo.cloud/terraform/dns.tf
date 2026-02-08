@@ -1,32 +1,23 @@
-resource "desec_rrset" "web" {
-  for_each = toset([
+resource "technitium_record" "for_node" {
+  for_each   = local.nodes_deployed
+  zone       = "cloud.internal"
+  domain     = "${each.value.name}.monitor.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value.private_ipv6
+}
+resource "technitium_record" "all" {
+  for_each = { for pair in setproduct(keys(local.nodes_deployed), [
     "",
     "prometheus.",
     "loki.",
     "grpc.otel.",
     "http.otel.",
-  ])
+  ]) : "${pair[0]}-${pair[1]}" => { node = pair[0], domain = pair[1] } }
 
-  domain  = "tjo.cloud"
-  subname = "${each.key}${trimsuffix(var.domain, ".tjo.cloud")}"
-  type    = "CNAME"
-  records = ["any.ingress.tjo.cloud."]
-  ttl     = 3600
-}
-
-resource "desec_rrset" "node_a" {
-  for_each = local.nodes_deployed
-  domain   = "tjo.cloud"
-  subname  = "${each.value.name}.${trimsuffix(var.domain, ".tjo.cloud")}"
-  type     = "A"
-  records  = [each.value.private_ipv4]
-  ttl      = 3600
-}
-resource "desec_rrset" "node_aaaa" {
-  for_each = local.nodes_deployed
-  domain   = "tjo.cloud"
-  subname  = "${each.value.name}.${trimsuffix(var.domain, ".tjo.cloud")}"
-  type     = "AAAA"
-  records  = [each.value.private_ipv6]
-  ttl      = 3600
+  zone       = "cloud.internal"
+  domain     = "${each.value.domain}monitor.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = local.nodes_deployed[each.value.node].private_ipv6
 }

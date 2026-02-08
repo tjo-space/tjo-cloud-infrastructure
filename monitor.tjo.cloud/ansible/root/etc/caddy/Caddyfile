@@ -31,6 +31,19 @@ monitor.tjo.cloud {
 	}
 }
 
+monitor.cloud.internal {
+	tls {
+		issuer acme {
+			dir https://ca.cloud.internal/acme/v1/directory
+		}
+	}
+
+	reverse_proxy localhost:3000 {
+		health_uri /api/health
+		health_port 3000
+	}
+}
+
 ##
 # PROMETHEUS
 ##
@@ -54,5 +67,24 @@ grpc.otel.monitor.tjo.cloud {
 	reverse_proxy h2c://localhost:4317
 }
 http.otel.monitor.tjo.cloud {
+	reverse_proxy localhost:4318
+}
+
+grpc.otel.monitor.cloud.internal {
+	tls {
+		issuer acme {
+			dir https://ca.cloud.internal/acme/v1/directory
+		}
+	}
+
+  reverse_proxy h2c://localhost:4317
+}
+http.otel.monitor.cloud.internal {
+	tls {
+		issuer acme {
+			dir https://ca.cloud.internal/acme/v1/directory
+		}
+	}
+
 	reverse_proxy localhost:4318
 }

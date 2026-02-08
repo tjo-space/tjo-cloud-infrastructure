@@ -40,7 +40,6 @@
         "clientSecret": "CvYx6uWO0VWOcPUkuXGGyttBePY0mc9ek8rWttFH9KgfV3tA0xMODY03XCNiqpOxUCJOgCWVel2dgiyXZdkUVgNtGbT3u6eSRAAJUJoVVtDD5R46Zpb6T1gRdRnwYePG",
         "configurationEndpoint": "https://id.tjo.cloud/application/o/ca-tjo-cloud/.well-known/openid-configuration",
         "admins": ["tine.jozelj@tjo.space"],
-        "domains": ["tjo.space", "tjo.cloud"],
         "claims": {
           "maxTLSCertDuration": "8h",
           "defaultTLSCertDuration": "2h",

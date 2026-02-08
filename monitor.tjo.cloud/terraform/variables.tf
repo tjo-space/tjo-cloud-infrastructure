@@ -23,12 +23,12 @@ variable "proxmox_token" {
   sensitive = true
 }
 
-variable "desec_token" {
+variable "authentik_token" {
   type      = string
   sensitive = true
 }
 
-variable "authentik_token" {
+variable "dns_tjo_cloud_token" {
   type      = string
   sensitive = true
 }

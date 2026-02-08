@@ -12,6 +12,11 @@ resource "desec_rrset" "ingress" {
     "ca",
     "dashboard.k8s",
     "dns",
+    "grpc.otel.monitor",
+    "http.otel.monitor",
+    "loki.monitor",
+    "monitor",
+    "prometheus.monitor",
     "proxmox",
   ]) : "${pair[0]}-${pair[1]}" => { type = pair[0], subname = pair[1] } }
 
@@ -27,6 +32,11 @@ resource "desec_rrset" "https" {
     "ca",
     "dashboard.k8s",
     "dns",
+    "grpc.otel.monitor",
+    "http.otel.monitor",
+    "loki.monitor",
+    "monitor",
+    "prometheus.monitor",
     "proxmox",
   ])
 
