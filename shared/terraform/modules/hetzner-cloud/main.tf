@@ -89,7 +89,6 @@ EOF
   packages = [
     "ansible-core",
     "firewalld",
-    "python3-firewall",
   ]
   package_update  = true
   package_upgrade = true
