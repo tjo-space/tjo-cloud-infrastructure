@@ -5,27 +5,27 @@ Complete configuration of `tjo.cloud`.
 Each subfolder represent a project.
 
 * [ca.tjo.cloud](ca.tjo.cloud/README.md)
- - Internal Certificate Authority.
+  - Internal Certificate Authority.
 * [dns.tjo.cloud](dns.tjo.cloud/README.md)
- - Internal DNS.
+  - Internal DNS.
 * [id.tjo.cloud](id.tjo.cloud/README.md)
- - Identity and Authorization.
+  - Identity and Authorization.
 * [ingress.tjo.cloud](ingress.tjo.cloud/README.md)
- - Exposing internal services to the public internet.
+  - Exposing internal services to the public internet.
 * [k8s.tjo.cloud](k8s.tjo.cloud/README.md)
- - Kubernetes Cluster.
+  - Kubernetes Cluster.
 * [mail.tjo.cloud](mail.tjo.cloud/README.md)
- - Mail Server.
+  - Mail Server.
 * [monitor.tjo.cloud](monitor.tjo.cloud/README.md)
- - Grafana + Loki + Prometheus Monitoring Stack.
+  - Grafana + Loki + Prometheus Monitoring Stack.
 * [network.tjo.cloud](network.tjo.cloud/README.md)
- - Router + BGP + DHCP + RADV.
+  - Router + BGP + DHCP + RADV.
 * [postgresql.tjo.cloud](postgresql.tjo.cloud/README.md)
- - Postgresql Clusters.
+  - Postgresql Clusters.
 * [proxmox.tjo.cloud](proxmox.tjo.cloud/README.md)
- - Proxmox Cluster.
+  - Proxmox Cluster.
 * [s3.tjo.cloud](s3.tjo.cloud/README.md)
- - S3 Compatible storage.
+  - S3 Compatible storage.
 
 ## Starting Guide
 
