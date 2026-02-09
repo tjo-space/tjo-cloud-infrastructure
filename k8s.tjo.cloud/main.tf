@@ -121,19 +121,35 @@ module "cluster-core" {
   }
   hosts = {
     nevaroo = {
-      storage = "local-nvme-lvm"
+      storage = {
+        common = "local-nvme-lvm"
+        nvme   = "local-nvme-lvm"
+      }
     }
     endor = {
-      storage = "local-nvme"
+      storage = {
+        common = "local-nvme"
+        nvme   = "local-nvme"
+      }
     }
     mustafar = {
-      storage = "local"
+      storage = {
+        common = "local"
+      }
     }
     batuu = {
-      storage = "local-nvme"
+      storage = {
+        common = "local-nvme"
+        nvme   = "local-nvme"
+        ssd    = "local-ssd"
+      }
     }
     jakku = {
-      storage = "local-nvme"
+      storage = {
+        common = "local-nvme"
+        nvme   = "local-nvme"
+        hdd    = "local-hdd"
+      }
     }
   }
   proxmox = module.cluster.proxmox

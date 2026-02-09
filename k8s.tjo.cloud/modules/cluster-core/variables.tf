@@ -25,7 +25,7 @@ variable "proxmox" {
 
 variable "hosts" {
   type = map(object({
-    storage = string
+    storage = map(string)
   }))
 }
 

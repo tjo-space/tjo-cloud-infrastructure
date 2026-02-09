@@ -62,15 +62,41 @@ resource "helm_release" "hybrid-csi" {
   })]
 }
 
+moved {
+  from = kubernetes_storage_class.per-host["nevaroo"]
+  to   = kubernetes_storage_class.per-host["nevaroo-common-local-nvme-lvm"]
+}
+moved {
+  from = kubernetes_storage_class.per-host["batuu"]
+  to   = kubernetes_storage_class.per-host["batuu-common-local-nvme"]
+}
+moved {
+  from = kubernetes_storage_class.per-host["jakku"]
+  to   = kubernetes_storage_class.per-host["jakku-common-local-nvme"]
+}
+moved {
+  from = kubernetes_storage_class.per-host["endor"]
+  to   = kubernetes_storage_class.per-host["endor-common-local-nvme"]
+}
+moved {
+  from = kubernetes_storage_class.per-host["mustafar"]
+  to   = kubernetes_storage_class.per-host["mustafar-common-local"]
+}
 resource "kubernetes_storage_class" "per-host" {
   depends_on = [helm_release.hybrid-csi, helm_release.proxmox-csi]
-  for_each   = var.hosts
+  for_each = merge([
+    for host, details in var.hosts : {
+      for type, storage in details.storage : "${host}-${type}-${storage}" => { host : host, type : type, storage : storage }
+    }
+  ]...)
 
   metadata {
-    name = each.key
+    name = each.value.type == "common" ? each.value.host : "${each.value.host}-${each.value.storage}"
     annotations = {
-      "k8s.tjo.cloud/host"    = each.key
-      "k8s.tjo.cloud/proxmox" = var.proxmox.name
+      "k8s.tjo.cloud/host"            = each.value.host
+      "k8s.tjo.cloud/storage-type"    = each.value.type
+      "k8s.tjo.cloud/proxmox"         = var.proxmox.name
+      "k8s.tjo.cloud/proxmox-storage" = each.value.storage
     }
   }
 
@@ -92,7 +118,7 @@ resource "kubernetes_storage_class" "per-host" {
     }
     match_label_expressions {
       key    = "topology.kubernetes.io/zone"
-      values = [each.key]
+      values = [each.value.host]
     }
   }
 }
@@ -113,6 +139,9 @@ resource "kubernetes_storage_class" "common" {
   volume_binding_mode    = "WaitForFirstConsumer"
 
   parameters = {
-    storageClasses = join(",", [for sc in kubernetes_storage_class.per-host : sc.metadata[0].name])
+    storageClasses = join(",", [
+      for sc in kubernetes_storage_class.per-host : sc.metadata[0].name
+      if sc.metadata[0].annotations["k8s.tjo.cloud/storage-type"] == "common"
+    ])
   }
 }
