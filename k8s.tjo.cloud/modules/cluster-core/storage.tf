@@ -62,26 +62,6 @@ resource "helm_release" "hybrid-csi" {
   })]
 }
 
-moved {
-  from = kubernetes_storage_class.per-host["nevaroo"]
-  to   = kubernetes_storage_class.per-host["nevaroo-common-local-nvme-lvm"]
-}
-moved {
-  from = kubernetes_storage_class.per-host["batuu"]
-  to   = kubernetes_storage_class.per-host["batuu-common-local-nvme"]
-}
-moved {
-  from = kubernetes_storage_class.per-host["jakku"]
-  to   = kubernetes_storage_class.per-host["jakku-common-local-nvme"]
-}
-moved {
-  from = kubernetes_storage_class.per-host["endor"]
-  to   = kubernetes_storage_class.per-host["endor-common-local-nvme"]
-}
-moved {
-  from = kubernetes_storage_class.per-host["mustafar"]
-  to   = kubernetes_storage_class.per-host["mustafar-common-local"]
-}
 resource "kubernetes_storage_class" "per-host" {
   depends_on = [helm_release.hybrid-csi, helm_release.proxmox-csi]
   for_each = merge([
