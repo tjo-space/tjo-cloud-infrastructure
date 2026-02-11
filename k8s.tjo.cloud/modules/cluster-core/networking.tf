@@ -2,7 +2,7 @@ resource "helm_release" "cilium" {
   name            = "cilium"
   chart           = "cilium"
   repository      = "https://helm.cilium.io/"
-  version         = "1.18.6"
+  version         = "1.19.0"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -12,11 +12,11 @@ resource "helm_release" "cilium" {
       mode = "kubernetes"
     }
 
-    image = {
-      repository = "quay.io/cilium/cilium-ci"
-      tag        = "latest"
-      digest     = "sha256:7a0d5df32cdbb00f958c033d4323bc1e3f804fd365dc25b6a1d7784ea9d157ea"
-    }
+    #image = {
+    #  repository = "quay.io/cilium/cilium-ci"
+    #  tag        = "latest"
+    #  digest     = "sha256:7a0d5df32cdbb00f958c033d4323bc1e3f804fd365dc25b6a1d7784ea9d157ea"
+    #}
 
     operator = {
       priorityClassName = "system-cluster-critical"
