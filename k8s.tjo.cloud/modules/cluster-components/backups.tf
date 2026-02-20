@@ -79,34 +79,3 @@ resource "helm_release" "k8sup" {
     ]
   })]
 }
-
-resource "kubernetes_manifest" "k8up-schedule" {
-  manifest = {
-    apiVersion = "k8up.io/v1"
-    kind       = "Schedule"
-    metadata = {
-      name      = "default"
-      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
-    }
-    spec = {
-      backup = {
-        # Every 30 minutes
-        schedule                   = "*/30 * * * *"
-        failedJobsHistoryLimit     = 2
-        successfulJobsHistoryLimit = 2
-      }
-      check = {
-        # At 05:15 on Monday.
-        schedule = "15 5 * * 1"
-      }
-      prune = {
-        # At 05:15 on Sunday.
-        schedule = "15 5 * * 0"
-        retention = {
-          keepLast  = 5
-          keepDaily = 14
-        }
-      }
-    }
-  }
-}

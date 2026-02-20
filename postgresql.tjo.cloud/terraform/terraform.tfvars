@@ -54,8 +54,8 @@ users = [
   {
     node             = "endor-one"
     name             = "cloud.tjo.space"
-    connection_limit = 40
-    databases        = [{ name = "cloud.tjo.space", connection_limit = 40 }]
+    connection_limit = 100
+    databases        = [{ name = "cloud.tjo.space", connection_limit = 100 }]
   },
   {
     node             = "endor-one"

@@ -163,8 +163,8 @@ module "cluster-components" {
 
   backup = {
     password             = var.backup.password
-    s3_bucket            = "k8s-tjo-cloud-backups"
-    s3_endpoint          = "https://api.s3.tjo.cloud"
+    s3_bucket            = "backups-tjo-cloud"
+    s3_endpoint          = "https://hel1.your-objectstorage.com"
     s3_access_key_id     = var.backup.s3_access_key_id
     s3_secret_access_key = var.backup.s3_secret_access_key
   }

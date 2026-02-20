@@ -37,6 +37,17 @@ resource "helm_release" "cilium" {
     }
     bpfClockProbe = true
 
+    ipMasqAgent = {
+      enabled = true
+      config = {
+        masqLinkLocalIPv6 = false
+        nonMasqueradeCIDRs = [
+          # Do not masquerade traffic to internal tjo.cloud ULA.
+          "fd74:6a6f::/32"
+        ]
+      }
+    }
+
     ipv4 = { enabled = false }
 
     ipv6                  = { enabled = true }
@@ -98,12 +109,21 @@ resource "helm_release" "cilium" {
         enabled           = true
         priorityClassName = "system-cluster-critical"
       }
-      #metrics = {
-      #  enabled = true
-      #  serviceMonitor = {
-      #    enabled = true
-      #  }
-      #}
+      metrics = {
+        enabled = [
+          "dns",
+          "drop",
+          "tcp",
+          "flow",
+          "port-distribution",
+          "icmp",
+          "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction"
+        ]
+        enableOpenMetrics = true
+        serviceMonitor = {
+          enabled = true
+        }
+      }
       tls = {
         auto = {
           enabled              = true
