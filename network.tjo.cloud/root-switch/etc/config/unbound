@@ -1,0 +1,35 @@
+config unbound
+  option dns64 '1'
+
+  option domain 'lan'
+
+  option listen_port '53'
+  option rebind_protection '0'
+
+  option recursion 'aggressive'
+  option resource 'large'
+
+  option unbound_control '1'
+
+	# FIXME: To make DNS queries via tailscale work. Maybe there is a better way.
+  # Prevent DNS amplification attacks. Only answer to subnets this machine has interfaces on.
+	option localservice '0'
+
+config zone 'fwd_internal'
+	option zone_type 'forward_zone'
+	option enabled '1'
+	option fallback '1'
+	list zone_name 'internal.'
+	list zone_name 'arpa.'
+	option port '53'
+	# internal dns.tjo.cloud
+	list server 'fd74:6a6f::be24:11ff:fe8a:b5e6'
+
+config zone 'fwd_public'
+  option zone_type 'forward_zone'
+  option enabled '1'
+  option fallback '1'
+  list zone_name '.'
+
+  # gateway dns
+  list server 'fd74:6a6f::1'

@@ -85,7 +85,9 @@
         owner: "root"
         group: "root"
       notify: Restart networking
+      tags: networking
 
     - name: Configure SDN
       ansible.builtin.include_tasks:
         file: tasks/sdn.yaml
+      tags: networking

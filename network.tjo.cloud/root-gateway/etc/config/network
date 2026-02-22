@@ -21,13 +21,6 @@ config interface 'lan'
 	list dns '10.0.0.1'
 	list dns 'fd74:6a6f::1'
 
-config interface 'lan_vip'
-  option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
-	option proto 'static'
-	option device 'eth1'
-	list ipaddr '10.0.0.1/32'
-	list ip6addr 'fd74:6a6f::1/128'
-
 config route 'lan4'
 	option interface 'lan'
 	option target '10.0.0.0/10'
@@ -113,7 +106,6 @@ config yggdrasil_ygg_interface
 # JOOL
 ##
 config interface 'jool'
-  option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
 	option proto 'static'
 	option device 'jool'
 	option ipaddr '192.168.164.1'
@@ -122,7 +114,6 @@ config interface 'jool'
 	option ip6hint '64'
 
 config route6
-  option disabled {{ if $node.primary }}0{{ else }}1{{ end }}
 	option interface 'jool'
 	option target '64:ff9b::/96'
 	option gateway 'fe80::64'

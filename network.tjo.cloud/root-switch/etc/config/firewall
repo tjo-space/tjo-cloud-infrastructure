@@ -5,46 +5,22 @@ config defaults
 	option synflood_protect '1'
 
 ##
-# WAN
+# UPSTREAM
 ##
 config zone
-	option name 'wan'
-	list network 'wan'
-	list network 'wan6'
-	list network 'ygg'
+	option name 'upstream'
+	list network 'upstream'
+	list network 'upstream_vip'
 	option input 'REJECT'
 	option output 'ACCEPT'
 	option forward 'REJECT'
-	option masq '1'
+	option masq '0'
 	option masq6 '0'
 	option mtu_fix '1'
 
 config rule
-	option name 'Allow-DHCP-Renew'
-	option src 'wan'
-	option proto 'udp'
-	option dest_port '68'
-	option target 'ACCEPT'
-	option family 'ipv4'
-
-config rule
-	option name 'Allow-Ping'
-	option src 'wan'
-	option proto 'icmp'
-	option icmp_type 'echo-request'
-	option family 'ipv4'
-	option target 'ACCEPT'
-
-config rule
-	option name 'Allow-IGMP'
-	option src 'wan'
-	option proto 'igmp'
-	option family 'ipv4'
-	option target 'ACCEPT'
-
-config rule
 	option name 'Allow-DHCPv6'
-	option src 'wan'
+	option src 'upstream'
 	option proto 'udp'
 	option dest_port '546'
 	option family 'ipv6'
@@ -52,7 +28,7 @@ config rule
 
 config rule
 	option name 'Allow-MLD'
-	option src 'wan'
+	option src 'upstream'
 	option proto 'icmp'
 	option src_ip 'fe80::/10'
 	list icmp_type '130/0'
@@ -64,7 +40,7 @@ config rule
 
 config rule
 	option name 'Allow-ICMPv6-Input'
-	option src 'wan'
+	option src 'upstream'
 	option proto 'icmp'
 	list icmp_type 'echo-request'
 	list icmp_type 'echo-reply'
@@ -83,7 +59,7 @@ config rule
 
 config rule
 	option name 'Allow-ICMPv6-Forward'
-	option src 'wan'
+	option src 'upstream'
 	option dest '*'
 	option proto 'icmp'
 	list icmp_type 'echo-request'
@@ -99,88 +75,52 @@ config rule
 
 config rule
 	option name 'Allow-IPSec-ESP'
-	option src 'wan'
-	option dest 'lan'
+	option src 'upstream'
+	option dest 'internal'
 	option proto 'esp'
 	option target 'ACCEPT'
 
 config rule
 	option name 'Allow-ISAKMP'
-	option src 'wan'
-	option dest 'lan'
+	option src 'upstream'
+	option dest 'internal'
 	option dest_port '500'
 	option proto 'udp'
 	option target 'ACCEPT'
 
 config rule
 	option name 'Allow-IPv6-Forward'
-	option src 'wan'
-	option dest 'lan'
+	option src 'upstream'
+	option dest 'internal'
 	option proto 'all'
 	option family 'ipv6'
 	option target 'ACCEPT'
 
 config rule
-	option name 'Allow-Yggdrasil-Peerings'
-	option src 'wan'
-	option dest_port '4541-4543'
+	option name 'Allow-SSH-From-Internal-Range'
+	option src 'upstream'
+	option src_ip 'fd74:6a6f::/32'
+	option dest_port '22'
+	option proto 'tcp'
+	option family 'ipv6'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-4443-From-Internal-Range'
+	option src 'upstream'
+	option src_ip 'fd74:6a6f::/32'
+	option dest_port '4443'
+	option proto 'tcp'
+	option family 'ipv6'
 	option target 'ACCEPT'
 
 ##
 # LAN
 ##
 config zone
-	option name 'lan'
+	option name 'internal'
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
-	list network 'lan'
-	list network 'lan_vip'
+	list network 'local'
 	option mtu_fix '1'
-
-config forwarding
-	option src 'lan'
-	option dest 'wan'
-
-##
-# TAILSCALE
-##
-config zone
-	option name 'tailscale'
-	option input 'ACCEPT'
-	option output 'ACCEPT'
-	option forward 'ACCEPT'
-	option masq '1'
-	option mtu_fix '1'
-	list network 'tailscale'
-
-config forwarding
-	option src 'tailscale'
-	option dest 'lan'
-
-config forwarding
-	option src 'tailscale'
-	option dest 'wan'
-
-config forwarding
-	option src 'lan'
-	option dest 'tailscale'
-
-##
-# JOOL
-##
-config zone
-	option name 'jool'
-	option input 'ACCEPT'
-	option output 'ACCEPT'
-	option forward 'REJECT'
-	list network 'jool'
-	option mtu_fix '1'
-
-config forwarding
-	option src 'jool'
-	option dest 'wan'
-
-config forwarding
-	option src 'lan'
-	option dest 'jool'

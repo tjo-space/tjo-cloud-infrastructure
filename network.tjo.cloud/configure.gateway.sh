@@ -8,12 +8,13 @@ echo "- Resize FS"
 if [ ! -f /etc/resized-fs.01.ok ]; then
   opkg install parted tune2fs resize2fs
 
-  parted /dev/vda resizepart 2 100%
+  parted --fix /dev/vda resizepart 2 100%
   mount -o remount,ro /
 
   tune2fs -O^resize_inode /dev/vda2
   fsck.ext4 -y -f /dev/vda2
 
+  mount -o remount,rw /
   touch /etc/resized-fs.01.ok
   reboot
 fi

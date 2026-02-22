@@ -1,0 +1,28 @@
+{{ $nodeName := getenv "NODE" }}
+{{ $node := index (ds "config").nodes $nodeName }}
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+# LAN
+config globals 'globals'
+	option ula_prefix 'fd74:6a6f:0::/48'
+
+config interface 'upstream'
+	option device 'eth0'
+	option proto  'dhcpv6'
+	option ip6assign '64'
+	option ip6ifaceid 'eui64'
+	list dns 'fd74:6a6f::1'
+
+config interface 'upstream_vip'
+	option proto 'static'
+	option device 'eth0'
+	list ip6addr '{{ $node.lan.ipv6.address }}'
+
+config interface 'local'
+	option device 'eth1'
+	option proto  'none'

@@ -5,6 +5,15 @@ nodes = {
     boot_storage = "local"
     iso_storage  = "local"
 
+    role = "gateway"
     wan_mac_address = "00:50:56:00:97:FD"
+  }
+
+  mustafar = {
+    host         = "mustafar"
+    boot_storage = "local"
+    iso_storage  = "local"
+
+    role = "switch"
   }
 }

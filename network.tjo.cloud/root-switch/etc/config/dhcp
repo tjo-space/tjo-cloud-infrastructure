@@ -1,0 +1,21 @@
+config dnsmasq
+  # Disable DNS
+  option port '0'
+
+config dhcp 'local'
+	option interface 'local'
+  option dhcpv6 relay
+  option ra disabled
+  option ndp relay
+
+config dhcp 'upstream'
+  option interface 'upstream'
+  option dhcpv6 relay
+  option ra disabled
+  option ndp relay
+  option master 1
+
+config odhcpd 'odhcpd'
+	option maindhcp '0'
+	option loglevel '4'
+	option piofolder '/tmp/odhcpd-piofolder'

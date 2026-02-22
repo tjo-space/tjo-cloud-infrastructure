@@ -50,9 +50,13 @@ The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|
-| Primary Router LAN VIP        | 10.0.0.1/32      | fd74:6a6f::1/128   |
+| nevaroo.network.tjo.cloud        | 10.0.0.1/32      | fd74:6a6f::1/128   |
 | # | # |  # |
-| nevaroo.network.tjo.cloud | 10.0.0.4/10     | fd74:6a6f::4/128  |
+| endor.network.tjo.cloud | 10.0.0.11/10     | fd74:6a6f::11/128  |
+| batuu.network.tjo.cloud | 10.0.0.12/10     | fd74:6a6f::12/128  |
+| jakku.network.tjo.cloud | 10.0.0.13/10     | fd74:6a6f::13/128  |
+| nevaroo.network.tjo.cloud | 10.0.0.14/10     | fd74:6a6f::14/128  |
+| mustafar.network.tjo.cloud | 10.0.0.15/10     | fd74:6a6f::15/128  |
 | # | # |  # |
 | endor.proxmox.tjo.cloud | 10.0.0.61/10     | fd74:6a6f::61/128  |
 | batuu.proxmox.tjo.cloud | 10.0.0.62/10     | fd74:6a6f::62/128  |

@@ -37,7 +37,7 @@ An network.tjo.cloud instance for ${each.value.host}.
 Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tjo.cloud
   EOT
 
-  tags = [each.value.domain]
+  tags = [each.value.domain, each.value.role]
 
   stop_on_destroy     = true
   timeout_start_vm    = 60
@@ -69,12 +69,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
   }
 
   network_device {
-    bridge      = "vmbr0"
+    bridge      = each.value.role == "gateway" ? "vmbr0" : "vmbr1"
     mac_address = each.value.wan_mac_address
   }
 
   network_device {
-    bridge      = "vmbr1"
+    bridge      = each.value.role == "gateway" ? "vmbr1" : "vmbr2"
     mac_address = each.value.private_mac_address
   }
 
@@ -88,5 +88,4 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
     iothread     = true
     file_format  = "raw"
   }
-
 }

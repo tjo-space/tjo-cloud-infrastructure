@@ -5,18 +5,10 @@ config service 'ctrl_agent'
 	option disabled '0'
 
 config service 'dhcp4'
-	{{ if $node.primary }}
 	option disabled '0'
-	{{ else }}
-	option disabled '1'
-	{{ end }}
 
 config service 'dhcp6'
-	{{ if $node.primary }}
 	option disabled '0'
-	{{ else }}
-	option disabled '1'
-	{{ end }}
 
 config service 'dhcp_ddns'
 	option disabled '1'

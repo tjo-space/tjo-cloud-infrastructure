@@ -45,7 +45,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
 
   node_name = each.value.name
   name      = "vmbr0"
-  comment   = "Proxmox Host network interface."
+  comment   = "Proxmox Host network interface. DO NOT USE!"
 
   address = each.value.vmbr0.ipv4.address
   gateway = each.value.vmbr0.ipv4.gateway
@@ -61,9 +61,21 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
 
   node_name = each.value.name
   name      = "vmbr1"
-  comment   = "Private network for VMs."
+  comment   = "Global internal network."
   // Must be left as empty list!
   ports = []
+  mtu   = 2800
+}
+
+resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
+  for_each = local.nodes
+
+  node_name = each.value.name
+  name      = "vmbr2"
+  comment   = "Local internal network"
+  // Must be left as empty list!
+  ports = []
+  mtu   = 2800
 }
 
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {

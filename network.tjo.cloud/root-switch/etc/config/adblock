@@ -1,0 +1,7 @@
+config adblock 'global'
+  option adb_enabled '1'
+  option adb_dns 'unbound'
+  option adb_safesearch '0'
+  option adb_dnsfilereset '0'
+  option adb_backup '0'
+  list adb_sources 'adguard'

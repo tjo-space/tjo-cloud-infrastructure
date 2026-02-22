@@ -45,7 +45,7 @@ configure-all:
   set -euo pipefail
   for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
-    just configure ${node} | ts ${node}
+    just configure ${node}} | ts ${node}
   done
 
 configure node:
@@ -53,14 +53,16 @@ configure node:
   set -euo pipefail
 
   export NODE="{{node}}"
+  export ROLE="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].role')"
+  export IPV6="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].lan.ipv6.address' | cut -d '/' -f1)"
   export TMPDIR="$(mktemp -d)"
   export CONFIG="{{source_directory()}}/vars.secrets.yaml"
 
-  cd {{source_directory()}}/root
+  echo "Configuring ${NODE} as ${ROLE}"
 
-  echo "Configuring ${NODE}.network.tjo.cloud"
+  ssh-copy-id root@${IPV6}
 
-  ssh-copy-id root@${NODE}.network.tjo.cloud
+  cd {{source_directory()}}/root-${ROLE}
 
   echo "- Generating configuration ${TMPDIR}..."
   for file in $(find * -type f)
@@ -76,8 +78,8 @@ configure node:
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | ssh -J root@nevaroo.system.tjo.cloud root@10.0.0.1 "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  cat {{source_directory()}}/configure.sh | ssh -J root@nevaroo.system.tjo.cloud root@10.0.0.1 'sh' | ts ${NODE}
+  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'sh' | ts ${NODE}

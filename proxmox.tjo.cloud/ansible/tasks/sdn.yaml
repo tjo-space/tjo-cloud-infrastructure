@@ -1,11 +1,13 @@
 - name: Install Zerotier
   ansible.builtin.include_role:
     name: zerotier
+  tags: networking
 
 - name: Ensure zerotier systemd override dir exists
   file:
     path: /etc/systemd/system/zerotier-one.service.d
     state: directory
+  tags: networking
 
 - name: Configure zerotier overrides
   ansible.builtin.template:
@@ -15,10 +17,12 @@
     owner: "root"
     group: "root"
   notify: Restart zerotier
+  tags: networking
 
 - name: Daemon reload in case we changed zerotier config overrides
   ansible.builtin.systemd_service:
     daemon_reload: true
+  tags: networking
 
 - name: Configure Zerotier
   ansible.builtin.shell: |
@@ -34,6 +38,7 @@
     zerotier-cli set "{{ zerotier.network }}" allowDNS=0
   args:
     creates: /var/lib/zerotier-one/networks.d/{{ zerotier.network }}.conf
+  tags: networking
 
 - name: Configure zerotier local.conf
   ansible.builtin.template:
@@ -43,14 +48,17 @@
     owner: "root"
     group: "root"
   notify: Restart zerotier
+  tags: networking
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+  tags: networking
 
 - name: Refresh facts
   ansible.builtin.setup:
     gather_subset:
       - network
+  tags: networking
 
 - name: Install SDN Dependencies
   ansible.builtin.apt:
@@ -61,12 +69,14 @@
     - 'libpve-network-perl'
     - 'dnsmasq'
     - 'frr-pythontools'
+  tags: networking
 
 - name: Disable dnsmasq
   ansible.builtin.systemd:
     name: 'dnsmasq.service'
     state: stopped
     enabled: false
+  tags: networking
 
 - name: Disable SDN Dependencies
   ansible.builtin.systemd:
@@ -75,9 +85,11 @@
     enabled: true
   loop:
     - 'frr.service'
+  tags: networking
 
 - name: Flush handlers
   ansible.builtin.meta: flush_handlers
+  tags: networking
 
 - name: Configure resolv.conf
   ansible.builtin.template:
@@ -86,3 +98,4 @@
     mode: '0644'
     owner: "root"
     group: "root"
+  tags: networking
