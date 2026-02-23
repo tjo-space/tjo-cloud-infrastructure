@@ -10,6 +10,7 @@ config defaults
 config zone
 	option name 'internal'
 	list network 'internal'
+	list network 'internal_vip'
 	option input 'REJECT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'
