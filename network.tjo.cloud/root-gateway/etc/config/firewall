@@ -5,12 +5,12 @@ config defaults
 	option synflood_protect '1'
 
 ##
-# INTERNET
+# PUBLIC
 ##
 config zone
-	option name 'internet'
-	list network 'internet'
-	list network 'internet6'
+	option name 'public'
+	list network 'public'
+	list network 'public6'
 	list network 'ygg'
 	option input 'REJECT'
 	option output 'ACCEPT'
@@ -21,7 +21,7 @@ config zone
 
 config rule
 	option name 'Allow-DHCP-Renew'
-	option src 'internet'
+	option src 'public'
 	option proto 'udp'
 	option dest_port '68'
 	option target 'ACCEPT'
@@ -29,7 +29,7 @@ config rule
 
 config rule
 	option name 'Allow-Ping'
-	option src 'internet'
+	option src 'public'
 	option proto 'icmp'
 	option icmp_type 'echo-request'
 	option family 'ipv4'
@@ -37,14 +37,14 @@ config rule
 
 config rule
 	option name 'Allow-IGMP'
-	option src 'internet'
+	option src 'public'
 	option proto 'igmp'
 	option family 'ipv4'
 	option target 'ACCEPT'
 
 config rule
 	option name 'Allow-DHCPv6'
-	option src 'internet'
+	option src 'public'
 	option proto 'udp'
 	option dest_port '546'
 	option family 'ipv6'
@@ -52,7 +52,7 @@ config rule
 
 config rule
 	option name 'Allow-MLD'
-	option src 'internet'
+	option src 'public'
 	option proto 'icmp'
 	option src_ip 'fe80::/10'
 	list icmp_type '130/0'
@@ -64,7 +64,7 @@ config rule
 
 config rule
 	option name 'Allow-ICMPv6-Input'
-	option src 'internet'
+	option src 'public'
 	option proto 'icmp'
 	list icmp_type 'echo-request'
 	list icmp_type 'echo-reply'
@@ -83,7 +83,7 @@ config rule
 
 config rule
 	option name 'Allow-ICMPv6-Forward'
-	option src 'internet'
+	option src 'public'
 	option dest '*'
 	option proto 'icmp'
 	list icmp_type 'echo-request'
@@ -99,14 +99,14 @@ config rule
 
 config rule
 	option name 'Allow-IPSec-ESP'
-	option src 'internet'
+	option src 'public'
 	option dest 'internal'
 	option proto 'esp'
 	option target 'ACCEPT'
 
 config rule
 	option name 'Allow-ISAKMP'
-	option src 'internet'
+	option src 'public'
 	option dest 'internal'
 	option dest_port '500'
 	option proto 'udp'
@@ -114,7 +114,7 @@ config rule
 
 config rule
 	option name 'Allow-IPv6-Forward'
-	option src 'internet'
+	option src 'public'
 	option dest 'internal'
 	option proto 'all'
 	option family 'ipv6'
@@ -122,7 +122,7 @@ config rule
 
 config rule
 	option name 'Allow-Yggdrasil-Peerings'
-	option src 'internet'
+	option src 'public'
 	option dest_port '4541-4543'
 	option target 'ACCEPT'
 
@@ -139,7 +139,7 @@ config zone
 
 config forwarding
 	option src 'internal'
-	option dest 'internet'
+	option dest 'public'
 
 ##
 # TAILSCALE
@@ -159,7 +159,7 @@ config forwarding
 
 config forwarding
 	option src 'tailscale'
-	option dest 'internet'
+	option dest 'public'
 
 config forwarding
 	option src 'internal'
@@ -178,7 +178,7 @@ config zone
 
 config forwarding
 	option src 'jool'
-	option dest 'internet'
+	option dest 'public'
 
 config forwarding
 	option src 'internal'

@@ -8,7 +8,7 @@ config interface 'loopback'
 	option netmask '255.0.0.0'
 
 config globals 'globals'
-	option ula_prefix 'fd74:6a6f:0::/48'
+	option ula_prefix '{{ $node.internal.ipv6.prefix }}'
 
 ##
 # INTERNAL
@@ -40,25 +40,25 @@ config route6 'internal6'
 	option type 'unicast'
 
 ##
-# INTERNET
+# PUBLIC
 ##
-config interface 'internet'
+config interface 'public'
 	option device 'eth0'
-	option proto '{{ $node.internet.ipv4.proto }}'
+	option proto '{{ $node.public.ipv4.proto }}'
 
-  {{ if eq $node.internet.ipv4.proto "static" }}
-  list ipaddr '{{ $node.internet.ipv4.address }}'
-  option gateway '{{ $node.internet.ipv4.gateway }}'
+  {{ if eq $node.public.ipv4.proto "static" }}
+  list ipaddr '{{ $node.public.ipv4.address }}'
+  option gateway '{{ $node.public.ipv4.gateway }}'
   {{ end }}
 
-config interface 'internet6'
+config interface 'public6'
 	option device 'eth0'
-	option proto '{{ $node.internet.ipv6.proto }}'
+	option proto '{{ $node.public.ipv6.proto }}'
 
-  {{ if eq $node.internet.ipv6.proto "static" }}
-  list ip6addr '{{ $node.internet.ipv6.address }}'
-  option ip6gw '{{ $node.internet.ipv6.gateway }}'
-  option ip6prefix '{{ $node.internet.ipv6.prefix }}'
+  {{ if eq $node.public.ipv6.proto "static" }}
+  list ip6addr '{{ $node.public.ipv6.address }}'
+  option ip6gw '{{ $node.public.ipv6.gateway }}'
+  option ip6prefix '{{ $node.public.ipv6.prefix }}'
   {{ end }}
 
 ##
@@ -83,10 +83,10 @@ config interface 'ygg'
 	list listen_address 'tls://[::]:4542'
 	list listen_address 'quic://[::]:4543'
 
-config yggdrasil_ygg_jumper
-  option enabled '1'
-  option loglevel 'info'
-  option autofill_listen_addresses '1'
+  # Jumper
+	option jumper_enable '1'
+	option jumper_loglevel 'info'
+	option jumper_autofill_listen_addresses '1'
 
 config yggdrasil_ygg_peer
 	option address 'tls://n.ygg.yt:443'

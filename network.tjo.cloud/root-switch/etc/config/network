@@ -8,7 +8,7 @@ config interface 'loopback'
 	option netmask '255.0.0.0'
 
 config globals 'globals'
-	option ula_prefix 'fd74:6a6f:0::/48'
+	option ula_prefix '{{ $node.local.ipv6.prefix }}'
 
 ##
 # INTERNAL
@@ -16,23 +16,16 @@ config globals 'globals'
 config interface 'internal'
 	option device 'eth0'
 	option proto  'dhcpv6'
-  option reqaddress 'try'
-  option reqprefix 'no'
-  option norelease '1'
 
 config interface 'internal_vip'
-	option proto 'static'
 	option device 'eth0'
+	option proto 'static'
 	list ip6addr '{{ $node.internal.ipv6.address }}'
-
-config route6 'internal6'
-	option interface 'internal'
-	option target 'fd74:6a6f::/32'
-	option type 'unicast'
 
 ##
 # LOCAL
 ##
 config interface 'local'
 	option device 'eth1'
-	option proto  'none'
+	option proto  'static'
+	list ip6addr '{{ $node.local.ipv6.address }}'

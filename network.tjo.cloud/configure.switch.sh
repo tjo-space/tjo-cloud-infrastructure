@@ -31,16 +31,13 @@ opkg install bird2 bird2c
 
 echo "- Installing unbound (DNS, DNS64)"
 opkg install luci-app-unbound unbound-control adblock
-
-echo "- Installing odhcpd and relayd"
-opkg install dnsmasq odhcpd-ipv6only odhcp6c
+opkg remove --autoremove dnsmasq odhcpd odhcpd-ipv6only
 
 echo "- Reloading Services"
 service bird reload
 service network reload
 sleep 5
 service firewall reload
-service odhcpd reload
 service unbound reload
 service adblock reload
 
