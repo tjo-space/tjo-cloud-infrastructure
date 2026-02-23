@@ -5,13 +5,13 @@ config dnsmasq
 config dhcp 'local'
 	option interface 'local'
   option dhcpv6 relay
-  option ra disabled
+  option ra relay
   option ndp relay
 
-config dhcp 'upstream'
-  option interface 'upstream'
+config dhcp 'internal'
+  option interface 'internal'
   option dhcpv6 relay
-  option ra disabled
+  option ra relay
   option ndp relay
   option master 1
 

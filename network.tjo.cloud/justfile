@@ -54,7 +54,8 @@ configure node:
 
   export NODE="{{node}}"
   export ROLE="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].role')"
-  export IPV6="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].lan.ipv6.address' | cut -d '/' -f1)"
+  export IPV6="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].internal.ipv6.address' | cut -d '/' -f1)"
+  #export IPV6="fd74:6a6f::a8bb:ff:fe00:c230"
   export TMPDIR="$(mktemp -d)"
   export CONFIG="{{source_directory()}}/vars.secrets.yaml"
 

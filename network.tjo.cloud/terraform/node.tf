@@ -6,8 +6,14 @@ locals {
       domain = local.domain
       hash   = sha1(v.host)
 
-      wan_mac_address     = v.wan_mac_address != null ? v.wan_mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
-      private_mac_address = "AA:BB:00:11:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+      network_devices = v.role == "gateway" ? {
+        "vmbr0" = v.internet_mac_address != null ? v.internet_mac_address : "AA:BB:00:00:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+        "vmbr1" = "AA:BB:00:11:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+        "vmbr2" = "AA:BB:00:22:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+        } : {
+        "vmbr1" = "AA:BB:00:11:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+        "vmbr2" = "AA:BB:00:22:${format("%v:%v", substr(sha1(v.host), 0, 2), substr(sha1(v.host), 2, 2))}"
+      }
     })
   }
 }
@@ -68,14 +74,12 @@ Repo: https://code.tjo.space/tjo-cloud/infrastructure/src/branch/main/network.tj
     timeout = "10s"
   }
 
-  network_device {
-    bridge      = each.value.role == "gateway" ? "vmbr0" : "vmbr1"
-    mac_address = each.value.wan_mac_address
-  }
-
-  network_device {
-    bridge      = each.value.role == "gateway" ? "vmbr1" : "vmbr2"
-    mac_address = each.value.private_mac_address
+  dynamic "network_device" {
+    for_each = each.value.network_devices
+    content {
+      bridge      = network_device.key
+      mac_address = network_device.value
+    }
   }
 
   scsi_hardware = "virtio-scsi-single"

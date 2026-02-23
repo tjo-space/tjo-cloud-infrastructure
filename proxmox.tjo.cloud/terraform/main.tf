@@ -6,10 +6,14 @@ locals {
   }
 
   images = {
+    # Ubuntu
     "ubuntu_2404_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/noble/current/noble-server-cloudimg-amd64.img"
     "ubuntu_2510_server_cloudimg_amd64.img" = "https://cloud-images.ubuntu.com/questing/current/questing-server-cloudimg-amd64.img"
-    "debian_13_server_cloudimg_amd64.img"   = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
-    "rocky_10_1_server_cloudimg_amd64.img"  = "https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-GenericCloud-Base-10.1-20251116.0.x86_64.qcow2"
+    "ubuntu_2510_server_live_amd64.iso"     = "https://releases.ubuntu.com/25.10/ubuntu-25.10-live-server-amd64.iso"
+    # Debian
+    "debian_13_server_cloudimg_amd64.img" = "https://cloud.debian.org/images/cloud/trixie/latest/debian-13-generic-amd64.qcow2"
+    # Rocky
+    "rocky_10_1_server_cloudimg_amd64.img" = "https://dl.rockylinux.org/pub/rocky/10/images/x86_64/Rocky-10-GenericCloud-Base-10.1-20251116.0.x86_64.qcow2"
   }
 }
 
@@ -45,7 +49,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
 
   node_name = each.value.name
   name      = "vmbr0"
-  comment   = "Proxmox Host network interface. DO NOT USE!"
+  comment   = "DO NOT USE! Proxmox Host network interface."
 
   address = each.value.vmbr0.ipv4.address
   gateway = each.value.vmbr0.ipv4.gateway
@@ -72,7 +76,7 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
 
   node_name = each.value.name
   name      = "vmbr2"
-  comment   = "Local internal network"
+  comment   = "Local internal network."
   // Must be left as empty list!
   ports = []
   mtu   = 2800

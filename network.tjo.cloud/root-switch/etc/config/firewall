@@ -1,26 +1,23 @@
 config defaults
 	option input 'REJECT'
 	option output 'ACCEPT'
-	option forward 'REJECT'
+	option forward 'ACCEPT'
 	option synflood_protect '1'
 
 ##
-# UPSTREAM
+# internal
 ##
 config zone
-	option name 'upstream'
-	list network 'upstream'
-	list network 'upstream_vip'
+	option name 'internal'
+	list network 'internal'
 	option input 'REJECT'
 	option output 'ACCEPT'
-	option forward 'REJECT'
-	option masq '0'
-	option masq6 '0'
+	option forward 'ACCEPT'
 	option mtu_fix '1'
 
 config rule
 	option name 'Allow-DHCPv6'
-	option src 'upstream'
+	option src 'internal'
 	option proto 'udp'
 	option dest_port '546'
 	option family 'ipv6'
@@ -28,7 +25,7 @@ config rule
 
 config rule
 	option name 'Allow-MLD'
-	option src 'upstream'
+	option src 'internal'
 	option proto 'icmp'
 	option src_ip 'fe80::/10'
 	list icmp_type '130/0'
@@ -40,7 +37,7 @@ config rule
 
 config rule
 	option name 'Allow-ICMPv6-Input'
-	option src 'upstream'
+	option src 'internal'
 	option proto 'icmp'
 	list icmp_type 'echo-request'
 	list icmp_type 'echo-reply'
@@ -58,47 +55,8 @@ config rule
 	option target 'ACCEPT'
 
 config rule
-	option name 'Allow-ICMPv6-Forward'
-	option src 'upstream'
-	option dest '*'
-	option proto 'icmp'
-	list icmp_type 'echo-request'
-	list icmp_type 'echo-reply'
-	list icmp_type 'destination-unreachable'
-	list icmp_type 'packet-too-big'
-	list icmp_type 'time-exceeded'
-	list icmp_type 'bad-header'
-	list icmp_type 'unknown-header-type'
-	option limit '1000/sec'
-	option family 'ipv6'
-	option target 'ACCEPT'
-
-config rule
-	option name 'Allow-IPSec-ESP'
-	option src 'upstream'
-	option dest 'internal'
-	option proto 'esp'
-	option target 'ACCEPT'
-
-config rule
-	option name 'Allow-ISAKMP'
-	option src 'upstream'
-	option dest 'internal'
-	option dest_port '500'
-	option proto 'udp'
-	option target 'ACCEPT'
-
-config rule
-	option name 'Allow-IPv6-Forward'
-	option src 'upstream'
-	option dest 'internal'
-	option proto 'all'
-	option family 'ipv6'
-	option target 'ACCEPT'
-
-config rule
 	option name 'Allow-SSH-From-Internal-Range'
-	option src 'upstream'
+	option src 'internal'
 	option src_ip 'fd74:6a6f::/32'
 	option dest_port '22'
 	option proto 'tcp'
@@ -107,7 +65,7 @@ config rule
 
 config rule
 	option name 'Allow-4443-From-Internal-Range'
-	option src 'upstream'
+	option src 'internal'
 	option src_ip 'fd74:6a6f::/32'
 	option dest_port '4443'
 	option proto 'tcp'
@@ -115,10 +73,10 @@ config rule
 	option target 'ACCEPT'
 
 ##
-# LAN
+# LOCAL
 ##
 config zone
-	option name 'internal'
+	option name 'local'
 	option input 'ACCEPT'
 	option output 'ACCEPT'
 	option forward 'ACCEPT'

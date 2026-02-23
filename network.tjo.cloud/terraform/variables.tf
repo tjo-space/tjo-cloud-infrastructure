@@ -6,7 +6,7 @@ variable "nodes" {
     cores  = optional(number, 1)
     memory = optional(number, 512)
 
-    wan_mac_address = optional(string)
+    internet_mac_address = optional(string)
 
     role = string
 
