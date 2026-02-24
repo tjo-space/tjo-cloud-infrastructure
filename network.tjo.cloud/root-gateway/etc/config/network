@@ -36,7 +36,7 @@ config route 'internal4'
 
 config route6 'internal6'
 	option interface 'internal'
-	option target 'fd74:6a6f::/32'
+	option target 'fd74:6a6f::/48'
 	option type 'unicast'
 
 ##

@@ -12,23 +12,10 @@ __LAN interface__ is an ordinary lan network.
 
 __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
 
-# Subnet
+# Subnets
 
-### Layer 2
-We are using `10.0.0.0/10` range for IPv4 as well as `fd74:6a6f::/32` for IPv6 for L2 Network.
-
-
-| Use                  | IPv4          | IPv6              |
-|----------------------|---------------|-------------------|
-| DHCP/SLAAC Assignments     | 10.0.0.0/16   | fd74:6a6f:0::/48  |
-| ZeroTier Assignments | 10.1.0.0/16   | Use SLAAC  |
-
-Unspecified are unused.
-
-### Layer 3
-We do BGP Peering with other networks. This should also be counted as used.
-
-See [k8s.tjo.cloud](../k8s.tjo.cloud/README.md) where the `fd9b:7c3d:7f6a::/48` subnet are being used.
+- network.tjo.cloud where `fd74:6a6f::/48` and `2a01:4f8:120:7700::/56` subnets are used.
+- [k8s.tjo.cloud](../k8s.tjo.cloud/README.md) where the `fd9b:7c3d:7f6a::/48` subnet are being used.
 
 ## network.tjo.cloud
 
@@ -38,15 +25,25 @@ Each router instance establishes iBGP peering with all others.
 ASN 65000 is used. Each router also listens for any iBGP peerings.
 This is used for `k8s.tjo.cloud` where cilium advertises pod and external load balancer ips.
 
-### DHCP Assignments
-Ranges are `10.0.4.0-10.0.255.255`.
+### Subnets
 
-### ZeroTier Assignments
+| Node           | Internal            | Public                 |
+|----------------|---------------------|------------------------|
+| nevaroo        | fd74:6a6f:0:0::/64  | 2a01:4f8:120:7700::/64 |
+| #              | #                   | #                      |
+| endor          | fd74:6a6f:0:11::/64 | 2a01:4f8:120:7711::/64 |
+| batuu          | fd74:6a6f:0:12::/64 | 2a01:4f8:120:7712::/64 |
+| jakku          | fd74:6a6f:0:13::/64 | 2a01:4f8:120:7713::/64 |
+| mustafar       | fd74:6a6f:0:14::/64 | 2a01:4f8:120:7714::/64 |
+| #              | #                   | #                      |
+| nevaroo NAT64  | fd74:6a6f:0:64::/64 | 2a01:4f8:120:7764::/64 |
 
-Ranges are `10.1.0.0-10.0.255.255` and SLAAC for IPv6.
+The `nevaroo` node is special gateway node. This once routes traffic out to the internet
+and it has the public `/56` routed to it.
+
+Any node in the "cloud" (hetzner cloud etc.) is part of the `nevaroo` L2 network.
 
 ### Special designations
-The `10.0.0.0/22` and `fd74:6a6f:0:0000::/54` are reserved for cloud operations.
 
 | Use                   | IPv4             | IPv6                     |
 |-----------------------|------------------|--------------------------|
@@ -77,7 +74,6 @@ We can use automated way of maintaining config.
 ```
 just configure <node>
 ```
-
 
 # TODO
 

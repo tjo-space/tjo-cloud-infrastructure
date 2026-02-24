@@ -27,7 +27,8 @@ echo "- Qemu agent"
 opkg install qemu-ga
 
 echo "- Installing Bird (BGP, Router Advertisement NDP)"
-opkg install bird2 bird2c
+opkg remove --autoremove bird2c bird2
+opkg install bird3 bird3c
 
 echo "- Installing unbound (DNS, DNS64)"
 opkg install luci-app-unbound unbound-control adblock

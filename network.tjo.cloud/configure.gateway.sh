@@ -39,6 +39,9 @@ echo "- Qemu agent"
 opkg install qemu-ga
 
 echo "- Installing Bird (BGP, Router Advertisement NDP)"
+# Fixme: Upgrading to bird3 failed with:
+#  daemon.crit bird: Assertion 'DG_IS_LOCKED(orig->domain)' failed at lib/resource.c:208
+#opkg install bird3 bird3c
 opkg install bird2 bird2c
 
 echo "- Installing Kea (DHCPv4, DHCPv6)"
