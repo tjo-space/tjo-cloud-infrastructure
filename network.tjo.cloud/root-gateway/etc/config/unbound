@@ -1,8 +1,6 @@
 config unbound
   option dns64 '1'
 
-  option domain 'lan'
-
   option listen_port '53'
   option rebind_protection '0'
 

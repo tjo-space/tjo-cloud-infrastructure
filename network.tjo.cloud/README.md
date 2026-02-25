@@ -14,7 +14,7 @@ __network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.
 
 # Subnets
 
-- network.tjo.cloud where `fd74:6a6f::/48` and `2a01:4f8:120:7700::/56` subnets are used.
+- network.tjo.cloud where `fd74:6a6f::/32` and `2a01:4f8:120:7700::/56` subnets are used.
 - [k8s.tjo.cloud](../k8s.tjo.cloud/README.md) where the `fd9b:7c3d:7f6a::/48` subnet are being used.
 
 ## network.tjo.cloud
@@ -41,7 +41,7 @@ This is used for `k8s.tjo.cloud` where cilium advertises pod and external load b
 The `nevaroo` node is special gateway node. This once routes traffic out to the internet
 and it has the public `/56` routed to it.
 
-Any node in the "cloud" (hetzner cloud etc.) is part of the `nevaroo` L2 network.
+Any node in the "cloud" (hetzner cloud etc.) as well as "router" vms are part of the `nevaroo` subnets.
 
 ### Special designations
 

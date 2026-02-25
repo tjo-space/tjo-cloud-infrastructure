@@ -8,7 +8,7 @@ config service 'dhcp4'
 	option disabled '0'
 
 config service 'dhcp6'
-	option disabled '0'
+	option disabled '1'
 
 config service 'dhcp_ddns'
 	option disabled '1'

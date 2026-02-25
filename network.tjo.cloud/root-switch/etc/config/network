@@ -15,11 +15,10 @@ config globals 'globals'
 ##
 config interface 'internal'
 	option device 'eth0'
-	option proto  'dhcpv6'
-
-config interface 'internal_vip'
-	option device 'eth0'
-	option proto 'static'
+	option proto  'static'
+  option ip6gw 'fd74:6a6f::1'
+  option ip6prefix '{{ $node.public.ipv6.prefix }}'
+	list ip6addr '{{ $node.public.ipv6.address }}'
 	list ip6addr '{{ $node.internal.ipv6.address }}'
 
 ##
@@ -28,5 +27,5 @@ config interface 'internal_vip'
 config interface 'local'
 	option device 'eth1'
 	option proto  'static'
-	list ip6addr '{{ $node.local.ipv6.address }}'
-	list ip6addr '{{ $node.public.ipv6.address }}'
+	option ip6assign '64'
+	option ip6ifaceid '::1'
