@@ -13,14 +13,8 @@ config globals 'globals'
 ##
 # INTERNAL
 ##
-config device
-	option name 'br-internal'
-	option type 'bridge'
-	list ports 'eth1'
-	list ports 'eth2'
-
 config interface 'internal'
-	option device 'br-internal'
+	option device 'eth1'
 	option proto  'static'
 	list ipaddr   '{{ $node.internal.ipv4.address }}'
 	option ip6assign '64'

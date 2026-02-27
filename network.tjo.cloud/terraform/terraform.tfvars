@@ -4,34 +4,38 @@ nodes = {
     host         = "nevaroo"
     boot_storage = "local"
     iso_storage  = "local"
-
     role = "gateway"
     internet_mac_address = "00:50:56:00:97:FD"
   }
 
-  mustafar = {
+  nevaroo-router = {
+    host         = "nevaroo"
+    boot_storage = "local"
+    iso_storage  = "local"
+    role = "router"
+  }
+  mustafar-router = {
     host         = "mustafar"
     boot_storage = "local"
     iso_storage  = "local"
-    role = "switch"
+    role = "router"
   }
-
-  batuu = {
+  batuu-router = {
     host         = "batuu"
     boot_storage = "local-nvme"
     iso_storage  = "local"
-    role = "switch"
+    role = "router"
   }
-  endor = {
+  endor-router = {
     host         = "endor"
     boot_storage = "local-nvme"
     iso_storage  = "local"
-    role = "switch"
+    role = "router"
   }
-  jakku = {
+  jakku-router = {
     host         = "jakku"
     boot_storage = "local-nvme"
     iso_storage  = "local"
-    role = "switch"
+    role = "router"
   }
 }

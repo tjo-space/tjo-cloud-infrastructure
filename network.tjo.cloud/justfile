@@ -40,6 +40,11 @@ reboot-all:
     just reboot ${node} | ts ${node}
   done
 
+ssh node:
+  #!/usr/bin/env sh
+  export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
+  ssh -J root@nevaroo.system.tjo.cloud root@${IPV6}
+
 configure-all:
   #!/usr/bin/env sh
   set -euo pipefail
@@ -55,7 +60,7 @@ configure node:
   export NODE="{{node}}"
   export ROLE="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].role')"
   export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
-  #export IPV6="fd74:6a6f::a8bb:ff:fe11:c230"
+  #export IPV6="fd74:6a6f::a8bb:ff:fe11:b755"
   export TMPDIR="$(mktemp -d)"
   export CONFIG="{{source_directory()}}/vars.secrets.yaml"
 

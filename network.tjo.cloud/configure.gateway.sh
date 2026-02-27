@@ -4,25 +4,6 @@ set -eou pipefail
 echo "- OPKG Update"
 opkg update
 
-echo "- Resize FS"
-if [ ! -f /etc/resized-fs.01.ok ]; then
-  opkg install parted tune2fs resize2fs
-
-  parted --fix /dev/vda resizepart 2 100%
-  mount -o remount,ro /
-
-  tune2fs -O^resize_inode /dev/vda2
-  fsck.ext4 -y -f /dev/vda2
-
-  mount -o remount,rw /
-  touch /etc/resized-fs.01.ok
-  reboot
-fi
-if [ ! -f /etc/resized-fs.02.ok ]; then
-  resize2fs /dev/vda2
-  touch /etc/resized-fs.02.ok
-fi
-
 echo "- Tailscale"
 opkg install tailscale
 tailscale up \

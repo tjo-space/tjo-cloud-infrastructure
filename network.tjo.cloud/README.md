@@ -68,10 +68,11 @@ Any node in the "cloud" (hetzner cloud etc.) as well as "router" vms are part of
 
 ### 3. Configure.
 
-Once tailscale is up and manually configured (see the config files for guide).
-We can use automated way of maintaining config.
-
 ```
+# 1. Manually configure /etc/config/{firewall,network} to get ip and allow ssh
+# 2. Then do the changes in the `prepare.sh` file manually.
+# 3. Finally, run the configure.
+
 just configure <node>
 ```
 
