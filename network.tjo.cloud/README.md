@@ -29,16 +29,18 @@ This is used for `k8s.tjo.cloud` where cilium advertises pod and external load b
 
 | Node           | Internal            | Public                 |
 |----------------|---------------------|------------------------|
-| nevaroo        | fd74:6a6f:0:0::/64  | 2a01:4f8:120:7700::/64 |
+| nevaroo-gateway        | fd74:6a6f:0:0::/64  | 2a01:4f8:120:7700::/64 |
 | #              | #                   | #                      |
-| endor          | fd74:6a6f:0:11::/64 | 2a01:4f8:120:7711::/64 |
-| batuu          | fd74:6a6f:0:12::/64 | 2a01:4f8:120:7712::/64 |
-| jakku          | fd74:6a6f:0:13::/64 | 2a01:4f8:120:7713::/64 |
-| mustafar       | fd74:6a6f:0:14::/64 | 2a01:4f8:120:7714::/64 |
+| nevaroo-router          | fd74:6a6f:0:10::/64 | 2a01:4f8:120:7710::/64 |
+| endor-router          | fd74:6a6f:0:11::/64 | 2a01:4f8:120:7711::/64 |
+| batuu-router          | fd74:6a6f:0:12::/64 | 2a01:4f8:120:7712::/64 |
+| jakku-router          | fd74:6a6f:0:13::/64 | 2a01:4f8:120:7713::/64 |
+| mustafar-router       | fd74:6a6f:0:14::/64 | 2a01:4f8:120:7714::/64 |
 | #              | #                   | #                      |
-| nevaroo NAT64  | fd74:6a6f:0:64::/64 | 2a01:4f8:120:7764::/64 |
+| router/gateway VIP  | fd74:6a6f:0:53::/64 | # |
+| nevaroo-gateway NAT64  | fd74:6a6f:0:64::/64 | 2a01:4f8:120:7764::/64 |
 
-The `nevaroo` node is special gateway node. This once routes traffic out to the internet
+The `nevaroo-gateway` node is special gateway node. This once routes traffic out to the internet
 and it has the public `/56` routed to it.
 
 Any node in the "cloud" (hetzner cloud etc.) as well as "router" vms are part of the `nevaroo` subnets.
@@ -49,10 +51,11 @@ Any node in the "cloud" (hetzner cloud etc.) as well as "router" vms are part of
 |-----------------------|------------------|--------------------------|
 | nevaroo.network.tjo.cloud        | 10.0.0.1/32      | fd74:6a6f::1/128   |
 | # | # |  # |
-| endor.network.tjo.cloud | #     | fd74:6a6f::11/128  |
-| batuu.network.tjo.cloud | #     | fd74:6a6f::12/128  |
-| jakku.network.tjo.cloud | #     | fd74:6a6f::13/128  |
-| mustafar.network.tjo.cloud | #     | fd74:6a6f::14/128  |
+| nevaroo-router.network.tjo.cloud | #     | fd74:6a6f::10/128  |
+| endor-router.network.tjo.cloud | #     | fd74:6a6f::11/128  |
+| batuu-router.network.tjo.cloud | #     | fd74:6a6f::12/128  |
+| jakku-router.network.tjo.cloud | #     | fd74:6a6f::13/128  |
+| mustafar-router.network.tjo.cloud | #     | fd74:6a6f::14/128  |
 | # | # |  # |
 | endor.proxmox.tjo.cloud | 10.0.0.61/10     | fd74:6a6f::61/128  |
 | batuu.proxmox.tjo.cloud | 10.0.0.62/10     | fd74:6a6f::62/128  |

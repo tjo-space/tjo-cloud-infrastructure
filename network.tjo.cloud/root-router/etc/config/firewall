@@ -1,7 +1,7 @@
 config defaults
 	option input 'REJECT'
 	option output 'ACCEPT'
-	option forward 'ACCEPT'
+	option forward 'REJECT'
 	option synflood_protect '1'
 
 ##
@@ -12,7 +12,7 @@ config zone
 	list network 'internal'
 	option input 'REJECT'
 	option output 'ACCEPT'
-	option forward 'ACCEPT'
+	option forward 'REJECT'
 	option mtu_fix '1'
 
 config rule
@@ -55,20 +55,57 @@ config rule
 	option target 'ACCEPT'
 
 config rule
-	option name 'Allow-SSH-From-Internal-Range'
+	option name 'Allow-ICMPv6-Forward'
 	option src 'internal'
-	option src_ip 'fd74:6a6f::/32'
-	option dest_port '22'
-	option proto 'tcp'
+	option dest '*'
+	option proto 'icmp'
+	list icmp_type 'echo-request'
+	list icmp_type 'echo-reply'
+	list icmp_type 'destination-unreachable'
+	list icmp_type 'packet-too-big'
+	list icmp_type 'time-exceeded'
+	list icmp_type 'bad-header'
+	list icmp_type 'unknown-header-type'
+	option limit '1000/sec'
 	option family 'ipv6'
 	option target 'ACCEPT'
 
 config rule
-	option name 'Allow-4443-From-Internal-Range'
+	option name 'Allow-IPSec-ESP'
 	option src 'internal'
+	option dest 'local'
+	option proto 'esp'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-ISAKMP'
+	option src 'internal'
+	option dest 'local'
+	option dest_port '500'
+	option proto 'udp'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-IPv6-Forward'
+	option src 'internal'
+	option dest 'local'
+	option proto 'all'
+	option family 'ipv6'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-LinkLocal'
+	option src 'internal'
+	option proto 'all'
+	option src_ip 'fe80::/10'
+	option family 'ipv6'
+	option target 'ACCEPT'
+
+config rule
+	option name 'Allow-Internal'
+	option src 'internal'
+	option proto 'all'
 	option src_ip 'fd74:6a6f::/32'
-	option dest_port '4443'
-	option proto 'tcp'
 	option family 'ipv6'
 	option target 'ACCEPT'
 
@@ -82,3 +119,7 @@ config zone
 	option forward 'ACCEPT'
 	list network 'local'
 	option mtu_fix '1'
+
+config forwarding
+	option src 'local'
+	option dest 'internal'

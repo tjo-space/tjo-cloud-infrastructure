@@ -22,5 +22,9 @@ terraform {
       source  = "hashicorp/random"
       version = ">=3.7.1"
     }
+    technitium = {
+      source  = "kevynb/technitium"
+      version = "0.4.0"
+    }
   }
 }

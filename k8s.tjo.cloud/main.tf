@@ -34,46 +34,45 @@ module "cluster" {
   }
 
   nodes = {
-    nevaroo-yellow = {
-      id        = 6010
-      type      = "controlplane"
-      host      = "nevaroo"
-      storage   = "local-nvme-lvm"
-      cores     = 4
-      memory    = 6144
-      bootstrap = true
+    nevaroo-purple = {
+      id      = 6011
+      type    = "controlplane"
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
+      cores   = 4
+      memory  = 6144
     }
-    endor-yellow = {
-      id      = 6022
+    endor-purple = {
+      id      = 6021
       type    = "controlplane"
       host    = "endor"
       storage = "local-nvme"
       cores   = 4
       memory  = 6144
     }
-    jakku-yellow = {
-      id      = 6040
-      type    = "controlplane"
-      host    = "jakku"
-      storage = "local-nvme"
-      cores   = 2
-      memory  = 6144
-    }
-    endor-orange = {
-      id      = 6023
+    endor-pink = {
+      id      = 6024
       type    = "worker"
       host    = "endor"
       storage = "local-nvme"
       cores   = 4
       memory  = 12288
     }
-    batuu-yellow = {
-      id      = 6032
+    batuu-pink = {
+      id      = 6031
       type    = "worker"
       host    = "batuu"
       storage = "local-nvme"
       cores   = 4
       memory  = 12288
+    }
+    jakku-purple = {
+      id      = 6041
+      type    = "controlplane"
+      host    = "jakku"
+      storage = "local-nvme"
+      cores   = 2
+      memory  = 6144
     }
   }
 }

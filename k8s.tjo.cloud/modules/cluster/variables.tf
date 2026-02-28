@@ -11,6 +11,8 @@ variable "nodes" {
     boot_size = optional(number, 32)
 
     bootstrap = optional(bool, false)
+
+    network_bridge = optional(string, "vmbr2")
   }))
 }
 
@@ -26,8 +28,8 @@ variable "cluster" {
     name = string
     api = optional(object({
       internal = optional(object({
-        domain    = optional(string, "tjo.cloud")
-        subdomain = optional(string, "api.internal.k8s")
+        domain    = optional(string, "cloud.internal")
+        subdomain = optional(string, "api.k8s")
         port      = optional(number, 6443)
       }), {})
       public = optional(object({

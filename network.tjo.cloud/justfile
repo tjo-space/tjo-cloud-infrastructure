@@ -50,7 +50,7 @@ configure-all:
   set -euo pipefail
   for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
-    just configure ${node}} | ts ${node}
+    just configure ${node} | ts ${node}
   done
 
 configure node:

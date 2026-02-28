@@ -32,6 +32,10 @@ terraform {
       source  = "Valodim/desec"
       version = "0.6.1"
     }
+    technitium = {
+      source  = "kevynb/technitium"
+      version = "0.4.0"
+    }
   }
 
   required_version = "~> 1.9.0"
@@ -81,15 +85,23 @@ provider "desec" {
 }
 
 provider "kubectl" {
-  config_path = module.cluster.kubeconfig_path
+  config_path = "admin.kubeconfig"
+  #config_path = module.cluster.kubeconfig_path
 }
 
 provider "helm" {
   kubernetes = {
-    config_path = module.cluster.kubeconfig_path
+    config_path = "admin.kubeconfig"
+    #config_path = module.cluster.kubeconfig_path
   }
 }
 
 provider "kubernetes" {
-  config_path = module.cluster.kubeconfig_path
+  #config_path = module.cluster.kubeconfig_path
+  config_path = "admin.kubeconfig"
+}
+
+provider "technitium" {
+  url   = "https://dns.tjo.cloud"
+  token = var.dns_tjo_cloud_token
 }

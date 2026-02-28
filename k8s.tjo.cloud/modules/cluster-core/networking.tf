@@ -160,7 +160,7 @@ resource "kubernetes_manifest" "cilium-bgp-cluster-config" {
             {
               name        = "local-router"
               peerASN     = var.bgp.asn
-              peerAddress = "fd74:6a6f::1"
+              peerAddress = "fd74:6a6f:53::53"
               peerConfigRef = {
                 name = "default"
               }

@@ -86,7 +86,9 @@ destroy:
   tofu destroy
 
 remove node: etcd-snapshot
-  #!/usr/bin/env bash -euo pipefail
+  #!/usr/bin/env bash
+  set -eou pipefail
+
   IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv6')
 
   talosctl -n ${IP} reset
@@ -94,12 +96,12 @@ remove node: etcd-snapshot
   echo "Node {{node}} removed from kubernetes. Now remove it from terraform configuration!"
 
 reboot node:
-  #!/usr/bin/env bash -euo pipefail
+  #!/usr/bin/env bash
   IP=$(tofu output -json | jq -r '.nodes.value | map(select(.name == "{{node}}")) | first | .ipv6')
   talosctl -n ${IP} reboot
 
 etcd-snapshot prefix="manual":
-  #!/usr/bin/env bash -euo pipefail
+  #!/usr/bin/env bash
   set -eou pipefail
 
   NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv6')
@@ -110,13 +112,15 @@ etcd-snapshot prefix="manual":
   echo "{{CYAN}}{{BOLD}}== Snapshoting done!{{NORMAL}}"
 
 etcd-emergancy-restore snapshot:
-  #!/usr/bin/env bash -euo pipefail
+  #!/usr/bin/env bash
+  set -eou pipefail
+
   # TODO: Implement
   talos -n ${ALL_CONTROLPLANE_NODES} reset --graceful=false --reboot --system-labels-to-wipe=EPHEMERAL
   talosctl -n ${SINGLE_CONTROLPLANE_NODE} bootstrap --recover-from={{snapshot}} --recover-skip-hash-check
 
 upgrade-talos version:
-  #!/usr/bin/env bash -euo pipefail
+  #!/usr/bin/env bash
   set -eou pipefail
 
   echo "{{CYAN}}{{BOLD}}= Talos version: {{ version }}{{NORMAL}}"

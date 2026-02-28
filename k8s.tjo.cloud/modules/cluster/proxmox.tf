@@ -102,7 +102,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
 
   network_device {
-    bridge = "vmbr1"
+    bridge = each.value.network_bridge
   }
 
   cdrom {

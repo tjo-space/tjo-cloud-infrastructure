@@ -160,7 +160,7 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 
   network_device {
-    bridge = "vmbr1"
+    bridge = "vmbr2"
   }
 
   scsi_hardware = "virtio-scsi-single"
@@ -196,7 +196,7 @@ resource "proxmox_virtual_environment_vm" "node" {
     user_data_file_id = proxmox_virtual_environment_file.userdata.id
 
     dns {
-      servers = ["10.0.0.1", "fd74:6a6f::1"]
+      servers = ["fd74:6a6f:53::53", "fd74:6a6f::1"]
     }
 
     ip_config {

@@ -19,6 +19,7 @@ config interface 'internal'
 	list ipaddr   '{{ $node.internal.ipv4.address }}'
 	option ip6assign '64'
 	option ip6ifaceid '::1'
+	list ip6addr 'fd74:6a6f:53::53/128'
 
 config route 'internal4'
 	option interface 'internal'

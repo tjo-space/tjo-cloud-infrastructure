@@ -15,7 +15,7 @@ nodes = {
     }
     vmbr1 = {
       ipv4 = { address = "10.0.0.61/10" }
-      ipv6 = { address = "fd74:6a6f::61/128" }
+      ipv6 = { address = "fd74:6a6f::61/64" }
     }
   }
   batuu = {
@@ -34,7 +34,7 @@ nodes = {
     }
     vmbr1 = {
       ipv4 = { address = "10.0.0.62/10" }
-      ipv6 = { address = "fd74:6a6f::62/128" }
+      ipv6 = { address = "fd74:6a6f::62/64" }
     }
   }
   jakku = {
@@ -53,7 +53,7 @@ nodes = {
     }
     vmbr1 = {
       ipv4 = { address = "10.0.0.63/10" }
-      ipv6 = { address = "fd74:6a6f::63/128" }
+      ipv6 = { address = "fd74:6a6f::63/64" }
     }
   }
   nevaroo = {
@@ -76,7 +76,7 @@ nodes = {
     }
     vmbr1 = {
       ipv4 = { address = "10.0.0.64/10" }
-      ipv6 = { address = "fd74:6a6f::64/128" }
+      ipv6 = { address = "fd74:6a6f::64/64" }
     }
   }
   mustafar = {
@@ -95,7 +95,7 @@ nodes = {
     }
     vmbr1 = {
       ipv4 = { address = "10.0.0.65/10" }
-      ipv6 = { address = "fd74:6a6f::65/128" }
+      ipv6 = { address = "fd74:6a6f::65/64" }
     }
   }
 }

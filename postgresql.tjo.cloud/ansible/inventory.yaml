@@ -2,7 +2,7 @@
   "hosts":
     "barman.postgresql.cloud.internal":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f::be24:11ff:fed6:31de"
+      "ansible_host": "fd74:6a6f:0:14:be24:11ff:fed6:31de"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "18"
@@ -10,13 +10,13 @@
   "hosts":
     "endor-one.postgresql.cloud.internal":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f::be24:11ff:fe6f:de16"
+      "ansible_host": "fd74:6a6f:0:11:be24:11ff:fe6f:de16"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "16"
     "nevaroo-one.postgresql.cloud.internal":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f::be24:11ff:fea6:4c11"
+      "ansible_host": "fd74:6a6f:0:10:be24:11ff:fea6:4c11"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "16"

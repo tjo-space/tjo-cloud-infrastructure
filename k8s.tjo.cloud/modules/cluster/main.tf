@@ -34,7 +34,7 @@ locals {
         }
       }
       network = {
-        nameservers = ["fd74:6a6f::1"]
+        nameservers = ["fd74:6a6f:53::53", "fd74:6a6f::1"]
       }
     }
     cluster = {
@@ -220,7 +220,7 @@ resource "talos_cluster_kubeconfig" "this" {
 
 resource "local_file" "kubeconfig" {
   content  = talos_cluster_kubeconfig.this.kubeconfig_raw
-  filename = "${path.root}/admin.kubeconfig"
+  filename = "${path.root}/admin.kubeconfig.broken"
 
   lifecycle {
     ignore_changes = [content]
@@ -248,11 +248,20 @@ resource "desec_rrset" "api-internal" {
     AAAA = [for k, v in local.nodes_with_address : v.ipv6 if v.type == "controlplane"]
   }
 
-  domain  = var.cluster.api.internal.domain
-  subname = var.cluster.api.internal.subdomain
+  domain  = "tjo.cloud"
+  subname = "api.internal.k8s"
   type    = each.key
   records = each.value
   ttl     = 3600
+}
+
+resource "technitium_record" "api-internal" {
+  for_each   = toset([for k, v in local.nodes_with_address : v.ipv6 if v.type == "controlplane"])
+  zone       = var.cluster.api.internal.domain
+  domain     = "${var.cluster.api.internal.subdomain}.${var.cluster.api.internal.domain}"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = each.value
 }
 
 resource "desec_rrset" "api-public" {
