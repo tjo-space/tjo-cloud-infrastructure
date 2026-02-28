@@ -76,6 +76,7 @@
     - name: Configure Observability
       ansible.builtin.include_tasks:
         file: tasks/observability.yaml
+      tags: observability
 
     - name: Add custom networking options
       ansible.builtin.template:

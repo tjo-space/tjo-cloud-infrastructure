@@ -3,11 +3,13 @@
     name: pipx
     state: present
     update_cache: yes
+  tags: observability
 
 - name: Install prometheus-pve-exporter
   community.general.pipx:
     name: prometheus-pve-exporter
     global: true
+  tags: observability
 
 - name: Configure prometheus-pve-exporter
   ansible.builtin.template:
@@ -17,6 +19,7 @@
     owner: "root"
     group: "root"
   notify: Restart prometheus-pve-exporter
+  tags: observability
 
 - name: Start and enable prometheus-pve-exporter service
   ansible.builtin.systemd:
@@ -24,11 +27,13 @@
     state: started
     enabled: true
     daemon_reload: true
+  tags: observability
 
 - name: Install Alloy
   ansible.builtin.import_role:
     name: alloy
   vars:
+    alloy_endpoint: "grpc.otel.monitor.tjo.cloud:443"
     alloy_username: "{{ tjo_cloud.credentials[inventory_hostname].username }}"
     alloy_password: "{{ tjo_cloud.credentials[inventory_hostname].password }}"
     otel_resource_attributes:
@@ -62,3 +67,4 @@
         targets    = local.file_match.pveproxy_access_log.targets
         forward_to = [loki.process.drop_old.receiver]
       }
+  tags: observability

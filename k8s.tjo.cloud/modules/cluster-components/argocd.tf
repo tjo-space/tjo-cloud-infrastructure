@@ -112,7 +112,7 @@ resource "helm_release" "argocd" {
       }
       clusterCredentials = {
         "k8s-tjo-cloud" = {
-          server = "https://api.internal.k8s.tjo.cloud:6443"
+          server = "https://api.k8s.cloud.internal:6443"
           config = {
             bearerToken = kubernetes_secret_v1.argocd_secret.data["token"]
             tlsClientConfig = {

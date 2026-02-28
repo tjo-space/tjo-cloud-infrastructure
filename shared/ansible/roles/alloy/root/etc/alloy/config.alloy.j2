@@ -194,7 +194,7 @@ otelcol.auth.oauth2 "default" {
 
 otelcol.exporter.otlp "default" {
 	client {
-		endpoint = "grpc.otel.monitor.cloud.internal:443"
+		endpoint = "{{ alloy_endpoint }}"
 		auth     = otelcol.auth.oauth2.default.handler
 	}
 }
