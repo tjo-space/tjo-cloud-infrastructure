@@ -17,3 +17,9 @@
   ansible.builtin.apt:
     name: locales-all
     state: present
+
+- name: Install extensions
+  ansible.builtin.apt:
+    name: postgresql-{{ postgresql_version }}-{{ item }}
+    state: present
+  loop: "{{ postgresql_extensions }}"

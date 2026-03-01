@@ -48,6 +48,7 @@ zerotier-cli join b6079f73c6379990
 # Ref: https://askubuntu.com/questions/997888/sysctl-p-return-net-ipv6-conf-all-accept-ra-2
 #  > net.ipv6.conf.all.accept_ra = 2 is used when you what to use ipv6 forwarding and also use ipv6 SLAAC.
 sysctl -w net.ipv6.conf.ztyxa2r2sw.accept_ra=2
+ip -6 route add fd74:6a6f::/32 via fd74:6a6f::1 dev ztyxa2r2sw
 
 echo "=== Copy Configuration Files"
 rsync -a mail.tjo.cloud/root/ /

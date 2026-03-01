@@ -29,6 +29,10 @@
     - name: Install Postgresql
       ansible.builtin.import_role:
         name: postgresql
+      vars:
+        # Required for immich
+        postgresql_shared_preload_libraries: "vchord.so"
+        postgresql_extensions: "pgvector"
 
     - name: Install and Configure postgresql server
       ansible.builtin.import_tasks:

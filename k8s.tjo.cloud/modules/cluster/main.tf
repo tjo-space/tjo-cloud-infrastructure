@@ -220,7 +220,7 @@ resource "talos_cluster_kubeconfig" "this" {
 
 resource "local_file" "kubeconfig" {
   content  = talos_cluster_kubeconfig.this.kubeconfig_raw
-  filename = "${path.root}/admin.kubeconfig.broken"
+  filename = "${path.root}/admin.kubeconfig"
 
   lifecycle {
     ignore_changes = [content]

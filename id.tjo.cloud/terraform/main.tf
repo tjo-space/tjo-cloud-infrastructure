@@ -52,8 +52,8 @@ resource "hcloud_server" "main" {
 
 resource "desec_rrset" "main" {
   for_each = {
-    A = [for k, v in hcloud_server.main : v.ipv4_address]
-    #AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
+    A    = [for k, v in hcloud_server.main : v.ipv4_address]
+    AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
   }
   domain  = var.domain.zone
   subname = trimsuffix(var.domain.name, ".${var.domain.zone}")

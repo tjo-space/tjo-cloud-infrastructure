@@ -63,8 +63,8 @@ module "cluster" {
       type    = "worker"
       host    = "batuu"
       storage = "local-nvme"
-      cores   = 4
-      memory  = 12288
+      cores   = 6
+      memory  = 24576
     }
     jakku-purple = {
       id      = 6041
