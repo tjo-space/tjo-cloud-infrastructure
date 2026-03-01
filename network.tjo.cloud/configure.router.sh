@@ -5,7 +5,7 @@ echo "- OPKG Update"
 opkg update
 
 echo "- Tools"
-opkg install tcpdump htop
+opkg install tcpdump htop bind-dig
 
 echo "- Qemu agent"
 opkg install qemu-ga

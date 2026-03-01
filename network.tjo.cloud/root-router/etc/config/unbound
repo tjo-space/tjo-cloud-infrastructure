@@ -21,7 +21,7 @@ config zone 'fwd_internal'
 	# internal dns.tjo.cloud
 	list server 'fd74:6a6f::be24:11ff:fe8a:b5e6'
 
-config zone 'fwd_public'
+config zone 'fwd_gateway'
   option zone_type 'forward_zone'
   option enabled '1'
   option fallback '1'
@@ -29,3 +29,22 @@ config zone 'fwd_public'
 
   # gateway dns
   list server 'fd74:6a6f::1'
+
+config zone 'fwd_public'
+  option zone_type 'forward_zone'
+  option enabled '1'
+  option fallback '1'
+  option tls_upstream '1'
+  list zone_name '.'
+
+  # UncensoredDNS
+  list server '91.239.100.100@853#anycast.uncensoreddns.org'
+  list server '2001:67c:28a4::@853#anycast.uncensoreddns.org'
+  list server '89.233.43.71@853#unicast.uncensoreddns.org'
+  list server '2a01:3a0:53:53::@853#unicast.uncensoreddns.org'
+
+  # Quad9
+  list server '9.9.9.9@853#dns.quad9.net'
+  list server '149.112.112.112@853#dns.quad9.net'
+  list server '2620:fe::fe@853#dns.quad9.net'
+  list server '2620:fe::9@853#dns.quad9.net'

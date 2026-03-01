@@ -82,9 +82,6 @@ locals {
     { type = "A", subdomain = "synology.storage", records = ["100.79.91.32"] },
     ## BACKUP
     { type = "CNAME", subdomain = "backup", records = ["u409586.your-storagebox.de."] },
-    ## NETWORK
-    { type = "A", subdomain = "nevaroo.network", records = ["10.0.0.4"] },
-    { type = "AAAA", subdomain = "nevaroo.network", records = ["fd74:6a6f::4"] },
     ## SYSTEM
     { type = "A", subdomain = "batuu.system", records = ["100.110.88.100"] },
     { type = "A", subdomain = "endor.system", records = ["100.103.129.84"] },

@@ -51,6 +51,8 @@ module "proxmox_node" {
   cores  = each.value.cores
   memory = each.value.memory
 
+  network_bridge = "vmbr1" # Use internal not local network.
+
   boot = {
     storage = each.value.boot_storage
     size    = each.value.boot_size

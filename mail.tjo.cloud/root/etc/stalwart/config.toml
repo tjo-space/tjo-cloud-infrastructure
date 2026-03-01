@@ -6,8 +6,8 @@ local-keys = [ "store.*", "directory.*", "tracer.*", "!server.blocked-ip.*", "!s
 
 [authentication.fallback-admin]
 # openssl passwd -6
-secret = "$6$gxZSzKLDHK5d3fVJ$xKXp7PpC3uLBn0wuw7gbcvfIG5agmBEjBOGQ4nB8xqBglV10eakrllisniFGeyZT.C8CRksVTJ8uNY40oGrcP."
-user = "admin"
+secret = "%{env:ADMIN_PASSWORD}%"
+user = "%{env:ADMIN_USERNAME}%"
 
 [server]
 hostname = "mail.tjo.cloud"

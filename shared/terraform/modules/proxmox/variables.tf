@@ -4,6 +4,12 @@ variable "username" {
   description = "Linux Username"
 }
 
+variable "network_bridge" {
+  type        = string
+  default     = "vmbr2"
+  description = "Bridge to be used for network interface."
+}
+
 variable "name" {
   type = string
 }

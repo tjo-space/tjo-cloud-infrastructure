@@ -160,7 +160,7 @@ resource "proxmox_virtual_environment_vm" "node" {
   }
 
   network_device {
-    bridge = "vmbr2"
+    bridge = var.network_bridge
   }
 
   scsi_hardware = "virtio-scsi-single"
