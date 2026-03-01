@@ -45,6 +45,16 @@ ssh node:
   export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
   ssh -J root@nevaroo.system.tjo.cloud root@${IPV6}
 
+dns-flush-cache domain:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
+    ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'unbound-control flush_negative' | ts ${node}
+    ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
+  done
+
 configure-all:
   #!/usr/bin/env sh
   set -euo pipefail

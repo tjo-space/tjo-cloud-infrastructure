@@ -39,7 +39,7 @@ nodes = {
     data_size    = 128
 
     cores  = 2
-    memory = 2048
+    memory = 8096
 
     postgresql_version = "18"
   }
