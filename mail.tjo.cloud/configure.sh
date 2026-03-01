@@ -79,7 +79,7 @@ PROMETHEUS_PASSWORD=${PROMETHEUS_PASSWORD}
 ADMIN_USERNAME=${ADMIN_USERNAME}
 ADMIN_PASSWORD=${ADMIN_PASSWORD}
 EOF
-export STALWART_VERSION="v0.15.3"
+export STALWART_VERSION="v0.15.5"
 export STALWART_ARCH="$(arch)"
 pushd "$(mktemp -d)"
 for bin in "stalwart" "stalwart-cli"; do
