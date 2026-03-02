@@ -63,6 +63,12 @@ users = [
     connection_limit = 40
     databases        = [{ name = "paperless.tjo.space", connection_limit = 40 }]
   },
+  {
+    node             = "endor-one"
+    name             = "photos.tjo.space"
+    connection_limit = 10
+    databases        = [{ name = "photos.tjo.space", connection_limit = 10 }]
+  },
 ]
 
 administrators = [

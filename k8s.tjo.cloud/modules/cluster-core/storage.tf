@@ -2,7 +2,7 @@ resource "helm_release" "proxmox-csi" {
   name            = "proxmox-csi-plugin"
   chart           = "proxmox-csi-plugin"
   repository      = "oci://ghcr.io/sergelogvinov/charts"
-  version         = "0.5.3"
+  version         = "0.5.5"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
