@@ -4,13 +4,19 @@ Handling networking between nodes and between virtual machines.
 
 # Architecture
 
-<img align="left" src="docs/arhitecture.excalidraw.svg" width="40%">
+<img align="left" src="docs/network.excalidraw.svg" width="40%">
 
-__WAN interface__ either represents an actual public interface (on Hetzner) or an interface in home LAN that has port-forwarded ports to it from home router.
+### Internal Network
+This is a zerotier enable network accesso all servers. This applies to Proxmox Hosts as well as any
+cloud vps (hetzner cloud etc.). They all share single IPv4 and IPv6 subnet.
 
-__LAN interface__ is an ordinary lan network.
+### Local Network
+This are L2 IPv6 networks for specific Proxmox Host. Reason to have this is so that all VM's on that
+host have _next hop_ as the local router. Which can then do DNS, NTP, BGP and further routing.
 
-__network.tjo.cloud__ establishes ZeroTier connection between other network.tjo.cloud nodes to establish Layer2 SD-WAN.
+This improves performance, as otherwise in the Internal network, next hope is always the Gateway, which is
+a single VM currently on nevaroo deployed in Hetzner Germany datacenter. This means that there is ~30ms latency
+to do any routing (even if the hop after router is the same proxmox host).
 
 # Subnets
 
