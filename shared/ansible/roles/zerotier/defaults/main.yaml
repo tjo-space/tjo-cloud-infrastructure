@@ -1,0 +1,13 @@
+zerotier_one_service_override: |
+  [Service]
+  ExecStartPost=/bin/sleep 10
+  ## Accept Router Advertisements
+  ## This must be set to 2 to work with podman networking.
+  ExecStartPost=/usr/sbin/sysctl -w net.ipv6.conf.ztyxa2r2sw.accept_ra=2
+  ## Wait a bit to get SLAAC ips.
+  ExecStartPost=/bin/sleep 10
+  ## Set additional routes
+  ### k8s.tjo.cloud
+  ExecStartPost=/usr/sbin/ip -6 route add fd9b:7c3d:7f6a::/48 dev ztyxa2r2sw via fd74:6a6f::1
+  ### network.tjo.cloud
+  ExecStartPost=/usr/sbin/ip -6 route add fd74:6a6f::/32 dev ztyxa2r2sw via fd74:6a6f::1

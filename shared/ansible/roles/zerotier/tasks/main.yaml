@@ -12,3 +12,21 @@
     name: zerotier-one
     state: present
     update_cache: yes
+
+- name: Ensure zerotier systemd override dir exists
+  file:
+    path: /etc/systemd/system/zerotier-one.service.d
+    state: directory
+
+- name: Configure zerotier overrides
+  ansible.builtin.copy:
+    content: "{{ zerotier_one_service_override }}"
+    dest: /etc/systemd/system/zerotier-one.service.d/override.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"
+  notify: Restart zerotier
+
+- name: Daemon reload in case we changed zerotier config overrides
+  ansible.builtin.systemd_service:
+    daemon_reload: true
