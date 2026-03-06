@@ -71,7 +71,7 @@ module "cluster" {
       type    = "controlplane"
       host    = "jakku"
       storage = "local-nvme"
-      cores   = 2
+      cores   = 1
       memory  = 6144
     }
   }
