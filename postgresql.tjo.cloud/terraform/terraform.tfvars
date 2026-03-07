@@ -69,6 +69,12 @@ users = [
     connection_limit = 20
     databases        = [{ name = "photos.tjo.space", connection_limit = 20 }]
   },
+  {
+    node             = "endor-one"
+    name             = "rss.tjo.space"
+    connection_limit = 20
+    databases        = [{ name = "rss.tjo.space", connection_limit = 20 }]
+  },
 ]
 
 administrators = [
