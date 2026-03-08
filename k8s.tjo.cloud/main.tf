@@ -66,12 +66,12 @@ module "cluster" {
       cores   = 6
       memory  = 24576
     }
-    jakku-purple = {
-      id      = 6041
+    batuu-purple = {
+      id      = 6032
       type    = "controlplane"
-      host    = "jakku"
+      host    = "batuu"
       storage = "local-nvme"
-      cores   = 1
+      cores   = 2
       memory  = 6144
     }
   }

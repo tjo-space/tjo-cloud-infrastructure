@@ -256,7 +256,7 @@ resource "desec_rrset" "api-internal" {
 }
 
 resource "technitium_record" "api-internal" {
-  for_each   = toset([for k, v in local.nodes_with_address : v.ipv6 if v.type == "controlplane"])
+  for_each   = tomap({ for k, v in local.nodes_with_address : k => v.ipv6 if v.type == "controlplane" })
   zone       = var.cluster.api.internal.domain
   domain     = "${var.cluster.api.internal.subdomain}.${var.cluster.api.internal.domain}"
   ttl        = 60

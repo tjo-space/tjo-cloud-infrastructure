@@ -66,8 +66,8 @@ users = [
   {
     node             = "endor-one"
     name             = "photos.tjo.space"
-    connection_limit = 20
-    databases        = [{ name = "photos.tjo.space", connection_limit = 20 }]
+    connection_limit = 40
+    databases        = [{ name = "photos.tjo.space", connection_limit = 40 }]
   },
   {
     node             = "endor-one"
