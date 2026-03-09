@@ -5,7 +5,6 @@ variable "nodes_hetzner_cloud" {
     datacenter   = string
     image        = optional(string, "ubuntu-24.04")
     server_type  = optional(string, "cax11")
-    private_ipv4 = optional(string, "")
     private_ipv6 = optional(string, "")
   }))
 }

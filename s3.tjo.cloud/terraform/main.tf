@@ -43,7 +43,6 @@ locals {
 
   nodes_deployed = {
     for k, v in local.nodes_with_meta : k => merge(v, {
-      private_ipv4 = v.provider == "hetzner-cloud" ? v.private_ipv4 : module.proxmox_node[k].address.ipv4
       private_ipv6 = v.provider == "hetzner-cloud" ? v.private_ipv6 : module.proxmox_node[k].address.ipv6
 
       public_ipv4 = v.provider == "hetzner-cloud" ? module.hetzner-cloud[k].address.ipv4 : ""
@@ -88,7 +87,7 @@ module "proxmox_node" {
   boot = {
     storage = each.value.boot_storage
     size    = each.value.boot_size
-    image   = "ubuntu_2404_server_cloudimg_amd64.img"
+    image   = "debian_13_server_cloudimg_amd64.img"
   }
 
   disks = [{
@@ -103,7 +102,7 @@ module "proxmox_node" {
     } }
     fs_setup = [{
       label      = "garage"
-      filesystem = "xfs"
+      filesystem = "ext4"
       device     = "/dev/vdb"
     }]
     mounts = [["/dev/vdb1", "/srv/garage"]]

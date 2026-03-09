@@ -24,7 +24,7 @@
 - name: Loop connect garage nodes
   ansible.builtin.command:
     cmd: |
-      garage node connect {{ hostvars[item]['garage_node_id'] }}@{{ hostvars[item]['garage_node_ip'] }}:3901
+      garage node connect {{ hostvars[item]['garage_node_id'] }}@[{{ hostvars[item]['garage_node_ip'] }}]:3901
   loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
   delegate_to: "{{ ansible_play_hosts[0] }}"
   changed_when: false

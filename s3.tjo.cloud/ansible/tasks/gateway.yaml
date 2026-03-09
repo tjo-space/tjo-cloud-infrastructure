@@ -1,12 +1,16 @@
-- name: Gateway - Firewall
-  community.general.ufw:
-    rule: allow
+- name: FIREWALL - HTTP, HTTPS and ZEROTIER
+  ansible.posix.firewalld:
     port: '{{ item }}'
-    proto: tcp
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
   loop:
-    - '80'
-    - '443'
-    - '9993' # Zerotier
+    - "80/tcp"
+    - "443/tcp"
+    - "9993/tcp"
+    - "9993/udp"
+  tags: firewall
 
 - name: Gateway - Install Zerotier
   ansible.builtin.include_role:

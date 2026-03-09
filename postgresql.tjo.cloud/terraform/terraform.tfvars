@@ -32,14 +32,14 @@ nodes = {
   barman = {
     kind = "barman"
 
-    host         = "mustafar"
+    host         = "nevaroo"
     boot_storage = "local"
 
     data_storage = "local"
     data_size    = 128
 
     cores  = 2
-    memory = 8096
+    memory = 4096
 
     postgresql_version = "18"
   }

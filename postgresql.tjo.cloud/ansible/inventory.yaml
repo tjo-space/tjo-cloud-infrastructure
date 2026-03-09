@@ -2,7 +2,7 @@
   "hosts":
     "barman.postgresql.cloud.internal":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f:0:14:be24:11ff:fed6:31de"
+      "ansible_host": "fd74:6a6f:0:10:be24:11ff:fe81:bab"
       "ansible_port": 2222
       "ansible_user": "bine"
       "postgresql_version": "18"

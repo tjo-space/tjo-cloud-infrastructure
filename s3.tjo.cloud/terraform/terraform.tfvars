@@ -3,21 +3,11 @@ nodes_hetzner_cloud = {
     garage_zone  = "germany"
     garage_kind  = "gateway"
     datacenter   = "fsn1-dc14"
-    private_ipv4 = "10.1.227.36" # manually configured once known
-    private_ipv6 = "fd74:6a6f::90ef:71ff:fe49:2599"
+    private_ipv6 = "fd74:6a6f::90af:1eff:fe52:3884"
   }
 }
 
 nodes_proxmox = {
-  "mustafar-purple" = {
-    garage_zone    = "mustafar"
-    garage_kind    = "store"
-    garage_storage = "local"
-    garage_size    = 400
-
-    host         = "mustafar"
-    boot_storage = "local"
-  }
   "batuu-yellow" = {
     garage_zone    = "batuu"
     garage_kind    = "store"
@@ -31,7 +21,7 @@ nodes_proxmox = {
     garage_zone    = "endor"
     garage_kind    = "store"
     garage_storage = "local-nvme"
-    garage_size    = 400
+    garage_size    = 800
 
     host         = "endor"
     boot_storage = "local-nvme"

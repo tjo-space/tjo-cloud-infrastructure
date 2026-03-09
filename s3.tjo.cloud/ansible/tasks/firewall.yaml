@@ -1,23 +1,32 @@
-- name: UFW - Install
-  ansible.builtin.apt:
-    name: ufw
-    state: present
-
-- name: UFW - Allow S3 API, S3 WEB, RPC and ADMIN ports
-  community.general.ufw:
-    rule: allow
-    port: '{{ item[0] }}'
-    proto: tcp
-    src: '{{ item[1] }}'
-  loop: "{{ ['3900', '3902', '3901', '3903'] | product(tjo_cloud_networks) | list }}"
-
-- name: UFW - Allow SSH
-  community.general.ufw:
-    rule: allow
-    port: '2222'
-    proto: tcp
-
-- name: UFW - Enable and deny by default
-  community.general.ufw:
+- name: FIREWALL - Define internal zone
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
     state: enabled
-    default: deny
+  loop: "{{ tjo_cloud_networks }}"
+  tags: firewall
+
+- name: FIREWALL - Allow S3 API, S3 WEB, RPC and ADMIN ports
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "3900/tcp"
+    - "3902/tcp"
+    - "3901/tcp"
+    - "3903/tcp"
+  tags: firewall
+
+- name: FIREWALL - Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall

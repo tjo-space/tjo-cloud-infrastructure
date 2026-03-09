@@ -55,14 +55,6 @@ resource "desec_rrset" "web_https" {
   ttl     = 3600
 }
 
-resource "desec_rrset" "node_aaaa" {
-  for_each = local.nodes_deployed
-  domain   = "tjo.cloud"
-  subname  = trimsuffix(each.value.fqdn, ".tjo.cloud")
-  type     = "AAAA"
-  records  = [each.value.private_ipv6]
-  ttl      = 3600
-}
 resource "technitium_record" "any" {
   for_each   = local.nodes_deployed
   zone       = "cloud.internal"

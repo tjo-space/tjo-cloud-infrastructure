@@ -45,7 +45,7 @@ module "proxmox_node" {
 
   name        = each.value.name
   fqdn        = each.value.fqdn
-  description = "dns.tjo.cloud node ${each.value.name}"
+  description = "ca.tjo.cloud node ${each.value.name}"
   host        = each.value.host
 
   cores  = each.value.cores
