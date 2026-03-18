@@ -18,6 +18,7 @@ mod network 'network.tjo.cloud'
 mod postgresql 'postgresql.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'
 mod s3 's3.tjo.cloud'
+mod kamino 'kamino.system.tjo.cloud'
 
 import 'secrets.justfile'
 

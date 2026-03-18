@@ -1,0 +1,8 @@
+"all":
+  "hosts":
+    "kamino.system.tjo.cloud":
+      "ansible_become": true
+      "ansible_host": "fd7a:115c:a1e0::9638:6035"
+      "ansible_port": 22
+      "ansible_user": "bine"
+      "provider": "onprem"

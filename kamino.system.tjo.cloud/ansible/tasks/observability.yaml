@@ -1,0 +1,40 @@
+- name: Download Nut
+  ansible.builtin.get_url:
+    url: "https://github.com/DRuggeri/nut_exporter/releases/download/v3.2.5/nut_exporter-v3.2.5-linux-arm64"
+    dest: "/usr/local/bin/nut_exporter"
+    mode: '0711'
+    owner: root
+    group: root
+  notify: Restart Nut
+
+- name: Install Alloy
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+    alloy_custom_integrations: |
+      prometheus.scrape "nut" {
+        targets    = concat(
+          [
+            {"__address__" = "127.0.0.1:9199", "instance" = constants.hostname, "job" = "integrations/nut"},
+          ],
+        )
+        metrics_path = "/ups_metrics"
+        params = { ups = ["primary"] }
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+      }
+
+copy files
+
+sudo systemctl start nut-server
+sudo systemctl enable nut-server
+sudo systemctl start nut-monitor
+sudo systemctl enable nut-monitor

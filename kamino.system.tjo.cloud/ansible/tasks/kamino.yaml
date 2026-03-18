@@ -1,0 +1,26 @@
+- name: Connect to Tailscale
+  ansible.builtin.shell: |
+    tailscale up \
+      --reset \
+      --accept-dns=false \
+      --ssh=true \
+      --hostname="kamino.system.tjo.cloud" \
+      --advertise-tags="tag:system-tjo-cloud"
+
+    #tailscale serve --service=svc:proxmox https+insecure://localhost:8006
+
+    cat > /etc/sysctl.d/99-tailscale.conf << EOF
+    net.ipv4.ip_forward = 1
+    net.ipv6.conf.all.forwarding = 1
+    EOF
+    sysctl -p /etc/sysctl.d/99-tailscale.conf
+  tags: tailscale
+
+- name: Secure SSH
+  ansible.builtin.shell: |
+    echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
+
+- name: Install nut
+  ansible.builtin.apt:
+    name: nut
+    state: present

@@ -1,0 +1,30 @@
+- name: FIREWALL - Define internal zone
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ tjo_cloud_networks }}"
+  tags: firewall
+
+- name: FIREWALL - Define internal zone for tailscale and home
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "fd7a:115c:a1e0::/48" # Tailscale
+    - "fddc:2c1b:1bbc::/48" # Home Network
+  tags: firewall
+
+- name: FIREWALL - Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall
