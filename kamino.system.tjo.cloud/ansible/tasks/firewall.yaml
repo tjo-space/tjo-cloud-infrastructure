@@ -28,3 +28,12 @@
     immediate: true
     state: enabled
   tags: firewall
+
+- name: FIREWALL - Allow Nut
+  ansible.posix.firewalld:
+    port: "3493/tcp"
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall

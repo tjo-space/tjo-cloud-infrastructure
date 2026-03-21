@@ -5,10 +5,48 @@
   vars_files:
     - vars.yaml
     - vars.secrets.yaml
+    - vars.terraform.secrets.yaml
 
-  handlers: []
+  handlers:
+    - name: Restart nut-exporter
+      ansible.builtin.systemd:
+        name: nut-exporter
+        state: restarted
+    - name: Restart nut-server
+      ansible.builtin.systemd:
+        name: nut-server
+        state: restarted
+    - name: Restart nut-monitor
+      ansible.builtin.systemd:
+        name: nut-monitor
+        state: restarted
 
   tasks:
+    - name: Create tjo.cloud directory
+      ansible.builtin.file:
+        state: directory
+        path: "/etc/tjo.cloud"
+        mode: "0700"
+        owner: "root"
+        group: "root"
+
+    - name: Write metadata
+      ansible.builtin.copy:
+        dest: "/etc/tjo.cloud/meta.json"
+        content: |
+          {
+            "cloud_provider": "onprem",
+            "cloud_region": "rbpi",
+            "service_account": {
+              "password": "{{ tjo_cloud.credentials.password }}",
+              "username": "{{ tjo_cloud.credentials.username }}"
+            },
+            "service_name": "kamino.system.tjo.cloud"
+          }
+        mode: "0600"
+        owner: "root"
+        group: "root"
+
     - name: Run defaults
       ansible.builtin.import_role:
         name: default

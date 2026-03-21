@@ -6,6 +6,7 @@
     suites: stable
     components: main
     signed_by: https://apt.grafana.com/gpg.key
+    install_python_debian: yes
 
 - name: Install Grafana Alloy
   ansible.builtin.apt:

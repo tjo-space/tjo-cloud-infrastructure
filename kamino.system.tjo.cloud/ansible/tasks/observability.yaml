@@ -1,16 +1,33 @@
-- name: Download Nut
+- name: Download nut-exporter
   ansible.builtin.get_url:
     url: "https://github.com/DRuggeri/nut_exporter/releases/download/v3.2.5/nut_exporter-v3.2.5-linux-arm64"
-    dest: "/usr/local/bin/nut_exporter"
+    dest: "/usr/local/bin/nut-exporter"
     mode: '0711'
     owner: root
     group: root
-  notify: Restart Nut
+  notify: Restart nut-exporter
+
+- name: Create nut-exporter systemd service file
+  ansible.builtin.template:
+    src: root/etc/systemd/system/nut-exporter.service
+    dest: /etc/systemd/system/nut-exporter.service
+    mode: '0644'
+    owner: root
+    group: root
+  notify: Restart nut-exporter
+
+- name: Start and enable nut-exporter service
+  ansible.builtin.systemd:
+    name: nut-exporter
+    state: started
+    enabled: true
+    daemon_reload: true
 
 - name: Install Alloy
   ansible.builtin.import_role:
     name: alloy
   vars:
+    alloy_endpoint: "grpc.otel.monitor.tjo.cloud:443"
     alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
     alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
     otel_resource_attributes:
@@ -31,10 +48,3 @@
           otelcol.receiver.prometheus.default.receiver,
         ]
       }
-
-copy files
-
-sudo systemctl start nut-server
-sudo systemctl enable nut-server
-sudo systemctl start nut-monitor
-sudo systemctl enable nut-monitor

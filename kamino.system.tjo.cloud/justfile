@@ -1,6 +1,17 @@
 default:
   @just --list
 
+apply:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init -upgrade
+  tofu apply
+
+destroy:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu  destroy
+
 configure tag="":
   #!/usr/bin/env sh
   cd {{source_directory()}}/ansible
