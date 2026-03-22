@@ -68,6 +68,10 @@ variable "nodes" {
       })
     })
     iso_storage = optional(string, "local")
+    nut = optional(object({
+      enabled = bool
+      host    = string
+    }), { enabled = false, host = "" })
   }))
   description = "List of proxmox nodes"
 }

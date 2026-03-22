@@ -17,6 +17,10 @@ nodes = {
       ipv4 = { address = "10.0.0.61/10" }
       ipv6 = { address = "fd74:6a6f::61/64" }
     }
+    nut = {
+      enabled = true
+      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+    }
   }
   batuu = {
     cloud_provider = "onprem"
@@ -36,6 +40,10 @@ nodes = {
       ipv4 = { address = "10.0.0.62/10" }
       ipv6 = { address = "fd74:6a6f::62/64" }
     }
+    nut = {
+      enabled = true
+      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+    }
   }
   jakku = {
     cloud_provider = "onprem"
@@ -54,6 +62,10 @@ nodes = {
     vmbr1 = {
       ipv4 = { address = "10.0.0.63/10" }
       ipv6 = { address = "fd74:6a6f::63/64" }
+    }
+    nut = {
+      enabled = true
+      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
     }
   }
   nevaroo = {

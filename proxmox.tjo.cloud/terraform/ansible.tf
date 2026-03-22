@@ -8,6 +8,8 @@ resource "local_file" "ansible_inventory" {
           ansible_user   = "root"
           cloud_region   = v.cloud_region
           cloud_provider = v.cloud_provider
+          nut_enabled    = v.nut.enabled
+          nut_host       = v.nut.host
         }
       }
     }

@@ -18,6 +18,7 @@
   loop:
     - "fd7a:115c:a1e0::/48" # Tailscale
     - "fddc:2c1b:1bbc::/48" # Home Network
+    - "fe80::/10" # link local
   tags: firewall
 
 - name: FIREWALL - Allow SSH

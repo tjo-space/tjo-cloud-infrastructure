@@ -1,0 +1,26 @@
+- name: Install nut
+  ansible.builtin.apt:
+    name: nut-client
+    state: present
+  tags: nut
+
+- name: Template nut config files
+  ansible.builtin.template:
+    src: "root/etc/nut/{{ item }}"
+    dest: "/etc/nut/{{ item }}"
+    mode: "0644"
+    owner: "root"
+    group: "root"
+  loop:
+    - "nut.conf"
+    - "upsmon.conf"
+  notify:
+    - Restart nut-client
+  tags: nut
+
+- name: Start and enable nut-client
+  ansible.builtin.systemd:
+    name: "nut-client"
+    state: started
+    enabled: true
+  tags: nut

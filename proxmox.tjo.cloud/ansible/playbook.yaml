@@ -21,6 +21,10 @@
       ansible.builtin.systemd:
         name: systemd-journald
         state: restarted
+    - name: Restart nut-client
+      ansible.builtin.systemd:
+        name: nut-client
+        state: restarted
 
   tasks:
     - name: Fetch Public SSH Key
@@ -92,3 +96,9 @@
       ansible.builtin.include_tasks:
         file: tasks/sdn.yaml
       tags: networking
+
+    - name: Include nut task
+      ansible.builtin.include_tasks:
+        file: tasks/nut.yaml
+      when: nut_enabled
+      tags: nut

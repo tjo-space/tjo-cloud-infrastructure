@@ -4,7 +4,9 @@ After=network-online.target nut-server.service
 Wants=network-online.target nut-server.service
 
 [Service]
-ExecStart=/usr/local/bin/nut-exporter --nut.server="127.0.0.1" --nut.serverport=3493 --web.listen-address=:9199
+Environment=NUT_EXPORTER_USERNAME=admin
+Environment=NUT_EXPORTER_PASSWORD={{ nut_admin_password }}
+ExecStart=/usr/local/bin/nut-exporter --nut.server="[::1]" --nut.serverport=3493 --web.listen-address=:9199
 NoNewPrivileges=yes
 PrivateUsers=yes
 PrivateTmp=yes
