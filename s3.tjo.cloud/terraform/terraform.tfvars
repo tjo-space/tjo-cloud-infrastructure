@@ -29,7 +29,7 @@ nodes_proxmox = {
   "jakku-yellow" = {
     garage_zone    = "jakku"
     garage_kind    = "store"
-    garage_storage = "local-hdd"
+    garage_storage = "local-nvme"
     garage_size    = 800
 
     host         = "jakku"

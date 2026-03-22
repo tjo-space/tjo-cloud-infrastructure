@@ -18,15 +18,6 @@
       "garage_size": "800G"
       "garage_zone": "endor"
       "provider": "proxmox"
-    "jakku-yellow-proxmox.s3.tjo.cloud":
-      "ansible_become": true
-      "ansible_host": "fd74:6a6f:0:13:be24:11ff:fe77:49c5"
-      "ansible_port": 2222
-      "ansible_user": "bine"
-      "garage_kind": "store"
-      "garage_size": "800G"
-      "garage_zone": "jakku"
-      "provider": "proxmox"
     "pink-hetzner-cloud.s3.tjo.cloud":
       "ansible_become": true
       "ansible_host": "fd74:6a6f::90af:1eff:fe52:3884"
