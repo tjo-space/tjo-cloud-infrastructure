@@ -82,6 +82,9 @@ update-blocked-list:
   echo "# FACEBOOK IPV4 $(echo $FACEBOOK_IPV4 | wc -w)"
   echo "# FACEBOOK IPV6 $(echo $FACEBOOK_IPV6 | wc -w)"
 
+  FACEBOOK_ANOTHER=$(curl -s https://raw.githubusercontent.com/sakib-m/IP-Prefix-List/refs/heads/main/FACEBOOK/only_ip_blocks.txt | grep -v '#')
+  echo "# FACEBOOK ANOTHER $(echo $FACEBOOK_ANOTHER | wc -w)"
+
   ALIBABA=$(curl -s https://raw.githubusercontent.com/sakib-m/IP-Prefix-List/refs/heads/main/ALIBABA/only_ip_blocks.txt | grep -v '#')
   echo "# ALIBABA $(echo $ALIBABA | wc -w)"
 
