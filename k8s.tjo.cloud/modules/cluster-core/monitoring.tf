@@ -112,7 +112,7 @@ resource "helm_release" "monitoring" {
       {
         name = "monitor-tjo-cloud"
         type = "otlp"
-        url  = "grpc.otel.monitor.tjo.cloud:443"
+        url  = "grpc.otel.monitor.cloud.internal:443"
         auth = {
           type = "oauth2"
           oauth2 = {
@@ -124,6 +124,21 @@ resource "helm_release" "monitoring" {
               client_assertion_type = ["urn:ietf:params:oauth:client-assertion-type:jwt-bearer"]
             }
           }
+        }
+        tls = {
+          ca = <<EOF
+-----BEGIN CERTIFICATE-----
+MIIBfzCCASSgAwIBAgIQTwBj3msM0GPYkUSHuEsKEjAKBggqhkjOPQQDAjAeMRww
+GgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MCAXDTI2MDIwNjIwNTc0MFoYDzIw
+NTEwMzE0MTI1NzQwWjAeMRwwGgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MFkw
+EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENghQfaCunCDzn0BmU8vI5X79OAqZ7Uob
+8tM38BJmvUmafJMyxpvlIKNgotXJfnTw1GN5mR6u4eqvSRclhUcRtKNCMEAwDgYD
+VR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFD0gfxAPGvuX
+jmqfZ1CreFQT+WuQMAoGCCqGSM49BAMCA0kAMEYCIQCY0suGAsNGx7n2+F+Z786Q
+dubTJY1VA3fqwc0ZpO+AtQIhAOmeM2O7iFarM2KILzS5189DsdNIn5pp9v5uLOSX
+T8+p
+-----END CERTIFICATE-----
+EOF
         }
         logs = {
           enabled = true
