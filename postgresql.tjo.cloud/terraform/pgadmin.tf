@@ -86,6 +86,9 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
             run_as_user = 0
           }
           resources {
+            requests = {
+              cpu = "200m"
+            }
             limits = {
               cpu    = "1000m"
               memory = "250Mi"
@@ -127,6 +130,9 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
           }
 
           resources {
+            requests = {
+              cpu = "200m"
+            }
             limits = {
               cpu    = "1000m"
               memory = "250Mi"
