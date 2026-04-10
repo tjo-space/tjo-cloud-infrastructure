@@ -113,3 +113,12 @@ resource "technitium_record" "for_node" {
   type       = "AAAA"
   ip_address = split("/", each.value.vmbr1.ipv6.address)[0]
 }
+
+resource "technitium_record" "any" {
+  for_each   = local.nodes
+  zone       = "cloud.internal"
+  domain     = "proxmox.cloud.internal"
+  ttl        = 60
+  type       = "AAAA"
+  ip_address = split("/", each.value.vmbr1.ipv6.address)[0]
+}

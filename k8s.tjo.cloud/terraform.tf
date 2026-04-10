@@ -42,8 +42,9 @@ terraform {
 }
 
 provider "proxmox" {
-  endpoint  = "https://proxmox.tjo.cloud/api2/json"
+  endpoint  = "https://proxmox.cloud.internal:8006/api2/json"
   api_token = var.proxmox_token
+  insecure  = true
   ssh {
     agent    = true
     username = "root"

@@ -29,6 +29,17 @@
     proto: tcp
   tags: firewall
 
+- name: UFW - Allow PROXMOX WEB UI from INTERNAL
+  community.general.ufw:
+    rule: allow
+    port: "8006"
+    proto: tcp
+    src: "{{ item }}"
+  loop:
+    - "fd74:6a6f::/32"
+    - "fd9b:7c3d:7f6a::/48"
+  tags: firewall
+
 - name: UFW - Allow ZeroTier
   community.general.ufw:
     rule: allow

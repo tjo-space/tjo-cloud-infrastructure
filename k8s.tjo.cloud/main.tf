@@ -29,8 +29,9 @@ module "cluster" {
   }
 
   proxmox = {
-    name = "tjo-cloud"
-    url  = "https://proxmox.tjo.cloud/api2/json"
+    name     = "tjo-cloud"
+    url      = "https://proxmox.cloud.internal:8006/api2/json"
+    insecure = true
   }
 
   nodes = {
@@ -40,6 +41,14 @@ module "cluster" {
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
+      memory  = 6144
+    }
+    nevaroo-pink = {
+      id      = 6012
+      type    = "worker"
+      host    = "nevaroo"
+      storage = "local-nvme-lvm"
+      cores   = 6
       memory  = 6144
     }
     endor-purple = {
