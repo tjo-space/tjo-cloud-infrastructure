@@ -9,5 +9,9 @@ id.tjo.space {
 	reverse_proxy systemd-authentik-server:9000
 
 	log
-	tls
+
+	tls {
+		issuer acme {
+		}
+	}
 }
