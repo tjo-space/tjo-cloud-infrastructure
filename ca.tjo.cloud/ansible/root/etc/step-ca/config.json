@@ -50,6 +50,7 @@
       {
         "type": "ACME",
         "name": "v1",
+        "challenges": ["http-01", "dns-01", "tls-alpn-01"],
         "claims": {
           "minTLSCertDuration": "5m",
           "maxTLSCertDuration": "24h",

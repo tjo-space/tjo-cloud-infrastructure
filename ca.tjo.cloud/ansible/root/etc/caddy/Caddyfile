@@ -41,6 +41,7 @@ ca.cloud.internal {
 		}
 
 		reverse_proxy https://localhost:9000 {
+      header_up Host {http.request.host}
 			transport http {
 				tls_trust_pool file {
 					pem_file /etc/caddy/root.crt
@@ -67,6 +68,7 @@ ca.tjo.cloud {
 		}
 
 		reverse_proxy https://localhost:9000 {
+      header_up Host {http.request.host}
 			transport http {
 				tls_trust_pool file {
 					pem_file /etc/caddy/root.crt
