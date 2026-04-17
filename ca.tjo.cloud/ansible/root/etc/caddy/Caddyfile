@@ -3,6 +3,11 @@
 		per_host
 	}
 
+  log {
+    format console
+    output stdout
+  }
+
 	servers {
 		listener_wrappers {
 			proxy_protocol {
@@ -19,6 +24,8 @@
 
 # Internal DNS with Internal CA
 ca.cloud.internal {
+  log
+
 	tls {
 		issuer acme {
 			dir https://localhost:9000/acme/v1/directory
@@ -45,6 +52,8 @@ ca.cloud.internal {
 
 # Public DNS with Public CA
 ca.tjo.cloud {
+  log
+
 	tls {
 		issuer acme {
 			disable_http_challenge

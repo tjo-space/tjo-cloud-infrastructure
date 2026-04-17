@@ -49,7 +49,14 @@
       },
       {
         "type": "ACME",
-        "name": "v1"
+        "name": "v1",
+        "claims": {
+          "minTLSCertDuration": "5m",
+          "maxTLSCertDuration": "24h",
+          "defaultTLSCertDuration": "24h",
+          "disableRenewal": false,
+          "allowRenewalAfterExpiry": false
+        }
       }
     ]
   },

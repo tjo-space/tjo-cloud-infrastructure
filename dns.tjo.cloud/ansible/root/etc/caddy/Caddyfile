@@ -3,6 +3,11 @@
 		per_host
 	}
 
+  log {
+    format console
+    output stdout
+  }
+
 	servers {
 		listener_wrappers {
 			proxy_protocol {
@@ -22,5 +27,6 @@
 }
 
 dns.tjo.cloud {
+  log
 	reverse_proxy localhost:5380
 }

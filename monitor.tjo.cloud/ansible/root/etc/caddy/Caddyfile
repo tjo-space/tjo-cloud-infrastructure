@@ -1,8 +1,11 @@
 {
-	log
 	metrics {
 		per_host
 	}
+  log {
+    format console
+    output stdout
+  }
 	servers {
 		listener_wrappers {
 			proxy_protocol {
@@ -25,6 +28,7 @@
 # GRAFANA
 ##
 monitor.tjo.cloud {
+  log
 	reverse_proxy localhost:3000 {
 		health_uri /api/health
 		health_port 3000
@@ -32,6 +36,8 @@ monitor.tjo.cloud {
 }
 
 monitor.cloud.internal {
+  log
+
 	tls {
 		issuer acme {
 			dir https://ca.cloud.internal/acme/v1/directory
@@ -48,6 +54,7 @@ monitor.cloud.internal {
 # PROMETHEUS
 ##
 prometheus.monitor.tjo.cloud {
+  log
 	respond "Not quite working" 500
 	# TODO: Implement authenticaiton then proxy
 }
@@ -56,7 +63,8 @@ prometheus.monitor.tjo.cloud {
 # LOKI
 ##
 loki.monitor.tjo.cloud {
-	respond "Not quite working" 500
+  log
+  respond "Not quite working" 500
 	# TODO: Implement authentication then proxy
 }
 
@@ -64,13 +72,16 @@ loki.monitor.tjo.cloud {
 # OTEL
 ##
 grpc.otel.monitor.tjo.cloud {
+  log
 	reverse_proxy h2c://localhost:4317
 }
 http.otel.monitor.tjo.cloud {
+  log
 	reverse_proxy localhost:4318
 }
 
 grpc.otel.monitor.cloud.internal {
+  log
 	tls {
 		issuer acme {
 			dir https://ca.cloud.internal/acme/v1/directory
@@ -80,6 +91,7 @@ grpc.otel.monitor.cloud.internal {
 	reverse_proxy h2c://localhost:4317
 }
 http.otel.monitor.cloud.internal {
+  log
 	tls {
 		issuer acme {
 			dir https://ca.cloud.internal/acme/v1/directory
