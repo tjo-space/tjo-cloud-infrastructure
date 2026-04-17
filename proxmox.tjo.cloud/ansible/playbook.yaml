@@ -27,6 +27,24 @@
         state: restarted
 
   tasks:
+    - name: Upgrade APT Packages
+      ansible.builtin.apt:
+        upgrade: yes
+        update_cache: yes
+        autoremove: yes
+        autoclean: yes
+      tags: upgrade
+      register: result
+
+    - name: List installed and updated packages
+      shell: grep -E "^$(date +%Y-%m-%d).+ (install|upgrade) " /var/log/dpkg.log |cut -d " " -f 3-5
+      register: result
+      tags: upgrade
+
+    - name: Show Output
+      debug: msg="{{ result.stdout_lines }}"
+      tags: upgrade
+
     - name: Fetch Public SSH Key
       ansible.builtin.set_fact:
         root_ssh_key_pub: "{{ lookup('ansible.builtin.file', '~/.ssh/id_rsa.pub') }}"

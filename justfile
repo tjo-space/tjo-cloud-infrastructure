@@ -46,3 +46,13 @@ format:
 
 dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id
+
+packages-upgrade-all:
+  echo "TODO: Migrate id, mail, network to ansible for this to work!"
+  @just ca configure-all upgrade
+  @just dns configure-all upgrade
+  @just ingress configure-all upgrade
+  @just monitor configure-all upgrade
+  @just postgresql configure-all upgrade
+  @just kamino configure upgrade
+  @just proxmox configure-all upgrade
