@@ -30,6 +30,8 @@ chown -R 1200:1200 /srv/authentik
 
 mkdir -p /srv/postgresql/{data,backups}
 
+mkdir -p /srv/caddy/data
+
 echo "=== Read Secrets"
 age -d -i /etc/age/key.txt id.tjo.cloud/secrets.env.encrypted >id.tjo.cloud/secrets.env
 set -a && source id.tjo.cloud/secrets.env && set +a
