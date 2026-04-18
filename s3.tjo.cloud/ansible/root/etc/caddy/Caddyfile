@@ -5,17 +5,17 @@
 	metrics {
 		per_host
 	}
-  log {
-    format console
-    output stdout
-  }
+	log {
+		format console
+		output stdout
+	}
 }
 
 ##
 # Buckets as static websites
 ##
 https://, *.web.s3.tjo.cloud {
-  log
+	log
 
 	tls {
 		on_demand
@@ -31,7 +31,7 @@ https://, *.web.s3.tjo.cloud {
 # API
 ##
 api.s3.tjo.cloud {
-  log
+	log
 
 	reverse_proxy localhost:3900 {
 		health_uri /health
@@ -43,7 +43,7 @@ api.s3.tjo.cloud {
 # MANAGEMENT
 ##
 admin.s3.tjo.cloud {
-  log
+	log
 
 	reverse_proxy localhost:3903 {
 		health_uri /health

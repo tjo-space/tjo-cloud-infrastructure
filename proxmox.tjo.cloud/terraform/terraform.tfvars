@@ -19,7 +19,7 @@ nodes = {
     }
     nut = {
       enabled = true
-      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
     }
   }
   batuu = {
@@ -42,7 +42,7 @@ nodes = {
     }
     nut = {
       enabled = true
-      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
     }
   }
   jakku = {
@@ -65,7 +65,7 @@ nodes = {
     }
     nut = {
       enabled = true
-      host = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
     }
   }
   nevaroo = {

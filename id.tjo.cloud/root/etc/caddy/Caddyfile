@@ -1,17 +1,27 @@
 {
-  acme_ca https://acme.zerossl.com/v2/DV90
-  email   sysadmin@tjo.cloud
+	acme_ca https://acme.zerossl.com/v2/DV90
+	email sysadmin@tjo.cloud
 }
 
 id.tjo.cloud,
 id.tjo.space {
-	respond /healthz "OK"
-	reverse_proxy systemd-authentik-server:9000
-
 	log
-
 	tls {
 		issuer acme {
 		}
 	}
+
+	respond /healthz "OK"
+
+	route /application/o/token/ {
+		rate_limit {
+			zone dynamic_zone {
+				key {http.request.remote_ip}
+				events 1
+				window 10s
+			}
+		}
+	}
+
+	reverse_proxy systemd-authentik-server:9000
 }

@@ -3,10 +3,10 @@
 		per_host
 	}
 
-  log {
-    format console
-    output stdout
-  }
+	log {
+		format console
+		output stdout
+	}
 
 	servers {
 		listener_wrappers {
@@ -24,7 +24,7 @@
 
 # Internal DNS with Internal CA
 ca.cloud.internal {
-  log
+	log
 
 	tls {
 		issuer acme {
@@ -41,7 +41,7 @@ ca.cloud.internal {
 		}
 
 		reverse_proxy https://localhost:9000 {
-      header_up Host {http.request.host}
+			header_up Host {http.request.host}
 			transport http {
 				tls_trust_pool file {
 					pem_file /etc/caddy/root.crt
@@ -53,7 +53,7 @@ ca.cloud.internal {
 
 # Public DNS with Public CA
 ca.tjo.cloud {
-  log
+	log
 
 	tls {
 		issuer acme {
@@ -68,7 +68,7 @@ ca.tjo.cloud {
 		}
 
 		reverse_proxy https://localhost:9000 {
-      header_up Host {http.request.host}
+			header_up Host {http.request.host}
 			transport http {
 				tls_trust_pool file {
 					pem_file /etc/caddy/root.crt

@@ -2,7 +2,7 @@
 Description=A Caddy Container
 
 [Container]
-Image=docker.io/caddy:2
+Image=caddy-with-rate-limit
 PublishPort=0.0.0.0:443:443
 PublishPort=0.0.0.0:80:80
 Volume=/etc/caddy:/etc/caddy:ro

@@ -47,6 +47,17 @@ AUTHENTIK_POSTGRESQL__PASSWORD=${POSTGRESQL_PASSWORD}
 EOF
 
 echo "=== Setup Caddy"
+CADDY_DOCKER_FILE=$(mktemp)
+cat >$CADDY_DOCKER_FILE <<EOF
+FROM docker.io/library/caddy:2-builder AS builder
+
+RUN xcaddy build --with github.com/mholt/caddy-ratelimit
+
+FROM docker.io/library/caddy:2
+
+COPY --from=builder /usr/bin/caddy /usr/bin/caddy
+EOF
+podman build -t caddy-with-rate-limit . -f $CADDY_DOCKER_FILE
 systemctl restart caddy
 
 echo "=== Setup Postgresql"
