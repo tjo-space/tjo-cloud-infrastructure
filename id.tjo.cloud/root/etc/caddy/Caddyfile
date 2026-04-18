@@ -13,12 +13,13 @@ id.tjo.space {
 
 	respond /healthz "OK"
 
-	route /application/o/token/ {
-		rate_limit {
-			zone dynamic_zone {
-				key {http.request.remote_ip}
-				events 1
-				window 10s
+	rate_limit {
+		zone token_endpoint {
+			key {http.request.remote_ip}
+			events 2
+			window 10s
+			match {
+				path /application/o/token/
 			}
 		}
 	}
