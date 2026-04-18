@@ -15,7 +15,7 @@ id.tjo.space {
 
 	rate_limit {
 		zone token_endpoint {
-			key {http.request.remote_ip}
+			key {http.request.remote_host}
 			events 2
 			window 10s
 			match {
