@@ -8,7 +8,6 @@ PublishPort=0.0.0.0:80:80
 Volume=/etc/caddy:/etc/caddy:ro
 Volume=/srv/caddy/data:/data:rw
 Network=main.network
-AutoUpdate=registry
 
 [Service]
 Restart=always
