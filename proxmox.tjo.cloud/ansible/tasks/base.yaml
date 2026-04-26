@@ -27,7 +27,10 @@
 
 - name: Secure SSH
   ansible.builtin.shell: |
-    echo "PasswordAuthentication no" >/etc/ssh/sshd_config.d/no-password-auth.conf
+    cat >/etc/ssh/sshd_config.d/00-no-password-auth.conf <<EOF
+    PasswordAuthentication no
+    EOF
+  notify: Reload ssh
 
 - name: Ensure journald.conf.d folder exists
   ansible.builtin.file:

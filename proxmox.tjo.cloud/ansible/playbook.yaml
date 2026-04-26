@@ -25,6 +25,10 @@
       ansible.builtin.systemd:
         name: nut-client
         state: restarted
+    - name: Reload ssh
+      ansible.builtin.systemd:
+        name: ssh
+        state: reloaded
 
   tasks:
     - name: Upgrade APT Packages

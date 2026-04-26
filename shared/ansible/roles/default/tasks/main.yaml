@@ -38,6 +38,13 @@
     exclusive: true
     key: "{{ lookup('ansible.builtin.dict', ssh_keys) | map(attribute='value') | join('\n')}}"
 
+- name: Secure SSH
+  ansible.builtin.shell: |
+    cat >/etc/ssh/sshd_config.d/00-no-password-auth.conf <<EOF
+    PasswordAuthentication no
+    EOF
+  notify: Reload ssh
+
 - name: Configure Systemd Resolved
   ansible.builtin.template:
     src: root/etc/systemd/resolved.conf
@@ -47,7 +54,6 @@
     group: "root"
   notify: Restart systemd-resolved
   when: configure_resolved
-
 
 - name: Create /usr/local/share/ca-certificates/ca-tjo-cloud directory
   ansible.builtin.file:

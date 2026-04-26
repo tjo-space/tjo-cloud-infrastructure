@@ -1,3 +1,8 @@
+- name: Reload ssh
+  ansible.builtin.systemd:
+    name: ssh
+    state: reloaded
+
 - name: Restart systemd-resolved
   ansible.builtin.systemd:
     name: systemd-resolved
