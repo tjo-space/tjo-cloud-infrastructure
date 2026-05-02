@@ -138,13 +138,13 @@ upgrade-talos version:
     echo "{{CYAN}}{{BOLD}}==== Upgrade completed.{{NORMAL}}"
   }
 
-  echo "{{CYAN}}{{BOLD}}== Upgrading WORKER nodes{{NORMAL}}"
-  for node in ${WORKER_NODES}; do
+  echo "{{RED}}{{BOLD}}== Upgrading CONTROL PLANE nodes{{NORMAL}}"
+  for node in ${CONTROLPLANE_NODES}; do
     upgrade_node $node
   done
 
-  echo "{{RED}}{{BOLD}}== Upgrading CONTROL PLANE nodes{{NORMAL}}"
-  for node in ${CONTROLPLANE_NODES}; do
+  echo "{{CYAN}}{{BOLD}}== Upgrading WORKER nodes{{NORMAL}}"
+  for node in ${WORKER_NODES}; do
     upgrade_node $node
   done
 
@@ -161,7 +161,7 @@ upgrade-kubernetes version:
   NODE=$(tofu output -json | jq -r '.nodes.value | map(select(.type == "controlplane")) | first | .ipv6')
 
   echo "{{CYAN}}{{BOLD}}== Upgrading...{{NORMAL}}"
-  talosctl --nodes ${NODE} upgrade-k8s --to {{ version }}
+  talosctl --nodes ${NODE} upgrade-k8s  --to {{ version }}
   echo "{{CYAN}}{{BOLD}}== Upgrade completed.{{NORMAL}}"
 
   just etcd-snapshot "post-upgrade-kubernetes-{{version}}"

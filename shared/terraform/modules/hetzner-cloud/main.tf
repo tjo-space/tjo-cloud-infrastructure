@@ -90,6 +90,7 @@ EOF
     "ansible-core",
     "firewalld",
     "python3-firewall",
+    "systemd-resolved",
   ]
   package_update  = true
   package_upgrade = true

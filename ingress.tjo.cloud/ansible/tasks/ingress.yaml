@@ -10,6 +10,8 @@
     systemctl start zerotier-one
     sleep 5
     zerotier-cli join b6079f73c6379990
+    sleep 5
+    resolvectl dns ztyxa2r2sw fd74:6a6f:53::53 fd74:6a6f::1
   args:
     creates: /var/lib/zerotier-one/networks.d/b6079f73c6379990.conf
 
@@ -21,6 +23,18 @@
 - name: Add haproxy PPA
   ansible.builtin.apt_repository:
     repo: ppa:vbernat/haproxy-3.3
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Add repository
+  ansible.builtin.deb822_repository:
+    name: haproxy
+    types: deb
+    uris: https://haproxy.debian.net
+    suites: trixie-backports-3.3
+    components: main
+    signed_by: https://haproxy.debian.net/haproxy-archive-keyring.gpg
+    install_python_debian: yes
+  when: ansible_distribution == 'Debian'
 
 - name: Install haproxy
   ansible.builtin.apt:
