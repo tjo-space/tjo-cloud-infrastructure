@@ -557,12 +557,12 @@
               "default": true
             },
             {
-              "name": "info",
-              "path": "/nix/store/g9mlf7b7ck9jchlrjs4d25sbbpwpqhw2-inetutils-2.7-info"
-            },
-            {
               "name": "apparmor",
               "path": "/nix/store/a56kd492nk44svm0zg0j8jrp9qfm31s5-inetutils-2.7-apparmor"
+            },
+            {
+              "name": "info",
+              "path": "/nix/store/g9mlf7b7ck9jchlrjs4d25sbbpwpqhw2-inetutils-2.7-info"
             }
           ],
           "store_path": "/nix/store/3x81h3i9la6fmzajdrl2nq008hr9z7yp-inetutils-2.7"
@@ -1143,50 +1143,50 @@
       }
     },
     "tenv@latest": {
-      "last_modified": "2026-04-23T13:07:47Z",
-      "resolved": "github:NixOS/nixpkgs/01fbdeef22b76df85ea168fbfe1bfd9e63681b30#tenv",
+      "last_modified": "2026-04-30T11:26:30Z",
+      "resolved": "github:NixOS/nixpkgs/7aaa00e7cc9be6c316cb5f6617bd740dd435c59d#tenv",
       "source": "devbox-search",
-      "version": "4.11.1",
+      "version": "4.12.0",
       "systems": {
         "aarch64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/hjivplvscls9i5k6bgsjp1gzadc42jhj-tenv-4.11.1",
+              "path": "/nix/store/6ilc4ir77p23vrgvxlg7vyj23xmp221s-tenv-4.12.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/hjivplvscls9i5k6bgsjp1gzadc42jhj-tenv-4.11.1"
+          "store_path": "/nix/store/6ilc4ir77p23vrgvxlg7vyj23xmp221s-tenv-4.12.0"
         },
         "aarch64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/0mb4xqfqzpyhrjqw3n5z60ad326aw719-tenv-4.11.1",
+              "path": "/nix/store/2xvjpgvq7cqq2nvlcf36h2gf40czcawm-tenv-4.12.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/0mb4xqfqzpyhrjqw3n5z60ad326aw719-tenv-4.11.1"
+          "store_path": "/nix/store/2xvjpgvq7cqq2nvlcf36h2gf40czcawm-tenv-4.12.0"
         },
         "x86_64-darwin": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/8abcm5z6d1qzpldf2rzjqnrmq7p5q3ba-tenv-4.11.1",
+              "path": "/nix/store/037c5ig05vs2czr8wc37qyg97ynyifm8-tenv-4.12.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/8abcm5z6d1qzpldf2rzjqnrmq7p5q3ba-tenv-4.11.1"
+          "store_path": "/nix/store/037c5ig05vs2czr8wc37qyg97ynyifm8-tenv-4.12.0"
         },
         "x86_64-linux": {
           "outputs": [
             {
               "name": "out",
-              "path": "/nix/store/z1spg2ljn9rdr9yjwix1bnpflc6r96c0-tenv-4.11.1",
+              "path": "/nix/store/67d8wxpqdzfwaffxymcxrpn4sk66c0bk-tenv-4.12.0",
               "default": true
             }
           ],
-          "store_path": "/nix/store/z1spg2ljn9rdr9yjwix1bnpflc6r96c0-tenv-4.11.1"
+          "store_path": "/nix/store/67d8wxpqdzfwaffxymcxrpn4sk66c0bk-tenv-4.12.0"
         }
       }
     },

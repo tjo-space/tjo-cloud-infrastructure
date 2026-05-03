@@ -1,27 +1,36 @@
-- name: UFW - Install
-  ansible.builtin.apt:
-    name: ufw
-    state: present
-
-- name: UFW - Allow SSH, HTTPS, HTTP, 1337 and 993
-  community.general.ufw:
-    rule: allow
-    port: '{{ item }}'
-    proto: tcp
-  loop:
-    - '22'
-    - '80'
-    - '443'
-    - '9993' # Zerotier
-    - '1337' # Healthcheck
-
-- name: UFW - Allow SSH
-  community.general.ufw:
-    rule: allow
-    port: '2222'
-    proto: tcp
-
-- name: UFW - Enable and deny by default
-  community.general.ufw:
+- name: FIREWALL - Define internal zone
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
     state: enabled
-    default: deny
+  loop: "{{ tjo_cloud_networks }}"
+  tags: firewall
+
+- name: FIREWALL - Allow SSH, HTTP, HTTPS, ZEROTIER and HEALTHCHECK
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - '22/tcp'
+    - '80/tcp'
+    - '443/tcp'
+    - '9993/udp' # Zerotier
+    - '1337/tcp' # Healthcheck
+  tags: firewall
+
+- name: FIREWALL - Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    zone: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - 'internal'
+    - 'public'
+  tags: firewall
