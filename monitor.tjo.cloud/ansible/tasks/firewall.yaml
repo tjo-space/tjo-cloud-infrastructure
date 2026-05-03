@@ -1,8 +1,3 @@
-- name: UFW - Install
-  ansible.builtin.apt:
-    name: ufw
-    state: absent
-
 - name: FIREWALL - Define internal zone
   ansible.posix.firewalld:
     source: '{{ item }}'
