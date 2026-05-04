@@ -60,9 +60,9 @@ resource "helm_release" "monitoring" {
       name = var.cluster.name
     }
 
-    collectors {
+    collectors = {
       metrics-collector = {
-        presets = [clustered, statefulset]
+        presets = ["clustered", "statefulset"]
         controller = {
           priorityClassName = "system-cluster-critical"
           tolerations = [{
@@ -72,13 +72,13 @@ resource "helm_release" "monitoring" {
         }
       }
       logs-collector = {
-        presets = [filesystem-log-reader, daemonset]
+        presets = ["filesystem-log-reader", "daemonset"]
         controller = {
           priorityClassName = "system-node-critical"
         }
       }
       events-collector = {
-        presets = [singleton]
+        presets = ["singleton"]
         controller = {
           priorityClassName = "system-cluster-critical"
           tolerations = [{
@@ -91,48 +91,63 @@ resource "helm_release" "monitoring" {
 
     # Features
     clusterMetrics = {
-      enabled = true
+      enabled   = true
       collector = "metrics-collector"
       controlPlane = {
         enabled = true
       }
       kube-state-metrics = {
-        enabled = true
+        enabled   = true
+        namespace = kubernetes_namespace.monitoring-system.metadata[0].name
+        labelMatchers = {
+          "app.kubernetes.io/name" = "kube-state-metrics"
+        }
       }
     }
     hostMetrics = {
-      enabled = true
+      enabled   = true
       collector = "metrics-collector"
       linuxHosts = {
         enabled = true
         metricsTuning = {
-          useDefaultAllowList = true
+          useDefaultAllowList     = true
           useIntegrationAllowList = true
         }
       }
+      nodeLabels = {
+        availabilityZone = true
+        instanceType     = true
+        nodeArchitecture = true
+        nodeOS           = true
+        nodePool         = true
+        nodeRole         = true
+        region           = true
+      }
     }
     clusterEvents = {
-      enabled = true
+      enabled   = true
       collector = "events-collector"
     }
     podLogsViaLoki = {
-      enabled = true
+      enabled   = true
       collector = "logs-collector"
       annotations = {
-        app = "app.kubernetes.io/name"
+        app     = "app.kubernetes.io/name"
         version = "app.kubernetes.io/version"
       }
     }
     prometheusOperatorObjects = {
-      enabled = true
+      enabled   = true
+      collector = "metrics-collector"
     }
     annotationAutodiscovery = {
-      enabled = true
+      enabled   = true
+      collector = "metrics-collector"
     }
 
     telemetryServices = {
       node-exporter = {
-        deploy = true
+        deploy            = true
         priorityClassName = "system-cluster-critical"
       }
     }
