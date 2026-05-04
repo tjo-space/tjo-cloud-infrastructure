@@ -50,7 +50,7 @@ resource "helm_release" "monitoring" {
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "3.8.0"
+  version         = "4.0.4"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -60,26 +60,69 @@ resource "helm_release" "monitoring" {
       name = var.cluster.name
     }
 
+    collectors {
+      metrics-collector = {
+        presets = [clustered, statefulset]
+        controller = {
+          priorityClassName = "system-cluster-critical"
+          tolerations = [{
+            key    = "node-role.kubernetes.io/control-plane"
+            effect = "NoSchedule"
+          }]
+        }
+      }
+      logs-collector = {
+        presets = [filesystem-log-reader, daemonset]
+        controller = {
+          priorityClassName = "system-node-critical"
+        }
+      }
+      events-collector = {
+        presets = [singleton]
+        controller = {
+          priorityClassName = "system-cluster-critical"
+          tolerations = [{
+            key    = "node-role.kubernetes.io/control-plane"
+            effect = "NoSchedule"
+          }]
+        }
+      }
+    }
+
     # Features
     clusterMetrics = {
       enabled = true
+      collector = "metrics-collector"
       controlPlane = {
         enabled = true
       }
-      node-exporter = {
-        priorityClassName = "system-node-critical"
-      }
       kube-state-metrics = {
-        priorityClassName = "system-cluster-critical"
+        enabled = true
+      }
+    }
+    hostMetrics = {
+      enabled = true
+      collector = "metrics-collector"
+      linuxHosts = {
+        enabled = true
+        metricsTuning = {
+          useDefaultAllowList = true
+          useIntegrationAllowList = true
+        }
       }
     }
     clusterEvents = {
       enabled = true
+      collector = "events-collector"
     }
-    podLogs = {
+    podLogsViaLoki = {
       enabled = true
+      collector = "logs-collector"
+      annotations = {
+        app = "app.kubernetes.io/name"
+        version = "app.kubernetes.io/version"
+      }
     }
-
     prometheusOperatorObjects = {
       enabled = true
     }
@@ -87,30 +130,15 @@ resource "helm_release" "monitoring" {
       enabled = true
     }
 
-    alloy-logs = {
-      enabled = true
-      controller = {
-        priorityClassName = "system-node-critical"
-      }
-    }
-    alloy-metrics = {
-      enabled = true
-    }
-    alloy-singleton = {
-      enabled = true
-    }
-
-    collectorCommon = {
-      alloy = {
-        controller = {
-          priorityClassName = "system-cluster-critical"
-        }
+    telemetryServices = {
+      node-exporter = {
+        deploy = true
+        priorityClassName = "system-cluster-critical"
       }
     }
 
-    destinations = [
-      {
-        name = "monitor-tjo-cloud"
+    destinations = {
+      monitor-tjo-cloud = {
         type = "otlp"
         url  = "grpc.otel.monitor.cloud.internal:443"
         auth = {
@@ -150,7 +178,7 @@ EOF
           enabled = false
         }
       }
-    ]
+    }
 
     alloy-operator = {
       priorityClassName = "system-cluster-critical"
