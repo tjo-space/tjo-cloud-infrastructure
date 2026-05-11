@@ -7,5 +7,3 @@ OnFailure=notify-webhook-failure@%n.service
 Type=simple
 User=barman
 ExecStart=/usr/bin/barman cron
-Restart=always
-RestartSec=5
