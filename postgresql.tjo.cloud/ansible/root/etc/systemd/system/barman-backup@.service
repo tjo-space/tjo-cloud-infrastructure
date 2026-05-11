@@ -8,3 +8,5 @@ PartOf=barman-backup.service
 Type=simple
 User=barman
 ExecStart=/usr/bin/barman backup %i --wait
+Restart=always
+RestartSec=60
