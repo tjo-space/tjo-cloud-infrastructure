@@ -45,7 +45,7 @@ resource "helm_release" "argocd" {
   name            = "argo-cd"
   chart           = "argo-cd"
   repository      = "https://argoproj.github.io/argo-helm"
-  version         = "9.2.3"
+  version         = "9.5.13"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true

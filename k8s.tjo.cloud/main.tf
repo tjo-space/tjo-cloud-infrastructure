@@ -15,7 +15,7 @@ module "cluster" {
 
   talos = {
     version    = "v1.13.0"
-    kubernetes = "v1.35.0"
+    kubernetes = "v1.36.0"
   }
 
   cluster = {
