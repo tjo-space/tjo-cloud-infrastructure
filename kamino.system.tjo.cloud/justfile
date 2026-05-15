@@ -27,10 +27,9 @@ configure tag="":
 ssh:
   ssh bine@fd7a:115c:a1e0::9638:6035 -p 22
 
-wake:
-  # Jakku
+wake-jakku:
   ssh bine@fd7a:115c:a1e0::9638:6035 -p 22 'wakeonlan 00:1e:06:45:0c:35'
-  # Endor
+wake-endor:
   ssh bine@fd7a:115c:a1e0::9638:6035 -p 22 'wakeonlan 00:1e:06:45:5d:c9'
-  # Batuu
+wake-batuu:
   ssh bine@fd7a:115c:a1e0::9638:6035 -p 22 'wakeonlan 00:1e:06:45:5e:d1'

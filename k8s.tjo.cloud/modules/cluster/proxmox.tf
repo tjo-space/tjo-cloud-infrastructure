@@ -129,7 +129,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
 
   lifecycle {
     // We preform upgrades via talosctl
-    ignore_changes = [cdrom, boot_order, initialization[0].meta_data_file_id]
+    ignore_changes = [initialization[0].meta_data_file_id]
   }
 }
 
