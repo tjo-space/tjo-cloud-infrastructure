@@ -70,6 +70,7 @@
     - name: Include base task
       ansible.builtin.include_tasks:
         file: tasks/base.yaml
+      tags: wol
 
     - name: Include firewall task
       ansible.builtin.include_tasks:
