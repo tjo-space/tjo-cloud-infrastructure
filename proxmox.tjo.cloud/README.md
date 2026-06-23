@@ -14,7 +14,7 @@ tailscale up \
     --ssh \
     --accept-routes \
     --accept-dns=false \
-    --advertise-tags=tag:system-tjo-cloud \
+    --advertise-tags=tag:proxmox.cloud.internal \
     --hostname=$(hostname -f | sed 's/\./-/g')
 
 ```

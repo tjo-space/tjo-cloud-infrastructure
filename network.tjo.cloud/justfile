@@ -43,7 +43,7 @@ reboot-all:
 ssh node:
   #!/usr/bin/env sh
   export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
-  ssh -J root@nevaroo.system.tjo.cloud root@${IPV6}
+  ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6}
 
 dns-flush-cache domain:
   #!/usr/bin/env sh
@@ -51,8 +51,8 @@ dns-flush-cache domain:
   for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
     IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
-    ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'unbound-control flush_negative' | ts ${node}
-    ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
+    ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'unbound-control flush_negative' | ts ${node}
+    ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
   done
 
 configure-all:
@@ -94,8 +94,8 @@ configure node:
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo.system.tjo.cloud root@${IPV6} 'sh' | ts ${NODE}
+  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'sh' | ts ${NODE}

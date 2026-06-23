@@ -2,7 +2,7 @@
 Description=Technitium DNS Server
 
 [Container]
-Image=docker.io/technitium/dns-server:14.3.0@sha256:322b236403ca25028032f28736e2270a860527b030b162c9f82451c6494c4698
+Image=docker.io/technitium/dns-server:15.2.0@sha256:23d3b63d959e997800b095fe93009b3fae271b5258234ff2ade8535cb33682c8
 Environment=DNS_SERVER_DOMAIN=dns.tjo.cloud
 Environment=DNS_SERVER_PREFER_IPV6=true
 Network=main.network

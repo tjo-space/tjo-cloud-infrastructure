@@ -2,7 +2,7 @@ terraform {
   required_providers {
     proxmox = {
       source  = "bpg/proxmox"
-      version = "0.84.0"
+      version = "0.110.0"
     }
     authentik = {
       source  = "goauthentik/authentik"
@@ -32,7 +32,7 @@ provider "authentik" {
 
 provider "proxmox" {
   # FIXME: Traefik/NGINX breaks this! 500 ERROR
-  endpoint  = "https://batuu.system.tjo.cloud:8006/api2/json"
+  endpoint  = "https://batuu.proxmox.cloud.internal:8006/api2/json"
   insecure  = true
   api_token = var.proxmox_token
 
@@ -42,31 +42,31 @@ provider "proxmox" {
 
     node {
       name    = "batuu"
-      address = "batuu.system.tjo.cloud"
+      address = "batuu.proxmox.cloud.internal"
       port    = 22
     }
 
     node {
       name    = "jakku"
-      address = "jakku.system.tjo.cloud"
+      address = "jakku.proxmox.cloud.internal"
       port    = 22
     }
 
     node {
       name    = "nevaroo"
-      address = "nevaroo.system.tjo.cloud"
+      address = "nevaroo.proxmox.cloud.internal"
       port    = 22
     }
 
     node {
       name    = "mustafar"
-      address = "mustafar.system.tjo.cloud"
+      address = "mustafar.proxmox.cloud.internal"
       port    = 22
     }
 
     node {
       name    = "endor"
-      address = "endor.system.tjo.cloud"
+      address = "endor.proxmox.cloud.internal"
       port    = 22
     }
   }

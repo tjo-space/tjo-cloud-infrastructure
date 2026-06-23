@@ -4,6 +4,6 @@ resource "tailscale_tailnet_key" "main" {
   preauthorized = true
   description   = "proxmox tjo cloud key"
   tags = [
-    "tag:system-tjo-cloud"
+    "tag:proxmox.cloud.internal"
   ]
 }

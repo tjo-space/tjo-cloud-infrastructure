@@ -88,8 +88,8 @@
           --accept-dns=false \
           --ssh=true \
           --authkey={{ tailscale_auth_key }} \
-          --hostname="{{ inventory_hostname }}.system.tjo.cloud" \
-          --advertise-tags="tag:system-tjo-cloud"
+          --hostname="{{ inventory_hostname }}.proxmox.cloud.internal" \
+          --advertise-tags="tag:proxmox-tjo-cloud"
 
         tailscale serve --service=svc:proxmox https+insecure://localhost:8006
 

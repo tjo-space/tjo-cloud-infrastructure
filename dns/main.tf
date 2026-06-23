@@ -82,23 +82,6 @@ locals {
     { type = "A", subdomain = "synology.storage", records = ["100.79.91.32"] },
     ## BACKUP
     { type = "CNAME", subdomain = "backup", records = ["u409586.your-storagebox.de."] },
-    ## SYSTEM
-    { type = "A", subdomain = "batuu.system", records = ["100.110.88.100"] },
-    { type = "A", subdomain = "endor.system", records = ["100.103.129.84"] },
-    { type = "A", subdomain = "jakku.system", records = ["100.67.200.27"] },
-    { type = "A", subdomain = "mustafar.system", records = ["100.99.13.61"] },
-    { type = "A", subdomain = "nevaroo.system", records = ["100.82.48.119"] },
-    { type = "AAAA", subdomain = "batuu.system", records = ["fd7a:115c:a1e0::1901:5864"] },
-    { type = "AAAA", subdomain = "endor.system", records = ["fd7a:115c:a1e0::3b01:8154"] },
-    { type = "AAAA", subdomain = "jakku.system", records = ["fd7a:115c:a1e0::301:c81b"] },
-    { type = "AAAA", subdomain = "mustafar.system", records = ["fd7a:115c:a1e0::2601:d3d"] },
-    { type = "AAAA", subdomain = "nevaroo.system", records = ["fd7a:115c:a1e0::b301:3077"] },
-    { type = "A", subdomain = "any.system", records = [
-      "100.110.88.100", "100.103.129.84", "100.67.200.27", "100.99.13.61", "100.82.48.119",
-    ] },
-    { type = "AAAA", subdomain = "any.system", records = [
-      "fd7a:115c:a1e0::1901:5864", "fd7a:115c:a1e0::3b01:8154", "fd7a:115c:a1e0::301:c81b", "fd7a:115c:a1e0::2601:d3d", "fd7a:115c:a1e0::b301:3077",
-    ] },
   ]
 }
 resource "desec_rrset" "records" {
