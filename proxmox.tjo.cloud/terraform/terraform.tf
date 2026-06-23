@@ -51,7 +51,7 @@ provider "tailscale" {
 }
 
 provider "proxmox" {
-  endpoint  = "https://nevaroo.proxmox.cloud.internal:8006/api2/json"
+  endpoint  = "https://nevaroo-proxmox-cloud-internal.corgi-hamlet.ts.net:8006/api2/json"
   insecure  = true
   api_token = var.proxmox_token
 
@@ -61,31 +61,31 @@ provider "proxmox" {
 
     node {
       name    = "batuu"
-      address = "batuu.proxmox.cloud.internal"
+      address = "batuu-proxmox-cloud-internal.corgi-hamlet.ts.net"
       port    = 22
     }
 
     node {
       name    = "jakku"
-      address = "jakku.proxmox.cloud.internal"
+      address = "jakku-proxmox-cloud-internal.corgi-hamlet.ts.net"
       port    = 22
     }
 
     node {
       name    = "nevaroo"
-      address = "nevaroo.proxmox.cloud.internal"
+      address = "nevaroo-proxmox-cloud-internal.corgi-hamlet.ts.net"
       port    = 22
     }
 
     node {
       name    = "mustafar"
-      address = "mustafar.proxmox.cloud.internal"
+      address = "mustafar-proxmox-cloud-internal.corgi-hamlet.ts.net"
       port    = 22
     }
 
     node {
       name    = "endor"
-      address = "endor.proxmox.cloud.internal"
+      address = "endor-proxmox-cloud-internal.corgi-hamlet.ts.net"
       port    = 22
     }
   }

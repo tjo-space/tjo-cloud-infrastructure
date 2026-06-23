@@ -67,6 +67,15 @@
         key: "{{ hostvars[item]['root_ssh_key_pub'] }}"
       loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
+    - name: Copy /etc/hosts
+      ansible.builtin.template:
+        src: root/etc/hosts
+        dest: /etc/hosts
+        mode: '0644'
+        owner: root
+        group: root
+      tags: hosts
+
     - name: Include base task
       ansible.builtin.include_tasks:
         file: tasks/base.yaml

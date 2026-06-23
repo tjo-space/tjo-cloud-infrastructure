@@ -8,6 +8,8 @@
       "cloud_region": "tine"
       "nut_enabled": true
       "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "tailscale_ipv4": "100.110.88.100"
+      "tailscale_ipv6": "fd7a:115c:a1e0::1901:5864"
     "endor":
       "ansible_host": "fd7a:115c:a1e0::3b01:8154"
       "ansible_port": 22
@@ -16,6 +18,8 @@
       "cloud_region": "tine"
       "nut_enabled": true
       "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "tailscale_ipv4": "100.103.129.84"
+      "tailscale_ipv6": "fd7a:115c:a1e0::3b01:8154"
     "jakku":
       "ansible_host": "fd7a:115c:a1e0::301:c81b"
       "ansible_port": 22
@@ -24,6 +28,8 @@
       "cloud_region": "tine"
       "nut_enabled": true
       "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "tailscale_ipv4": "100.67.200.27"
+      "tailscale_ipv6": "fd7a:115c:a1e0::301:c81b"
     "mustafar":
       "ansible_host": "fd7a:115c:a1e0::2601:d3d"
       "ansible_port": 22
@@ -32,6 +38,8 @@
       "cloud_region": "jakob"
       "nut_enabled": false
       "nut_host": ""
+      "tailscale_ipv4": "100.99.13.61"
+      "tailscale_ipv6": "fd7a:115c:a1e0::2601:d3d"
     "nevaroo":
       "ansible_host": "fd7a:115c:a1e0::b301:3077"
       "ansible_port": 22
@@ -40,3 +48,5 @@
       "cloud_region": "germany"
       "nut_enabled": false
       "nut_host": ""
+      "tailscale_ipv4": "100.82.48.119"
+      "tailscale_ipv6": "fd7a:115c:a1e0::b301:3077"

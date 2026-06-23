@@ -10,6 +10,8 @@ resource "local_file" "ansible_inventory" {
           cloud_provider = v.cloud_provider
           nut_enabled    = v.nut.enabled
           nut_host       = v.nut.host
+          tailscale_ipv4 = v.tailscale.ipv4
+          tailscale_ipv6 = v.tailscale.ipv6
         }
       }
     }
