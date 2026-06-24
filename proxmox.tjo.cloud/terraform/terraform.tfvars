@@ -17,9 +17,11 @@ nodes = {
       ipv4 = { address = "10.0.0.61/10" }
       ipv6 = { address = "fd74:6a6f::61/64" }
     }
-    nut = {
-      enabled = true
-      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+    features = {
+      nut = {
+        enabled = true
+        host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      }
     }
   }
   batuu = {
@@ -40,9 +42,11 @@ nodes = {
       ipv4 = { address = "10.0.0.62/10" }
       ipv6 = { address = "fd74:6a6f::62/64" }
     }
-    nut = {
-      enabled = true
-      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+    features = {
+      nut = {
+        enabled = true
+        host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      }
     }
   }
   jakku = {
@@ -63,9 +67,15 @@ nodes = {
       ipv4 = { address = "10.0.0.63/10" }
       ipv6 = { address = "fd74:6a6f::63/64" }
     }
-    nut = {
-      enabled = true
-      host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+    features = {
+      disable_network_offloading = {
+        enabled = true
+        interfaces = ["enp1s0", "enp2s0"]
+      }
+      nut = {
+        enabled = true
+        host    = "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      }
     }
   }
   nevaroo = {
@@ -89,6 +99,12 @@ nodes = {
     vmbr1 = {
       ipv4 = { address = "10.0.0.64/10" }
       ipv6 = { address = "fd74:6a6f::64/64" }
+    }
+    features = {
+      disable_network_offloading = {
+        enabled = true
+        interfaces = ["eno1"]
+      }
     }
   }
   mustafar = {

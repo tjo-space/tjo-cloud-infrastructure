@@ -132,5 +132,15 @@
     - name: Include nut task
       ansible.builtin.include_tasks:
         file: tasks/nut.yaml
-      when: nut_enabled
-      tags: nut
+        apply:
+          tags: features
+      when: features.nut.enabled
+      tags: features
+
+    - name: Include disable network ofloading task
+      ansible.builtin.include_tasks:
+        file: tasks/disable_network_offloading.yaml
+        apply:
+          tags: features
+      when: features.disable_network_offloading.enabled
+      tags: features

@@ -3,8 +3,10 @@
 ## Proxmox Configuration
 
 * [Guide to install on emmc](https://ibug.io/blog/2022/03/install-proxmox-ve-emmc/)
-* [E1000 Driver Hand](https://forum.proxmox.com/threads/e1000-driver-hang.58284/page-8#post-390709)
-  * `ethtool -K eno1 gso off gro off tso off tx off rx off rxvlan off txvlan off sg off`
+* [E1000 Driver Hang](https://forum.proxmox.com/threads/e1000-driver-hang.58284/page-8#post-390709)
+    * Implemented via disable_network_offloading task.
+* [R8169 Driver Hang](https://github.com/Tooelite/proxmox-realtek-r8169-fix/)
+    * Implemented via disable_network_offloading task.
 
 ### 1. Tailscale.
 Install and authenticate as always. Start with:
@@ -46,4 +48,4 @@ pvecm add $EXISTING_CLUSTER_NODE_HOST_NAME --link0 $(tailscale ip -4) --link1 $(
 
 ### 7. Done
 
-Your node should now be visible at https://proxmox.tjo.cloud.
+Your node should now be visible at https://proxmox.cloud.internal.

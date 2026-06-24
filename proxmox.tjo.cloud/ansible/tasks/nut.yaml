@@ -2,7 +2,6 @@
   ansible.builtin.apt:
     name: nut-client
     state: present
-  tags: nut
 
 - name: Template nut config files
   ansible.builtin.template:
@@ -16,11 +15,9 @@
     - "upsmon.conf"
   notify:
     - Restart nut-client
-  tags: nut
 
 - name: Start and enable nut-client
   ansible.builtin.systemd:
     name: "nut-client"
     state: started
     enabled: true
-  tags: nut

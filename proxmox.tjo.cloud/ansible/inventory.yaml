@@ -6,8 +6,13 @@
       "ansible_user": "root"
       "cloud_provider": "onprem"
       "cloud_region": "tine"
-      "nut_enabled": true
-      "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "features":
+        "disable_network_offloading":
+          "enabled": false
+          "interfaces": []
+        "nut":
+          "enabled": true
+          "host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
       "tailscale_ipv4": "100.110.88.100"
       "tailscale_ipv6": "fd7a:115c:a1e0::1901:5864"
     "endor":
@@ -16,8 +21,13 @@
       "ansible_user": "root"
       "cloud_provider": "onprem"
       "cloud_region": "tine"
-      "nut_enabled": true
-      "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "features":
+        "disable_network_offloading":
+          "enabled": false
+          "interfaces": []
+        "nut":
+          "enabled": true
+          "host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
       "tailscale_ipv4": "100.103.129.84"
       "tailscale_ipv6": "fd7a:115c:a1e0::3b01:8154"
     "jakku":
@@ -26,8 +36,15 @@
       "ansible_user": "root"
       "cloud_provider": "onprem"
       "cloud_region": "tine"
-      "nut_enabled": true
-      "nut_host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
+      "features":
+        "disable_network_offloading":
+          "enabled": true
+          "interfaces":
+          - "enp1s0"
+          - "enp2s0"
+        "nut":
+          "enabled": true
+          "host": "fe80::bf1e:8ac5:67c1:db1%vmbr0"
       "tailscale_ipv4": "100.67.200.27"
       "tailscale_ipv6": "fd7a:115c:a1e0::301:c81b"
     "mustafar":
@@ -36,8 +53,13 @@
       "ansible_user": "root"
       "cloud_provider": "onprem"
       "cloud_region": "jakob"
-      "nut_enabled": false
-      "nut_host": ""
+      "features":
+        "disable_network_offloading":
+          "enabled": false
+          "interfaces": []
+        "nut":
+          "enabled": false
+          "host": ""
       "tailscale_ipv4": "100.99.13.61"
       "tailscale_ipv6": "fd7a:115c:a1e0::2601:d3d"
     "nevaroo":
@@ -46,7 +68,13 @@
       "ansible_user": "root"
       "cloud_provider": "hetzner"
       "cloud_region": "germany"
-      "nut_enabled": false
-      "nut_host": ""
+      "features":
+        "disable_network_offloading":
+          "enabled": true
+          "interfaces":
+          - "eno1"
+        "nut":
+          "enabled": false
+          "host": ""
       "tailscale_ipv4": "100.82.48.119"
       "tailscale_ipv6": "fd7a:115c:a1e0::b301:3077"

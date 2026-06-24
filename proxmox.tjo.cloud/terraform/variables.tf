@@ -68,10 +68,16 @@ variable "nodes" {
       })
     })
     iso_storage = optional(string, "local")
-    nut = optional(object({
-      enabled = bool
-      host    = string
-    }), { enabled = false, host = "" })
+    features = optional(object({
+      disable_network_offloading = optional(object({
+        enabled    = bool
+        interfaces = set(string)
+      }), { enabled = false, interfaces = [] })
+      nut = optional(object({
+        enabled = bool
+        host    = string
+      }), { enabled = false, host = "" })
+    }), {})
   }))
   description = "List of proxmox nodes"
 }

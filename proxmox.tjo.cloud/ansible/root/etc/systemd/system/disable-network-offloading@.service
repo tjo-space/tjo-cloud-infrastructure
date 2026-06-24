@@ -1,0 +1,12 @@
+[Unit]
+Description=Disable NIC offloads for %I
+After=network.target
+ConditionPathExists=/sys/class/net/%I
+
+[Service]
+Type=oneshot
+ExecStart=/usr/sbin/ethtool -K %I tso off gso off gro off lro off rx off tx off
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target
