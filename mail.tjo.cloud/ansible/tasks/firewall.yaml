@@ -20,7 +20,6 @@
     - '465/tcp'  # SMTP + TLS
     - '587/tcp'  # SMTP + Optional TLS
     - '993/tcp'  # IMAP + TLS
-    - '80/tcp'   # HTTP
     - '443/tcp'  # HTTPS
     - '4190/tcp' # SIEVE
     - '9993/udp' # Zerotier
