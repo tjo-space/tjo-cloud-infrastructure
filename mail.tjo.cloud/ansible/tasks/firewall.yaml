@@ -1,0 +1,39 @@
+- name: FIREWALL - Define internal zone
+  ansible.posix.firewalld:
+    source: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ tjo_cloud_networks }}"
+  tags: firewall
+
+- name: FIREWALL - Allow Zerotier + Stalwart Ports
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - '25/tcp'   # SMTP
+    - '465/tcp'  # SMTP + TLS
+    - '587/tcp'  # SMTP + Optional TLS
+    - '993/tcp'  # IMAP + TLS
+    - '80/tcp'   # HTTP
+    - '443/tcp'  # HTTPS
+    - '4190/tcp' # SIEVE
+    - '9993/udp' # Zerotier
+  tags: firewall
+
+- name: FIREWALL - Allow SSH
+  ansible.posix.firewalld:
+    service: ssh
+    zone: '{{ item }}'
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - 'internal'
+    - 'public'
+  tags: firewall

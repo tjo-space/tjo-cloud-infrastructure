@@ -6,7 +6,7 @@ terraform {
     }
     authentik = {
       source  = "goauthentik/authentik"
-      version = "2025.4.0"
+      version = "2026.5.0"
     }
     zerotier = {
       source  = "zerotier/zerotier"

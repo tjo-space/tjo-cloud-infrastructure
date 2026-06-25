@@ -11,18 +11,12 @@ An mail cluster used for other `tjo.cloud` and `tjo.space` services as well pers
 
 ### Components
 
-- Ubuntu
-- Podman
-  - Container management, using Systemd.
-- Stalwart Container
+- Debian
+- Valkey
+  - Cache for Stalwart
+- Stalwart
   - Email server.
-- Authentik LDAP Outputs
-  - Used for Stalwart LDAP Authentication.
 - Grafana Alloy
   - Metrics and Logs being shipped to https://monitor.tjo.cloud.
 - Roundcube deployed on k8s.tjo.cloud.
   - Web Email access.
-
-### TODO
-
-- [ ] UFW not working with Podman. What do?

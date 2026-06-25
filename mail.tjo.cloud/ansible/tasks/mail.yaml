@@ -1,0 +1,113 @@
+- name: Install Zerotier
+  ansible.builtin.include_role:
+    name: zerotier
+
+- name: Configure Zerotier
+  ansible.builtin.shell: |
+    systemctl stop zerotier-one
+    echo "{{ tjo_cloud_metadata.zerotier.public_key }}" >/var/lib/zerotier-one/identity.public
+    echo "{{ tjo_cloud_metadata.zerotier.private_key }}" >/var/lib/zerotier-one/identity.secret
+    systemctl start zerotier-one
+    sleep 5
+    zerotier-cli join b6079f73c6379990
+    sleep 5
+    resolvectl dns ztyxa2r2sw fd74:6a6f:53::53 fd74:6a6f::1
+  args:
+    creates: /var/lib/zerotier-one/networks.d/b6079f73c6379990.conf
+
+- name: Refresh facts
+  ansible.builtin.setup:
+    gather_subset:
+      - network
+
+- name: Install valkey
+  ansible.builtin.apt:
+    name: valkey
+    state: present
+
+- name: Install Tar
+  ansible.builtin.apt:
+    name: tar
+    state: present
+
+- name: Download stalwart
+  ansible.builtin.unarchive:
+    src: https://github.com/stalwartlabs/stalwart/releases/download/{{ stalwart_version }}/stalwart-{{ ansible_architecture }}-unknown-linux-gnu.tar.gz
+    dest: /tmp
+    remote_src: yes
+
+- name: Install stalwart
+  ansible.builtin.copy:
+    src: /tmp/stalwart
+    dest: /usr/local/bin/stalwart
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+
+- name: Download stalwart-cli
+  ansible.builtin.unarchive:
+    src: https://github.com/stalwartlabs/cli/releases/download/{{ stalwart_cli_version }}/stalwart-cli-{{ ansible_architecture }}-unknown-linux-gnu.tar.xz
+    dest: /tmp
+    remote_src: yes
+
+- name: Install stalwart-cli
+  ansible.builtin.copy:
+    src: /tmp/stalwart-cli-{{ ansible_architecture }}-unknown-linux-gnu/stalwart-cli
+    dest: /usr/local/bin/stalwart-cli
+    owner: root
+    group: root
+    mode: '0755'
+    remote_src: yes
+
+- name: Create stalwart group
+  ansible.builtin.group:
+    name: "stalwart"
+    system: true
+    state: present
+
+- name: Create stalwart User
+  ansible.builtin.user:
+    name: "stalwart"
+    group: "stalwart"
+    system: true
+    state: present
+
+- name: Create Stalwart directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    mode: "0700"
+    owner: "stalwart"
+    group: "stalwart"
+  loop:
+    - "/etc/stalwart"
+
+- name: Copy Stalwart configs
+  ansible.builtin.template:
+    src: 'root{{ item }}'
+    dest: '{{item}}'
+    mode: '0640'
+    owner: "stalwart"
+    group: "stalwart"
+  notify: Restart Stalwart
+  loop:
+    - "/etc/stalwart/config.json"
+  tags: config-reload
+
+- name: Create Stalwart systemd service file
+  ansible.builtin.template:
+    src: root/etc/systemd/system/stalwart.service
+    dest: /etc/systemd/system/stalwart.service
+    mode: '0644'
+    owner: root
+    group: root
+  tags: config-reload
+  notify: Restart Stalwart
+
+- name: Enable and start stalwart
+  ansible.builtin.systemd:
+    name: stalwart
+    state: started
+    enabled: true
+    daemon_reload: true

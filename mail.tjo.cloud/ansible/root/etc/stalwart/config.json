@@ -1,0 +1,15 @@
+{
+  "@type": "PostgreSql",
+  "host": "{{postgresql_host}}",
+  "database": "{{postgresql_database}}",
+  "port": 5432,
+  "authUsername": "{{postgresql_username}}",
+  "authSecret": {
+    "@type": "Value",
+    "secret": "{{postgresql_password}}"
+  },
+  "useTls": true,
+  "allowInvalidCerts": true,
+  "timeout": 15000,
+  "poolMaxConnections": 10
+}

@@ -1,7 +1,5 @@
 locals {
   roundcube_version = "1.6.11-apache"
-
-  postgresql_password = sensitive(provider::dotenv::get_by_key("POSTGRESQL_PASSWORD", "${path.module}/../secrets.env"))
 }
 
 resource "random_password" "roundcube_des_key" {
@@ -52,7 +50,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
           }
           env {
             name  = "ROUNDCUBEMAIL_DB_HOST"
-            value = "pink.postgresql.tjo.cloud"
+            value = "nevaroo-one.postgresql.cloud.internal"
           }
           env {
             name  = "ROUNDCUBEMAIL_DB_PORT"
@@ -64,7 +62,7 @@ resource "kubernetes_deployment_v1" "roundcube" {
           }
           env {
             name  = "ROUNDCUBEMAIL_DB_PASSWORD"
-            value = local.postgresql_password
+            value = var.postgresql_password
           }
           env {
             name  = "ROUNDCUBEMAIL_DB_NAME"

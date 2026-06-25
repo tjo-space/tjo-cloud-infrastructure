@@ -69,7 +69,7 @@ nodes = {
     }
     features = {
       disable_network_offloading = {
-        enabled = true
+        enabled    = true
         interfaces = ["enp1s0", "enp2s0"]
       }
       nut = {
@@ -102,7 +102,7 @@ nodes = {
     }
     features = {
       disable_network_offloading = {
-        enabled = true
+        enabled    = true
         interfaces = ["eno1"]
       }
     }

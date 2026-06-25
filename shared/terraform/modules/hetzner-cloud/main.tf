@@ -113,7 +113,7 @@ EOF
 EOF
 
 lifecycle {
-  ignore_changes = [user_data]
+  ignore_changes = [user_data, ssh_keys]
 }
 }
 

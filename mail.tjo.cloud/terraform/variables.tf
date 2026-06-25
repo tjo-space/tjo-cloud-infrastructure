@@ -3,16 +3,13 @@ variable "nodes_hetzner_cloud" {
     datacenter  = string
     image       = optional(string, "ubuntu-24.04")
     server_type = optional(string, "cax11")
+    use         = bool
   }))
 }
 
 variable "domain" {
   type    = string
   default = "mail.tjo.cloud"
-}
-
-variable "ssh_keys" {
-  type = map(string)
 }
 
 variable "proxmox_token" {
@@ -36,6 +33,11 @@ variable "authentik_token" {
 }
 
 variable "desec_token" {
+  type      = string
+  sensitive = true
+}
+
+variable "postgresql_password" {
   type      = string
   sensitive = true
 }

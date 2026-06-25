@@ -1,8 +1,10 @@
 [Unit]
 Description=Stalwart
 Conflicts=postfix.service sendmail.service exim4.service
-ConditionPathExists=/etc/stalwart/config.toml
+ConditionPathExists=/etc/stalwart/config.json
 After=network-online.target
+After=zerotier-one.service
+Requires=zerotier-one.service
 
 [Service]
 Type=simple
@@ -11,8 +13,7 @@ KillMode=process
 KillSignal=SIGINT
 Restart=on-failure
 RestartSec=5
-EnvironmentFile=/etc/stalwart/secrets.env
-ExecStart=/usr/local/bin/stalwart --config=/etc/stalwart/config.toml
+ExecStart=/usr/local/bin/stalwart --config=/etc/stalwart/config.json
 SyslogIdentifier=stalwart
 User=stalwart
 Group=stalwart

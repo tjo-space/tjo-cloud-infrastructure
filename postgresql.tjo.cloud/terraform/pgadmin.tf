@@ -91,7 +91,7 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
             }
             limits = {
               cpu    = "1000m"
-              memory = "250Mi"
+              memory = "2000Mi"
             }
           }
         }
@@ -180,7 +180,7 @@ resource "kubernetes_stateful_set_v1" "pgadmin" {
         storage_class_name = "common"
         resources {
           requests = {
-            storage = "3Gi"
+            storage = "100Gi"
           }
         }
       }
