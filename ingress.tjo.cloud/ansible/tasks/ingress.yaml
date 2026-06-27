@@ -20,11 +20,6 @@
     gather_subset:
       - network
 
-- name: Add haproxy PPA
-  ansible.builtin.apt_repository:
-    repo: ppa:vbernat/haproxy-3.3
-  when: ansible_distribution == 'Ubuntu'
-
 - name: Add repository
   ansible.builtin.deb822_repository:
     name: haproxy
@@ -34,7 +29,6 @@
     components: main
     signed_by: https://haproxy.debian.net/haproxy-archive-keyring.gpg
     install_python_debian: yes
-  when: ansible_distribution == 'Debian'
 
 - name: Install haproxy
   ansible.builtin.apt:

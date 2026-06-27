@@ -39,6 +39,16 @@ locals {
   global = yamldecode(file("../../${path.module}/global.yaml"))
 }
 
+moved {
+  from = module.hetzner-cloud["purple"].hcloud_rdns.ipv4
+  to   = module.hetzner-cloud["blue"].hcloud_rdns.ipv4
+}
+
+moved {
+  from = module.hetzner-cloud["purple"].hcloud_rdns.ipv6
+  to   = module.hetzner-cloud["blue"].hcloud_rdns.ipv6
+}
+
 module "hetzner-cloud" {
   source = "../../shared/terraform/modules/hetzner-cloud"
   for_each = {

@@ -1,12 +1,12 @@
 "all":
   "hosts":
+    "blue-hetzner-cloud":
+      "ansible_become": true
+      "ansible_host": "116.203.153.67"
+      "ansible_port": 2222
+      "ansible_user": "bine"
     "pink-hetzner-cloud":
       "ansible_become": true
       "ansible_host": "178.105.25.4"
-      "ansible_port": 2222
-      "ansible_user": "bine"
-    "purple-hetzner-cloud":
-      "ansible_become": true
-      "ansible_host": "116.203.153.67"
       "ansible_port": 2222
       "ansible_user": "bine"
