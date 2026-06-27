@@ -60,8 +60,8 @@ update-geoip:
   #!/usr/bin/env bash
   # Database and Contents Copyright (c) MaxMind, Inc.
   mkdir -p ansible/root/usr/share/geoip
-  curl -sLn -o ansible/root/usr/share/geoip/GeoLite2-City.mmdb https://raw.githubusercontent.com/P3TERX/GeoLite.mmdb/download/GeoLite2-City.mmdb
-  curl -sLn -o ansible/root/usr/share/geoip/GeoLite2-ASN.mmdb https://raw.githubusercontent.com/P3TERX/GeoLite.mmdb/download/GeoLite2-ASN.mmdb
+  curl -s -o ansible/root/usr/share/geoip/GeoLite2-City.mmdb https://raw.githubusercontent.com/P3TERX/GeoLite.mmdb/download/GeoLite2-City.mmdb
+  curl -s -o ansible/root/usr/share/geoip/GeoLite2-ASN.mmdb https://raw.githubusercontent.com/P3TERX/GeoLite.mmdb/download/GeoLite2-ASN.mmdb
 
 # Create a list of blocked IP ranges. Traffic we don't want.
 update-blocked-list:
