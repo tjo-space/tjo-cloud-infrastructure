@@ -1,0 +1,8 @@
+"all":
+  "hosts":
+    "nevaroo-purple-proxmox":
+      "ansible_become": true
+      "ansible_host": "fd74:6a6f:0:10:be24:11ff:fe50:93d5"
+      "ansible_port": 2222
+      "ansible_user": "bine"
+      "provider": "proxmox"

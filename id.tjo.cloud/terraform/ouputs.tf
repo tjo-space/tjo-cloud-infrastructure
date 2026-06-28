@@ -1,7 +1,10 @@
-output "ipv4" {
-  value = { for node in var.nodes : node => hcloud_server.main[node].ipv4_address }
-}
-
-output "ipv6" {
-  value = { for node in var.nodes : node => hcloud_server.main[node].ipv6_address }
+output "nodes" {
+  value = [
+    for key, node in local.nodes_deployed : {
+      name     = node.name
+      fqdn     = node.fqdn
+      ipv6     = node.private_ipv6
+      provider = node.provider
+    }
+  ]
 }

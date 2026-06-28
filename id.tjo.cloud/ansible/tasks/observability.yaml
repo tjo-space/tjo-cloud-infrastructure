@@ -1,0 +1,36 @@
+- name: Install Alloy
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+    alloy_custom_integrations: |
+      prometheus.scrape "caddy" {
+        targets    = concat(
+          [
+            {"__address__" = "127.0.0.1:2019", "instance" = constants.hostname, "job" = "integrations/caddy"},
+          ],
+        )
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+      }
+      prometheus.scrape "stalwart" {
+        targets    = concat(
+          [
+            {
+              "__address__" = "127.0.0.1:9300",
+              "instance" = constants.hostname,
+              "job" = "integrations/authentik",
+            },
+          ],
+        )
+        forward_to = [
+          otelcol.receiver.prometheus.default.receiver,
+        ]
+      }

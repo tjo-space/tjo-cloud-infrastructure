@@ -1,0 +1,122 @@
+- name: Instal podman
+  ansible.builtin.apt:
+    name: podman
+    state: present
+
+- name: Set podman interface as trusted
+  ansible.posix.firewalld:
+    interface: podman1
+    zone: trusted
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall
+
+- name: Configure NAT64/DNS64 support
+  ansible.posix.firewalld:
+    rich_rule: rule family=ipv6 destination address="64:ff9b::/96" masquerade
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+  tags: firewall
+
+- name: Install Caddy
+  ansible.builtin.import_role:
+    name: caddy
+  tags: config-reload
+
+- name: Configure Caddy
+  ansible.builtin.template:
+    src: root/etc/caddy/Caddyfile
+    dest: /etc/caddy/Caddyfile
+    mode: '0600'
+    owner: "caddy"
+    group: "caddy"
+  notify: Restart caddy
+  tags: config-reload
+
+- name: Create authentik group
+  ansible.builtin.group:
+    name: "authentik"
+    system: true
+    state: present
+
+- name: Create authentik User
+  ansible.builtin.user:
+    name: "authentik"
+    group: "authentik"
+    system: true
+    state: present
+
+- name: Create authentik directories
+  ansible.builtin.file:
+    state: directory
+    path: "{{ item }}"
+    mode: "0700"
+    owner: "authentik"
+    group: "authentik"
+  loop:
+    - "/etc/authentik"
+    - "/etc/authentik/assets"
+    - "/srv/authentik/media"
+    - "/srv/authentik/custom-templates"
+    - "/srv/authentik/certs"
+
+- name: Copy authentik configs
+  ansible.builtin.template:
+    src: 'root{{ item }}'
+    dest: '{{item}}'
+    mode: '0640'
+    owner: "authentik"
+    group: "authentik"
+  notify:
+    - Restart authentik-server
+    - Restart authentik-worker
+  loop:
+    - "/etc/authentik/authentik.env"
+    - "/etc/authentik/assets/background.jpg"
+    - "/etc/authentik/assets/custom.css"
+    - "/etc/authentik/assets/icon.svg"
+    - "/etc/authentik/assets/logo.svg"
+  tags: config-reload
+
+- name: Copy network configuration
+  ansible.builtin.template:
+    src: 'root/etc/containers/systemd/{{ item }}'
+    dest: '/etc/containers/systemd/{{ item }}'
+    mode: '0600'
+    owner: root
+    group: root
+  loop:
+    - id.network
+  tags: config-reload
+
+- name: Copy container configuration
+  ansible.builtin.template:
+    src: 'root/etc/containers/systemd/{{ item }}.container'
+    dest: '/etc/containers/systemd/{{ item }}.container'
+    mode: '0600'
+    owner: root
+    group: root
+  loop:
+    - authentik-worker
+    - authentik-server
+  tags: config-reload
+  register: container_configs
+
+- name: systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+  tags: config-reload
+
+- name: Start containers
+  ansible.builtin.systemd:
+    name: "{{ item }}"
+    # In case container config changed, restart it. Otherwise we only make sure it's running.
+    state: "{{ container_configs.results | selectattr('item', 'equalto', item) | map(attribute='changed') | list | first | ternary('restarted', 'started') }}"
+    enabled: true
+  loop:
+    - authentik-worker
+    - authentik-server
+  tags: config-reload

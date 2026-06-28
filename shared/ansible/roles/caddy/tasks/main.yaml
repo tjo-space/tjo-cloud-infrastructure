@@ -1,14 +1,77 @@
-- name: Add repository
-  ansible.builtin.deb822_repository:
-    name: caddy
-    types: deb
-    uris: https://dl.cloudsmith.io/public/caddy/stable/deb/debian
-    suites: any-version
-    components: main
-    signed_by: https://dl.cloudsmith.io/public/caddy/stable/gpg.key
-
-- name: Install Caddy
+- name: Remove Caddy installed via apt
   ansible.builtin.apt:
     name: caddy
-    state: present
+    state: absent
     update_cache: yes
+    purge: true
+
+- name: Create caddy group
+  ansible.builtin.group:
+    name: "caddy"
+    system: true
+    state: present
+
+- name: Create caddy User
+  ansible.builtin.user:
+    name: "caddy"
+    group: "caddy"
+    system: true
+    state: present
+
+- name: Create /etc/caddy directory
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/caddy"
+    mode: "0755"
+    owner: "root"
+    group: "root"
+
+- name: Add Caddy systemd service
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/caddy.service
+    content: |
+      [Unit]
+      Description=Caddy
+      Documentation=https://caddyserver.com/docs/
+      After=network.target network-online.target
+      Requires=network-online.target
+
+      [Service]
+      Type=notify
+      User=caddy
+      Group=caddy
+      ExecStart=/usr/local/bin/caddy run --environ --config /etc/caddy/Caddyfile
+      ExecReload=/usr/local/bin/caddy reload --config /etc/caddy/Caddyfile --force
+      TimeoutStopSec=5s
+      LimitNOFILE=1048576
+      PrivateTmp=true
+      ProtectSystem=full
+      AmbientCapabilities=CAP_NET_ADMIN CAP_NET_BIND_SERVICE
+
+      [Install]
+      WantedBy=multi-user.target
+  register: caddy_systemd_service
+
+- name: Systemd daemon-reload
+  ansible.builtin.systemd:
+    daemon_reload: true
+  when: caddy_systemd_service.changed
+
+- name: Set facts for architecture if this is an amd64 system
+  when: ansible_architecture == "x86_64"
+  set_fact:
+    caddy_architecture: "amd64"
+
+- name: Set facts for architecture if this is an arm64 system
+  when: ansible_architecture == "aarch64"
+  set_fact:
+    caddy_architecture: "arm64"
+
+- name: Download caddy
+  ansible.builtin.get_url:
+    url: https://caddyserver.com/api/download?os=linux&arch={{ caddy_architecture }}&p={{ caddy_features | join("&p=") }}
+    dest: /usr/local/bin/caddy
+    mode: "0755"
+    owner: "root"
+    group: "root"
+  notify: "Restart caddy"

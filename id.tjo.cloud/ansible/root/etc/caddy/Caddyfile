@@ -1,0 +1,71 @@
+{
+	metrics {
+		per_host
+	}
+
+	log {
+		format console
+		output stdout
+	}
+
+	servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 2s
+				# Using comment hack here. Otherwise caddy fmt takes the template
+				#  curly brackets and tries to "format them", which breaks things.
+				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
+				fallback_policy reject
+			}
+			tls {
+				issuer acme {
+					disable_http_challenge
+				}
+			}
+		}
+	}
+}
+
+id.tjo.cloud,
+id.tjo.space {
+	log
+
+	respond /healthz "OK"
+
+	rate_limit {
+		zone token_endpoint {
+			events 10
+			window 5s
+			match {
+				path /application/o/token/
+			}
+		}
+	}
+
+	reverse_proxy localhost:9000
+}
+
+id.cloud.internal,
+id.space.internal {
+	log
+
+	tls {
+		issuer acme {
+			dir https://ca.cloud.internal/acme/v1/directory
+		}
+	}
+
+	respond /healthz "OK"
+
+	rate_limit {
+		zone token_endpoint {
+			events 10
+			window 5s
+			match {
+				path /application/o/token/
+			}
+		}
+	}
+
+	reverse_proxy localhost:9000
+}

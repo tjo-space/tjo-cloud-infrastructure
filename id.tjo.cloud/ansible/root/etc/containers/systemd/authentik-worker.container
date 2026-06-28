@@ -1,19 +1,16 @@
 [Unit]
 Description=An Authentik Worker
-Requires=postgresql.service
-After=postgresql.service
+After=network-online.target
 
 [Container]
-Image=ghcr.io/goauthentik/server:2026.5.3
+Image=ghcr.io/goauthentik/server:{{ authentik_version }}
 Exec=worker
 EnvironmentFile=/etc/authentik/authentik.env
-EnvironmentFile=/etc/authentik/secrets.env
 Volume=/srv/authentik/media:/media
 Volume=/srv/authentik/certs:/certs
 Volume=/srv/authentik/custom-templates:/custom-templates
-Network=main.network
-User=1200
-AutoUpdate=registry
+Network=id.network
+User=authentik
 
 [Service]
 Restart=always

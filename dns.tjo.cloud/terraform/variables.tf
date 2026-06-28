@@ -20,11 +20,6 @@ variable "authentik_token" {
   sensitive = true
 }
 
-variable "desec_token" {
-  type      = string
-  sensitive = true
-}
-
 variable "proxmox_token" {
   type      = string
   sensitive = true

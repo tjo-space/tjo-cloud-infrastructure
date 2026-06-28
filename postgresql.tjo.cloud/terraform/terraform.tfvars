@@ -78,7 +78,8 @@ users = [
   {
     node      = "nevaroo-one"
     name      = "id.tjo.cloud"
-    databases = [{ name = "id.tjo.cloud" }]
+    connection_limit = 40
+    databases = [{ name = "id.tjo.cloud", connection_limit = 40 }]
   },
 ]
 

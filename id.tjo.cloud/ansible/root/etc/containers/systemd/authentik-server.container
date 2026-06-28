@@ -1,0 +1,25 @@
+[Unit]
+Description=An Authentik Server
+After=network-online.target
+
+[Container]
+Image=ghcr.io/goauthentik/server:{{ authentik_version }}
+Exec=server
+EnvironmentFile=/etc/authentik/authentik.env
+Volume=/srv/authentik/media:/media
+Volume=/srv/authentik/custom-templates:/custom-templates
+Volume=/etc/authentik/assets/custom.css:/web/dist/custom.css:ro
+Volume=/etc/authentik/assets/custom.css:/web/dist/custom.css:ro
+Volume=/etc/authentik/assets/background.jpg:/web/dist/assets/images/flow_background.jpg:ro
+Volume=/etc/authentik/assets/logo.svg:/web/dist/assets/images/logo.svg:ro
+Volume=/etc/authentik/assets/icon.svg:/web/dist/assets/images/icon.svg:ro
+Network=id.network
+User=authentik
+PublishPort=127.0.0.1:9000:9000/tcp
+PublishPort=127.0.0.1:9300:9300/tcp
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

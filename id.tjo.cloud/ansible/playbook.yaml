@@ -1,0 +1,43 @@
+---
+- name: Configure id.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars.yaml
+    - vars.terraform.yaml
+    - vars.terraform.secrets.yaml
+    - vars.secrets.yaml
+
+  handlers:
+  - name: Restart authentik-server
+    ansible.builtin.systemd:
+      name: authentik-server
+      state: restarted
+  - name: Restart authentik-worker
+    ansible.builtin.systemd:
+      name: authentik-worker
+      state: restarted
+
+  tasks:
+    - name: Run defaults
+      ansible.builtin.import_role:
+        name: default
+      vars:
+        version: "{{ tjo_cloud_version }}"
+        ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
+        configure_resolved: true
+
+    - name: Install and Configure Observability
+      ansible.builtin.import_tasks:
+        file: tasks/observability.yaml
+
+    - name: Install and Configure Firewall
+      ansible.builtin.import_tasks:
+        file: tasks/firewall.yaml
+
+    - name: Deploy id
+      ansible.builtin.import_tasks:
+        file: tasks/id.yaml
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers
