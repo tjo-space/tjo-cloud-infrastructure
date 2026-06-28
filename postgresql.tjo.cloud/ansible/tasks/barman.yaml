@@ -63,6 +63,7 @@
   vars:
     barman_server_name: "{{ hostvars[item].ansible_hostname }}"
     barman_server_host: "{{ hostvars[item].ansible_fqdn }}"
+    barman_server_version: "{{ hostvars[item].postgresql_version }}"
 
 - name: Copy barman systemd files
   ansible.builtin.template:

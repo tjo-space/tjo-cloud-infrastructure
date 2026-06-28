@@ -11,7 +11,7 @@ nodes = {
     cores  = 2
     memory = 4096
 
-    postgresql_version = "16"
+    postgresql_version = "18"
   }
 
   endor-one = {
@@ -26,7 +26,7 @@ nodes = {
     cores  = 2
     memory = 4096
 
-    postgresql_version = "16"
+    postgresql_version = "18"
   }
 
   barman = {
@@ -75,10 +75,14 @@ users = [
     connection_limit = 20
     databases        = [{ name = "rss.tjo.space", connection_limit = 20 }]
   },
+  {
+    node      = "nevaroo-one"
+    name      = "id.tjo.cloud"
+    databases = [{ name = "id.tjo.cloud" }]
+  },
 ]
 
 administrators = [
   "tine.jozelj",
   "jakob.jozelj",
-  "svc-console-tjo-cloud",
 ]

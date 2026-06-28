@@ -29,16 +29,35 @@
 - name: Install vchord
   ansible.builtin.apt:
     deb: https://github.com/tensorchord/VectorChord/releases/download/1.1.1/postgresql-{{ postgresql_version }}-vchord_1.1.1-1_amd64.deb
+    state: present
 # Required for Immich
 - name: Install pgvector
   ansible.builtin.apt:
     name: postgresql-{{ postgresql_version }}-pgvector
     state: present
 
-- name: Template postgresql.conf
+- name: Create /srv/data/postgresql
+  ansible.builtin.file:
+    state: directory
+    path: "/srv/data/postgresql"
+    mode: "0700"
+    owner: "postgres"
+    group: "postgres"
+
+- name: "Check if postgres data directory exists"
+  ansible.builtin.stat:
+    path: "/srv/data/postgresql/{{ postgresql_version }}/PG_VERSION"
+  register: postgres_data
+
+- name: "Create PostgreSQL cluster"
+  ansible.builtin.command:
+    cmd: "pg_createcluster {{ postgresql_version }} main --datadir=/srv/data/postgresql/{{ postgresql_version }}"
+  when: not postgres_data.stat.exists
+
+- name: Template postgresql.conf override
   ansible.builtin.template:
-    src: '../root/etc/postgresql/{{ postgresql_version }}/main/conf.d/postgresql.conf'
-    dest: '/etc/postgresql/{{ postgresql_version }}/main/conf.d/postgresql.conf'
+    src: '../root/etc/postgresql/VERSION/main/conf.d/custom.conf'
+    dest: '/etc/postgresql/{{ postgresql_version }}/main/conf.d/custom.conf'
     mode: '0644'
     owner: "postgres"
     group: "postgres"
@@ -50,30 +69,12 @@
 
 - name: Template pg_hba.conf
   ansible.builtin.template:
-    src: '../root/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf'
+    src: '../root/etc/postgresql/VERSION/main/pg_hba.conf'
     dest: '/etc/postgresql/{{ postgresql_version }}/main/pg_hba.conf'
     mode: '0644'
     owner: "postgres"
     group: "postgres"
   notify: Restart postgresql
-
-- name: Create /srv/data/postgresql
-  ansible.builtin.file:
-    state: directory
-    path: "/srv/data/postgresql/{{ postgresql_version }}"
-    mode: "0700"
-    owner: "postgres"
-    group: "postgres"
-
-- name: "Check if postgres data directory exists"
-  ansible.builtin.stat:
-    path: "/srv/data/postgresql/{{ postgresql_version }}/postgresql.conf"
-  register: postgres_data
-
-- name: "Initialize PostgreSQL"
-  ansible.builtin.command:
-    cmd: "sudo -u postgres -- /usr/lib/postgresql/{{ postgresql_version }}/bin/initdb -D /srv/data/postgresql/{{ postgresql_version }}"
-  when: not postgres_data.stat.exists
 
 - name: Fetch certificate
   # we run it after postgresql installed. As we need the /var/lib/postgresql

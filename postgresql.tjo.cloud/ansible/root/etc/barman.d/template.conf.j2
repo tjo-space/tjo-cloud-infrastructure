@@ -1,5 +1,5 @@
-[{{ barman_server_name }}]
-description = "Postgresql server {{ barman_server_name }}"
+[{{ barman_server_name }}-{{ barman_server_version }}]
+description = "Postgresql server {{ barman_server_name }} version {{ barman_server_version }}"
 streaming_archiver = on
 conninfo = host={{ barman_server_host }} user=barman dbname=postgres password={{ barman_password }}
 slot_name = barman
@@ -8,7 +8,7 @@ create_slot = auto
 backup_compression = gzip
 compression = gzip
 
-backup_directory = /srv/data/barman/{{ barman_server_name }}
+backup_directory = /srv/data/barman/{{ barman_server_name }}-{{ barman_server_version }}
 backup_method = postgres
 
 # This configuration should in theory make it possible to recover to any time in the last 3 days.
