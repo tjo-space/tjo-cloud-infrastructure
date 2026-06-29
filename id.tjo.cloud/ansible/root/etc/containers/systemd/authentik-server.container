@@ -6,17 +6,17 @@ After=network-online.target
 Image=ghcr.io/goauthentik/server:{{ authentik_version }}
 Exec=server
 EnvironmentFile=/etc/authentik/authentik.env
-Volume=/srv/authentik/media:/media
-Volume=/srv/authentik/custom-templates:/custom-templates
+Volume=/srv/authentik/data:/data
 Volume=/etc/authentik/assets/custom.css:/web/dist/custom.css:ro
 Volume=/etc/authentik/assets/custom.css:/web/dist/custom.css:ro
 Volume=/etc/authentik/assets/background.jpg:/web/dist/assets/images/flow_background.jpg:ro
 Volume=/etc/authentik/assets/logo.svg:/web/dist/assets/images/logo.svg:ro
 Volume=/etc/authentik/assets/icon.svg:/web/dist/assets/images/icon.svg:ro
 Network=id.network
-User=authentik
-PublishPort=127.0.0.1:9000:9000/tcp
-PublishPort=127.0.0.1:9300:9300/tcp
+User=1010
+Group=1010
+IP6=fd6a:e0a3:bb4b:c6b3::2
+ShmSize=512m
 
 [Service]
 Restart=always

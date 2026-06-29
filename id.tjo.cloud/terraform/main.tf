@@ -18,18 +18,6 @@ resource "hcloud_server" "main" {
   }
 }
 
-resource "desec_rrset" "main" {
-  for_each = {
-    A    = [for k, v in hcloud_server.main : v.ipv4_address]
-    AAAA = [for k, v in hcloud_server.main : v.ipv6_address]
-  }
-  domain  = "tjo.cloud"
-  subname = trimsuffix(var.domain, ".tjo.cloud")
-  type    = each.key
-  records = each.value
-  ttl     = 3600
-}
-
 locals {
   nodes_with_provider = merge(
     {

@@ -24,7 +24,6 @@
 - name: Install Caddy
   ansible.builtin.import_role:
     name: caddy
-  tags: config-reload
 
 - name: Configure Caddy
   ansible.builtin.template:
@@ -33,18 +32,20 @@
     mode: '0600'
     owner: "caddy"
     group: "caddy"
-  notify: Restart caddy
   tags: config-reload
+  notify: Restart caddy
 
 - name: Create authentik group
   ansible.builtin.group:
     name: "authentik"
+    gid: 1010
     system: true
     state: present
 
 - name: Create authentik User
   ansible.builtin.user:
     name: "authentik"
+    uid: 1010
     group: "authentik"
     system: true
     state: present

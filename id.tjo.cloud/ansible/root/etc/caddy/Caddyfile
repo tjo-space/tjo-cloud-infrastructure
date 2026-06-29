@@ -42,7 +42,7 @@ id.tjo.space {
 		}
 	}
 
-	reverse_proxy localhost:9000
+	reverse_proxy [fd6a:e0a3:bb4b:c6b3::2]:9000
 }
 
 id.cloud.internal,
@@ -67,5 +67,5 @@ id.space.internal {
 		}
 	}
 
-	reverse_proxy localhost:9000
+	reverse_proxy [fd6a:e0a3:bb4b:c6b3::2]:9000
 }

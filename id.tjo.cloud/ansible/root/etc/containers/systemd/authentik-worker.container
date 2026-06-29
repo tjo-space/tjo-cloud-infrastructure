@@ -6,11 +6,12 @@ After=network-online.target
 Image=ghcr.io/goauthentik/server:{{ authentik_version }}
 Exec=worker
 EnvironmentFile=/etc/authentik/authentik.env
-Volume=/srv/authentik/media:/media
-Volume=/srv/authentik/certs:/certs
-Volume=/srv/authentik/custom-templates:/custom-templates
+Volume=/srv/authentik/data:/data
 Network=id.network
-User=authentik
+User=1010
+Group=1010
+IP6=fd6a:e0a3:bb4b:c6b3::3
+ShmSize=512m
 
 [Service]
 Restart=always

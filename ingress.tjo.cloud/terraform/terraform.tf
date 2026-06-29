@@ -34,8 +34,9 @@ provider "desec" {
 }
 
 provider "authentik" {
-  url   = "https://id.tjo.cloud"
-  token = var.authentik_token
+  url      = "https://id.cloud.internal"
+  token    = var.authentik_token
+  insecure = true
 }
 
 provider "hcloud" {

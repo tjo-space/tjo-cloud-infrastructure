@@ -14,6 +14,7 @@ resource "desec_rrset" "ingress" {
     "dns",
     "grpc.otel.monitor",
     "http.otel.monitor",
+    "id",
     "loki.monitor",
     "monitor",
     "postgresql",
@@ -35,6 +36,7 @@ resource "desec_rrset" "https" {
     "dns",
     "grpc.otel.monitor",
     "http.otel.monitor",
+    "id",
     "loki.monitor",
     "monitor",
     "postgresql",
@@ -51,33 +53,6 @@ resource "desec_rrset" "https" {
 
 locals {
   records = [
-    ## EMAIL
-    { type = "MX", subdomain = "", records = ["10 mail.tjo.cloud."] },
-    { type = "TXT", subdomain = "202507e._domainkey", records = ["v=DKIM1; k=ed25519; h=sha256; p=tI29Jb/g3aRaH70XWLOfeleUwudtVHnucgNiNWWp7Zs="] },
-    { type = "TXT", subdomain = "202507r._domainkey", records = ["v=DKIM1; k=rsa; h=sha256; p=MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEA7lHuPkLOYlWtec8cegvMGfBa+e78tGMzC9NxSePHOVQ5hP2Wv0i9QwWwMHa1DVC0JXIFmM5h+it5vjo541/2cCwkZw5WtmlHJH/XnrEO8wvKrfeqnl0kR3WKjCPHuhxXt3iEoEig5o/4+yc03irGZARqsAyR5IDnFvgN+hCw4e5RcA7yIdfl6BEn0n165Q6AoXeSX6bHv3EM/D9UOCgK/08BDMUOl8nESACU4FRgIdNUmw1J5LfY729WkbC2xGFRsqLpp58a9hV7AxUGDO3TbmBcO8L72hwdFh4lC9xKbWsQomlvfrJJ+J3QWCZ4dfIQljwTnZoRPng/6UDvGHmrGQIDAQAB"] },
-    { type = "TXT", subdomain = "mail", records = ["v=spf1 a ra=postmaster -all"] },
-    { type = "TXT", subdomain = "", records = ["v=spf1 mx ra=postmaster -all"] },
-    { type = "SRV", subdomain = "_jmap._tcp", records = ["0 1 443 mail.tjo.cloud."] },
-    { type = "SRV", subdomain = "_calddavs._tcp", records = ["0 1 443 mail.tjo.cloud."] },
-    { type = "SRV", subdomain = "_carddavs._tcp", records = ["0 1 443 mail.tjo.cloud."] },
-    { type = "SRV", subdomain = "_imaps._tcp", records = ["0 1 443 mail.tjo.cloud."] },
-    { type = "SRV", subdomain = "_submissions._tcp", records = ["0 1 443 mail.tjo.cloud."] },
-    { type = "CNAME", subdomain = "autoconfig", records = ["mail.tjo.cloud."] },
-    { type = "CNAME", subdomain = "autodiscover", records = ["mail.tjo.cloud."] },
-    { type = "CNAME", subdomain = "mta-sts", records = ["mail.tjo.cloud."] },
-    { type = "TXT", subdomain = "_mta-sts", records = ["v=STSv1; id=12389896138107905122"] },
-    { type = "TXT", subdomain = "_dmarc", records = ["v=DMARC1; p=reject; rua=mailto:postmaster@tjo.cloud; ruf=mailto:postmaster@tjo.cloud"] },
-    { type = "TXT", subdomain = "_smtp._tls", records = ["v=TLSRPTv1; rua=mailto:postmaster@tjo.cloud"] },
-    { type = "TLSA", subdomain = "_25._tcp.mail", records = [
-      "3 0 1 a9c21d8f2ce8680fc5ed5030cdf633844b5342adbbcd6cc40562fd6e71d945af",
-      "3 0 2 9022b83885cb27db254b69c4ff2e8233cd2a9a5571e5c7e1bdc0e373ddb95f1bad392fef371b39aaee3659759c5737fc84fb2d3cee0672b4357a7e7d285bbb91",
-      "3 1 1 de1e8456d72f3bc8a02398b352cf82c30b886fad289e016f8e635213d7c19c2e",
-      "3 1 2 01a1d600ee1154a476e52015564ab7f47b073bc9495c70aeb118e7b9b0f8a4b13dacd3e61a74a64033b218051fc26af8783d398ed3cc94b369e21765610d22b4",
-      "2 0 1 aeb1fd7410e83bc96f5da3c6a7c2c1bb836d1fa5cb86e708515890e428a8770b",
-      "2 0 2 e18f3d6ccbc578f025c3c7c29ed7bffe1b8eef5b1f839c17298dcf218303d2a63e305f6c1f489691774a18bad836035e5af2de1fc42a3a26cfe9e530f92e3855",
-      "2 1 1 cbbc559b44d524d6a132bdac672744da3407f12aae5d5f722c5f6c7913871c75",
-      "2 1 2 7d779dd26d37ca5a72fd05f1b815a06078c8e09777697c651fbe012c8d2894e048fcfe24160ee1562602240b6bef44e00f2b7340c84546d6110842bbdeb484a7",
-    ] },
     ## STORAGE
     { type = "A", subdomain = "synology.storage", records = ["100.79.91.32"] },
     ## BACKUP

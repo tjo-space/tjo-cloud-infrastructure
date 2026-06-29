@@ -2,3 +2,4 @@
   ansible.builtin.systemd:
     name: caddy
     state: restarted
+    enabled: true

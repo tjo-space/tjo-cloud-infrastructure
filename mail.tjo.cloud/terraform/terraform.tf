@@ -42,7 +42,7 @@ provider "desec" {
 }
 
 provider "authentik" {
-  url   = "https://id.tjo.cloud"
+  url   = "https://id.cloud.internal"
   token = var.authentik_token
 }
 

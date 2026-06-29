@@ -1,6 +1,6 @@
 # mail.tjo.cloud
 
-An mail cluster used for other `tjo.cloud` and `tjo.space` services as well personal email.
+An mail server used for other `tjo.cloud` and `tjo.space` services as well personal email.
 
 ### Endpoints
 
