@@ -1,23 +1,3 @@
-resource "hcloud_server" "main" {
-  for_each = { for node in var.nodes : node => {} }
-
-  name = "${each.key}.${var.domain}"
-
-  image       = "ubuntu-24.04"
-  server_type = "cax11"
-  datacenter  = "hel1-dc2"
-  public_net {
-    ipv4_enabled = true
-    ipv6_enabled = true
-  }
-  backups  = true
-  ssh_keys = []
-
-  lifecycle {
-    ignore_changes = [ssh_keys, user_data, image]
-  }
-}
-
 locals {
   nodes_with_provider = merge(
     {

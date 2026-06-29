@@ -1,12 +1,3 @@
-variable "id_hcloud_token" {
-  sensitive = true
-  type      = string
-}
-
-variable "nodes" {
-  type = list(string)
-}
-
 variable "nodes_proxmox" {
   type = map(object({
     host         = string
@@ -23,11 +14,6 @@ variable "domain" {
 }
 
 variable "authentik_token" {
-  type      = string
-  sensitive = true
-}
-
-variable "desec_token" {
   type      = string
   sensitive = true
 }
