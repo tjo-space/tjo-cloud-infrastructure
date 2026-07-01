@@ -38,7 +38,7 @@ variable "boot" {
   type = object({
     storage = string
     size    = number
-    image   = optional(string, "ubuntu_2404_server_cloudimg_amd64.img")
+    image   = string
   })
 }
 

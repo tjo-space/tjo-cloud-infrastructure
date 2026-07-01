@@ -52,7 +52,7 @@ EOF
   boot = {
     storage = each.value.boot_storage
     size    = each.value.boot_size
-    image   = "ubuntu_2404_server_cloudimg_amd64.img"
+    image   = each.value.image
   }
 
   disks = [{
@@ -67,7 +67,7 @@ EOF
     } }
     fs_setup = [{
       label      = "data"
-      filesystem = "xfs"
+      filesystem = "ext4"
       device     = "/dev/vdb"
     }]
     mounts = [["/dev/vdb1", "/srv/data"]]
@@ -82,7 +82,7 @@ resource "local_file" "ansible_inventory" {
   content = yamlencode({
     all = {
       hosts = {
-        for k, v in local.nodes_deployed : v.fqdn => {
+        for k, v in local.nodes_deployed : k => {
           ansible_host   = v.private_ipv6
           ansible_port   = 2222
           ansible_user   = "bine"

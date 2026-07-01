@@ -7,12 +7,10 @@ resource "technitium_record" "for_node" {
   ip_address = each.value.private_ipv6
 }
 resource "technitium_record" "all" {
-  for_each = { for pair in setproduct(keys(local.nodes_deployed), [
+  for_each = { for pair in setproduct([for name, node in local.nodes_deployed : name if node.use == true], [
     "",
-    "prometheus.",
-    "loki.",
     "grpc.otel.",
-    "http.otel.",
+    "otel.",
   ]) : "${pair[0]}-${pair[1]}" => { node = pair[0], domain = pair[1] } }
 
   zone       = "cloud.internal"

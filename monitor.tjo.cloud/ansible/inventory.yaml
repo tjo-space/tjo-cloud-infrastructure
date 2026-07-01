@@ -1,7 +1,7 @@
 "all":
   "hosts":
-    "nevaroo-yellow.monitor.tjo.cloud":
+    "batuu-pink":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f:0:10:be24:11ff:fe0c:40e4"
+      "ansible_host": "fd74:6a6f:0:12:be24:11ff:feb8:1755"
       "ansible_port": 2222
       "ansible_user": "bine"

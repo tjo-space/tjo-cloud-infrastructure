@@ -2,9 +2,9 @@
 Description=Backup PostgreSQL databases using Barman
 OnFailure=notify-webhook-failure@%n.service
 
-BindsTo={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}.service {% endfor %}
+BindsTo={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}-{{ hostvars[host].postgresql_version }}.service {% endfor %}
 
-After={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}.service {% endfor %}
+After={% for host in groups['postgresql'] %}barman-backup@{{ hostvars[host].ansible_hostname }}-{{ hostvars[host].postgresql_version }}.service {% endfor %}
 
 [Service]
 Type=oneshot

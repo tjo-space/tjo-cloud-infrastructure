@@ -10,6 +10,10 @@ variable "nodes" {
 
     data_storage = string
     data_size    = number
+
+    image = string
+
+    use = bool
   }))
 }
 

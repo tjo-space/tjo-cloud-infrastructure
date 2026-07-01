@@ -53,4 +53,4 @@ configure-all tag="":
     playbook.yaml
 
 ssh node:
-  ssh -A bine@{{node}}.ingress.tjo.cloud -4 -p 2222
+  ssh -A bine@{{node}}.mail.tjo.cloud -4 -p 2222

@@ -9,12 +9,11 @@
 
 - name: Install Services
   ansible.builtin.apt:
-    name: '{{ item }}'
+    name:
+      - grafana
+      - loki
     state: present
     update_cache: yes
-  loop:
-    - grafana
-    - loki
 
 - name: Set facts for architecture if this is an amd64 system
   when: ansible_architecture == "x86_64"
@@ -45,6 +44,14 @@
   ansible.builtin.user:
     name: prometheus
     system: true
+
+- name: Prepare /etc/prometheus directory
+  ansible.builtin.file:
+    path: /etc/prometheus
+    owner: root
+    group: root
+    mode: "0755"
+    state: directory
 
 - name: Copy configuration
   ansible.builtin.template:
