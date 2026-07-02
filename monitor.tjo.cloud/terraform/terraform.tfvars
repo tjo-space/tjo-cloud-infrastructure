@@ -7,7 +7,7 @@ nodes = {
     data_size    = 128
 
     cores  = 2
-    memory = 4096
+    memory = 6144
 
     image = "debian_13_server_cloudimg_amd64.img"
     use = true
