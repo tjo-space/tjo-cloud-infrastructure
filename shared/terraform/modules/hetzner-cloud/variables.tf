@@ -6,18 +6,16 @@ variable "fqdn" {
   type = string
 }
 
-variable "datacenter" {
+variable "location" {
   type = string
 }
 
 variable "image" {
-  type    = string
-  default = "ubuntu-24.04"
+  type = string
 }
 
 variable "server_type" {
-  type    = string
-  default = "cax11"
+  type = string
 }
 
 variable "userdata" {

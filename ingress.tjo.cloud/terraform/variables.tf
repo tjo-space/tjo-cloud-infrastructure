@@ -1,8 +1,8 @@
 variable "nodes_hetzner_cloud" {
   type = map(object({
-    datacenter  = string
-    image       = optional(string, "ubuntu-24.04")
-    server_type = optional(string, "cax11")
+    location    = string
+    image       = string
+    server_type = string
     use         = bool
   }))
 }

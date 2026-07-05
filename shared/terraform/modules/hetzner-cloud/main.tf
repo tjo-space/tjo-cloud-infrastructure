@@ -3,7 +3,7 @@ resource "hcloud_server" "main" {
 
   image       = var.image
   server_type = var.server_type
-  datacenter  = var.datacenter
+  location    = var.location
   public_net {
     ipv4_enabled = true
     ipv6_enabled = true
@@ -58,7 +58,7 @@ EOF
     {
       path     = "/etc/tjo.cloud/meta.json"
       encoding = "base64"
-      content  = base64encode(jsonencode(merge(var.metadata, { cloud_region = var.datacenter, cloud_provider = "hetzner-cloud" })))
+      content  = base64encode(jsonencode(merge(var.metadata, { cloud_region = var.location, cloud_provider = "hetzner-cloud" })))
     },
     {
       path     = "/tmp/provision.sh"
