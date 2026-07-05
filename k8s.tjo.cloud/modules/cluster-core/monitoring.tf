@@ -13,7 +13,7 @@ resource "helm_release" "kube-state-metrics" {
   name            = "kube-state-metrics"
   chart           = "kube-state-metrics"
   repository      = "https://prometheus-community.github.io/helm-charts"
-  version         = "7.0.0"
+  version         = "7.5.1"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -50,7 +50,7 @@ resource "helm_release" "monitoring" {
   name            = "monitoring"
   chart           = "k8s-monitoring"
   repository      = "https://grafana.github.io/helm-charts"
-  version         = "4.0.4"
+  version         = "4.2.0"
   namespace       = kubernetes_namespace.monitoring-system.metadata[0].name
   atomic          = true
   cleanup_on_fail = true

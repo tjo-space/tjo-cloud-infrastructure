@@ -34,8 +34,8 @@ References:
  - https://docs.siderolabs.com/talos/v1.12/configure-your-talos-cluster/lifecycle-management/upgrading-talos
 
 ### Steps
-- [ ] Run `just upgrade-talos v1.13.0`
-- [ ] Run `just upgrade-kubernetes 1.36.0`
+- [ ] Run `just upgrade-talos v1.13.5`
+- [ ] Run `just upgrade-kubernetes 1.36.2`
 - [ ] Change Talos and/or Kubernetes versions in `main.tf`.
 - [ ] Run `just apply`.
 

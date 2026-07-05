@@ -3,8 +3,8 @@ resource "helm_release" "sealed-secrets" {
 
   name            = "sealed-secrets"
   chart           = "sealed-secrets"
-  repository      = "https://bitnami-labs.github.io/sealed-secrets"
-  version         = "2.18.5"
+  repository      = "https://bitnami.github.io/sealed-secrets"
+  version         = "2.19.1"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

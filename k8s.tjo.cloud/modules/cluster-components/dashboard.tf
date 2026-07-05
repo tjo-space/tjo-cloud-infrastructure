@@ -2,7 +2,7 @@ resource "helm_release" "headlamp" {
   name            = "headlamp"
   repository      = "https://kubernetes-sigs.github.io/headlamp/"
   chart           = "headlamp"
-  version         = "0.42.0"
+  version         = "0.43.0"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
