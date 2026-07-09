@@ -1,0 +1,42 @@
+{
+	metrics {
+		per_host
+	}
+
+	log {
+		format console
+		output stdout
+	}
+
+	servers {
+		listener_wrappers {
+			proxy_protocol {
+				timeout 2s
+				# Using comment hack here. Otherwise caddy fmt takes the template
+				#  curly brackets and tries to "format them", which breaks things.
+				# {{ "\n allow " + (tjo_cloud_networks | join(' ')) }}
+				fallback_policy reject
+			}
+			tls {
+				issuer acme {
+					disable_http_challenge
+				}
+			}
+		}
+	}
+}
+
+vpn.tjo.cloud {
+	log
+
+  # Native gRPC (needs HTTP/2 cleartext to backend)
+  @grpc header Content-Type application/grpc*
+  reverse_proxy @grpc h2c://[fd6a:e0a3:bb4b:c6b3::2]:8080
+
+  # Combined server paths (relay, signal, management, OAuth2)
+  @backend path /relay* /ws-proxy/* /api/* /oauth2/*
+  reverse_proxy @backend [fd6a:e0a3:bb4b:c6b3::2]:8080
+
+  # Dashboard (everything else)
+  reverse_proxy /* [fd6a:e0a3:bb4b:c6b3::3]:80
+}

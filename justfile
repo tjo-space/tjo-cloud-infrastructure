@@ -18,6 +18,7 @@ mod network 'network.tjo.cloud'
 mod postgresql 'postgresql.tjo.cloud'
 mod proxmox 'proxmox.tjo.cloud'
 mod s3 's3.tjo.cloud'
+mod vpn 'vpn.tjo.cloud'
 mod kamino 'kamino.system.tjo.cloud'
 
 import 'secrets.justfile'
@@ -48,11 +49,14 @@ dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id
 
 packages-upgrade-all:
-  echo "TODO: Migrate id, mail, network to ansible for this to work!"
+  echo "TODO: network to ansible for this to work!"
+  @just id configure-all upgrade
+  @just mail configure-all upgrade
   @just ca configure-all upgrade
   @just dns configure-all upgrade
   @just ingress configure-all upgrade
   @just monitor configure-all upgrade
   @just postgresql configure-all upgrade
+  @just vpn configure-all upgrade
   @just kamino configure upgrade
   @just proxmox configure-all upgrade

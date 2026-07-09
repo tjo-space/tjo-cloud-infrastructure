@@ -32,10 +32,10 @@ variable "metadata" {
       username = string
       password = string
     })
-    zerotier = object({
+    zerotier = optional(object({
       public_key  = string
       private_key = string
-    })
+    }))
   })
   description = "VM Metadata"
 }

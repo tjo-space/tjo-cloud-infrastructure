@@ -1,0 +1,20 @@
+[Unit]
+Description=An Netbird Server
+After=network-online.target
+
+[Container]
+Image=ghcr.io/netbirdio/netbird-server:{{ netbird_version }}
+Exec=--config /etc/netbird/config.yaml
+Volume=/srv/netbird/data:/var/lib/netbird:rw
+Volume=/etc/netbird/config.yaml:/etc/netbird/config.yaml:ro
+Network=vpn.network
+User=1010
+Group=1010
+IP6=fd6a:e0a3:bb4b:c6b3::2
+PublishPort=3478:3478/udp
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
