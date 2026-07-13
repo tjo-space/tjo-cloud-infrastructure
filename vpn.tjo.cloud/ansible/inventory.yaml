@@ -1,7 +1,0 @@
-"all":
-  "hosts":
-    "blue-hetzner-cloud":
-      "ansible_become": true
-      "ansible_host": "88.99.172.153"
-      "ansible_port": 2222
-      "ansible_user": "bine"
