@@ -45,6 +45,8 @@ This is used for `k8s.tjo.cloud` where cilium advertises pod and external load b
 | #              | #                   | #                      |
 | router/gateway VIP  | fd74:6a6f:0:53::/64 | # |
 | nevaroo-gateway NAT64  | fd74:6a6f:0:64::/64 | 2a01:4f8:120:7764::/64 |
+| #              | #                   | #                      |
+| Wireguard  | fd74:6a6f:0:70::/64 | # |
 
 The `nevaroo-gateway` node is special gateway node. This once routes traffic out to the internet
 and it has the public `/56` routed to it.
@@ -62,12 +64,18 @@ Any node in the "cloud" (hetzner cloud etc.) as well as "router" vms are part of
 | batuu-router.network.tjo.cloud | #     | fd74:6a6f::12/128  |
 | jakku-router.network.tjo.cloud | #     | fd74:6a6f::13/128  |
 | mustafar-router.network.tjo.cloud | #     | fd74:6a6f::14/128  |
-| # | # |  # |
+| # Zerotier | # |  # |
 | endor.proxmox.tjo.cloud | 10.0.0.61/10     | fd74:6a6f::61/128  |
 | batuu.proxmox.tjo.cloud | 10.0.0.62/10     | fd74:6a6f::62/128  |
 | jakku.proxmox.tjo.cloud | 10.0.0.63/10     | fd74:6a6f::63/128  |
 | nevaroo.proxmox.tjo.cloud | 10.0.0.64/10     | fd74:6a6f::64/128  |
 | mustafar.proxmox.tjo.cloud | 10.0.0.65/10     | fd74:6a6f::65/128  |
+| # Wireguard | # |  # |
+| endor.proxmox.tjo.cloud | #     | fd74:6a6f:70::1/128  |
+| batuu.proxmox.tjo.cloud | #     | fd74:6a6f:70::2/128  |
+| jakku.proxmox.tjo.cloud | #     | fd74:6a6f:70::3/128  |
+| nevaroo.proxmox.tjo.cloud | #     | fd74:6a6f:70::4/128  |
+| mustafar.proxmox.tjo.cloud | #     | fd74:6a6f:70::5/128  |
 
 # Setting up new Host
 

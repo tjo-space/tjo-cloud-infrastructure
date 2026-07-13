@@ -82,13 +82,12 @@
 
 - name: Install SDN Dependencies
   ansible.builtin.apt:
-    name: '{{ item }}'
+    name:
+      - 'libpve-network-perl'
+      - 'dnsmasq'
+      - 'frr-pythontools'
+      - 'wireguard-tools'
     state: present
-    update_cache: yes
-  loop:
-    - 'libpve-network-perl'
-    - 'dnsmasq'
-    - 'frr-pythontools'
   tags: networking
 
 - name: Disable dnsmasq
@@ -96,15 +95,6 @@
     name: 'dnsmasq.service'
     state: stopped
     enabled: false
-  tags: networking
-
-- name: Disable SDN Dependencies
-  ansible.builtin.systemd:
-    name: '{{ item }}'
-    state: started
-    enabled: true
-  loop:
-    - 'frr.service'
   tags: networking
 
 - name: Flush handlers

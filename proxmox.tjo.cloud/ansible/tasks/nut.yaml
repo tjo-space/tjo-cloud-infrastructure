@@ -21,3 +21,21 @@
     name: "nut-client"
     state: started
     enabled: true
+
+- name: Copy wol service
+  ansible.builtin.template:
+    src: root/etc/systemd/system/wol@.service
+    dest: /etc/systemd/system/wol@.service
+    mode: '0644'
+    owner: root
+    group: root
+
+- name: Enable wol service
+  ansible.builtin.systemd:
+    name: 'wol@{{ item }}'
+    state: started
+    enabled: true
+    daemon_reload: true
+  loop:
+    - enp1s0
+    - enp2s0
