@@ -48,7 +48,6 @@ dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id
 
 packages-upgrade-all:
-  echo "TODO: network to ansible for this to work!"
   @just id configure-all upgrade
   @just mail configure-all upgrade
   @just ca configure-all upgrade
@@ -58,3 +57,4 @@ packages-upgrade-all:
   @just postgresql configure-all upgrade
   @just kamino configure upgrade
   @just proxmox configure-all upgrade
+  @just network upgrade-all

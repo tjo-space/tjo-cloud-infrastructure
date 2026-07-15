@@ -43,7 +43,7 @@ reboot-all:
 ssh node:
   #!/usr/bin/env sh
   export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
-  ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6}
+  ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6}
 
 dns-flush-cache domain:
   #!/usr/bin/env sh
@@ -51,8 +51,8 @@ dns-flush-cache domain:
   for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
     IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
-    ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'unbound-control flush_negative' | ts ${node}
-    ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'unbound-control flush_negative' | ts ${node}
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
   done
 
 configure-all:
@@ -70,7 +70,6 @@ configure node:
   export NODE="{{node}}"
   export ROLE="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].role')"
   export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
-  #export IPV6="fd74:6a6f::a8bb:ff:fe11:b755"
   export TMPDIR="$(mktemp -d)"
   export CONFIG="{{source_directory()}}/vars.secrets.yaml"
 
@@ -94,8 +93,17 @@ configure node:
   do
     directory=$(dirname $file)
     echo "- $file"
-    cat $file | ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
+    cat $file | ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
   done
   popd
 
-  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo.proxmox.cloud.internal root@${IPV6} 'sh' | ts ${NODE}
+  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'sh' | ts ${NODE}
+
+upgrade-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'opkg update && opkg install owut && owut upgrade' | ts ${node}
+  done

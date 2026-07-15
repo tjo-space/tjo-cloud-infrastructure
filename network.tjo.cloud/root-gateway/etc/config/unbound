@@ -21,7 +21,7 @@ config zone 'fwd_internal'
 	list zone_name 'arpa.'
 	option port '53'
 	# internal dns.tjo.cloud
-	list server 'fd74:6a6f::be24:11ff:fe8a:b5e6'
+	list server 'fd74:6a6f:0:12:be24:11ff:fe8a:b5e6'
 
 config zone 'fwd_public'
   option zone_type 'forward_zone'
