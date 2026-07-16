@@ -14,12 +14,6 @@ nodes = {
     iso_storage  = "local"
     role         = "router"
   }
-  mustafar-router = {
-    host         = "mustafar"
-    boot_storage = "local"
-    iso_storage  = "local"
-    role         = "router"
-  }
   batuu-router = {
     host         = "batuu"
     boot_storage = "local-nvme"

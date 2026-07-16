@@ -17,6 +17,11 @@ apply:
   tofu init
   tofu apply
 
+apply-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu apply -target='proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
 destroy:
   #!/usr/bin/env sh
   cd {{source_directory()}}/terraform
@@ -35,7 +40,7 @@ reboot node:
 reboot-all:
   #!/usr/bin/env sh
   set -euo pipefail
-  for node in $(cat config.yaml | yq -r '.nodes | keys | .[]')
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
   do
     just reboot ${node} | ts ${node}
   done
