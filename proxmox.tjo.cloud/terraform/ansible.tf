@@ -43,7 +43,6 @@ resource "local_file" "ansible_secrets" {
         }
       }
     }
-
   })
   filename = "${path.module}/../ansible/vars.terraform.secrets.yaml"
 }

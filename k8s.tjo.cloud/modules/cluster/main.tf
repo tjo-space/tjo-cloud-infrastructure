@@ -34,7 +34,7 @@ locals {
         }
       }
       network = {
-        nameservers = ["fd74:6a6f:53::53", "fd74:6a6f::1"]
+        nameservers = ["fd74:6a6f:53::53"]
       }
     }
     cluster = {
@@ -107,7 +107,7 @@ locals {
         }
       }
       network = {
-        nameservers = ["fd74:6a6f::1"]
+        nameservers = ["fd74:6a6f:53::53"]
       }
     }
   }

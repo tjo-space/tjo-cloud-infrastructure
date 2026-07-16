@@ -42,17 +42,6 @@ variable "boot" {
   })
 }
 
-variable "network" {
-  type = object({
-    ipv4 = optional(string, "dhcp")
-    ipv6 = optional(string, "dhcp")
-  })
-  default = {
-    ipv4 = "dhcp"
-    ipv6 = "dhcp"
-  }
-}
-
 variable "disks" {
   type = list(object({
     storage = string

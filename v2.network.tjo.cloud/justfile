@@ -1,0 +1,128 @@
+set dotenv-load
+
+OPENWRT_VERSION := "25.12.5"
+
+default:
+  @just --list
+
+download:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  mkdir -p {{source_directory()}}/iso
+
+  curl -L -o - https://downloads.openwrt.org/releases/{{ OPENWRT_VERSION }}/targets/x86/64/openwrt-{{ OPENWRT_VERSION }}-x86-64-generic-ext4-combined-efi.img.gz \
+    | gunzip > {{source_directory()}}/iso/openwrt_{{ OPENWRT_VERSION }}_amd64.img
+
+apply:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu init
+  tofu apply
+
+apply-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu apply -target='proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+destroy:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu destroy
+
+destroy-only node:
+  #!/usr/bin/env sh
+  cd {{source_directory()}}/terraform
+  tofu destroy -target='proxmox_virtual_environment_vm.nodes["{{node}}"]'
+
+reboot node:
+  #!/usr/bin/env sh
+  echo "- Rebooting {{node}}"
+  ssh root@{{node}}.network.tjo.cloud 'reboot'
+
+reboot-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    just reboot ${node} | ts ${node}
+  done
+
+ssh node:
+  #!/usr/bin/env sh
+  export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
+  ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6}
+
+generate-wireguard-keys:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    echo "$node"
+    PRIVATE_KEY=$(wg genkey)
+    echo "private-key: ${PRIVATE_KEY}"
+    echo "public-key: $(echo ${PRIVATE_KEY} | wg pubkey)"
+    echo "pre-shared-key: $(wg genpsk)"
+  done
+
+dns-flush-cache domain:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'unbound-control flush_negative' | ts ${node}
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'unbound-control flush_zone {{domain}}' | ts ${node}
+  done
+
+configure-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    just configure ${node} | ts ${node}
+  done
+
+configure node:
+  #!/usr/bin/env sh
+  set -euo pipefail
+
+  export NODE="{{node}}"
+  export ROLE="$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].role')"
+  export IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r '.nodes["{{node}}"].id')"
+  export TMPDIR="$(mktemp -d)"
+  export CONFIG="{{source_directory()}}/vars.secrets.yaml"
+
+  echo "Configuring ${NODE} as ${ROLE}"
+
+  ssh-copy-id root@${IPV6}
+
+  cd {{source_directory()}}/root-${ROLE}
+
+  echo "- Generating configuration ${TMPDIR}..."
+  for file in $(find * -type f)
+  do
+    echo " - $file"
+    mkdir -p ${TMPDIR}/$(dirname $file)
+    gomplate --experimental --file $file --datasource config=${CONFIG} > ${TMPDIR}/${file}
+  done
+
+  echo "- Copying configuration to node..."
+  pushd ${TMPDIR}
+  for file in $(find * -type f)
+  do
+    directory=$(dirname $file)
+    echo "- $file"
+    cat $file | ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} "mkdir -p /$(dirname $file) && cat > /$file"
+  done
+  popd
+
+  cat {{source_directory()}}/configure.${ROLE}.sh | ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'sh' | ts ${NODE}
+
+upgrade-all:
+  #!/usr/bin/env sh
+  set -euo pipefail
+  for node in $(cat vars.secrets.yaml | yq -r '.nodes | keys | .[]')
+  do
+    IPV6="fd74:6a6f::$(cat vars.secrets.yaml | yq -r ".nodes[\"${node}\"].id")"
+    ssh -J root@nevaroo-proxmox-cloud-internal root@${IPV6} 'opkg update && opkg install owut && owut upgrade' | ts ${node}
+  done

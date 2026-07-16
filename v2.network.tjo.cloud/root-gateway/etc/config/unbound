@@ -1,0 +1,43 @@
+config unbound
+  option dns64 '1'
+
+  option listen_port '53'
+  option rebind_protection '0'
+
+  option recursion 'aggressive'
+  option resource 'large'
+
+  option unbound_control '1'
+
+	# FIXME: To make DNS queries via tailscale work. Maybe there is a better way.
+  # Prevent DNS amplification attacks. Only answer to subnets this machine has interfaces on.
+	option localservice '0'
+
+config zone 'fwd_internal'
+	option zone_type 'forward_zone'
+	option enabled '1'
+	option fallback '1'
+	list zone_name 'internal.'
+	list zone_name 'arpa.'
+	option port '53'
+	# internal dns.tjo.cloud
+	list server 'fd74:6a6f:0:12:be24:11ff:fe8a:b5e6'
+
+config zone 'fwd_public'
+  option zone_type 'forward_zone'
+  option enabled '1'
+  option fallback '1'
+  option tls_upstream '1'
+  list zone_name '.'
+
+  # UncensoredDNS
+  list server '91.239.100.100@853#anycast.uncensoreddns.org'
+  list server '2001:67c:28a4::@853#anycast.uncensoreddns.org'
+  list server '89.233.43.71@853#unicast.uncensoreddns.org'
+  list server '2a01:3a0:53:53::@853#unicast.uncensoreddns.org'
+
+  # Quad9
+  list server '9.9.9.9@853#dns.quad9.net'
+  list server '149.112.112.112@853#dns.quad9.net'
+  list server '2620:fe::fe@853#dns.quad9.net'
+  list server '2620:fe::9@853#dns.quad9.net'

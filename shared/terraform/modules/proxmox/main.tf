@@ -197,17 +197,12 @@ resource "proxmox_virtual_environment_vm" "node" {
     user_data_file_id = proxmox_virtual_environment_file.userdata.id
 
     dns {
-      servers = ["fd74:6a6f:53::53", "fd74:6a6f::1"]
+      servers = ["fd74:6a6f:53::53"]
     }
 
     ip_config {
-      ipv4 {
-        gateway = var.network.ipv4 == "dhcp" ? null : "10.0.0.1"
-        address = var.network.ipv4
-      }
       ipv6 {
-        gateway = var.network.ipv6 == "dhcp" ? null : "fd74:6a6f::1"
-        address = var.network.ipv6
+        address = "dhcp"
       }
     }
   }

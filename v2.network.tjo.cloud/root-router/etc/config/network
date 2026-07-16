@@ -1,0 +1,100 @@
+{{ $nodeName := getenv "NODE" }}
+{{ $nodes := (ds "config").nodes }}
+{{ $node := index $nodes $nodeName }}
+{{ $wireguard_external_peers := (ds "config").wireguard_external_peers }}
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix '{{ $node.local.private.ipv6.prefix }}'
+
+##
+# PUBLIC
+# - Only used to establish Wireguard connections
+##
+{{ if ne $node.public.ipv4.proto "disabled" }}
+config interface 'public4'
+	option device 'eth0'
+	option proto '{{ $node.public.ipv4.proto }}'
+
+  {{ if eq $node.public.ipv4.proto "static" }}
+  list ipaddr '{{ $node.public.ipv4.address }}'
+  option gateway '{{ $node.public.ipv4.gateway }}'
+  {{ end }}
+{{ end }}
+
+config interface 'public'
+	option device 'eth0'
+	option proto '{{ $node.public.ipv6.proto }}'
+
+  option norelease '1'
+  option reqprefix 'no'
+  option delegate  '0'
+
+  {{ if eq $node.public.ipv6.proto "static" }}
+  list ip6addr '{{ $node.public.ipv6.address }}'
+  option ip6gw '{{ $node.public.ipv6.gateway }}'
+  option ip6prefix '{{ $node.public.ipv6.prefix }}'
+  {{ end }}
+
+##
+# LOCAL
+##
+config interface 'local'
+	option device 'eth1'
+	option proto  'static'
+  option ip6gw 'fd74:6a6f:0:70::1'
+	list ip6addr '{{ $node.local.public.ipv6.address }}'
+  list ip6addr '{{ $node.local.private.ipv6.address }}'
+	list ip6addr 'fd74:6a6f:53::53/128'
+
+##
+# TAILSCALE
+##
+config interface 'tailscale'
+	option proto 'none'
+	option device 'tailscale0'
+
+##
+# WIREGUARD
+##
+config interface 'wireguard'
+	option proto 'wireguard'
+	option device 'wg0'
+  option private_key '{{ $node.wireguard.private_key }}'
+  option preshared_key '{{ $node.wireguard.preshared_key }}'
+  list addresses '{{ $node.wireguard.ipv6.address }}'
+  # option nohostroute '1'
+
+##
+# WIREGUARD PEERS
+##
+# Other network peers
+#  - Mesh network
+#  - We allow all ips, we use BGP to route between
+#    so we have disabled the route_allowed_ips.
+{{ range $key, $n := $nodes }}
+config wireguard_wireguard '{{ $key }}'
+  option public_key '{{ $n.wireguard.public_key }}'
+  option preshared_key '{{ $n.wireguard.preshared_key }}'
+  option endpoint_host '{{ $n.wireguard.endpoint_host }}'
+  option route_allowed_ips '0'
+  option persistent_keepalive '25'
+  list allowed_ips '::/0'
+{{ end }}
+{{ range $key, $n := $wireguard_external_peers }}
+# External Peers
+#  - They connect to network instances.
+#  - They are only allowed to use specific ips (single internal static ip)
+#    so we enable the route_allowed_ips to route to it without BGP etc.
+config wireguard_wireguard '{{ $key }}'
+  option public_key '{{ $n.public_key }}'
+  option preshared_key '{{ $n.preshared_key }}'
+  list allowed_ips '{{ $n.allowed_ips }}'
+  option route_allowed_ips '1'
+  option persistent_keepalive '25'
+{{ end }}

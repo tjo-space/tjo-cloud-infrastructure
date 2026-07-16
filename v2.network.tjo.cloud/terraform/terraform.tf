@@ -1,58 +1,12 @@
 terraform {
   required_providers {
-    authentik = {
-      source  = "goauthentik/authentik"
-      version = "2026.5.0"
-    }
-    zerotier = {
-      source  = "zerotier/zerotier"
-      version = "1.6.0"
-    }
     proxmox = {
       source  = "bpg/proxmox"
       version = "0.110.0"
     }
-    desec = {
-      source  = "Valodim/desec"
-      version = "0.6.1"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "2.5.3"
-    }
-    tailscale = {
-      source  = "tailscale/tailscale"
-      version = "0.24.0"
-    }
-    technitium = {
-      source  = "kevynb/technitium"
-      version = "0.4.0"
-    }
-    wireguard = {
-      source  = "OJFord/wireguard"
-      version = "0.4.0"
-    }
   }
 
   required_version = "~> 1.11.0"
-}
-
-provider "desec" {
-  api_token = var.desec_token
-}
-
-provider "authentik" {
-  url      = "https://id.cloud.internal"
-  token    = var.authentik_token
-  insecure = true
-}
-
-provider "zerotier" {
-  zerotier_central_token = var.zerotier_token
-}
-
-provider "tailscale" {
-  api_key = var.tailscale_token
 }
 
 provider "proxmox" {
@@ -94,9 +48,4 @@ provider "proxmox" {
       port    = 22
     }
   }
-}
-
-provider "technitium" {
-  url   = "https://dns.tjo.cloud"
-  token = var.dns_tjo_cloud_token
 }

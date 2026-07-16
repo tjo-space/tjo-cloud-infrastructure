@@ -82,6 +82,17 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
   mtu   = 2800
 }
 
+resource "proxmox_virtual_environment_network_linux_bridge" "vmbr3" {
+  for_each = local.nodes
+
+  node_name = each.value.name
+  name      = "vmbr3"
+  comment   = "DO NOT USE! Testing network."
+  // Must be left as empty list!
+  ports = []
+  mtu   = 2800
+}
+
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
   comment = "Managed by Terraform"
   user_id = "prometheus-pve-exporter@pve"

@@ -1,0 +1,141 @@
+{{ $nodeName := getenv "NODE" }}
+{{ $node := index (ds "config").nodes $nodeName }}
+
+config interface 'loopback'
+	option device 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix '{{ $node.local.private.ipv6.prefix }}'
+
+##
+# PUBLIC
+##
+config interface 'public4'
+	option device 'eth0'
+	option proto '{{ $node.public.ipv4.proto }}'
+
+  {{ if eq $node.public.ipv4.proto "static" }}
+  list ipaddr '{{ $node.public.ipv4.address }}'
+  option gateway '{{ $node.public.ipv4.gateway }}'
+  {{ end }}
+
+config interface 'public'
+	option device 'eth0'
+	option proto '{{ $node.public.ipv6.proto }}'
+
+  {{ if eq $node.public.ipv6.proto "static" }}
+  list ip6addr '{{ $node.public.ipv6.address }}'
+  option ip6gw '{{ $node.public.ipv6.gateway }}'
+  option ip6prefix '{{ $node.public.ipv6.prefix }}'
+  {{ end }}
+
+##
+# LOCAL
+##
+config interface 'local'
+	option device 'eth1'
+	option proto  'static'
+	list ip6addr '{{ $node.local.public.ipv6.address }}'
+  list ip6addr '{{ $node.local.private.ipv6.address }}'
+	list ip6addr 'fd74:6a6f:53::53/128'
+
+##
+# TAILSCALE
+##
+config interface 'tailscale'
+	option proto 'none'
+	option device 'tailscale0'
+
+##
+# WIREGUARD
+##
+config interface 'wireguard'
+	option proto 'wireguard'
+	option device 'wg0'
+  option private_key '{{ $node.wireguard.private_key }}'
+  option preshared_key '{{ $node.wireguard.preshared_key }}'
+  list addresses '{{ $node.wireguard.ipv6.address }}'
+  list addresses 'fd74:6a6f:0:70::10/64'
+  # option nohostroute '1'
+
+##
+# WIREGUARD PEERS
+##
+# Other network peers
+#  - Mesh network
+#  - We allow all ips, we use BGP to route between
+#    so we have disabled the route_allowed_ips.
+{{ range $key, $n := $nodes }}
+config wireguard_wireguard '{{ $key }}'
+  option public_key '{{ $n.wireguard.public_key }}'
+  option preshared_key '{{ $n.wireguard.preshared_key }}'
+  option endpoint_host '{{ $n.wireguard.endpoint_host }}'
+  option route_allowed_ips '0'
+  option persistent_keepalive '25'
+  list allowed_ips '::/0'
+{{ end }}
+{{ range $key, $n := $wireguard_external_peers }}
+# External Peers
+#  - They connect to network instances.
+#  - They are only allowed to use specific ips (single internal static ip)
+#    so we enable the route_allowed_ips to route to it without BGP etc.
+config wireguard_wireguard '{{ $key }}'
+  option public_key '{{ $n.public_key }}'
+  option preshared_key '{{ $n.preshared_key }}'
+  list allowed_ips '{{ $n.allowed_ips }}'
+  option route_allowed_ips '1'
+  option persistent_keepalive '25'
+{{ end }}
+
+##
+# YGGDRASIL
+##
+config interface 'ygg'
+  option proto 'yggdrasil'
+  option allocate_listen_addresses '1'
+  option private_key '{{  $node.ygg.private_key }}'
+	option public_key '{{ $node.ygg.public_key }}'
+  # Multicas
+	list listen_address 'tcp://[::]:0'
+  # External
+	list listen_address 'tcp://[::]:4541'
+	list listen_address 'tls://[::]:4542'
+	list listen_address 'quic://[::]:4543'
+
+  # Jumper
+	option jumper_enable '1'
+	option jumper_loglevel 'info'
+	option jumper_autofill_listen_addresses '1'
+
+config yggdrasil_ygg_peer
+	option address 'tls://n.ygg.yt:443'
+
+config yggdrasil_ygg_peer
+	option address 'tls://bode.theender.net:42169?key=f91b909f43829f8b20732b3bcf80cbc4bb078dd47b41638379a078e35984c9a4'
+
+config yggdrasil_ygg_peer
+	option address 'tls://yggdrasil.su:62586'
+
+config yggdrasil_ygg_interface
+	list interface 'eth1'
+	option beacon '1'
+	option listen '1'
+
+##
+# JOOL
+##
+config interface 'jool'
+	option proto 'static'
+	option device 'jool'
+	option ipaddr '192.168.164.1'
+	option netmask '255.255.255.0'
+	option ip6assign '64'
+	option ip6hint '64'
+
+config route6 'jool6'
+	option interface 'jool'
+	option target '64:ff9b::/96'
+	option gateway 'fe80::64'
