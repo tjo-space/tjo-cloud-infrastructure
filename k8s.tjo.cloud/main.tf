@@ -75,12 +75,12 @@ module "cluster" {
       cores   = 6
       memory  = 24576
     }
-    batuu-purple = {
-      id      = 6032
+    batuu-blue = {
+      id      = 6030
       type    = "controlplane"
       host    = "batuu"
       storage = "local-nvme"
-      cores   = 2
+      cores   = 4
       memory  = 6144
     }
   }

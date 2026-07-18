@@ -31,8 +31,12 @@ processors:
 exporters:
   otlphttp/prometheus:
     endpoint: "http://localhost:9090/api/v1/otlp/"
+    retry_on_failure:
+      enabled: false
   otlphttp/loki:
     endpoint: "http://localhost:3100/otlp/"
+    retry_on_failure:
+      enabled: false
 
 service:
   extensions:
