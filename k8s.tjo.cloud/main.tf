@@ -75,7 +75,7 @@ module "cluster" {
       cores   = 6
       memory  = 24576
     }
-    batuu-blue = {
+    batuu-cyan = {
       id      = 6030
       type    = "controlplane"
       host    = "batuu"
