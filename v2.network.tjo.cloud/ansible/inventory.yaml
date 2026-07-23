@@ -1,0 +1,16 @@
+"gateway":
+  "hosts": {}
+"router":
+  "hosts":
+    "batuu":
+      "ansible_host": []
+      "ansible_port": 22
+      "ansible_user": "root"
+    "endor":
+      "ansible_host": []
+      "ansible_port": 22
+      "ansible_user": "root"
+    "jakku":
+      "ansible_host": []
+      "ansible_port": 22
+      "ansible_user": "root"

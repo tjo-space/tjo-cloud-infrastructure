@@ -1,0 +1,67 @@
+- name: Install Alloy for Barman
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+  when: inventory_hostname in groups["barman"]
+
+- name: Install Alloy for Postgresql
+  ansible.builtin.import_role:
+    name: alloy
+  vars:
+    alloy_username: "{{ tjo_cloud_metadata.service_account.username }}"
+    alloy_password: "{{ tjo_cloud_metadata.service_account.password }}"
+    otel_resource_attributes:
+      service.name: "{{ tjo_cloud_metadata.service_name }}"
+      service.version: "{{ tjo_cloud_version }}"
+      cloud.region: "{{ tjo_cloud_metadata.cloud_region }}"
+      cloud.provider: "{{ tjo_cloud_metadata.cloud_provider }}"
+    alloy_custom_integrations: |
+      prometheus.exporter.postgres "all" {
+        data_source_names  = ["postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"]
+        enabled_collectors = [
+          "database",
+          "locks",
+          "replication",
+          "replication_slot",
+          "stat_bgwriter",
+          "stat_statements",
+          "stat_database",
+          "stat_user_tables",
+          "statio_user_tables",
+          "wal",
+        ]
+
+        autodiscovery {
+          enabled = true
+        }
+      }
+
+      database_observability.postgres "all" {
+        data_source_name   = "postgres://postgres:{{postgres_password}}@localhost:5432/postgres?sslmode=disable"
+        enable_collectors  = ["query_details", "query_samples"]
+        disable_collectors = ["schema_details"] // "schema_details" doesn't work.
+        forward_to         = [loki.process.drop_old.receiver]
+        targets            = prometheus.exporter.postgres.all.targets
+      }
+
+      discovery.relabel "postgres_set_job_and_instance" {
+        targets = database_observability.postgres.all.targets
+        rule {
+          target_label = "instance"
+          replacement  = constants.hostname
+        }
+      }
+
+      prometheus.scrape "postgres" {
+        targets    = discovery.relabel.postgres_set_job_and_instance.output
+        forward_to = [otelcol.receiver.prometheus.default.receiver]
+        job_name   = "integrations/db-o11y"
+      }
+  when: inventory_hostname in groups["postgresql"]

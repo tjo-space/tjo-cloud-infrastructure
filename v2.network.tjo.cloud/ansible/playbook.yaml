@@ -1,0 +1,27 @@
+---
+- name: Configure network.tjo.cloud
+  hosts: all
+
+  vars_files:
+    - vars.yaml
+    - vars.terraform.yaml
+    - vars.terraform.secrets.yaml
+    - vars.secrets.yaml
+
+  handlers: []
+
+  tasks:
+    - name: Install and Configure router server
+      ansible.builtin.import_tasks:
+        file: tasks/router.yaml
+      when: inventory_hostname in groups["router"]
+      tags: config-refresh
+
+    - name: Install and Configure gateway server
+      ansible.builtin.import_tasks:
+        file: tasks/gateway.yaml
+      when: inventory_hostname in groups["gateway"]
+      tags: config-refresh
+
+    - name: Flush handlers
+      ansible.builtin.meta: flush_handlers

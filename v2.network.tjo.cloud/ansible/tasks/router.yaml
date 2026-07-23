@@ -1,0 +1,53 @@
+# TODO: Ansible Template Files
+
+- name: Configure
+  ansible.builtin.shell: |
+    #!/bin/bash
+    set -eou pipefail
+
+    echo "- OPKG Update"
+    opkg update
+
+    echo "- Tailscale"
+    apk add tailscale
+
+    echo "- Tools"
+    apk add tcpdump htop bind-dig
+
+    echo "- Qemu agent"
+    apk add qemu-ga
+
+    echo "- Installing Bird (BGP, Router Advertisement NDP)"
+    # Fixme: Upgrading to bird3 failed with:
+    #  daemon.crit bird: Assertion 'DG_IS_LOCKED(orig->domain)' failed at lib/resource.c:208
+    #apk add bird3 bird3c
+    apk del bird3c bird3
+    apk add bird2 bird2c
+
+    echo "- Installing unbound (DNS, DNS64)"
+    apk add luci-app-unbound unbound-control adblock
+    apk del --autoremove dnsmasq odhcpd odhcpd-ipv6only
+
+    echo "- Installing wireguard"
+    apk add wireguard-tools luci-proto-wireguard
+
+    echo "- Reloading Services"
+    service bird reload
+    service network reload
+    sleep 5
+    service firewall reload
+    service unbound reload
+    service adblock reload
+
+    echo "- Tailscale up"
+    tailscale up \
+      --reset \
+      --accept-dns=false \
+      --ssh=true \
+      --advertise-routes="10.0.0.0/10,fd74:6a6f::/32,10.100.0.0/16,fd9b:7c3d:7f6a::/48" \
+      --accept-routes=false \
+      --snat-subnet-routes=true \
+      --advertise-exit-node \
+      --advertise-tags="tag:network-tjo-cloud"
+
+    echo "- Done!"

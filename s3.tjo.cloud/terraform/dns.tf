@@ -1,7 +1,7 @@
 resource "desec_rrset" "api" {
   for_each = {
-    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
-    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway"]
+    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway" && v.use == true]
+    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway" && v.use == true]
   }
   domain  = "tjo.cloud"
   subname = "api.s3"
@@ -19,8 +19,8 @@ resource "desec_rrset" "api_https" {
 
 resource "desec_rrset" "admin" {
   for_each = {
-    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
-    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway"]
+    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway" && v.use == true]
+    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway" && v.use == true]
   }
   domain  = "tjo.cloud"
   subname = "admin.s3"
@@ -38,8 +38,8 @@ resource "desec_rrset" "admin_https" {
 
 resource "desec_rrset" "web" {
   for_each = {
-    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway"]
-    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway"]
+    A    = [for k, v in local.nodes_deployed : v.public_ipv4 if v.garage_kind == "gateway" && v.use == true]
+    AAAA = [for k, v in local.nodes_deployed : v.public_ipv6 if v.garage_kind == "gateway" && v.use == true]
   }
   domain  = "tjo.cloud"
   subname = "*.web.s3"
