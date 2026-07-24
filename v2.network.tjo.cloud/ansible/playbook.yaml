@@ -11,6 +11,23 @@
   handlers: []
 
   tasks:
+    - name: Run defaults
+      ansible.builtin.import_role:
+        name: default
+      vars:
+        version: "{{ tjo_cloud_version }}"
+        ssh_keys: "{{ tjo_cloud_admin_ssh_keys }}"
+      tags: config-refresh
+
+    - name: Install and Configure Observability
+      ansible.builtin.import_tasks:
+        file: tasks/observability.yaml
+
+    - name: Install and Configure common things
+      ansible.builtin.import_tasks:
+        file: tasks/common.yaml
+      tags: config-refresh
+
     - name: Install and Configure router server
       ansible.builtin.import_tasks:
         file: tasks/router.yaml

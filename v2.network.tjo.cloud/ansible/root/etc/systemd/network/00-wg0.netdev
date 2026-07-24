@@ -1,0 +1,16 @@
+[NetDev]
+Name = wg0
+Kind = wireguard
+Description = wg0 - Wireguard Tunnel
+
+[WireGuard]
+ListenPort = 51820
+PrivateKey = "" # base64 encoded
+
+# TODO: For each other get public key etc.
+[WireGuardPeer]
+PublicKey = publickey_of_client
+PreSharedKey = ""
+Endpoint = ""
+PersistentKeepalive = 25
+AllowedIPs = fd74:6a6f::/32,2a01:4f8:120:7700::/56,fd9b:7c3d:7f6a::/48

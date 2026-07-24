@@ -1,4 +1,4 @@
-data "proxmox_virtual_environment_file" "boot_image" {
+data "proxmox_file" "boot_image" {
   node_name    = var.host
   datastore_id = "local"
   content_type = "iso"
@@ -160,14 +160,10 @@ resource "proxmox_virtual_environment_vm" "node" {
     datastore_id = var.boot.storage
   }
 
-  network_device {
-    bridge = var.network_bridge
-  }
-
   scsi_hardware = "virtio-scsi-single"
 
   disk {
-    file_id      = data.proxmox_virtual_environment_file.boot_image.id
+    file_id      = data.proxmox_file.boot_image.id
     interface    = "virtio0"
     datastore_id = var.boot.storage
     size         = var.boot.size
@@ -190,6 +186,14 @@ resource "proxmox_virtual_environment_vm" "node" {
     }
   }
 
+  dynamic "network_device" {
+    for_each = var.network.devices
+    content {
+      bridge      = network_device.value.bridge
+      mac_address = network_device.value.mac_address
+    }
+  }
+
   initialization {
     interface    = "scsi0"
     datastore_id = var.boot.storage
@@ -197,12 +201,20 @@ resource "proxmox_virtual_environment_vm" "node" {
     user_data_file_id = proxmox_virtual_environment_file.userdata.id
 
     dns {
-      servers = ["fd74:6a6f:53::53"]
+      servers = var.network.dns.servers
     }
 
-    ip_config {
-      ipv6 {
-        address = "dhcp"
+    dynamic "ip_config" {
+      for_each = var.network.devices
+      content {
+        ipv4 {
+          address = ip_config.value.ipv4.address
+          gateway = ip_config.value.ipv4.gateway
+        }
+        ipv6 {
+          address = ip_config.value.ipv6.address
+          gateway = ip_config.value.ipv6.gateway
+        }
       }
     }
   }

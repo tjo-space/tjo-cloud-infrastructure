@@ -1,0 +1,8 @@
+- name: Install Bird3, unbound, wireguard
+  ansible.builtin.apt:
+    name:
+      - bird3
+      - wireguard
+      - unbound
+    state: present
+    update_cache: yes

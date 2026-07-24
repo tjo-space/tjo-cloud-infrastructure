@@ -28,10 +28,6 @@ terraform {
       source  = "kevynb/technitium"
       version = "0.4.0"
     }
-    wireguard = {
-      source  = "OJFord/wireguard"
-      version = "0.4.0"
-    }
   }
 
   required_version = "~> 1.11.0"

@@ -1,0 +1,11 @@
+[Match]
+Name=eth0
+
+[Network]
+DHCP=no
+ConfigureWithoutCarrier=yes
+IPv6Forwarding=yes
+
+Address={{ lan.public.address }}
+Address={{ lan.internal.address }}
+Address=fd74:6a6f:53::53/128

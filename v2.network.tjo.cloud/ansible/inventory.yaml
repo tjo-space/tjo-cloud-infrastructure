@@ -3,14 +3,17 @@
 "router":
   "hosts":
     "batuu":
-      "ansible_host": []
-      "ansible_port": 22
-      "ansible_user": "root"
+      "ansible_become": true
+      "ansible_host": "fe80::4d62:6912:325d:4e72"
+      "ansible_port": 2222
+      "ansible_user": "bine"
     "endor":
-      "ansible_host": []
-      "ansible_port": 22
-      "ansible_user": "root"
+      "ansible_become": true
+      "ansible_host": "fe80::70c5:ff6f:a4d8:82ec"
+      "ansible_port": 2222
+      "ansible_user": "bine"
     "jakku":
-      "ansible_host": []
-      "ansible_port": 22
-      "ansible_user": "root"
+      "ansible_become": true
+      "ansible_host": "fe80::1308:1479:90b7:fd1b"
+      "ansible_port": 2222
+      "ansible_user": "bine"

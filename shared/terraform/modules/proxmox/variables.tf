@@ -4,10 +4,38 @@ variable "username" {
   description = "Linux Username"
 }
 
-variable "network_bridge" {
-  type        = string
-  default     = "vmbr2"
-  description = "Bridge to be used for network interface."
+variable "network" {
+  type = object({
+    devices = optional(
+      list(object({
+        bridge      = string
+        mac_address = optional(string)
+        ipv4 = optional(
+          object({
+            address = optional(string) // either ipv4 address or "dhcp"
+            gateway = optional(string)
+          }),
+          { address = null }
+        )
+        ipv6 = optional(
+          object({
+            address = optional(string) // either ipv6 address or "dhcp" or "auto" for slaac
+            gateway = optional(string)
+          }),
+          { address = "auto" }
+        )
+      })),
+      [{ bridge = "vmbr2" }]
+    )
+
+    dns = optional(
+      object({
+        servers = set(string)
+      }),
+      { servers = ["fd74:6a6f:53::53"] }
+    )
+  })
+  description = "Network configuration."
 }
 
 variable "name" {

@@ -4,9 +4,27 @@ terraform {
       source  = "bpg/proxmox"
       version = "0.110.0"
     }
+    authentik = {
+      source  = "goauthentik/authentik"
+      version = "2026.5.0"
+    }
+    tailscale = {
+      source  = "tailscale/tailscale"
+      version = "0.24.0"
+    }
   }
 
   required_version = "~> 1.11.0"
+}
+
+provider "tailscale" {
+  api_key = var.tailscale_token
+}
+
+provider "authentik" {
+  url      = "https://id.cloud.internal"
+  token    = var.authentik_token
+  insecure = true
 }
 
 provider "proxmox" {
