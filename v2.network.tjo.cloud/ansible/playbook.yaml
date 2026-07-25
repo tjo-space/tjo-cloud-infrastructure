@@ -26,19 +26,19 @@
     - name: Install and Configure common things
       ansible.builtin.import_tasks:
         file: tasks/common.yaml
-      tags: config-refresh
+      tags: config-reload
 
     - name: Install and Configure router server
       ansible.builtin.import_tasks:
         file: tasks/router.yaml
       when: inventory_hostname in groups["router"]
-      tags: config-refresh
+      tags: config-reload
 
     - name: Install and Configure gateway server
       ansible.builtin.import_tasks:
         file: tasks/gateway.yaml
       when: inventory_hostname in groups["gateway"]
-      tags: config-refresh
+      tags: config-reload
 
     - name: Flush handlers
       ansible.builtin.meta: flush_handlers

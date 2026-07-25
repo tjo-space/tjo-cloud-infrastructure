@@ -61,13 +61,13 @@ EOF
   network = {
     devices = [
       {
-        bridge      = "vmbr0"
+        bridge      = each.value.wan.bridge
         mac_address = each.value.wan.mac_address != null ? each.value.wan.mac_address : "AA:BB:00:00:${format("%v:%v", substr(each.value.hash, 0, 2), substr(each.value.hash, 2, 2))}"
         ipv4        = { address = each.value.wan.ipv4.address, gateway = each.value.wan.ipv4.gateway }
         ipv6        = { address = each.value.wan.ipv6.address, gateway = each.value.wan.ipv6.gateway }
       },
       {
-        bridge      = "vmbr3"
+        bridge      = each.value.lan.bridge
         mac_address = "AA:BB:00:22:${format("%v:%v", substr(each.value.hash, 0, 2), substr(each.value.hash, 2, 2))}"
       },
     ]
@@ -109,6 +109,18 @@ resource "local_file" "ansible_inventory" {
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true
+          id             = v.id
+          wireguard = {
+            address = v.wireguard.address
+          }
+          lan = {
+            public = {
+              prefix = v.lan.public.prefix
+            }
+            internal = {
+              prefix = v.lan.internal.prefix
+            }
+          }
         } if v.kind == "router"
       }
     }
@@ -119,6 +131,18 @@ resource "local_file" "ansible_inventory" {
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true
+          id             = v.id
+          wireguard = {
+            address = v.wireguard.address
+          }
+          lan = {
+            public = {
+              prefix = v.lan.public.prefix
+            }
+            internal = {
+              prefix = v.lan.internal.prefix
+            }
+          }
         } if v.kind == "gateway"
       }
     }

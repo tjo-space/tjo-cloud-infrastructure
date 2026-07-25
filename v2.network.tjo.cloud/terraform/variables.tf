@@ -10,7 +10,14 @@ variable "nodes" {
     boot_storage = string
     boot_size    = optional(number, 16)
 
+    id = number
+
+    wireguard = object({
+      address = string
+    })
+
     wan = object({
+      bridge      = string
       mac_address = optional(string)
       ipv4 = optional(
         object({
@@ -26,6 +33,16 @@ variable "nodes" {
         }),
         {}
       )
+    })
+
+    lan = object({
+      bridge = string
+      public = object({
+        prefix = string
+      })
+      internal = object({
+        prefix = string
+      })
     })
   }))
 }

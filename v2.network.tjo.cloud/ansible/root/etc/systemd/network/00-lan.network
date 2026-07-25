@@ -1,11 +1,33 @@
 [Match]
-Name=eth0
+Name=eth1
 
 [Network]
 DHCP=no
+IPv6AcceptRA=no
 ConfigureWithoutCarrier=yes
-IPv6Forwarding=yes
 
-Address={{ lan.public.address }}
-Address={{ lan.internal.address }}
+Address={{ lan.public.prefix | ansible.utils.ipaddr('1') }}
+Address={{ lan.internal.prefix | ansible.utils.ipaddr('1') }}
 Address=fd74:6a6f:53::53/128
+
+IPv6Forwarding=yes
+IPv6SendRA=yes
+
+[IPv6SendRa]
+DNS=fd74:6a6f:53::53,_link_local
+
+[IPv6Prefix]
+Prefix={{ lan.public.prefix }}
+
+[IPv6Prefix]
+Prefix={{ lan.internal.prefix }}
+
+[IPv6PREF64Prefix]
+Prefix=64:ff9b::/96
+
+{% if "router" in group_names %}
+{% for host in groups["gateway"] %}
+[Route]
+Gateway={{ hostvars[host].lan.internal.prefix | ansible.utils.ipaddr('1') }}
+{% endfor %}
+{% endif %}

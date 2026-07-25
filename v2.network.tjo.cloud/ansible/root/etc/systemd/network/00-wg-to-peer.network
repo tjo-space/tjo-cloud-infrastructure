@@ -1,0 +1,9 @@
+[Match]
+Name = wg{{ hostvars[item].id }}
+
+[Network]
+Description = Wireguard connection to {{ item }}
+Address = {{ wireguard.address }}
+
+[Route]
+Destination = {{ hostvars[item].wireguard.address }}

@@ -79,7 +79,7 @@ systemctl start postgresql@$NEW_VERSION-main
 
 #### 5. Apply configuration again
 ```
-just postgresql configure-all config-refresh
+just postgresql configure-all config-reload
 ```
 
 #### 6. Cleanup

@@ -1,0 +1,16 @@
+[NetDev]
+Name = wg{{ hostvars[item].id }}
+Kind = wireguard
+Description = Wireguard Tunnel to {{ item }}
+
+[WireGuard]
+ListenPort = {{ 51820 + hostvars[item].id }}
+PrivateKeyFile = /etc/systemd/network/wg.private_key
+RouteTable = off
+
+[WireGuardPeer]
+PublicKey = {{ hostvars[item].wireguard_public_key }}
+PresharedKey = {{ wireguard_pre_shared_key }}
+Endpoint = {{ hostvars[item].wireguard_endpoint }}:{{ 51820 + id }}
+PersistentKeepalive = 25
+AllowedIPs = {{ hostvars[item].wireguard.address }}, {{ tjo_cloud_networks | ansible.builtin.join(', ') }}
