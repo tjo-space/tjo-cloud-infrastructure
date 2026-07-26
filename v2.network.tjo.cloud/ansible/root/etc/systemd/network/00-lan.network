@@ -32,7 +32,22 @@ Table=1000
 Type=unreachable
 {% endfor %}
 
+[Route]
+Destination={{ lan.public.prefix }}
+Table=1000
+
+[Route]
+Destination={{ lan.internal.prefix }}
+Table=1000
+
 [RoutingPolicyRule]
 IncomingInterface=eth1
 Table=1000
 Priority=100
+
+{% for network in tjo_cloud_networks %}
+[RoutingPolicyRule]
+To={{ network }}
+Table=1000
+Priority=100
+{% endfor %}

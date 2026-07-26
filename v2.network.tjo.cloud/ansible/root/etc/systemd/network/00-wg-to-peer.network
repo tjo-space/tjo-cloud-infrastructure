@@ -8,14 +8,15 @@ IPv6Forwarding=yes
 
 [Route]
 Destination={{ hostvars[item].wireguard.address }}
-[Route]
-Destination={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+Table=1000
 
 [Route]
-Destination={{ hostvars[item].wireguard.address }}
-Table=1000
-[Route]
 Destination={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+Table=1000
+
+[Route]
+Gateway={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+Destination={{ hostvars[item].lan.internal.prefix }}
 Table=1000
 
 {% if "gateway" in hostvars[item].group_names %}
