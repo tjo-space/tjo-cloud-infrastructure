@@ -78,6 +78,22 @@
     group: "root"
   notify: Restart alloy
 
+- name: Create Alloy override folder
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/systemd/system/alloy.service.d"
+    mode: "755"
+    owner: "root"
+    group: "root"
+
+- name: Copy alloy memory limits
+  ansible.builtin.template:
+    src: root/etc/systemd/system/alloy.service.d/memory-limit.conf
+    dest: /etc/systemd/system/alloy.service.d/memory-limit.conf
+    mode: '0644'
+    owner: "root"
+    group: "root"
+
 - name: Start and enable Alloy service
   ansible.builtin.systemd:
     name: alloy

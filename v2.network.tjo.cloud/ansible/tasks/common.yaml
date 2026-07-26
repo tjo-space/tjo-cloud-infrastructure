@@ -16,7 +16,7 @@
         /etc/systemd/network/wg.private_key \
         /etc/systemd/network/wg.public_key
 
-      chmod 64 \
+      chmod 640 \
         /etc/systemd/network/wg.private_key \
         /etc/systemd/network/wg.public_key
     creates: /etc/systemd/network/wg.private_key
@@ -35,6 +35,9 @@
   ansible.builtin.template:
     src: root/etc/systemd/network/{{ item }}
     dest: /etc/systemd/network/{{ item }}
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
   loop:
     - 00-wg0.netdev
     - 00-wg0.network
@@ -44,12 +47,18 @@
   ansible.builtin.template:
     src: root/etc/systemd/network/00-wg-to-peer.netdev
     dest: /etc/systemd/network/00-wg-{{ item }}.netdev
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
   loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
 - name: Generate peer wireguard connections - network
   ansible.builtin.template:
     src: root/etc/systemd/network/00-wg-to-peer.network
     dest: /etc/systemd/network/00-wg-{{ item }}.network
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
   loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
 - name: Reaload network
@@ -57,19 +66,38 @@
     name: systemd-networkd
     state: reloaded
 
-- name: FIREWALL - Define internal zone
+- name: FIREWALL - Define internal zone for primary wireguard interface and lan
   ansible.posix.firewalld:
-    source: '{{ item }}'
+    interface: "{{ item }}"
     zone: internal
     permanent: true
     immediate: true
     state: enabled
-  loop: "{{ tjo_cloud_networks }}"
+  loop:
+    - "wg0"
+    - "eth1"
+
+- name: FIREWALL - Define internal zone for peer wireguard interfaces
+  ansible.posix.firewalld:
+    interface: "wg{{ hostvars[item].id }}"
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
 - name: FIREWALL - Enable forwarding in internal zone
   ansible.posix.firewalld:
     forward: true
     zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: FIREWALL - Enable MSS MTU Clamping
+  ansible.posix.firewalld:
+    zone: internal
+    rich_rule: rule tcp-mss-clamp value=pmtu
     permanent: true
     immediate: true
     state: enabled

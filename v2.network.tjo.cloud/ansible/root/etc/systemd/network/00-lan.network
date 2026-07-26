@@ -13,8 +13,8 @@ Address=fd74:6a6f:53::53/128
 IPv6Forwarding=yes
 IPv6SendRA=yes
 
-[IPv6SendRa]
-DNS=fd74:6a6f:53::53,_link_local
+[IPv6SendRA]
+DNS=fd74:6a6f:53::53
 
 [IPv6Prefix]
 Prefix={{ lan.public.prefix }}
@@ -25,9 +25,14 @@ Prefix={{ lan.internal.prefix }}
 [IPv6PREF64Prefix]
 Prefix=64:ff9b::/96
 
-{% if "router" in group_names %}
-{% for host in groups["gateway"] %}
+{% for network in tjo_cloud_networks %}
 [Route]
-Gateway={{ hostvars[host].lan.internal.prefix | ansible.utils.ipaddr('1') }}
+Destination={{ network }}
+Table=1000
+Type=unreachable
 {% endfor %}
-{% endif %}
+
+[RoutingPolicyRule]
+IncomingInterface=eth1
+Table=1000
+Priority=100

@@ -1,9 +1,27 @@
 [Match]
-Name = wg{{ hostvars[item].id }}
+Name=wg{{ hostvars[item].id }}
 
 [Network]
-Description = Wireguard connection to {{ item }}
-Address = {{ wireguard.address }}
+Description=Wireguard connection to {{ item }}
+Address={{ wireguard.address }}
+IPv6Forwarding=yes
 
 [Route]
-Destination = {{ hostvars[item].wireguard.address }}
+Destination={{ hostvars[item].wireguard.address }}
+[Route]
+Destination={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+
+[Route]
+Destination={{ hostvars[item].wireguard.address }}
+Table=1000
+[Route]
+Destination={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+Table=1000
+
+{% if "gateway" in hostvars[item].group_names %}
+[Route]
+Destination=::
+Gateway={{ hostvars[item].lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+GatewayOnLink=yes
+Table=1000
+{% endif %}

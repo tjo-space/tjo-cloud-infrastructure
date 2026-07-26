@@ -1,5 +1,6 @@
 [Match]
-Name = wg0
+Name=wg0
 
 [Network]
-Address = {{ wireguard.address }}
+Address={{ wireguard.address }}
+IPv6Forwarding=yes
