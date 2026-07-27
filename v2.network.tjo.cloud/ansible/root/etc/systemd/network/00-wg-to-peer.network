@@ -4,7 +4,6 @@ Name=wg{{ hostvars[item].id }}
 [Network]
 Description=Wireguard connection to {{ item }}
 Address={{ wireguard.address }}
-IPv6Forwarding=yes
 
 [Route]
 Destination={{ hostvars[item].wireguard.address }}

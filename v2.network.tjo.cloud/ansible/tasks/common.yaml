@@ -66,6 +66,13 @@
     name: systemd-networkd
     state: reloaded
 
+- name: Enable IPv6 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: '1'
+    sysctl_set: true
+    sysctl_file: /etc/sysctl.d/99-forwarding.conf
+
 - name: FIREWALL - Define internal zone for primary wireguard interface and lan
   ansible.posix.firewalld:
     interface: "{{ item }}"

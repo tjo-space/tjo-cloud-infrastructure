@@ -3,4 +3,3 @@ Name=wg0
 
 [Network]
 Address={{ wireguard.address }}
-IPv6Forwarding=yes

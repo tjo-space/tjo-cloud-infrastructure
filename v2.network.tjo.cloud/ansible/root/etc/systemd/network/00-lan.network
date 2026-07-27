@@ -4,14 +4,11 @@ Name=eth1
 [Network]
 DHCP=no
 IPv6AcceptRA=no
-ConfigureWithoutCarrier=yes
+IPv6SendRA=yes
 
 Address={{ lan.public.prefix | ansible.utils.ipaddr('1') }}
 Address={{ lan.internal.prefix | ansible.utils.ipaddr('1') }}
 Address=fd74:6a6f:53::53/128
-
-IPv6Forwarding=yes
-IPv6SendRA=yes
 
 [IPv6SendRA]
 DNS=fd74:6a6f:53::53
