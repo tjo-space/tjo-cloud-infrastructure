@@ -11,6 +11,6 @@ RouteTable=off
 [WireGuardPeer]
 PublicKey={{ item.wireguard_public_key }}
 PresharedKey={{ wireguard_pre_shared_key }}
-Endpoint={{ item.wireguard_endpoint_ipv4 }}:{{ 51820 + cfg.id }}
+Endpoint={{ item.wireguard_endpoint_ipv6 }}:{{ 51820 + cfg.id }}
 PersistentKeepalive=25
 AllowedIPs={{ item.allowed_ips | join(', ') }}

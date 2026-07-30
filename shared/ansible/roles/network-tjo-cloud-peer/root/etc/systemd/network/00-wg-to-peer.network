@@ -8,3 +8,9 @@ Address={{ cfg.wireguard_address }}
 [Route]
 Destination={{ item.wireguard_address }}
 Table=1000
+
+[RoutingPolicyRule]
+IncomingInterface=wg{{ item.id }}
+Table=1000
+Priority=100
+Family=ipv6

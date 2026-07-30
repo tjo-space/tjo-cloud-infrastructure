@@ -3,4 +3,9 @@ Name=wg0
 
 [Network]
 Address={{ cfg.wireguard_address }}
-Address=fe80::fd74:6a6f:70:{{ cfg.id }}
+
+[RoutingPolicyRule]
+IncomingInterface=wg0
+Table=1000
+Priority=100
+Family=ipv6

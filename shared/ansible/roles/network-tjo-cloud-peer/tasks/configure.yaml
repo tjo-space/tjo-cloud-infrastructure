@@ -1,3 +1,19 @@
+- name: Generate wg0 wireguard connections - netdev
+  ansible.builtin.template:
+    src: root/etc/systemd/network/00-wg0.netdev
+    dest: /etc/systemd/network/00-wg0.netdev
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
+
+- name: Generate wg0 wireguard connections - network
+  ansible.builtin.template:
+    src: root/etc/systemd/network/00-wg0.network
+    dest: /etc/systemd/network/00-wg0.network
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
+
 - name: Generate peer wireguard connections - netdev
   ansible.builtin.template:
     src: root/etc/systemd/network/00-wg-to-peer.netdev

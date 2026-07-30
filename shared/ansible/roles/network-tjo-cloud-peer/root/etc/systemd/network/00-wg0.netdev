@@ -10,8 +10,8 @@ RouteTable=off
 
 {% for peer in cfg.peers %}
 # Host: {{ peer.name }}
-[WireGuardpeer]
+[WireGuardPeer]
 PublicKey={{ peer.wireguard_public_key }}
 PresharedKey={{ cfg.wireguard_pre_shared_key }}
-AllowedIPs={{ peer.wireguard_address }}, , fe80::fd74:6a6f:70:{{ peer.id }}
+AllowedIPs={{ peer.wireguard_address }}
 {% endfor %}

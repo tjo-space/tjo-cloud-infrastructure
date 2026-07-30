@@ -29,6 +29,10 @@
       wireguard_address: "{{ wireguard.address }}"
       wireguard_pre_shared_key: "{{ wireguard_pre_shared_key }}"
       peers: "{{ peers }}"
+      routes: |
+        {% if "gateway" in group_names %}
+        route ::/0 via "eth0";
+        {% endif %}
       bird_config_custom: |
         protocol bgp dyn_internal {
           description "BGP for INTERNAL";
