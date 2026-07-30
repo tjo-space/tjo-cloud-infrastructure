@@ -3,9 +3,29 @@ Name=wg0
 
 [Network]
 Address={{ cfg.wireguard_address }}
+Address=fe80:fd76:6a6f:70::{{cfg.id}}/64
 
 [RoutingPolicyRule]
 IncomingInterface=wg0
 Table=1000
 Priority=100
 Family=ipv6
+
+# Route 2a01:4f8:120:7700:: via main table
+# As the router/gateway's wan ip is here
+[RoutingPolicyRule]
+To=2a01:4f8:120:7700::/64
+Table=main
+Priority=50
+
+[RoutingPolicyRule]
+To=fd74:6a6f:70::/64
+Table=1000
+Priority=100
+
+#{% for network in tjo_cloud_networks %}
+#[RoutingPolicyRule]
+#To={{ network }}
+#Table=1000
+#Priority=100
+#{% endfor %}

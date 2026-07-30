@@ -65,6 +65,10 @@ resource "local_file" "ansible_inventory" {
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true
+          wireguard = {
+            id      = v.wireguard.id
+            address = v.wireguard.address
+          }
         }
       }
     }

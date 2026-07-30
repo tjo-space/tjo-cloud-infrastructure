@@ -48,7 +48,7 @@ module "hetzner-cloud" {
   image       = each.value.image
   name        = each.value.name
   fqdn        = each.value.fqdn
-  datacenter  = each.value.datacenter
+  location    = each.value.location
   metadata    = each.value.meta
   server_type = each.value.server_type
 
@@ -65,6 +65,10 @@ resource "local_file" "ansible_inventory" {
           ansible_port   = 2222
           ansible_user   = "bine"
           ansible_become = true
+          wireguard = {
+            id      = v.wireguard.id
+            address = v.wireguard.address
+          }
         }
       }
     }

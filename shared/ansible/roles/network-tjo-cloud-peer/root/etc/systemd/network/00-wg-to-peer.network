@@ -4,6 +4,7 @@ Name=wg{{ item.id }}
 [Network]
 Description=Wireguard connection to {{ item.name }}
 Address={{ cfg.wireguard_address }}
+Address=fe80:fd76:6a6f:70::{{cfg.id}}/64
 
 [Route]
 Destination={{ item.wireguard_address }}

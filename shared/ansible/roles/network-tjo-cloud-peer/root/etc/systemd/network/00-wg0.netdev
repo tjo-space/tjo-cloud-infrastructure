@@ -13,5 +13,5 @@ RouteTable=off
 [WireGuardPeer]
 PublicKey={{ peer.wireguard_public_key }}
 PresharedKey={{ cfg.wireguard_pre_shared_key }}
-AllowedIPs={{ peer.wireguard_address }}
+AllowedIPs=fe80:fd76:6a6f:70::{{peer.id}}/64, {{ peer.wireguard_address }}
 {% endfor %}

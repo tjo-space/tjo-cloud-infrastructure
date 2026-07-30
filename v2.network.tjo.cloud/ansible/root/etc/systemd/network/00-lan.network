@@ -25,26 +25,11 @@ Prefix=64:ff9b::/96
 ##
 # ROUTING POLICY RULES
 ##
-
-# Route 2a01:4f8:120:7700:: via main table
-# As the router/gateway's wan ip is here
-[RoutingPolicyRule]
-To=2a01:4f8:120:7700::/64
-Table=main
-Priority=50
-
 [RoutingPolicyRule]
 IncomingInterface=eth1
 Table=1000
 Priority=100
 Family=ipv6
-
-{% for network in tjo_cloud_networks %}
-[RoutingPolicyRule]
-To={{ network }}
-Table=1000
-Priority=100
-{% endfor %}
 
 ##
 # ROUTES

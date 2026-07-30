@@ -10,8 +10,7 @@
         peers | default([]) + [{
           "name": item,
           "id": hostvars[item].id,
-          "wireguard_endpoint_ipv4": hostvars[item].wireguard_endpoint_ipv4,
-          "wireguard_endpoint_ipv6": hostvars[item].wireguard_endpoint_ipv6,
+          "wireguard_endpoint": hostvars[item].wireguard_endpoint_ipv6,
           "wireguard_address": hostvars[item].wireguard.address,
           "wireguard_public_key": hostvars[item].wireguard_public_key,
           "allowed_ips": [ hostvars[item].wireguard.address ] + tjo_cloud_networks
@@ -28,7 +27,7 @@
       id: "{{ id }}"
       wireguard_address: "{{ wireguard.address }}"
       wireguard_pre_shared_key: "{{ wireguard_pre_shared_key }}"
-      peers: "{{ peers }}"
+      peers: "{{ peers + wireguard_remote_peers }}"
       routes: |
         {% if "gateway" in group_names %}
         route ::/0 via "eth0";

@@ -1,12 +1,8 @@
 terraform {
   required_providers {
-    proxmox = {
-      source  = "bpg/proxmox"
-      version = "0.61.1"
-    }
     hcloud = {
       source  = "hetznercloud/hcloud"
-      version = "1.50.0"
+      version = "1.66.0"
     }
     authentik = {
       source  = "goauthentik/authentik"
@@ -42,8 +38,9 @@ provider "desec" {
 }
 
 provider "authentik" {
-  url   = "https://id.cloud.internal"
-  token = var.authentik_token
+  url      = "https://id.cloud.internal"
+  token    = var.authentik_token
+  insecure = true
 }
 
 provider "hcloud" {
@@ -56,45 +53,4 @@ provider "kubernetes" {
 
 provider "zerotier" {
   zerotier_central_token = var.zerotier_token
-}
-
-provider "proxmox" {
-  endpoint  = "https://nevaroo.proxmox.cloud.internal:8006/api2/json"
-  insecure  = true
-  api_token = var.proxmox_token
-
-  ssh {
-    agent    = true
-    username = "root"
-
-    node {
-      name    = "batuu"
-      address = "batuu.proxmox.cloud.internal"
-      port    = 22
-    }
-
-    node {
-      name    = "jakku"
-      address = "jakku.proxmox.cloud.internal"
-      port    = 22
-    }
-
-    node {
-      name    = "nevaroo"
-      address = "nevaroo.proxmox.cloud.internal"
-      port    = 22
-    }
-
-    node {
-      name    = "mustafar"
-      address = "mustafar.proxmox.cloud.internal"
-      port    = 22
-    }
-
-    node {
-      name    = "endor"
-      address = "endor.proxmox.cloud.internal"
-      port    = 22
-    }
-  }
 }

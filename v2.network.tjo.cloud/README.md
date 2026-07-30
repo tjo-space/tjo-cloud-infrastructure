@@ -53,3 +53,6 @@ and it has the public `/56` routed to it. We use addresses from first /64 for th
 | batuu.network.tjo.cloud    | 12 | fd74:6a6f:70::12/128     | 65012  |
 | jakku.network.tjo.cloud    | 13 |fd74:6a6f:70::13/128     | 65013  |
 | mustafar.network.tjo.cloud | 14 |fd74:6a6f:70::14/128     | 65014  |
+| #                          | #  | #                        | #  |
+| blue-hetzner-cloud.ingress.tjo.cloud | 21 |fd74:6a6f:70::21/128     | 65021  |
+| purple-hetzner-cloud.mail.tjo.cloud | 22 |fd74:6a6f:70::22/128     | 65022  |

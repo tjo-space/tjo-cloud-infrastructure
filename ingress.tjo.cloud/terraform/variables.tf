@@ -4,6 +4,11 @@ variable "nodes_hetzner_cloud" {
     image       = string
     server_type = string
     use         = bool
+
+    wireguard = object({
+      id      = number
+      address = string
+    })
   }))
 }
 
