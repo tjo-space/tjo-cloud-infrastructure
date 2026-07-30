@@ -1,0 +1,10 @@
+[Match]
+Name=wg{{ item.id }}
+
+[Network]
+Description=Wireguard connection to {{ item.name }}
+Address={{ cfg.wireguard_address }}
+
+[Route]
+Destination={{ item.wireguard_address }}
+Table=1000

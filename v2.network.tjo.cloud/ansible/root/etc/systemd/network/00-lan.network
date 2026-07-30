@@ -22,6 +22,24 @@ Prefix={{ lan.internal.prefix }}
 [IPv6PREF64Prefix]
 Prefix=64:ff9b::/96
 
+##
+# ROUTING POLICY RULES
+##
+[RoutingPolicyRule]
+IncomingInterface=eth1
+Table=1000
+Priority=100
+
+{% for network in tjo_cloud_networks %}
+[RoutingPolicyRule]
+To={{ network }}
+Table=1000
+Priority=100
+{% endfor %}
+
+##
+# ROUTES
+##
 {% for network in tjo_cloud_networks %}
 [Route]
 Destination={{ network }}
@@ -37,14 +55,10 @@ Table=1000
 Destination={{ lan.internal.prefix }}
 Table=1000
 
-[RoutingPolicyRule]
-IncomingInterface=eth1
+{% if "gateway" in group_names %}
+[Route]
+Destination=::
+Gateway={{ lan.internal.prefix | ansible.utils.ipaddr('1') | ansible.utils.ipaddr('address') }}
+GatewayOnLink=yes
 Table=1000
-Priority=100
-
-{% for network in tjo_cloud_networks %}
-[RoutingPolicyRule]
-To={{ network }}
-Table=1000
-Priority=100
-{% endfor %}
+{% endif %}

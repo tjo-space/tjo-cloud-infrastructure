@@ -27,3 +27,11 @@
     name:
       - yggdrasil
     state: present
+
+- name: FIREWALL - Enable forwarding in public zone
+  ansible.posix.firewalld:
+    forward: true
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled

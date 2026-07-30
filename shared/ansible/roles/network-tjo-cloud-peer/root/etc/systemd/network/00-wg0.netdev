@@ -1,0 +1,17 @@
+[NetDev]
+Name=wg0
+Kind=wireguard
+Description=wg0 - Wireguard Tunnel
+
+[WireGuard]
+ListenPort=51820
+PrivateKeyFile=/etc/systemd/network/wg.private_key
+RouteTable=off
+
+{% for peer in cfg.peers %}
+# Host: {{ peer.name }}
+[WireGuardpeer]
+PublicKey={{ peer.wireguard_public_key }}
+PresharedKey={{ cfg.wireguard_pre_shared_key }}
+AllowedIPs={{ peer.wireguard_address }}, , fe80::fd74:6a6f:70:{{ peer.id }}
+{% endfor %}

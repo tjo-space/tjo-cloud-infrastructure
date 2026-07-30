@@ -1,0 +1,6 @@
+[Match]
+Name=wg0
+
+[Network]
+Address={{ cfg.wireguard_address }}
+Address=fe80::fd74:6a6f:70:{{ cfg.id }}

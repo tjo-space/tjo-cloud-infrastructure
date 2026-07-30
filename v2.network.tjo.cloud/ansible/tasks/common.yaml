@@ -1,65 +1,59 @@
-- name: Install Bird3, unbound, wireguard
-  ansible.builtin.apt:
-    name:
-      - bird3
-      - wireguard
-      - unbound
-    state: present
+- name: Setup wireguard
+  ansible.builtin.import_role:
+    name: network-tjo-cloud-peer
+    tasks_from: "setup"
 
-- name: Generate wireguard keys
-  ansible.builtin.shell:
-    cmd: |
-      wg genkey > /etc/systemd/network/wg.private_key
-      cat /etc/systemd/network/wg.private_key | wg pubkey > /etc/systemd/network/wg.public_key
-
-      chown root:systemd-network \
-        /etc/systemd/network/wg.private_key \
-        /etc/systemd/network/wg.public_key
-
-      chmod 640 \
-        /etc/systemd/network/wg.private_key \
-        /etc/systemd/network/wg.public_key
-    creates: /etc/systemd/network/wg.private_key
-
-- name: Read public key
-  ansible.builtin.slurp:
-    src: /etc/systemd/network/wg.public_key
-  register: wireguard_public_key_file
-
-- name: Save wireguard public key and pre shared key
+- name: Setup peers
   ansible.builtin.set_fact:
-    wireguard_endpoint: "{{ ansible_facts.default_ipv6.address | default(ansible_facts.default_ipv4.address) }}"
-    wireguard_public_key: "{{ wireguard_public_key_file.content | ansible.builtin.b64decode | ansible.builtin.trim }}"
-
-- name: Generate network configuration
-  ansible.builtin.template:
-    src: root/etc/systemd/network/{{ item }}
-    dest: /etc/systemd/network/{{ item }}
-    owner: "root"
-    group: "systemd-network"
-    mode: "640"
-  loop:
-    - 00-wg0.netdev
-    - 00-wg0.network
-    - 00-lan.network
-
-- name: Generate peer wireguard connections - netdev
-  ansible.builtin.template:
-    src: root/etc/systemd/network/00-wg-to-peer.netdev
-    dest: /etc/systemd/network/00-wg-{{ item }}.netdev
-    owner: "root"
-    group: "systemd-network"
-    mode: "640"
+    peers: |
+      {{
+        peers | default([]) + [{
+          "name": item,
+          "id": hostvars[item].id,
+          "wireguard_endpoint_ipv4": hostvars[item].wireguard_endpoint_ipv4,
+          "wireguard_endpoint_ipv6": hostvars[item].wireguard_endpoint_ipv6,
+          "wireguard_address": hostvars[item].wireguard.address,
+          "wireguard_public_key": hostvars[item].wireguard_public_key,
+          "allowed_ips": [ hostvars[item].wireguard.address ] + tjo_cloud_networks
+        }]
+      }}
   loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
-- name: Generate peer wireguard connections - network
+- name: Setup Network Wireguard and BGP peer
+  ansible.builtin.import_role:
+    name: network-tjo-cloud-peer
+    tasks_from: "configure"
+  vars:
+    cfg:
+      id: "{{ id }}"
+      wireguard_address: "{{ wireguard.address }}"
+      wireguard_pre_shared_key: "{{ wireguard_pre_shared_key }}"
+      peers: "{{ peers }}"
+      bird_config_custom: |
+        protocol bgp dyn_internal {
+          description "BGP for INTERNAL";
+          dynamic name "bgp_dyn_internal";
+
+          local port 179 as 65000;
+          neighbor range {{ lan.internal.prefix }} internal;
+
+          passive;
+          graceful restart on;
+          advertise hostname on;
+
+          ipv6 {
+            export none;
+            import all;
+          };
+        }
+
+- name: Generate lan network configuration
   ansible.builtin.template:
-    src: root/etc/systemd/network/00-wg-to-peer.network
-    dest: /etc/systemd/network/00-wg-{{ item }}.network
+    src: root/etc/systemd/network/00-lan.network
+    dest: /etc/systemd/network/00-lan.network
     owner: "root"
     group: "systemd-network"
     mode: "640"
-  loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
 - name: Reaload network
   ansible.builtin.systemd:
@@ -73,25 +67,13 @@
     sysctl_set: true
     sysctl_file: /etc/sysctl.d/99-forwarding.conf
 
-- name: FIREWALL - Define internal zone for primary wireguard interface and lan
+- name: FIREWALL - Define internal zone for lan
   ansible.posix.firewalld:
-    interface: "{{ item }}"
+    interface: eth1
     zone: internal
     permanent: true
     immediate: true
     state: enabled
-  loop:
-    - "wg0"
-    - "eth1"
-
-- name: FIREWALL - Define internal zone for peer wireguard interfaces
-  ansible.posix.firewalld:
-    interface: "wg{{ hostvars[item].id }}"
-    zone: internal
-    permanent: true
-    immediate: true
-    state: enabled
-  loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
 
 - name: FIREWALL - Enable forwarding in internal zone
   ansible.posix.firewalld:
@@ -109,7 +91,7 @@
     immediate: true
     state: enabled
 
-- name: FIREWALL - DNS, BGP
+- name: FIREWALL - DNS internal zone
   ansible.posix.firewalld:
     port: '{{ item }}'
     zone: internal
@@ -119,34 +101,11 @@
   loop:
     - "53/udp"
     - "53/tcp"
-    - "179/tcp"
 
-- name: FIREWALL - Allow SSH
-  ansible.posix.firewalld:
-    service: ssh
-    zone: internal
-    permanent: true
-    immediate: true
-    state: enabled
-
-- name: FIREWALL - Allow WIREGUARD
-  ansible.posix.firewalld:
-    port: '51820-51860/udp'
-    zone: public
-    permanent: true
-    immediate: true
-    state: enabled
-
-- name: Generate bird configuration
-  ansible.builtin.template:
-    src: root/etc/bird/bird.conf
-    dest: /etc/bird/bird.conf
-
-- name: Reaload bird
-  ansible.builtin.systemd:
-    name: bird
-    state: reloaded
-    enabled: true
+- name: Install unbound
+  ansible.builtin.apt:
+    name: unbound
+    state: present
 
 - name: Generate unbound configuration
   ansible.builtin.template:

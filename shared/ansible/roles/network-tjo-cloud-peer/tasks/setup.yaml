@@ -1,0 +1,32 @@
+- name: Install Wireguard and Bird3
+  ansible.builtin.apt:
+    name:
+      - wireguard
+      - bird3
+    state: present
+
+- name: Generate wireguard keys
+  ansible.builtin.shell:
+    cmd: |
+      wg genkey > /etc/systemd/network/wg.private_key
+      cat /etc/systemd/network/wg.private_key | wg pubkey > /etc/systemd/network/wg.public_key
+
+      chown root:systemd-network \
+        /etc/systemd/network/wg.private_key \
+        /etc/systemd/network/wg.public_key
+
+      chmod 640 \
+        /etc/systemd/network/wg.private_key \
+        /etc/systemd/network/wg.public_key
+    creates: /etc/systemd/network/wg.private_key
+
+- name: Read public key
+  ansible.builtin.slurp:
+    src: /etc/systemd/network/wg.public_key
+  register: wireguard_public_key_file
+
+- name: Save wireguard public key and pre shared key
+  ansible.builtin.set_fact:
+    wireguard_endpoint_ipv6: "{{ ansible_facts.default_ipv6.address | default('') }}"
+    wireguard_endpoint_ipv4: "{{ ansible_facts.default_ipv4.address | default('') }}"
+    wireguard_public_key: "{{ wireguard_public_key_file.content | ansible.builtin.b64decode | ansible.builtin.trim }}"

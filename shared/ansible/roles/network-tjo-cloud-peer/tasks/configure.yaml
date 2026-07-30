@@ -1,0 +1,63 @@
+- name: Generate peer wireguard connections - netdev
+  ansible.builtin.template:
+    src: root/etc/systemd/network/00-wg-to-peer.netdev
+    dest: /etc/systemd/network/00-wg-{{ item.name }}.netdev
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
+  loop: "{{ cfg.peers }}"
+
+- name: Generate peer wireguard connections - network
+  ansible.builtin.template:
+    src: root/etc/systemd/network/00-wg-to-peer.network
+    dest: /etc/systemd/network/00-wg-{{ item.name }}.network
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
+  loop: "{{ cfg.peers }}"
+
+- name: Reaload network
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+
+- name: FIREWALL - Define internal zone wireguard (for peers and wg0)
+  ansible.posix.firewalld:
+    interface: "wg{{ item }}"
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop: "{{ cfg.peers | map(attribute='id') + [0] }}"
+
+- name: FIREWALL - Allow WIREGUARD
+  ansible.posix.firewalld:
+    port: '51820-51860/udp'
+    zone: public
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: FIREWALL - BGP, BFD on internal zone
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "179/tcp"
+    - "3784/udp"
+    - "3785/udp"
+    - "4784/udp"
+
+- name: Generate bird configuration
+  ansible.builtin.template:
+    src: root/etc/bird/bird.conf
+    dest: /etc/bird/bird.conf
+
+- name: Reaload bird
+  ansible.builtin.systemd:
+    name: bird
+    state: reloaded
+    enabled: true
