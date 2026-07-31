@@ -124,9 +124,6 @@ module "cluster-core" {
     load_balancer_cidr = local.load_balancer_cidr
     pod_cidr           = local.pod_cidr
   }
-  bgp = {
-    asn = 65000
-  }
   hosts = {
     nevaroo = {
       storage = {

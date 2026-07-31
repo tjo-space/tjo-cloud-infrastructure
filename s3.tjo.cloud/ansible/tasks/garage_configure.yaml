@@ -19,7 +19,7 @@
 - name: Save garage node id
   ansible.builtin.set_fact:
     garage_node_id: "{{ garage_node_id.stdout }}"
-    garage_node_ip: "{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f.*') | first }}"
+    garage_node_ip: "{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f:3030.*') | first }}"
 
 - name: Loop connect garage nodes
   ansible.builtin.command:

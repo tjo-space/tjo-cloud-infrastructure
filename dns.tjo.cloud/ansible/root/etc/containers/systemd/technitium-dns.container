@@ -9,8 +9,8 @@ Network=main.network
 # WebUI
 PublishPort=127.0.0.1:5380:5380/tcp
 # DNS
-PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f.*') | first }}]:53:53/tcp
-PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f.*') | first }}]:53:53/udp
+PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f:3030.*') | first }}]:53:53/tcp
+PublishPort=[{{ ansible_all_ipv6_addresses | select('match', '^fd74:6a6f:3030.*') | first }}]:53:53/udp
 Volume=/srv/data/technitium-dns:/etc/dns:rw
 
 [Service]

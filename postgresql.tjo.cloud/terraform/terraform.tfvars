@@ -76,10 +76,10 @@ users = [
     databases        = [{ name = "rss.tjo.space", connection_limit = 20 }]
   },
   {
-    node      = "nevaroo-one"
-    name      = "id.tjo.cloud"
+    node             = "nevaroo-one"
+    name             = "id.tjo.cloud"
     connection_limit = 1400
-    databases = [{ name = "id.tjo.cloud", connection_limit = 1400 }]
+    databases        = [{ name = "id.tjo.cloud", connection_limit = 1400 }]
   },
 ]
 

@@ -64,7 +64,7 @@ variable "nodes" {
       })
       ipv6 = object({
         address = string
-        subnet  = optional(string, "fd74:6a6f::/48")
+        subnet  = optional(string, "fd74:6a6f:3030::/48")
       })
     })
     iso_storage = optional(string, "local")

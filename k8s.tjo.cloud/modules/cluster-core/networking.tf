@@ -101,38 +101,8 @@ resource "helm_release" "cilium" {
     }
 
     hubble = {
-      ui = {
-        enabled           = true
-        priorityClassName = "system-cluster-critical"
-      }
-      relay = {
-        enabled           = true
-        priorityClassName = "system-cluster-critical"
-      }
-      metrics = {
-        enabled = [
-          "dns",
-          "drop",
-          "tcp",
-          "flow",
-          "port-distribution",
-          "icmp",
-          "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction"
-        ]
-        enableOpenMetrics = true
-        serviceMonitor = {
-          enabled = true
-        }
-      }
-      tls = {
-        auto = {
-          enabled              = true
-          method               = "helm"
-          certValidityDuration = 1095
-        }
-      }
+      enabled = false
     }
-
     gatewayAPI = {
       enabled = false
     }
@@ -154,13 +124,13 @@ resource "kubernetes_manifest" "cilium-bgp-cluster-config" {
     spec = {
       bgpInstances = [
         {
-          name     = "instance-${var.bgp.asn}"
-          localASN = var.bgp.asn
+          name     = "instance-65000"
+          localASN = 65000
           peers = [
             {
               name        = "local-router"
-              peerASN     = var.bgp.asn
-              peerAddress = "fd74:6a6f:53::53"
+              peerASN     = 65000
+              peerAddress = "fd74:6a6f:3030:53::53"
               peerConfigRef = {
                 name = "default"
               }

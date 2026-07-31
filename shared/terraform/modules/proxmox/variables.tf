@@ -32,7 +32,7 @@ variable "network" {
       object({
         servers = set(string)
       }),
-      { servers = ["fd74:6a6f:53::53"] }
+      { servers = ["fd74:6a6f:3030:53::53"] }
     )
   })
   description = "Network configuration."

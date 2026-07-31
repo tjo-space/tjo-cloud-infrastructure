@@ -17,7 +17,7 @@ output "address" {
     ipv4 = try(local.local_interfaces_ipv4_address[0], "")
 
     // We filter ip addresses to only find internal ones.
-    ipv6 = try([for ipv6 in local.local_interfaces_ipv6_address : ipv6 if startswith(ipv6, "fd74:6a6f:")][0], "")
+    ipv6 = try([for ipv6 in local.local_interfaces_ipv6_address : ipv6 if startswith(ipv6, "fd74:6a6f:3030:")][0], "")
 
     per_interface_ipv4 = local.ipv4_addresses
     per_interface_ipv6 = local.ipv6_addresses

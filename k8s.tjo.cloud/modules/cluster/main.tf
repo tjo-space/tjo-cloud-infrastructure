@@ -13,7 +13,7 @@ locals {
         }
         nodeIP = {
           validSubnets = [
-            "fd74:6a6f::/32",
+            "fd74:6a6f:3030::/48",
           ]
         }
       }
@@ -34,13 +34,13 @@ locals {
         }
       }
       network = {
-        nameservers = ["fd74:6a6f:53::53"]
+        nameservers = ["fd74:6a6f:3030:53::53"]
       }
     }
     cluster = {
       etcd = {
         advertisedSubnets = [
-          "fd74:6a6f::/32",
+          "fd74:6a6f:3030::/48",
         ]
         extraArgs = {
           heartbeat-interval = "1000" # Defaults to 100ms. Which is too fast for our network.
@@ -91,7 +91,7 @@ locals {
         }
         nodeIP = {
           validSubnets = [
-            "fd74:6a6f::/32",
+            "fd74:6a6f:3030::/48",
           ]
         }
       }
@@ -107,7 +107,7 @@ locals {
         }
       }
       network = {
-        nameservers = ["fd74:6a6f:53::53"]
+        nameservers = ["fd74:6a6f:3030:53::53"]
       }
     }
   }

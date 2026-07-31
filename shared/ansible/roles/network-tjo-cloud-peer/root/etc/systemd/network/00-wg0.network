@@ -3,7 +3,7 @@ Name=wg0
 
 [Network]
 Address={{ cfg.wireguard_address }}
-Address=fe80:fd76:6a6f:70::{{cfg.id}}/64
+Address=fe80:fd76:6a6f:3030:70::{{cfg.id}}/64
 
 [RoutingPolicyRule]
 IncomingInterface=wg0
@@ -19,7 +19,7 @@ Table=main
 Priority=50
 
 [RoutingPolicyRule]
-To=fd74:6a6f:70::/64
+To=fd74:6a6f:3030:70::/64
 Table=1000
 Priority=100
 

@@ -10,6 +10,6 @@ nodes = {
     memory = 6144
 
     image = "debian_13_server_cloudimg_amd64.img"
-    use = true
+    use   = true
   }
 }

@@ -36,7 +36,7 @@
     proto: tcp
     src: "{{ item }}"
   loop:
-    - "fd74:6a6f::/32"
+    - "fd74:6a6f:3030::/48"
     - "fd9b:7c3d:7f6a::/48"
   tags: firewall
 

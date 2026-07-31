@@ -28,9 +28,3 @@ variable "hosts" {
     storage = map(string)
   }))
 }
-
-variable "bgp" {
-  type = object({
-    asn = number
-  })
-}

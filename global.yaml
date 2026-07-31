@@ -1,6 +1,6 @@
 tjo_cloud_networks:
   # tjo.cloud
-  - "fd74:6a6f::/32"
+  - "fd74:6a6f:3030::/48"
   - "2a01:4f8:120:7700::/56"
   # k8s.tjo.cloud
   - "fd9b:7c3d:7f6a::/48"

@@ -2,12 +2,12 @@ wireguard_remote_peers:
   - name: "blue-hetzner-cloud-ingress-tjo-cloud"
     id: 21
     wireguard_endpoint: "2a01:4f8:1c1a:16bd::1"
-    wireguard_address: "fd74:6a6f:70::21/128"
+    wireguard_address: "fd74:6a6f:3030:70::21/128"
     wireguard_public_key: "4FtPJPBoyyiUyte5wOvLd1r1+kbSUs265bgsXcgbayI="
     allowed_ips: []
   - name: "purple-hetzner-cloud-mail-tjo-cloud"
     id: 22
     wireguard_endpoint: "2a01:4f8:c17:cb10::1"
-    wireguard_address: "fd74:6a6f:70::22/128"
+    wireguard_address: "fd74:6a6f:3030:70::22/128"
     wireguard_public_key: "dVKfo8sRFey+OyWczcuD2l65cusvkajognyyCKywWyc="
     allowed_ips: []

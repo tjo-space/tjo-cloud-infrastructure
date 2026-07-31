@@ -34,25 +34,25 @@
         - name: "nevaroo"
           id: 10
           wireguard_endpoint: "2a01:4f8:120:7700:a8bb:ff:fe00:4536"
-          wireguard_address: "fd74:6a6f:70::10/128"
+          wireguard_address: "fd74:6a6f:3030:70::10/128"
           wireguard_public_key: "pTz+6VD8OodLZz+88j8dYgSmE6F7kbpv704ISD2OADc="
           allowed_ips: '{{ tjo_cloud_networks }}'
         - name: "endor"
           id: 11
           wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:dbea"
-          wireguard_address: "fd74:6a6f:70::11/128"
+          wireguard_address: "fd74:6a6f:3030:70::11/128"
           wireguard_public_key: "O/Z9bk0irnVB2weH7fm6Cl9Cl/Gc+zIkqf+Hh8dSEQQ="
           allowed_ips: '{{ tjo_cloud_networks }}'
         - name: "batuu"
           id: 12
           wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:f737"
-          wireguard_address: "fd74:6a6f:70::12/128"
+          wireguard_address: "fd74:6a6f:3030:70::12/128"
           wireguard_public_key: "jPP4LbYC/QVW6rZxjru/C7XjyS7lyWDw8nIANpqTmhg="
           allowed_ips: '{{ tjo_cloud_networks }}'
         - name: "jakku"
           id: 13
           wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:8aaf"
-          wireguard_address: "fd74:6a6f:70::13/128"
+          wireguard_address: "fd74:6a6f:3030:70::13/128"
           wireguard_public_key: "GAE2hslHVawcyEUOUYnpKfRI4KV73IM2tx50vdodEjc="
           allowed_ips: '{{ tjo_cloud_networks }}'
   tags: config-reload

@@ -13,4 +13,4 @@ PublicKey={{ item.wireguard_public_key }}
 PresharedKey={{ wireguard_pre_shared_key }}
 Endpoint={{ item.wireguard_endpoint }}:{{ 51820 + cfg.id }}
 PersistentKeepalive=25
-AllowedIPs=fe80:fd76:6a6f:70::{{item.id}}/64, {{ item.wireguard_address }}, {{ item.allowed_ips | join(', ') }}
+AllowedIPs=fe80:fd76:6a6f:3030:70::{{item.id}}/64, {{ item.wireguard_address }}, {{ item.allowed_ips | join(', ') }}

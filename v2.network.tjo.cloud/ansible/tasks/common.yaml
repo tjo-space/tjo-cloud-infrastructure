@@ -39,6 +39,7 @@
 
           local port 179 as 65000;
           neighbor range {{ lan.internal.prefix }} internal;
+          interface "eth1";
 
           passive;
           graceful restart on;
