@@ -67,6 +67,35 @@
     - "3785/udp"
     - "4784/udp"
 
+- name: FIREWALL - Enable forwarding in internal zone
+  ansible.posix.firewalld:
+    forward: true
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: FIREWALL - Enable MSS MTU Clamping
+  ansible.posix.firewalld:
+    zone: internal
+    rich_rule: rule tcp-mss-clamp value=pmtu
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Enable IPv6 forwarding
+  ansible.posix.sysctl:
+    name: net.ipv6.conf.all.forwarding
+    value: '1'
+    sysctl_set: true
+    sysctl_file: /etc/sysctl.d/99-forwarding.conf
+
+- name: FIREWALL - Change IPv6 RP Filter
+  ansible.builtin.shell:
+    cmd: |
+      sed -i 's/IPv6_rpfilter=.*$/IPv6_rpfilter=strict-forward/' /etc/firewalld/firewalld.conf
+      systemctl reload firewalld
+
 - name: Generate bird configuration
   ansible.builtin.template:
     src: root/etc/bird/bird.conf

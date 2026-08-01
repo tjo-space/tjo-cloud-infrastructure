@@ -19,7 +19,20 @@
     - '22/tcp'
     - '80/tcp'
     - '443/tcp'
-    - '9993/udp' # Zerotier
+    - '1337/tcp' # Healthcheck
+  tags: firewall
+
+- name: FIREWALL - Allow SSH, HTTP, HTTPS, ZEROTIER and HEALTHCHECK
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - '22/tcp'
+    - '80/tcp'
+    - '443/tcp'
     - '1337/tcp' # Healthcheck
   tags: firewall
 

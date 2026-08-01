@@ -40,13 +40,6 @@
     - "fd9b:7c3d:7f6a::/48"
   tags: firewall
 
-- name: UFW - Allow ZeroTier
-  community.general.ufw:
-    rule: allow
-    port: "9993"
-    proto: udp
-  tags: firewall
-
 - name: UFW - Allow Wireguard
   community.general.ufw:
     rule: allow
@@ -77,6 +70,7 @@
   loop:
     - vmbr0
     - vmbr1
+    - vmbr2
   tags: firewall
 
 - name: UFW - Allow tailscale to internal
@@ -85,6 +79,14 @@
     route:  true
     interface_in: "tailscale0"
     interface_out: "vmbr1"
+  tags: firewall
+
+- name: UFW - Allow tailscale to internal
+  community.general.ufw:
+    rule: allow
+    route:  true
+    interface_in: "tailscale0"
+    interface_out: "vmbr2"
   tags: firewall
 
 - name: UFW - Enable

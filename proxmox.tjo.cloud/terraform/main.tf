@@ -40,8 +40,8 @@ import {
   id = "nevaroo:vmbr0"
 }
 import {
-  to = proxmox_virtual_environment_network_linux_bridge.vmbr1["nevaroo"]
-  id = "nevaroo:vmbr1"
+  to = proxmox_virtual_environment_network_linux_bridge.vmbr2["nevaroo"]
+  id = "nevaroo:vmbr2"
 }
 
 resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
@@ -60,17 +60,6 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr0" {
   ports = each.value.vmbr0.interfaces
 }
 
-resource "proxmox_virtual_environment_network_linux_bridge" "vmbr1" {
-  for_each = local.nodes
-
-  node_name = each.value.name
-  name      = "vmbr1"
-  comment   = "Global internal network."
-  // Must be left as empty list!
-  ports = []
-  mtu   = 2800
-}
-
 resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
   for_each = local.nodes
 
@@ -79,18 +68,9 @@ resource "proxmox_virtual_environment_network_linux_bridge" "vmbr2" {
   comment   = "Local internal network."
   // Must be left as empty list!
   ports = []
-  mtu   = 2800
-}
+  mtu   = 1500
 
-resource "proxmox_virtual_environment_network_linux_bridge" "vmbr3" {
-  for_each = local.nodes
-
-  node_name = each.value.name
-  name      = "vmbr3"
-  comment   = "DO NOT USE! Testing network."
-  // Must be left as empty list!
-  ports = []
-  mtu   = 2800
+  address6 = each.value.vmbr2.ipv6.address
 }
 
 resource "proxmox_virtual_environment_user" "prometheus-pve-exporter" {
@@ -122,7 +102,7 @@ resource "technitium_record" "for_node" {
   domain     = "${each.value.name}.proxmox.cloud.internal"
   ttl        = 60
   type       = "AAAA"
-  ip_address = split("/", each.value.vmbr1.ipv6.address)[0]
+  ip_address = split("/", each.value.vmbr2.ipv6.address)[0]
 }
 
 resource "technitium_record" "any" {
@@ -131,5 +111,5 @@ resource "technitium_record" "any" {
   domain     = "proxmox.cloud.internal"
   ttl        = 60
   type       = "AAAA"
-  ip_address = split("/", each.value.vmbr1.ipv6.address)[0]
+  ip_address = split("/", each.value.vmbr2.ipv6.address)[0]
 }

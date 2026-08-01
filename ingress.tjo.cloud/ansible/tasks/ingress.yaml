@@ -1,19 +1,8 @@
-- name: Install Zerotier
-  ansible.builtin.include_role:
-    name: zerotier
-
-- name: Configure Zerotier
-  ansible.builtin.shell: |
-    systemctl stop zerotier-one
-    echo "{{ tjo_cloud_metadata.zerotier.public_key }}" >/var/lib/zerotier-one/identity.public
-    echo "{{ tjo_cloud_metadata.zerotier.private_key }}" >/var/lib/zerotier-one/identity.secret
-    systemctl start zerotier-one
-    sleep 5
-    zerotier-cli join b6079f73c6379990
-    sleep 5
-    resolvectl dns ztyxa2r2sw fd74:6a6f:53::53 fd74:6a6f::1
-  args:
-    creates: /var/lib/zerotier-one/networks.d/b6079f73c6379990.conf
+- name: Remove zerotier
+  ansible.builtin.apt:
+    name: zerotier-one
+    state: absent
+  tags: config-reload
 
 - name: Setup wireguard
   ansible.builtin.import_role:
@@ -33,28 +22,24 @@
       peers:
         - name: "nevaroo"
           id: 10
-          wireguard_endpoint: "2a01:4f8:120:7700:a8bb:ff:fe00:4536"
+          wireguard_endpoint: "2a01:4f8:120:7700::3"
           wireguard_address: "fd74:6a6f:3030:70::10/128"
-          wireguard_public_key: "pTz+6VD8OodLZz+88j8dYgSmE6F7kbpv704ISD2OADc="
-          allowed_ips: '{{ tjo_cloud_networks }}'
+          wireguard_public_key: "o/ia1z+qixUF5j/H/WFicI+djGzLUeUnz7LdDfaygVw="
         - name: "endor"
           id: 11
-          wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:dbea"
+          #wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:dbea"
           wireguard_address: "fd74:6a6f:3030:70::11/128"
-          wireguard_public_key: "O/Z9bk0irnVB2weH7fm6Cl9Cl/Gc+zIkqf+Hh8dSEQQ="
-          allowed_ips: '{{ tjo_cloud_networks }}'
+          wireguard_public_key: "UE2MeFP9mzfywxwiqOENJ7cO7wGX9iytTw3jpb41cns="
         - name: "batuu"
           id: 12
-          wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:f737"
+          #wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:f737"
           wireguard_address: "fd74:6a6f:3030:70::12/128"
-          wireguard_public_key: "jPP4LbYC/QVW6rZxjru/C7XjyS7lyWDw8nIANpqTmhg="
-          allowed_ips: '{{ tjo_cloud_networks }}'
+          wireguard_public_key: "+wXJ1spUAGtN+hePGFewNYW7mB+OxkVHesJigeQ6cEY="
         - name: "jakku"
           id: 13
-          wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:8aaf"
+          #wireguard_endpoint: "2001:2043:5d5d:d300:a8bb:ff:fe00:8aaf"
           wireguard_address: "fd74:6a6f:3030:70::13/128"
-          wireguard_public_key: "GAE2hslHVawcyEUOUYnpKfRI4KV73IM2tx50vdodEjc="
-          allowed_ips: '{{ tjo_cloud_networks }}'
+          wireguard_public_key: "h/7sAo+5xyhs01/6PyOcbEIHQ0B6mSsdP++Oa1z8jig="
   tags: config-reload
 
 - name: Refresh facts

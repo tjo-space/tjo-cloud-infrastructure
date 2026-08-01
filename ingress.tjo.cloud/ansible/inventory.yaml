@@ -6,5 +6,5 @@
       "ansible_port": 2222
       "ansible_user": "bine"
       "wireguard":
-        "address": "fd74:6a6f:70::21/128"
+        "address": "fd74:6a6f:3030:70::21/128"
         "id": 21

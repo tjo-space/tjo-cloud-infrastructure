@@ -35,6 +35,7 @@ variable "network" {
       { servers = ["fd74:6a6f:3030:53::53"] }
     )
   })
+  default     = {}
   description = "Network configuration."
 }
 
@@ -90,10 +91,10 @@ variable "metadata" {
   type = object({
     cloud_provider = string
     service_name   = string
-    service_account = object({
-      username = string
-      password = string
-    })
+    #service_account = object({
+    #  username = string
+    #  password = string
+    #})
   })
   description = "VM Metadata"
 }

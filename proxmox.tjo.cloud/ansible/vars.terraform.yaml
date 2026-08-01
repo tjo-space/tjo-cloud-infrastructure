@@ -1,42 +1,22 @@
 "network":
   "nodes":
     "batuu":
-      "vmbr1":
-        "ipv4":
-          "address": "10.0.0.62/10"
-          "subnet": "10.0.0.0/10"
+      "vmbr2":
         "ipv6":
-          "address": "fd74:6a6f::62/64"
-          "subnet": "fd74:6a6f::/48"
+          "address": "fd74:6a6f:3030:12::10/64"
+          "subnet": ""
     "endor":
-      "vmbr1":
-        "ipv4":
-          "address": "10.0.0.61/10"
-          "subnet": "10.0.0.0/10"
+      "vmbr2":
         "ipv6":
-          "address": "fd74:6a6f::61/64"
-          "subnet": "fd74:6a6f::/48"
+          "address": "fd74:6a6f:3030:11::10/64"
+          "subnet": ""
     "jakku":
-      "vmbr1":
-        "ipv4":
-          "address": "10.0.0.63/10"
-          "subnet": "10.0.0.0/10"
+      "vmbr2":
         "ipv6":
-          "address": "fd74:6a6f::63/64"
-          "subnet": "fd74:6a6f::/48"
-    "mustafar":
-      "vmbr1":
-        "ipv4":
-          "address": "10.0.0.65/10"
-          "subnet": "10.0.0.0/10"
-        "ipv6":
-          "address": "fd74:6a6f::65/64"
-          "subnet": "fd74:6a6f::/48"
+          "address": "fd74:6a6f:3030:13::10/64"
+          "subnet": ""
     "nevaroo":
-      "vmbr1":
-        "ipv4":
-          "address": "10.0.0.64/10"
-          "subnet": "10.0.0.0/10"
+      "vmbr2":
         "ipv6":
-          "address": "fd74:6a6f::64/64"
-          "subnet": "fd74:6a6f::/48"
+          "address": "fd74:6a6f:3030:10::10/64"
+          "subnet": ""

@@ -23,9 +23,21 @@ To=fd74:6a6f:3030:70::/64
 Table=1000
 Priority=100
 
-#{% for network in tjo_cloud_networks %}
-#[RoutingPolicyRule]
-#To={{ network }}
-#Table=1000
-#Priority=100
-#{% endfor %}
+[RoutingPolicyRule]
+To=fd74:6a6f::/32
+Table=1000
+Priority=100
+
+{% for network in tjo_cloud_networks %}
+[RoutingPolicyRule]
+To={{ network }}
+Table=1000
+Priority=100
+{% endfor %}
+
+{% for network in tjo_cloud_networks %}
+[Route]
+Destination={{ network }}
+Table=1000
+Type=unreachable
+{% endfor %}

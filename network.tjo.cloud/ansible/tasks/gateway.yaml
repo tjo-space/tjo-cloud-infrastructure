@@ -1,0 +1,43 @@
+- name: Install Jool
+  ansible.builtin.apt:
+    name:
+      - jool-dkms
+      - jool-tools
+      - linux-headers-generic
+    state: present
+
+- name: Create /etc/jool
+  ansible.builtin.file:
+    state: directory
+    path: "/etc/jool"
+
+- name: Configure Jool
+  ansible.builtin.template:
+    src: root/etc/jool/jool.conf
+    dest: /etc/jool/jool.conf
+
+- name: Start Jool
+  ansible.builtin.systemd:
+    name: jool
+    state: restarted
+    enabled: true
+
+- name: FIREWALL - Enable forwarding in public zone
+  ansible.posix.firewalld:
+    forward: true
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+
+- name: Allow Public<->Internal forwarding
+  ansible.builtin.shell:
+    cmd: |
+      firewall-cmd --permanent --new-policy PublicToInternal
+      firewall-cmd --permanent --policy PublicToInternal --add-ingress-zone public
+      firewall-cmd --permanent --policy PublicToInternal --add-egress-zone internal
+      firewall-cmd --permanent --policy PublicToInternal --set-target ACCEPT
+      firewall-cmd --permanent --new-policy InternalToPublic
+      firewall-cmd --permanent --policy InternalToPublic --add-ingress-zone internal
+      firewall-cmd --permanent --policy InternalToPublic --add-egress-zone public
+      firewall-cmd --permanent --policy InternalToPublic --set-target ACCEPT

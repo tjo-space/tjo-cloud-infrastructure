@@ -1,0 +1,150 @@
+- name: Install tools
+  ansible.builtin.apt:
+    name:
+      - dnsutils
+    state: present
+
+- name: Setup wireguard
+  ansible.builtin.import_role:
+    name: network-tjo-cloud-peer
+    tasks_from: "setup"
+
+- name: Setup peers
+  ansible.builtin.set_fact:
+    peers: |
+      {{
+        peers | default([]) + [{
+          "name": item,
+          "id": hostvars[item].id,
+          "wireguard_endpoint": hostvars[item].wireguard_endpoint_ipv4,
+          "wireguard_address": hostvars[item].wireguard.address,
+          "wireguard_public_key": hostvars[item].wireguard_public_key,
+        }]
+      }}
+  loop: "{{ ansible_play_hosts | reject('equalto', inventory_hostname) }}"
+
+- name: Setup Network Wireguard and BGP peer
+  ansible.builtin.import_role:
+    name: network-tjo-cloud-peer
+    tasks_from: "configure"
+  vars:
+    cfg:
+      id: "{{ id }}"
+      wireguard_address: "{{ wireguard.address }}"
+      wireguard_pre_shared_key: "{{ wireguard_pre_shared_key }}"
+      peers: "{{ peers + wireguard_remote_peers }}"
+      routes: |
+        {% if "gateway" in group_names %}
+        route ::/0 via "eth0";
+        {% endif %}
+      bird_config_custom: |
+        protocol bgp dyn_internal {
+          description "BGP for INTERNAL";
+          dynamic name "bgp_dyn_internal";
+
+          local port 179 as 65000;
+          neighbor range {{ lan.internal.prefix }} internal;
+
+          passive;
+          graceful restart on;
+          advertise hostname on;
+
+          ipv6 {
+            export none;
+            import all;
+          };
+        }
+        protocol bgp dyn_internal_legacy {
+          description "BGP for INTERNAL Legacy";
+          dynamic name "bgp_dyn_internal_legacy";
+
+          local port 179 as 65000;
+          neighbor range fd74:6a6f:0:{{ id }}::/64 internal;
+
+          passive;
+          graceful restart on;
+          advertise hostname on;
+
+          ipv6 {
+            export none;
+            import all;
+          };
+        }
+
+- name: Generate lan network configuration
+  ansible.builtin.template:
+    src: root/etc/systemd/network/00-lan.network
+    dest: /etc/systemd/network/00-lan.network
+    owner: "root"
+    group: "systemd-network"
+    mode: "640"
+
+- name: Reaload network
+  ansible.builtin.systemd:
+    name: systemd-networkd
+    state: reloaded
+
+- name: FIREWALL - Add interfaces to internal
+  ansible.posix.firewalld:
+    interface: "{{ item }}"
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - eth1
+
+- name: FIREWALL - Add interfaces to trusted
+  ansible.posix.firewalld:
+    interface: "{{ item }}"
+    zone: trusted
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - tailscale0
+
+- name: FIREWALL - DNS internal zone
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - "53/udp"
+    - "53/tcp"
+    - "853/tcp"
+
+- name: Advertise subnets using tailscale
+  ansible.builtin.shell:
+    cmd: |
+      tailscale set --advertise-routes={{ tjo_cloud_networks | join(',') }}
+      tailscale set --snat-subnet-routes=true
+
+- name: Install unbound
+  ansible.builtin.apt:
+    name: unbound
+    state: present
+
+- name: Generate unbound configuration
+  ansible.builtin.template:
+    src: root/etc/unbound/unbound.conf.d/custom.conf
+    dest: /etc/unbound/unbound.conf.d/custom.conf
+
+- name: Start unbound
+  ansible.builtin.systemd:
+    name: unbound
+    state: started
+    enabled: true
+
+- name: Disable resolved
+  ansible.builtin.systemd:
+    name: systemd-resolved
+    state: stopped
+    enabled: false
+
+- name: Reaload unbound
+  ansible.builtin.systemd:
+    name: unbound
+    state: reloaded

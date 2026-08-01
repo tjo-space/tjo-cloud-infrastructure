@@ -18,7 +18,7 @@ locals {
     for k, v in local.nodes :
     k => merge(v, {
       ipv6 = try([
-        for ipv6 in try(local.ipv6_addresses[k]["ens18"], try(local.ipv6_addresses[k]["eth0"], [])) : ipv6 if startswith(ipv6, "fd74:6a6f:")
+        for ipv6 in try(local.ipv6_addresses[k]["ens18"], try(local.ipv6_addresses[k]["eth0"], [])) : ipv6 if startswith(ipv6, "fd74:6a6f:3030:")
       ][0], "")
     })
   }

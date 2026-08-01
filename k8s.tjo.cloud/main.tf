@@ -10,6 +10,11 @@ locals {
   }
 }
 
+import {
+  to = module.cluster-core.helm_release.talos-ccm
+  id = "kube-system/talos-cloud-controller-manager"
+}
+
 module "cluster" {
   source = "./modules/cluster"
 

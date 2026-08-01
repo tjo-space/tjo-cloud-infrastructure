@@ -207,9 +207,12 @@ resource "proxmox_virtual_environment_vm" "node" {
     dynamic "ip_config" {
       for_each = var.network.devices
       content {
-        ipv4 {
-          address = ip_config.value.ipv4.address
-          gateway = ip_config.value.ipv4.gateway
+        dynamic "ipv4" {
+          for_each = ip_config.value.ipv4.address != null ? [1] : []
+          content {
+            address = ip_config.value.ipv4.address
+            gateway = ip_config.value.ipv4.gateway
+          }
         }
         ipv6 {
           address = ip_config.value.ipv6.address

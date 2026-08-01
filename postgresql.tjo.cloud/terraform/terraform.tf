@@ -40,8 +40,7 @@ provider "authentik" {
 }
 
 provider "proxmox" {
-  # FIXME: Traefik/NGINX breaks this! 500 ERROR
-  endpoint  = "https://batuu.proxmox.cloud.internal:8006/api2/json"
+  endpoint  = "https://nevaroo.proxmox.cloud.internal:8006/api2/json"
   insecure  = true
   api_token = var.proxmox_token
 

@@ -3,8 +3,6 @@ Description=Stalwart
 Conflicts=postfix.service sendmail.service exim4.service
 ConditionPathExists=/etc/stalwart/config.json
 After=network-online.target
-After=zerotier-one.service
-Requires=zerotier-one.service
 
 [Service]
 Type=simple

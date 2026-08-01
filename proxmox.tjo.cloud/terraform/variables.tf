@@ -57,14 +57,10 @@ variable "nodes" {
       }), { address = null, gateway = null })
       interfaces = list(string)
     })
-    vmbr1 = object({
-      ipv4 = object({
-        address = string
-        subnet  = optional(string, "10.0.0.0/10")
-      })
+    vmbr2 = object({
       ipv6 = object({
         address = string
-        subnet  = optional(string, "fd74:6a6f:3030::/48")
+        subnet  = optional(string, "")
       })
     })
     iso_storage = optional(string, "local")

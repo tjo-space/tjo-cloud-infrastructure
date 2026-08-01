@@ -2,6 +2,6 @@
   "hosts":
     "batuu-pink":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f:0:12:be24:11ff:feb8:1755"
+      "ansible_host": "fd74:6a6f:3030:12:be24:11ff:feb8:1755"
       "ansible_port": 2222
       "ansible_user": "bine"
