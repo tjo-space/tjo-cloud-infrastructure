@@ -124,6 +124,15 @@ sign-issuing-intermediate-ca node:
   # Restart services
   ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo systemctl restart step-ca.service caddy.service"
 
+backup-db node:
+  #!/usr/bin/env sh
+  mkdir -p {{source_directory()}}/backups
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tar -czvf - /etc/step-ca/db" > {{source_directory()}}/backups/$(date -u +%Y%m%d%H%M).tar.gz
+
+backup-db-restore node backup:
+  #!/usr/bin/env sh
+  echo "TODO: Not yet implemented..."
+
 remove-secrets:
   #!/usr/bin/env sh
   rm -rf {{SECRETS_PATH}}

@@ -12,7 +12,12 @@ We do not issue new certificates for existing nodes.
 1. Add new node in `terraform.tfvars`
 2. Run `just ca apply`
 3. Run `just ca configure-all`
-4. Run `just ca sign-issuing-intermediate-ca $NODE`
+4. Run `just ca backup-db $OLD_NODE`
+5. Run `just ca restore-db $NEW_NODE`
+   - We have to restore db otherwise ACME client's account "do not exist" and renewal fails.
+6. Run `just ca sign-issuing-intermediate-ca $NODE`
+7. Remove old node from `terraform.tfvars` and `just ca apply`.
+
 
 ## Authorities
 
