@@ -1,9 +1,3 @@
-- name: Remove zerotier
-  ansible.builtin.apt:
-    name: zerotier-one
-    state: absent
-  tags: config-reload
-
 - name: Setup wireguard
   ansible.builtin.import_role:
     name: network-tjo-cloud-peer
@@ -41,11 +35,6 @@
           wireguard_address: "fd74:6a6f:3030:70::13/128"
           wireguard_public_key: "h/7sAo+5xyhs01/6PyOcbEIHQ0B6mSsdP++Oa1z8jig="
   tags: config-reload
-
-- name: Refresh facts
-  ansible.builtin.setup:
-    gather_subset:
-      - network
 
 - name: Install valkey
   ansible.builtin.apt:

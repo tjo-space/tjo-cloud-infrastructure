@@ -5,6 +5,8 @@ variable "nodes_proxmox" {
     memory       = number
     boot_storage = string
     boot_size    = number
+
+    use = bool
   }))
 }
 

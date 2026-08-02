@@ -1,8 +1,8 @@
 "all":
   "hosts":
-    "batuu-purple-proxmox.ca.tjo.cloud":
+    "batuu-pink-proxmox.ca.tjo.cloud":
       "ansible_become": true
-      "ansible_host": "fd74:6a6f:3030:12:be24:11ff:fe91:41d9"
+      "ansible_host": "fd74:6a6f:3030:12:be24:11ff:fe6d:6ff1"
       "ansible_port": 2222
       "ansible_user": "bine"
       "provider": "proxmox"

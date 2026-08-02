@@ -69,16 +69,7 @@
     interface_out: "{{ item }}"
   loop:
     - vmbr0
-    - vmbr1
     - vmbr2
-  tags: firewall
-
-- name: UFW - Allow tailscale to internal
-  community.general.ufw:
-    rule: allow
-    route:  true
-    interface_in: "tailscale0"
-    interface_out: "vmbr1"
   tags: firewall
 
 - name: UFW - Allow tailscale to internal

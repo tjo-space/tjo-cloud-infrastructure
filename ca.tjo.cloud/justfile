@@ -121,6 +121,9 @@ sign-issuing-intermediate-ca node:
   cat {{CERTIFICATES_PATH}}/root/ca.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/caddy/root.crt"
   cat {{CERTIFICATES_PATH}}/root/ca.crt | ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo tee /etc/step-ca/root.crt"
 
+  # Restart services
+  ssh bine@{{node}}.ca.cloud.internal -p 2222 "sudo systemctl restart step-ca.service caddy.service"
+
 remove-secrets:
   #!/usr/bin/env sh
   rm -rf {{SECRETS_PATH}}
@@ -133,7 +136,7 @@ encrypt-secrets type:
 
 decrypt-secrets type:
   #!/usr/bin/env sh
-  just remove-secrets {{type}}
+  just remove-secrets
 
   mkdir -p {{SECRETS_PATH}}/{{type}}
   chmod 700 {{SECRETS_PATH}}
