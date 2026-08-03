@@ -40,6 +40,9 @@ module "cluster" {
   }
 
   nodes = {
+    ##
+    # CONTROL PLANE
+    ##
     nevaroo-purple = {
       id      = 6011
       type    = "controlplane"
@@ -48,12 +51,12 @@ module "cluster" {
       cores   = 4
       memory  = 6144
     }
-    nevaroo-pink = {
-      id      = 6012
-      type    = "worker"
-      host    = "nevaroo"
-      storage = "local-nvme-lvm"
-      cores   = 6
+    batuu-cyan = {
+      id      = 6030
+      type    = "controlplane"
+      host    = "batuu"
+      storage = "local-nvme"
+      cores   = 4
       memory  = 6144
     }
     endor-purple = {
@@ -64,29 +67,35 @@ module "cluster" {
       cores   = 4
       memory  = 6144
     }
-    endor-pink = {
-      id      = 6024
-      type    = "worker"
-      host    = "endor"
-      storage = "local-nvme"
-      cores   = 4
-      memory  = 12288
+    ##
+    # WORKERS
+    ##
+    nevaroo-w1 = {
+      id        = 6061
+      type      = "worker"
+      host      = "nevaroo"
+      storage   = "local-nvme-lvm"
+      boot_size = 64
+      cores     = 6
+      memory    = 12288
     }
-    batuu-pink = {
-      id      = 6031
-      type    = "worker"
-      host    = "batuu"
-      storage = "local-nvme"
-      cores   = 6
-      memory  = 24576
+    endor-w1 = {
+      id        = 6062
+      type      = "worker"
+      host      = "endor"
+      storage   = "local-nvme"
+      boot_size = 64
+      cores     = 4
+      memory    = 12288
     }
-    batuu-cyan = {
-      id      = 6030
-      type    = "controlplane"
-      host    = "batuu"
-      storage = "local-nvme"
-      cores   = 4
-      memory  = 6144
+    batuu-w1 = {
+      id        = 6063
+      type      = "worker"
+      host      = "batuu"
+      storage   = "local-nvme"
+      boot_size = 64
+      cores     = 6
+      memory    = 24576
     }
   }
 }

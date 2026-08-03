@@ -54,22 +54,6 @@
             import all;
           };
         }
-        protocol bgp dyn_internal_legacy {
-          description "BGP for INTERNAL Legacy";
-          dynamic name "bgp_dyn_internal_legacy";
-
-          local port 179 as 65000;
-          neighbor range fd74:6a6f:0:{{ id }}::/64 internal;
-
-          passive;
-          graceful restart on;
-          advertise hostname on;
-
-          ipv6 {
-            export none;
-            import all;
-          };
-        }
 
 - name: Generate lan network configuration
   ansible.builtin.template:
