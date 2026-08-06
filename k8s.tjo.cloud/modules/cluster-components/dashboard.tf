@@ -2,7 +2,7 @@ resource "helm_release" "headlamp" {
   name            = "headlamp"
   repository      = "https://kubernetes-sigs.github.io/headlamp/"
   chart           = "headlamp"
-  version         = "0.43.0"
+  version         = "0.44.0"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -39,7 +39,7 @@ resource "helm_release" "headlamp" {
     }
 
     httpRoute = {
-      enabled    = true
+      enabled    = false
       parentRefs = [{ name = kubernetes_manifest.gateway.object.metadata.name }]
       hostnames  = ["dashboard.k8s.tjo.cloud"]
     }
