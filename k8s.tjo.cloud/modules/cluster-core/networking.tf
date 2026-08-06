@@ -16,6 +16,18 @@ resource "helm_release" "cilium" {
       priorityClassName = "system-cluster-critical"
       prometheus = {
         enabled = true
+        serviceMonitor = {
+          enabled = true
+        }
+      }
+    }
+
+    resources = {
+      limits = {
+        memory = "1Gi"
+      }
+      requests = {
+        memory = "256Mi"
       }
     }
 
@@ -33,7 +45,8 @@ resource "helm_release" "cilium" {
       distributedLRU = {
         enabled = true
       }
-      mapDynamicSizeRatio = "0.08"
+      mapDynamicSizeRatio = "0.0025"
+      preallocateMaps     = true
     }
     bpfClockProbe = true
 
