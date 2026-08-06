@@ -83,6 +83,22 @@
     name: lego-run
     state: started
 
+- name: Create systemd override for PostgreSQL
+  ansible.builtin.file:
+    path: /etc/systemd/system/postgresql@.service.d
+    state: directory
+    mode: '0755'
+
+- name: Configure PostgreSQL service limits
+  ansible.builtin.copy:
+    dest: /etc/systemd/system/postgresql@.service.d/limits.conf
+    content: |
+      [Service]
+      LimitNOFILE=262144
+      LimitNPROC=16384
+      LimitMEMLOCK=infinity
+    mode: '0644'
+
 - name: Start postgresql
   ansible.builtin.systemd:
     name: postgresql@{{ postgresql_version}}-main
