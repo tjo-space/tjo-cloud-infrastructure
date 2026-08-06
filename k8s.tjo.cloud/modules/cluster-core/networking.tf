@@ -1,8 +1,8 @@
 resource "helm_release" "cilium" {
   name            = "cilium"
   chart           = "cilium"
-  repository      = "https://helm.cilium.io/"
-  version         = "1.19.5"
+  repository      = "oci://quay.io/cilium/charts"
+  version         = "1.20.0"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -43,7 +43,7 @@ resource "helm_release" "cilium" {
         masqLinkLocalIPv6 = false
         nonMasqueradeCIDRs = [
           # Do not masquerade traffic to internal tjo.cloud ULA.
-          "fd74:6a6f::/32"
+          "fd74:6a6f:3030::/48"
         ]
       }
     }
