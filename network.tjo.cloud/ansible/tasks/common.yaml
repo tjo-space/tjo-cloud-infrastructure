@@ -100,6 +100,26 @@
     - "53/tcp"
     - "853/tcp"
 
+- name: FIREWALL - Disable conntrack on eth1 <-> eth1
+  ansible.builtin.shell:
+    cmd: |
+      # This is a terible hack for asymmetric routing when k8s (node) is accessing other (vm)'s on the same
+      #  proxmox host.
+      #
+      # Request:
+      # (pod) -> (node) -> L2 Network -> (vm)
+      # Response:
+      # (vm) -> (router) DROP
+      #
+      # The (router) drops the (vm) response due to not having the initial connection in the firewall state.
+      # This hack fixes that by modifying the rules to "do no track any traffic with source or destination
+      #  of the kubernetes cluster".
+      #
+      # If we could somehow force the (node) to always forward traffic to (router) ??? that could solve the issue,
+      #  or installing BGP on all other vms so they can connect to (node) directly...
+      firewall-cmd --direct --add-rule ipv6 raw PREROUTING 0 -s fd9b:7c3d:7f6a::/48 -j CT --notrack
+      firewall-cmd --direct --add-rule ipv6 raw PREROUTING 0 -d fd9b:7c3d:7f6a::/48 -j CT --notrack
+
 - name: Advertise subnets using tailscale
   ansible.builtin.shell:
     cmd: |

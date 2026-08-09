@@ -68,3 +68,10 @@
         forward_to = [loki.process.drop_old.receiver]
       }
   tags: observability
+
+- name: Add alloy to www-data group to have access to access logs
+  ansible.builtin.user:
+    name: alloy
+    append: yes
+    groups: www-data
+  tags: observability

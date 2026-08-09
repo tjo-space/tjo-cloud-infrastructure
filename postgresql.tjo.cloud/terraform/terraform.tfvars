@@ -48,6 +48,11 @@ nodes = {
 users = [
   {
     node      = "endor-one"
+    name      = "mealie.tjo.space"
+    databases = [{ name = "mealie.tjo.space" }]
+  },
+  {
+    node      = "endor-one"
     name      = "code.tjo.space"
     databases = [{ name = "code.tjo.space" }]
   },

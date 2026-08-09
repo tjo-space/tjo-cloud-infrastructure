@@ -31,9 +31,7 @@ resource "helm_release" "cilium" {
       }
     }
 
-    routingMode                  = "native"
-    autoDirectNodeRoutes         = true
-    directRoutingSkipUnreachable = true
+    routingMode = "native"
 
     bgpControlPlane = {
       enabled = true
@@ -114,7 +112,36 @@ resource "helm_release" "cilium" {
     }
 
     hubble = {
-      enabled = false
+      ui = {
+        enabled           = true
+        priorityClassName = "system-cluster-critical"
+      }
+      relay = {
+        enabled           = true
+        priorityClassName = "system-cluster-critical"
+      }
+      metrics = {
+        enabled = [
+          "dns",
+          "drop",
+          "tcp",
+          "flow",
+          "port-distribution",
+          "icmp",
+          "httpV2:exemplars=true;labelsContext=source_ip,source_namespace,source_workload,destination_ip,destination_namespace,destination_workload,traffic_direction"
+        ]
+        enableOpenMetrics = true
+        serviceMonitor = {
+          enabled = true
+        }
+      }
+      tls = {
+        auto = {
+          enabled              = true
+          method               = "helm"
+          certValidityDuration = 1095
+        }
+      }
     }
     gatewayAPI = {
       enabled = false
