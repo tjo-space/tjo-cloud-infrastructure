@@ -27,25 +27,6 @@ resource "kubernetes_manifest" "acme-gateway" {
   }
 }
 
-resource "kubernetes_manifest" "acme-enable-proxy-protocol-policy" {
-  manifest = {
-    apiVersion = "gateway.envoyproxy.io/v1alpha1"
-    kind       = "ClientTrafficPolicy"
-    metadata = {
-      name      = "acme-enable-proxy-protocol-policy"
-      namespace = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
-    }
-    spec = {
-      targetRef = {
-        group = "gateway.networking.k8s.io"
-        kind  = "Gateway"
-        name  = kubernetes_manifest.acme-gateway.object.metadata.name
-      }
-      enableProxyProtocol = true
-    }
-  }
-}
-
 resource "kubernetes_manifest" "issuer" {
   manifest = {
     apiVersion = "cert-manager.io/v1"
@@ -89,6 +70,20 @@ resource "kubernetes_manifest" "issuer-ca-tjo-cloud" {
       acme = {
         email  = "hostmaster@tjo.cloud"
         server = "https://ca.cloud.internal/acme/v1/directory"
+        caBundle = base64encode(<<EOF
+-----BEGIN CERTIFICATE-----
+MIIBfzCCASSgAwIBAgIQTwBj3msM0GPYkUSHuEsKEjAKBggqhkjOPQQDAjAeMRww
+GgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MCAXDTI2MDIwNjIwNTc0MFoYDzIw
+NTEwMzE0MTI1NzQwWjAeMRwwGgYDVQQDExNjYS50am8uY2xvdWQgLSBSb290MFkw
+EwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAENghQfaCunCDzn0BmU8vI5X79OAqZ7Uob
+8tM38BJmvUmafJMyxpvlIKNgotXJfnTw1GN5mR6u4eqvSRclhUcRtKNCMEAwDgYD
+VR0PAQH/BAQDAgEGMA8GA1UdEwEB/wQFMAMBAf8wHQYDVR0OBBYEFD0gfxAPGvuX
+jmqfZ1CreFQT+WuQMAoGCCqGSM49BAMCA0kAMEYCIQCY0suGAsNGx7n2+F+Z786Q
+dubTJY1VA3fqwc0ZpO+AtQIhAOmeM2O7iFarM2KILzS5189DsdNIn5pp9v5uLOSX
+T8+p
+-----END CERTIFICATE-----
+EOF
+        )
         privateKeySecretRef = {
           name = "k8s-tjo-cloud-ca-tjo-cloud-acme-account"
         }
