@@ -77,3 +77,35 @@ resource "kubernetes_manifest" "issuer" {
     }
   }
 }
+
+resource "kubernetes_manifest" "issuer-ca-tjo-cloud" {
+  manifest = {
+    apiVersion = "cert-manager.io/v1"
+    kind       = "ClusterIssuer"
+    metadata = {
+      name = "ca-tjo-cloud"
+    }
+    spec = {
+      acme = {
+        email  = "hostmaster@tjo.cloud"
+        server = "https://ca.cloud.internal/acme/v1/directory"
+        privateKeySecretRef = {
+          name = "k8s-tjo-cloud-ca-tjo-cloud-acme-account"
+        }
+        solvers = [
+          {
+            http01 = {
+              gatewayHTTPRoute = {
+                parentRefs = [{
+                  name      = kubernetes_manifest.acme-gateway.object.metadata.name
+                  namespace = kubernetes_manifest.acme-gateway.object.metadata.namespace
+                  kind      = "Gateway"
+                }]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
