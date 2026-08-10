@@ -77,16 +77,9 @@
     state: enabled
   loop:
     - eth1
-
-- name: FIREWALL - Add interfaces to trusted
-  ansible.posix.firewalld:
-    interface: "{{ item }}"
-    zone: trusted
-    permanent: true
-    immediate: true
-    state: enabled
-  loop:
     - tailscale0
+
+
 
 - name: FIREWALL - DNS internal zone
   ansible.posix.firewalld:
@@ -119,6 +112,8 @@
       #  or installing BGP on all other vms so they can connect to (node) directly...
       firewall-cmd --direct --add-rule ipv6 raw PREROUTING 0 -s fd9b:7c3d:7f6a::/48 -j CT --notrack
       firewall-cmd --direct --add-rule ipv6 raw PREROUTING 0 -d fd9b:7c3d:7f6a::/48 -j CT --notrack
+
+      firewall-cmd --set-log-denied=all
 
 - name: Advertise subnets using tailscale
   ansible.builtin.shell:
