@@ -6,15 +6,12 @@ on:
 
 jobs:
   lint:
-    runs-on: ubuntu-latest
+    runs-on: nix-latest
     steps:
       - uses: actions/checkout@v4
       - name: Install devbox
-        uses: jetify-com/devbox-install-action@v0.13.0
-        env:
-          GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN }}
+        uses: jetify-com/devbox-install-action@v0.15.0
         with:
           enable-cache: false
-          github-token: "${{ secrets.NIX_GITHUB_TOKEN }}"
 
       - run: devbox run -- just lint
