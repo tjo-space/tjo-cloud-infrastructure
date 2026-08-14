@@ -14,5 +14,6 @@ jobs:
           enable-cache: false
           disable-nix-access-token: true
           skip-nix-installation: true
+          extra-nix-config: access-tokens = github.com=${{ secrets.NIX_GITHUB_TOKEN }}
 
       - run: devbox run -- just lint
