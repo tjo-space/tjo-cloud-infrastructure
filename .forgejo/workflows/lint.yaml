@@ -4,14 +4,10 @@ on:
       - main
   pull_request:
 
-env:
-  GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN }}
-
 jobs:
   lint:
     runs-on: nix-latest
     steps:
       - uses: actions/checkout@v4
-
 
       - run: nix develop --command just lint
