@@ -19,6 +19,9 @@
       in
       rec {
         devShells.default = pkgs.mkShellNoCC {
+          TENV_AUTO_INSTALL = "true";
+          ANSIBLE_HOST_KEY_CHECKING = "false";
+
           packages = with pkgs; [
             step-ca
             step-cli
