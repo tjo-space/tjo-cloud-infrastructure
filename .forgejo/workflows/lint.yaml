@@ -4,15 +4,17 @@ on:
       - main
   pull_request:
 
+env:
+  GITHUB_TOKEN: ${{ secrets.NIX_GITHUB_TOKEN }}
+
 jobs:
   lint:
     runs-on: nix-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: jetify-com/devbox-install-action@v0.15.0
-        with:
-          enable-cache: false
-          skip-nix-installation: true
-          extra-nix-config: access-tokens = github.com=${{ secrets.NIX_GITHUB_TOKEN }}
+      - run: |
+          cat <<EOF >> ~/.config/nix/nix.conf
+          access-tokens = github.com=${{ secrets.NIX_GITHUB_TOKEN }}
+          EOF
 
-      - run: devbox run -- just lint
+      - run: nix develop --command just lint

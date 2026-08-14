@@ -29,7 +29,7 @@ Each subfolder represent a project.
 
 ## Starting Guide
 
-Make sure you have [Devbox](https://www.jetify.com/docs/devbox) installed.
+Make sure you have [Nix](https://nix.dev/install-nix) installed.
 
 ```
 git clone

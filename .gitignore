@@ -41,7 +41,8 @@ vars.*.secrets.yaml
 admin.*config
 secrets.env
 
-.devbox.d/
+# Direnv
+.direnv
 
 # Nix
 **/result
