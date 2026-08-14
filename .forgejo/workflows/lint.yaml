@@ -12,9 +12,6 @@ jobs:
     runs-on: nix-latest
     steps:
       - uses: actions/checkout@v4
-      - run: |
-          cat <<EOF >> ~/.config/nix/nix.conf
-          access-tokens = github.com=${{ secrets.NIX_GITHUB_TOKEN }}
-          EOF
+
 
       - run: nix develop --command just lint
