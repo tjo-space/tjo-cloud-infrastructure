@@ -9,9 +9,10 @@ jobs:
     runs-on: nix-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Install devbox
-        uses: jetify-com/devbox-install-action@v0.15.0
+      - uses: jetify-com/devbox-install-action@v0.15.0
         with:
           enable-cache: false
+          disable-nix-access-token: true
+          skip-nix-installation: true
 
       - run: devbox run -- just lint
