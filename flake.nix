@@ -30,7 +30,6 @@
             kubelogin-oidc
             talosctl
             kubernetes-helm
-            tflint
             age
             tenv
             gomplate

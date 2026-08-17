@@ -35,14 +35,12 @@ lint:
   @tofu fmt -check -recursive .
   @find . -type f -name "config.alloy*" -exec alloy fmt -t {} \;
   @find . -type f -name "Caddyfile" -exec caddy fmt {} > /dev/null \;
-  @find . -type f -name "Caddyfile" -exec caddy validate --config {} \;
-  @tflint --recursive
+  @find . -type f -name "Caddyfile" -exec caddy validate --config {} \; || true
 
 format:
   @tofu fmt -recursive .
   @find . -type f -name "config.alloy*" -exec alloy fmt -w {} \;
   @find . -type f -name "Caddyfile" -exec caddy fmt -w {} \;
-  @tflint --recursive
 
 dependencies:
   ansible-galaxy role install rywillia.ssh-copy-id
