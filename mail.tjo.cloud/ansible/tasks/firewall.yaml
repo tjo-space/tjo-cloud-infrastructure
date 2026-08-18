@@ -8,7 +8,23 @@
   loop: "{{ tjo_cloud_networks }}"
   tags: firewall
 
-- name: FIREWALL - Allow Zerotier + Stalwart Ports
+- name: FIREWALL - Allow Stalwart Ports on internal
+  ansible.posix.firewalld:
+    port: '{{ item }}'
+    zone: internal
+    permanent: true
+    immediate: true
+    state: enabled
+  loop:
+    - '25/tcp'   # SMTP
+    - '465/tcp'  # SMTP + TLS
+    - '587/tcp'  # SMTP + Optional TLS
+    - '993/tcp'  # IMAP + TLS
+    - '443/tcp'  # HTTPS
+    - '4190/tcp' # SIEVE
+  tags: firewall
+
+- name: FIREWALL - Allow Stalwart Ports on public
   ansible.posix.firewalld:
     port: '{{ item }}'
     zone: public
@@ -22,7 +38,6 @@
     - '993/tcp'  # IMAP + TLS
     - '443/tcp'  # HTTPS
     - '4190/tcp' # SIEVE
-    - '9993/udp' # Zerotier
   tags: firewall
 
 - name: FIREWALL - Allow SSH
