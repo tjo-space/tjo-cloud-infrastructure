@@ -24,7 +24,7 @@ locals {
   }
 }
 
-resource "proxmox_virtual_environment_download_file" "talos" {
+resource "proxmox_download_file" "talos" {
   for_each = toset([for node in local.nodes : node.host])
 
   content_type = "iso"
@@ -106,7 +106,7 @@ resource "proxmox_virtual_environment_vm" "nodes" {
   }
 
   cdrom {
-    file_id = proxmox_virtual_environment_download_file.talos[each.value.host].id
+    file_id = proxmox_download_file.talos[each.value.host].id
   }
 
   scsi_hardware = "virtio-scsi-single"
@@ -164,13 +164,13 @@ resource "proxmox_virtual_environment_user" "csi" {
     role_id   = proxmox_virtual_environment_role.csi.role_id
   }
 }
-resource "proxmox_virtual_environment_user_token" "csi" {
+resource "proxmox_user_token" "csi" {
   comment    = "Managed by Terraform"
   token_name = "terraform"
   user_id    = proxmox_virtual_environment_user.csi.user_id
 }
-resource "proxmox_virtual_environment_acl" "csi" {
-  token_id = proxmox_virtual_environment_user_token.csi.id
+resource "proxmox_acl" "csi" {
+  token_id = proxmox_user_token.csi.id
   role_id  = proxmox_virtual_environment_role.csi.role_id
 
   path      = "/"
@@ -194,13 +194,13 @@ resource "proxmox_virtual_environment_user" "ccm" {
     role_id   = proxmox_virtual_environment_role.ccm.role_id
   }
 }
-resource "proxmox_virtual_environment_user_token" "ccm" {
+resource "proxmox_user_token" "ccm" {
   comment    = "Managed by Terraform"
   token_name = "terraform"
   user_id    = proxmox_virtual_environment_user.ccm.user_id
 }
-resource "proxmox_virtual_environment_acl" "ccm" {
-  token_id = proxmox_virtual_environment_user_token.ccm.id
+resource "proxmox_acl" "ccm" {
+  token_id = proxmox_user_token.ccm.id
   role_id  = proxmox_virtual_environment_role.ccm.role_id
 
   path      = "/"

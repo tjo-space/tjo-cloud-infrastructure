@@ -43,24 +43,24 @@ module "cluster" {
     ##
     # CONTROL PLANE
     ##
-    nevaroo-purple = {
-      id      = 6011
+    nevaroo-c1 = {
+      id      = 6020
       type    = "controlplane"
       host    = "nevaroo"
       storage = "local-nvme-lvm"
       cores   = 4
       memory  = 6144
     }
-    batuu-cyan = {
-      id      = 6030
+    batuu-c1 = {
+      id      = 6022
       type    = "controlplane"
       host    = "batuu"
       storage = "local-nvme"
       cores   = 4
       memory  = 6144
     }
-    endor-purple = {
-      id      = 6021
+    endor-c1 = {
+      id      = 6023
       type    = "controlplane"
       host    = "endor"
       storage = "local-nvme"

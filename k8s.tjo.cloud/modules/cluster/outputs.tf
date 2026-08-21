@@ -29,8 +29,8 @@ output "talos" {
 output "proxmox" {
   value = merge(var.proxmox, {
     token = {
-      id     = proxmox_virtual_environment_user_token.csi.id
-      secret = split("=", proxmox_virtual_environment_user_token.csi.value)[1]
+      id     = proxmox_user_token.csi.id
+      secret = split("=", proxmox_user_token.csi.value)[1]
     }
   })
 }

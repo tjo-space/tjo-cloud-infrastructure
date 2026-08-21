@@ -99,6 +99,12 @@ locals {
         image = "factory.talos.dev/nocloud-installer/${talos_image_factory_schematic.this.id}:${var.talos.version}"
         disk  = "/dev/vda"
       }
+      kernel = {
+        modules = [
+          { name = "vhost_net" },
+          { name = "vhost_vsock" },
+        ]
+      }
       features = {
         hostDNS = {
           enabled              = false

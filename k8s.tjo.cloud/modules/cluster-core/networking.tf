@@ -38,7 +38,9 @@ resource "helm_release" "cilium" {
     }
 
     bpf = {
-      datapathMode = "netkit"
+      # Required to use kata-containers
+      # Ref: https://github.com/kata-containers/kata-containers/issues/12159
+      datapathMode = "veth"
       masquerade   = true
       distributedLRU = {
         enabled = true
@@ -70,6 +72,11 @@ resource "helm_release" "cilium" {
     }
 
     kubeProxyReplacement = true
+    # Required for Kata Containers
+    # Ref: https://docs.cilium.io/en/stable/network/kubernetes/kubeproxy-free/#socket-loadbalancer-bypass-in-pod-namespace
+    socketLB = {
+      hostNamespaceOnly = true
+    }
 
     securityContext = {
       capabilities = {
