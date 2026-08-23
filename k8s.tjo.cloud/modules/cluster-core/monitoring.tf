@@ -76,6 +76,26 @@ resource "helm_release" "monitoring" {
         controller = {
           priorityClassName = "system-node-critical"
         }
+        extraConfig = <<EOF
+          local.file_match "var_log" {
+            path_targets = [{ "__path__" = "/var/log/*.log"}]
+            sync_period = "15s"
+          }
+
+          loki.source.file "var_log" {
+            targets = local.file_match.var_log.targets
+            forward_to = [loki.process.var_log.receiver]
+          }
+
+          loki.process "var_log" {
+            stage.static_labels {
+              values = {
+                host_name = sys.env("HOSTNAME"),
+              }
+            }
+            forward_to = [otelcol.receiver.loki.monitor_tjo_cloud.receiver]
+          }
+        EOF
       }
       events-collector = {
         presets = ["singleton"]
