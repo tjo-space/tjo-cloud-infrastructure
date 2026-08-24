@@ -77,7 +77,7 @@ module "cluster" {
       storage   = "local-nvme-lvm"
       boot_size = 64
       cores     = 6
-      memory    = 12288
+      memory    = 24576
     }
     endor-w1 = {
       id        = 6062
