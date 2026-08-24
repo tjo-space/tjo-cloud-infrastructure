@@ -127,6 +127,14 @@ locals {
             "k8s.tjo.cloud/host"    = node.host
             "k8s.tjo.cloud/proxmox" = var.proxmox.name
           }
+          files = [
+            {
+              path        = "/usr/local/share/kata-containers/configuration.toml"
+              content     = file("${path.module}/kata.configuration.toml")
+              op          = "overwrite"
+              permissions = 444
+            }
+          ]
         }
       }),
     ]

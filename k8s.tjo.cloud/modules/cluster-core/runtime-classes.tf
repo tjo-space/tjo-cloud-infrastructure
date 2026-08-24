@@ -8,8 +8,8 @@ resource "kubernetes_manifest" "kata" {
     handler = "kata"
     overhead = {
       podFixed = {
-        memory = "130Mi"
-        cpu    = "200m"
+        memory = "2250Mi" # 250Mi for VMM + default_memory option
+        cpu    = "250m"   # 250m  for VMM
       }
     }
   }
