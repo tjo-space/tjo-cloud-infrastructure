@@ -86,6 +86,11 @@ users = [
     connection_limit = 1400
     databases        = [{ name = "id.tjo.cloud", connection_limit = 1400 }]
   },
+  {
+    node      = "endor-one"
+    name      = "invoices.mnts.dev"
+    databases = [{ name = "invoices.mnts.dev" }]
+  },
 ]
 
 administrators = [
