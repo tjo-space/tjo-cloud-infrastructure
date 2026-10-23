@@ -2,7 +2,12 @@
   ansible.builtin.apt:
     name: caddy
     state: absent
-    update_cache: yes
+    purge: true
+
+- name: Remove xCaddy installed via apt
+  ansible.builtin.apt:
+    name: xcaddy
+    state: absent
     purge: true
 
 - name: Create caddy group
