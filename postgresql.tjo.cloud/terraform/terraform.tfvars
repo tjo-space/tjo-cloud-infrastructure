@@ -91,6 +91,12 @@ users = [
     name      = "invoices.mnts.dev"
     databases = [{ name = "invoices.mnts.dev" }]
   },
+  {
+    node             = "nevaroo-one"
+    name             = "mail.tjo.cloud_stalwart"
+    connection_limit = 200
+    databases        = [{ name = "mail.tjo.cloud_stalwart_v1", connection_limit = 200 }]
+  },
 ]
 
 administrators = [
