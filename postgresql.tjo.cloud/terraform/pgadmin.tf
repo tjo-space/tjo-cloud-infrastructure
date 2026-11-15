@@ -1,5 +1,5 @@
 locals {
-  pgadmin_version = "9.10.0"
+  pgadmin_version = "9.19.0"
 }
 
 resource "random_password" "pgadmin" {
