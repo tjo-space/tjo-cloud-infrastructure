@@ -16,10 +16,6 @@ terraform {
       source  = "germanbrew/dotenv"
       version = "1.2.6"
     }
-    zerotier = {
-      source  = "zerotier/zerotier"
-      version = "1.6.0"
-    }
     random = {
       source  = "hashicorp/random"
       version = "3.7.1"
@@ -49,8 +45,4 @@ provider "hcloud" {
 
 provider "kubernetes" {
   config_path = "${path.module}/../../k8s.tjo.cloud/kubeconfig"
-}
-
-provider "zerotier" {
-  zerotier_central_token = var.zerotier_token
 }

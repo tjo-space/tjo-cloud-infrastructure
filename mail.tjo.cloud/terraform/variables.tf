@@ -22,11 +22,6 @@ variable "proxmox_token" {
   sensitive = true
 }
 
-variable "zerotier_token" {
-  sensitive = true
-  type      = string
-}
-
 variable "mail_hcloud_token" {
   sensitive = true
   type      = string

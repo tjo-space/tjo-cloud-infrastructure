@@ -21,10 +21,6 @@ locals {
           username = authentik_user.service_account[k].username
           password = authentik_token.service_account[k].key
         }
-        zerotier = {
-          public_key  = zerotier_identity.main[k].public_key
-          private_key = zerotier_identity.main[k].private_key
-        }
       }
     })
   }
