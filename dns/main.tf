@@ -20,7 +20,6 @@ resource "desec_rrset" "ingress" {
     "postgresql",
     "prometheus.monitor",
     "proxmox",
-    "web-mail",
   ]) : "${pair[0]}-${pair[1]}" => { type = pair[0], subname = pair[1] } }
 
   domain  = "tjo.cloud"
@@ -43,7 +42,6 @@ resource "desec_rrset" "https" {
     "postgresql",
     "prometheus.monitor",
     "proxmox",
-    "web-mail",
   ])
 
   domain  = "tjo.cloud"
