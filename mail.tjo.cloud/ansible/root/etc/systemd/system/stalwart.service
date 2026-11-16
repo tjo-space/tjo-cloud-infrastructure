@@ -16,6 +16,8 @@ SyslogIdentifier=stalwart
 User=stalwart
 Group=stalwart
 AmbientCapabilities=CAP_NET_BIND_SERVICE
+Environment=STALWART_RECOVERY_ADMIN={{stalwart_recovery_admin}}
+Environment=STALWART_RECOVERY_MODE=0
 
 [Install]
 WantedBy=multi-user.target
