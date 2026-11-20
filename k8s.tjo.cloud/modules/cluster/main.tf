@@ -4,129 +4,159 @@ locals {
   cluster_internal_endpoint = "https://${local.internal_domain}:${var.cluster.api.internal.port}"
   cluster_public_endpoint   = "https://${local.public_domain}:${var.cluster.api.public.port}"
 
-  talos_controlplane_config = {
-    version = "v1alpha1"
-    machine = {
-      kubelet = {
-        extraArgs = {
-          rotate-server-certificates = true
-        }
-        nodeIP = {
-          validSubnets = [
+  talos_controlplane_configs = [
+    {
+      version = "v1alpha1"
+      cluster = {
+        etcd = {
+          advertisedSubnets = [
             "fd74:6a6f:3030::/48",
           ]
+          extraArgs = {
+            heartbeat-interval = "1000" # Defaults to 100ms. Which is too fast for our network.
+            election-timeout   = "5000" # Defaults to 1000ms. Which is too fast for our network.
+          }
         }
       }
-      features = {
-        kubernetesTalosAPIAccess = {
-          enabled = true
-          allowedRoles = [
-            "os:reader"
-          ]
-          allowedKubernetesNamespaces = [
-            "kube-system"
-          ]
-        }
-        hostDNS = {
-          enabled              = false
-          forwardKubeDNSToHost = false
-          resolveMemberNames   = false
-        }
-      }
-      network = {
-        nameservers = ["fd74:6a6f:3030:53::53"]
-      }
-    }
-    cluster = {
-      etcd = {
-        advertisedSubnets = [
-          "fd74:6a6f:3030::/48",
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeAPIServerConfig"
+      image      = "registry.k8s.io/kube-apiserver:${var.talos.kubernetes}"
+      certExtraSANs = [
+        local.public_domain,
+        local.internal_domain,
+        "localhost:7445",
+      ]
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeAuthenticationConfig"
+      configuration = {
+        jwt = [
+          {
+            issuer = {
+              url = "https://id.tjo.cloud/application/o/k8stjocloud/"
+              audiences = [
+                "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg"
+              ]
+            }
+            claimMappings = {
+              username = { claim = "sub", prefix = "oidc:" }
+              groups   = { claim = "groups", prefix = "oidc:groups:" }
+            }
+          }
         ]
-        extraArgs = {
-          heartbeat-interval = "1000" # Defaults to 100ms. Which is too fast for our network.
-          election-timeout   = "5000" # Defaults to 1000ms. Which is too fast for our network.
-        }
       }
-      apiServer = {
-        certSANs = [
-          local.public_domain,
-          local.internal_domain,
-          "localhost:7445",
-        ]
-        extraArgs = {
-          "oidc-issuer-url"      = "https://id.tjo.cloud/application/o/k8stjocloud/",
-          "oidc-client-id"       = "HAI6rW0EWtgmSPGKAJ3XXzubQTUut2GMeTRS2spg",
-          "oidc-username-claim"  = "sub",
-          "oidc-username-prefix" = "oidc:",
-          "oidc-groups-claim"    = "groups",
-          "oidc-groups-prefix"   = "oidc:groups:",
-        }
-      }
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeProxyConfig"
+      enabled    = false
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeTalosAPIAccessConfig"
+      allowedRoles = [
+        "os:reader"
+      ]
+      allowedKubernetesNamespaces = [
+        "kube-system"
+      ]
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubePrismConfig"
+      port       = 7445
     }
-  }
+  ]
 
-  talos_worker_config = {
-    version = "v1alpha1"
-    cluster = {
-      network = {
-        cni = {
-          name = "none"
-        }
-        podSubnets = [
-          var.cluster.pod_cidr.ipv6
-        ]
-        serviceSubnets = [
-          var.cluster.service_cidr.ipv6
-        ]
+  talos_configs = [
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeNetworkConfig"
+      podSubnets = [
+        var.cluster.pod_cidr.ipv6
+      ]
+      serviceSubnets = [
+        var.cluster.service_cidr.ipv6
+      ]
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeletConfig"
+      image      = "ghcr.io/siderolabs/kubelet:${var.talos.kubernetes}"
+      extraArgs = {
+        rotate-server-certificates = true
+        cloud-provider             = "external"
       }
-      proxy = {
-        disabled = true
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "ResolverConfig"
+      nameservers = [
+        { address = "fd74:6a6f:3030:53::53" }
+      ]
+      hostDNS = {
+        enabled              = false
+        forwardKubeDNSToHost = false
+        resolveMemberNames   = false
       }
-    }
-    machine = {
-      kubelet = {
-        extraArgs = {
-          rotate-server-certificates = true
-          cloud-provider             = "external"
-        }
-        nodeIP = {
-          validSubnets = [
-            "fd74:6a6f:3030::/48",
-          ]
-        }
-      }
-      install = {
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "UnattendedInstallConfig"
+      installer = {
         image = "factory.talos.dev/nocloud-installer/${talos_image_factory_schematic.this.id}:${var.talos.version}"
-        disk  = "/dev/vda"
       }
-      kernel = {
-        modules = [
-          { name = "vhost_net" },
-          { name = "vhost_vsock" },
-        ]
-      }
-      features = {
-        hostDNS = {
-          enabled              = false
-          forwardKubeDNSToHost = false
-          resolveMemberNames   = false
+      provisioning = {
+        diskSelector = {
+          match = "disk.dev_path == \"/dev/vda\""
         }
       }
-      network = {
-        nameservers = ["fd74:6a6f:3030:53::53"]
-      }
+    },
+    {
+      apiVersion        = "v1alpha1"
+      kind              = "SecurityProfileConfig"
+      workloadIsolation = true
+    },
+    ## Required for Kata Containers
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KernelModuleConfig"
+      name       = "vhost_net"
+    },
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KernelModuleConfig"
+      name       = "vhost_vsock"
+    },
+    ## Disable default Flannel CNI
+    {
+      apiVersion = "v1alpha1"
+      kind       = "KubeFlannelCNIConfig"
+      "$patch"   = "delete"
     }
-  }
+  ]
 
   talos_node_config = {
     for k, node in local.nodes_with_address : k => [
-      yamlencode({
+      {
+        apiVersion = "v1alpha1"
+        kind       = "KubeNodeConfig"
+        nodeIP = {
+          validSubnets = [
+            "fd74:6a6f:3030::/48"
+          ]
+        }
+        labels = {
+          "k8s.tjo.cloud/bgp"     = "true"
+          "k8s.tjo.cloud/host"    = node.host
+          "k8s.tjo.cloud/proxmox" = var.proxmox.name
+        }
+      },
+      {
         machine = {
-          nodeLabels = {
-            "k8s.tjo.cloud/bgp"     = "true"
-            "k8s.tjo.cloud/host"    = node.host
-            "k8s.tjo.cloud/proxmox" = var.proxmox.name
-          }
           files = [
             {
               path        = "/usr/local/share/kata-containers/configuration.toml"
@@ -136,7 +166,7 @@ locals {
             }
           ]
         }
-      }),
+      },
     ]
   }
 }
@@ -174,13 +204,11 @@ resource "talos_machine_configuration_apply" "controlplane" {
   node     = each.value.name
   endpoint = each.value.ipv6
 
-  config_patches = sensitive(concat(
-    [
-      yamlencode(local.talos_worker_config),
-      yamlencode(local.talos_controlplane_config)
-    ],
+  config_patches = sensitive([for config in concat(
+    local.talos_controlplane_configs,
+    local.talos_configs,
     local.talos_node_config[each.key],
-  ))
+  ) : yamlencode(config)])
 
   timeouts = {
     create = "1m"
@@ -197,12 +225,10 @@ resource "talos_machine_configuration_apply" "worker" {
   node     = each.value.name
   endpoint = each.value.ipv6
 
-  config_patches = sensitive(concat(
-    [
-      yamlencode(local.talos_worker_config)
-    ],
+  config_patches = sensitive([for config in concat(
+    local.talos_configs,
     local.talos_node_config[each.key],
-  ))
+  ) : yamlencode(config)])
 
   timeouts = {
     create = "1m"

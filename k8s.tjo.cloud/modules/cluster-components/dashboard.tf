@@ -2,7 +2,7 @@ resource "helm_release" "headlamp" {
   name            = "headlamp"
   repository      = "https://kubernetes-sigs.github.io/headlamp/"
   chart           = "headlamp"
-  version         = "0.44.0"
+  version         = "0.46.0"
   namespace       = kubernetes_namespace.k8s-tjo-cloud.metadata[0].name
   atomic          = true
   cleanup_on_fail = true
@@ -56,6 +56,7 @@ resource "helm_release" "headlamp" {
         clientSecret = "null"
         scopes       = "openid email profile"
         callbackURL  = "https://dashboard.k8s.tjo.cloud/oidc-callback"
+        autoLogin    = true
       }
     }
   })]

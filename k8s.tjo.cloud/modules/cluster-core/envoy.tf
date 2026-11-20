@@ -2,7 +2,7 @@ resource "helm_release" "envoy" {
   name            = "envoy"
   chart           = "gateway-helm"
   repository      = "oci://docker.io/envoyproxy"
-  version         = "v1.9.1"
+  version         = "v1.10.0"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

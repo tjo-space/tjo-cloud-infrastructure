@@ -2,7 +2,7 @@ resource "helm_release" "cilium" {
   name            = "cilium"
   chart           = "cilium"
   repository      = "oci://quay.io/cilium/charts"
-  version         = "1.20.0"
+  version         = "1.20.5"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

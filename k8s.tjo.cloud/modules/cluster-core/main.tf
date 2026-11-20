@@ -29,7 +29,7 @@ resource "helm_release" "proxmox-ccm" {
   name            = "proxmox-cloud-controller-manager"
   chart           = "proxmox-cloud-controller-manager"
   repository      = "oci://ghcr.io/sergelogvinov/charts"
-  version         = "0.2.14"
+  version         = "0.2.32"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -109,7 +109,7 @@ resource "helm_release" "talos-ccm" {
   name            = "talos-cloud-controller-manager"
   chart           = "talos-cloud-controller-manager"
   repository      = "oci://ghcr.io/siderolabs/charts"
-  version         = "0.4.7"
+  version         = "0.5.8"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true
@@ -148,7 +148,7 @@ resource "helm_release" "metrics-server" {
   name            = "metrics-server"
   chart           = "metrics-server"
   repository      = "https://kubernetes-sigs.github.io/metrics-server/"
-  version         = "3.12.2"
+  version         = "3.14.0"
   namespace       = "kube-system"
   atomic          = true
   cleanup_on_fail = true

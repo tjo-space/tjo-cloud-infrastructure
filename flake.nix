@@ -39,7 +39,7 @@
             inetutils
             argocd
             haproxy
-            garage
+            #garage
             cloud-init
             ansible
             grafana-alloy
